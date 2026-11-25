@@ -1,5 +1,5 @@
 ---
-import { ui, t, type Locale } from '@/i18n/ui';
+import { ui, t, href, type Locale } from '@/i18n/ui';
 import { lab } from '@/data/lab';
 interface Props { lang: Locale }
 const { lang } = Astro.props;
@@ -11,6 +11,12 @@ const built = new Date().toISOString().slice(0, 10);
       <p class="name">{lab.short} · {t(lab.name, lang)}</p>
       <p class="muted">{t(lab.dept, lang)}</p>
     </div>
+    <nav aria-label={lang === 'zh-tw' ? '網站地圖' : 'Site map'}>
+      <h2 class="eyebrow">{lang === 'zh-tw' ? '網站' : 'Site'}</h2>
+      <ul class="map">
+        {(['research', 'members', 'advisor', 'join', 'collaboration', 'history'] as const).map((k) => <li><a href={href(lang, k)}>{t(ui.nav[k], lang)}</a></li>)}
+      </ul>
+    </nav>
     <div>
       <h2 class="eyebrow">{t(ui.footer.contact, lang)}</h2>
       <address>
@@ -27,7 +33,10 @@ const built = new Date().toISOString().slice(0, 10);
 
 <style>
   .site-footer { margin-top: var(--space-9); border-top: 1px solid var(--line); padding-block: var(--space-7) calc(var(--space-7) + env(safe-area-inset-bottom, 0px)); }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5) var(--space-7); }
+  .grid { display: grid; grid-template-columns: 1.2fr 0.8fr 1.2fr; gap: var(--space-5) var(--space-7); }
+  .map { list-style: none; margin: var(--space-2) 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, max-content); gap: 0 var(--space-5); }
+  .map a { display: inline-block; padding-block: 4px; color: var(--ink); text-decoration: none; }
+  .map a:hover { color: var(--accent); text-decoration: underline; }
   .name { font: 600 18px/1.4 var(--f-display); }
   address { font-style: normal; display: grid; gap: 2px; margin-top: var(--space-2); }
   .small { grid-column: 1 / -1; font-size: 14px; }

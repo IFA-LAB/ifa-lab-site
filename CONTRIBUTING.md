@@ -114,3 +114,7 @@ npm run build
 
 - 先問你的 AI：「讀 CONTRIBUTING.md，告訴我這個錯誤怎麼修」，再貼上錯誤訊息。
 - 還是不行就開 issue，或在實驗室群組問維護者。
+
+## 標題字型
+
+標題用的是圓體（jf 粉圓 Huninn），建置時只留下網站真的用到的字（`scripts/subset-font.mjs`）。你在標題寫了新的中文字，`npm run dev` 預覽時那幾個字會先用一般字型顯示；跑一次 `npm run font` 就會更新。正式建置會自動重做，不用特別提交。

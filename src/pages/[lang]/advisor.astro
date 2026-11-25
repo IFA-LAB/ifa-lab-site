@@ -1,20 +1,27 @@
 ---
 import Base from '@/layouts/Base.astro';
 import ClayFigure from '@/components/ClayFigure.astro';
+import ClayBuddy from '@/components/three/ClayBuddy';
+import { Picture, getImage } from 'astro:assets';
+import photo from '@/assets/advisor.jpg';
 import { advisor, lab } from '@/data/lab';
 import { ui, t, href, type Locale } from '@/i18n/ui';
 import { langPaths } from '@/lib/content';
+import { getCollection } from 'astro:content';
 
 export const getStaticPaths = langPaths;
 const lang = Astro.params.lang as Locale;
 const zh = lang === 'zh-tw';
 const site = Astro.site!;
+const recent = (await getCollection('publications')).filter((p) => p.data.kind === 'journal').sort((a, b) => b.data.year - a.data.year).slice(0, 5);
+const share = await getImage({ src: photo, width: 336, format: 'jpg' });
 const person = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: advisor.name.en,
   alternateName: advisor.name.zh,
   jobTitle: advisor.title.en,
+  image: new URL(share.src, site).href,
   email: lab.contact.email,
   url: new URL(href(lang, 'advisor'), site).href,
   worksFor: { '@id': new URL('/#org', site).href },
@@ -24,10 +31,17 @@ const person = {
   alumniOf: advisor.education.map((e) => ({ '@type': 'CollegeOrUniversity', name: e.school.en })),
 };
 ---
-<Base lang={lang} title={t(advisor.name, lang)} description={t(advisor.bio, lang).slice(0, 150)} jsonld={[person]} ogType="profile">
+<Base lang={lang} title={t(advisor.name, lang)} description={t(advisor.bio, lang).slice(0, 150)} jsonld={[person]} ogType="profile" image={share.src}>
   <article class="wrap section">
     <header class="head">
-      <ClayFigure clay="sun" accessory="guitar" size={160} />
+      <div class="portrait" data-face="photo">
+        <Picture class="photo" src={photo} alt={zh ? '邱信瑜老師的照片' : 'Photo of Hsin-Yu Chiu'} widths={[240, 336]} sizes="240px" formats={['avif', 'webp']} loading="eager" />
+        <div class="buddy" data-buddy>
+          <div class="stage"><ClayFigure clay="sun" accessory="guitar" size={160} /></div>
+          <ClayBuddy client:visible clay="sun" accessory="guitar" hint={zh ? '拖曳轉圈，點一下會跳' : 'Drag to spin, click to hop'} hintTouch={zh ? '左右滑轉圈，點一下會跳' : 'Swipe to spin, tap to hop'} />
+        </div>
+        <button type="button" class="flip chip" aria-pressed="false" data-on={zh ? '換回照片' : 'Show photo'} data-off={zh ? '換成黏土公仔' : 'Show clay figure'}>{zh ? '換成黏土公仔' : 'Show clay figure'}</button>
+      </div>
       <div class="who">
         <p class="eyebrow">{t(ui.nav.advisor, lang)}</p>
         <h1>{t(advisor.name, lang)}</h1>
@@ -42,27 +56,68 @@ const person = {
     </header>
     <div class="blocks">
       <section class="block wide"><h2>{t(ui.sections.bio, lang)}</h2><p>{t(advisor.bio, lang)}</p></section>
+      <section class="block wide"><h2>{zh ? '近期期刊論文' : 'Recent journal papers'}</h2>
+        <ol class="recent">{recent.map((p) => <li><a href={href(lang, `papers/${p.id}`)} lang="en">{p.data.title}</a> <span class="mono muted">{p.data.year}</span></li>)}</ol>
+        <p><a href={href(lang, 'research')}>{zh ? '全部論文與研究計畫 →' : 'All papers and grants →'}</a></p></section>
       <section class="block"><h2>{t(ui.sections.research, lang)}</h2><ul class="tags">{advisor.research.map((r) => <li lang="en">{r}</li>)}</ul></section>
       <section class="block"><h2>{t(ui.sections.education, lang)}</h2>
         <ul class="timeline">{advisor.education.map((e) => <li><span class="mono">{e.period}</span><span>{t(e.school, lang)}・{t(e.degree, lang)}</span></li>)}</ul></section>
       <section class="block"><h2>{t(ui.sections.experience, lang)}</h2>
         <ul class="timeline">{advisor.experience.map((e) => <li><span class="mono">{e.period}</span><span>{t(e.title, lang)}・{t(e.org, lang)}</span></li>)}</ul></section>
-      <section class="block"><h2>{zh ? '獎項' : 'Awards'}</h2><ul class="plain">{advisor.awards.map((x) => <li>{t(x, lang)}</li>)}</ul></section>
-      <section class="block"><h2>{zh ? '證照' : 'Licenses'}</h2><ul class="plain">{advisor.licenses.map((l) => <li>{t(l, lang)}</li>)}</ul></section>
+      <section class="block"><h2>{zh ? '獎項' : 'Awards'}</h2><ul class="plain">{advisor.awards.map((x) => <li>{t(x, lang)}</li>)}</ul>
+        <h2 class="sub">{zh ? '證照' : 'Licenses'}</h2><ul class="plain">{advisor.licenses.map((l) => <li>{t(l, lang)}</li>)}</ul></section>
       <section class="block wide"><h2>{t(ui.sections.interests, lang)}</h2><p>{t(advisor.interests, lang)}</p></section>
     </div>
   </article>
 </Base>
 
+<script>
+  // Photo ⇄ clay figure. The 3D island only loads once the figure is first shown (client:visible on a hidden box).
+  for (const btn of document.querySelectorAll<HTMLButtonElement>('.portrait .flip')) {
+    btn.addEventListener('click', () => {
+      const box = btn.closest<HTMLElement>('.portrait')!;
+      const toBuddy = box.dataset.face === 'photo';
+      box.dataset.face = toBuddy ? 'buddy' : 'photo';
+      btn.setAttribute('aria-pressed', String(toBuddy));
+      btn.textContent = (toBuddy ? btn.dataset.on : btn.dataset.off) ?? '';
+    });
+  }
+</script>
+
 <style>
+  .portrait { position: relative; width: 240px; display: grid; justify-items: center; gap: var(--space-3); flex: none; }
+  .portrait > :global(picture), .buddy { grid-area: 1 / 1; }
+  .portrait :global(.photo) {
+    display: block; width: 240px; height: 240px; object-fit: cover; border-radius: var(--r-lg);
+    box-shadow: 8px 10px 22px var(--lo), inset 0 0 0 1px rgb(0 0 0 / 0.06);
+    transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-slow) var(--ease-out);
+  }
+  .portrait > :global(picture) { grid-row: 1; grid-column: 1; }
+  .buddy { position: relative; width: 240px; height: 260px; grid-row: 1; grid-column: 1; }
+  [data-face='photo'] .buddy { display: none; }
+  [data-face='buddy'] :global(picture) { display: none; }
+  [data-face='buddy'] .buddy { animation: pop var(--dur-slow) var(--ease-out); }
+  @keyframes pop { from { opacity: 0; transform: scale(0.96); } }
+  .flip { min-height: 44px; cursor: pointer; font: inherit; font-size: 15px; border: 0; }
+  .stage { position: absolute; inset: 0; display: grid; place-items: center; }
+  .buddy[data-live] .stage { opacity: 0; transition: opacity var(--dur-base) var(--ease-out); }
+  .buddy :global(.buddy-canvas) { position: absolute; inset: 0; cursor: grab; touch-action: pan-y; }
+  .buddy :global(.buddy-canvas:active) { cursor: grabbing; }
+  .buddy :global(.buddy-hint) {
+    position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); white-space: nowrap;
+    font: 500 13px/1.4 var(--f-body); color: var(--ink-2); pointer-events: none;
+  }
   .head { display: flex; gap: var(--space-6); align-items: center; flex-wrap: wrap; margin-bottom: var(--space-7); }
   .who { display: grid; gap: var(--space-1); min-width: 0; }
   .en { font: 500 20px/1.3 var(--f-display); color: var(--ink-2); }
   .links { list-style: none; padding: 0; margin: var(--space-3) 0 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .links a { text-decoration: none; min-height: 40px; }
   .blocks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
-  .block { padding: var(--space-5); border-radius: var(--r-md); background: var(--surface); display: grid; gap: var(--space-3); align-content: start; min-width: 0; }
+  .block { padding: var(--space-5) var(--space-6); border-radius: var(--r-lg); background: var(--surface); box-shadow: 8px 10px 22px var(--lo), inset -4px -6px 12px rgb(0 0 0 / 0.04), inset 4px 6px 12px var(--hi); display: grid; gap: var(--space-3); align-content: start; min-width: 0; }
   .block.wide { grid-column: 1 / -1; }
+  .block .sub { margin-top: var(--space-4); }
+  .recent { margin: 0; padding-left: 1.4em; display: grid; gap: var(--space-2); }
+  .recent .mono { font-size: 13px; margin-left: var(--space-1); }
   .block h2 { font-size: 18px; display: flex; align-items: center; gap: var(--space-2); }
   .block h2::before { content: ''; width: 12px; height: 12px; border-radius: 4px; background: var(--clay-sun); }
   .plain { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2); }

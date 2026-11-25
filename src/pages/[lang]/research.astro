@@ -50,6 +50,13 @@ const jsonld = journals.map((p) => ({
       </ul>
       <p class="muted status" aria-live="polite" data-status></p>
     </div>
+    <nav class="jump" aria-label={zh ? '跳到' : 'Jump to'}>
+      <a href="#j-h">{t(ui.pubs.journal, lang)} <b>{journals.length}</b></a>
+      <a href="#w-h">{t(ui.pubs.working, lang)} <b>{working.length}</b></a>
+      <a href="#t-h">{t(ui.pubs.theses, lang)} <b>{theses.length}</b></a>
+      <a href="#g-h">{t(ui.pubs.grants, lang)} <b>{grants.length}</b></a>
+      <a href="#s-h">{t(ui.pubs.projects, lang)} <b>{studentProjects.length}</b></a>
+    </nav>
 
     <section aria-labelledby="j-h" class="group" data-pubs>
       <h2 id="j-h">{t(ui.pubs.journal, lang)} <span class="n">{journals.length}</span></h2>
@@ -186,6 +193,8 @@ const jsonld = journals.map((p) => ({
 <style>
   .projects { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
   .projects > li { padding: var(--space-5); display: grid; gap: var(--space-4); align-content: start; min-width: 0; }
+  /* a lone card after the feature takes the full row instead of leaving a hole */
+  .projects > li:not(.feature):last-child:nth-child(even) { grid-column: 1 / -1; }
   .projects > li.feature { grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); align-items: center; }
   .ptext { display: grid; gap: var(--space-2); min-width: 0; }
   .projects :global(.pphoto) { display: block; width: 100%; height: auto; border-radius: var(--r-md); }
@@ -215,6 +224,12 @@ const jsonld = journals.map((p) => ({
   .title { font-weight: 700; font-size: 17px; line-height: 1.6; }
   .authors { font-size: 15px; }
   .meta { font-size: 14px; }
+  .jump { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); margin: var(--space-4) 0 var(--space-2); font-size: 15px; }
+  .jump a { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; color: var(--ink-2); text-decoration: none; }
+  .jump a:hover { color: var(--accent); }
+  .jump b { font: 600 13px/1 var(--f-mono); padding: 4px 7px; border-radius: var(--r-full); background: var(--surface-2); color: var(--ink); }
+  /* short links (DOI, 簡報) get a 24px+ hit area without changing the line */
+  .meta a { display: inline-block; padding-block: 3px; margin-block: -3px; min-width: 24px; text-align: center; }
   .pub :global(p:last-child) { overflow-wrap: anywhere; }
   .grants { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
   .grants li { padding: var(--space-5); display: grid; gap: var(--space-2); align-content: start; }

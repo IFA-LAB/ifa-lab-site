@@ -3,6 +3,8 @@ import Base from '@/layouts/Base.astro';
 import { lab, advisor } from '@/data/lab';
 import { ui, t, href, type Bi, type Locale } from '@/i18n/ui';
 import { langPaths } from '@/lib/content';
+import { getCollection, getEntry } from 'astro:content';
+import BiText from '@/components/Bi.astro';
 
 export const getStaticPaths = langPaths;
 const lang = Astro.params.lang as Locale;
@@ -26,6 +28,13 @@ const faq: { q: Bi; a: Bi }[] = [
     a: { zh: `寄信給邱信瑜老師（${lab.contact.email}），簡單介紹自己和有興趣的題目；也可以到志希館 712 實驗室找我們，或到管理二館 I1-932 找老師。`, en: `Email Prof. Hsin-Yu Chiu (${lab.contact.email}) with a short introduction and the topics you are interested in, or visit the lab in Room 712, Zhixi Building, or Prof. Chiu’s office, I1-932, Management Building II.` },
   },
 ];
+const theses = (await getCollection('theses')).sort((a, b) => b.data.academicYear - a.data.academicYear);
+const thesisRows = await Promise.all(theses.map(async (x) => ({ x, m: await getEntry('members', x.data.member) })));
+const steps: { t: Bi; d: Bi }[] = [
+  { t: { zh: '寄一封信', en: 'Send an email' }, d: { zh: '三五句話介紹自己、修過的課，和你好奇的題目。', en: 'A few lines about you, the courses you took and what you are curious about.' } },
+  { t: { zh: '來 712 聊聊', en: 'Drop by Room 712' }, d: { zh: '到志希館 712 跟學長姐聊實驗室的日常，再跟老師約時間。', en: 'Chat with current students in Zhixi 712, then book a time with the advisor.' } },
+  { t: { zh: '挑一塊積木', en: 'Pick a block' }, d: { zh: '從六個研究領域選題目，先從一個小資料集開始疊。', en: 'Choose a topic from the six research areas and start stacking with a small dataset.' } },
+];
 const faqLd = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
@@ -36,7 +45,7 @@ const faqLd = {
   <div class="wrap section">
     <div class="section-head">
       <p class="eyebrow">{t(ui.nav.join, lang)}</p>
-      <h1>{zh ? '想用 AI 做金融研究？來疊積木吧' : 'Want to do finance research with AI? Come build with us'}</h1>
+      <h1 class="lines">{(zh ? ['想用 AI 做金融研究？', '來疊積木吧'] : ['Want to do finance research with AI?', 'Come build with us']).map((l) => <span>{l}</span>)}</h1>
       <p class="muted">{zh ? '我們招收大學部專題生與碩士班學生。下面是最常被問到的四個問題。' : 'We recruit undergraduate project students and master’s students. Here are the four questions we get most.'}</p>
     </div>
     <div class="faq">
@@ -47,6 +56,25 @@ const faqLd = {
         </section>
       ))}
     </div>
+    <section class="steps-wrap" aria-labelledby="steps-h">
+      <h2 id="steps-h">{zh ? '三步加入' : 'Three steps in'}</h2>
+      <ol class="steps">
+        {steps.map((s, i) => (
+          <li class="clay"><span class="num" aria-hidden="true">{i + 1}</span><h3>{t(s.t, lang)}</h3><p class="muted">{t(s.d, lang)}</p></li>
+        ))}
+      </ol>
+    </section>
+    <section class="past" aria-labelledby="past-h">
+      <h2 id="past-h">{zh ? '學長姐做過的題目' : 'Topics past members wrote theses on'}</h2>
+      <ul>
+        {thesisRows.map(({ x, m }) => (
+          <li>
+            <BiText text={x.data.title} lang={lang} />
+            <p class="muted small">{m ? <a href={href(lang, `members/${x.data.member}`)}>{t(m.data.name, lang)}</a> : x.data.member} · {zh ? `${x.data.academicYear} 學年度` : `AY ${x.data.academicYear + 1911}`}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
     <p class="cta"><a class="btn" href={`mailto:${lab.contact.email}`}>{zh ? `寄信給${advisor.name.zh}老師` : `Email Prof. ${advisor.name.en}`}</a> <a class="btn secondary" href={href(lang, 'members')}>{zh ? '先認識成員' : 'Meet the members'}</a></p>
   </div>
 </Base>
@@ -56,5 +84,14 @@ const faqLd = {
   .qa { padding: var(--space-6); display: grid; gap: var(--space-3); align-content: start; }
   .qa h2 { font-size: 21px; }
   .cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-7); }
+  .steps-wrap, .past { margin-top: var(--space-8); display: grid; gap: var(--space-5); }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
+  .steps li { padding: var(--space-6) var(--space-5) var(--space-5); display: grid; gap: var(--space-2); align-content: start; position: relative; }
+  .num { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font: 600 22px/1 var(--f-display); color: var(--ink); background: var(--clay-sun); box-shadow: 3px 5px 10px var(--lo), inset -3px -4px 6px rgb(0 0 0 / 0.15), inset 3px 3px 6px rgb(255 255 255 / 0.35); margin-bottom: var(--space-2); }
+  .steps h3 { font-size: 20px; }
+  .past ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4) var(--space-6); }
+  .past li { display: grid; gap: var(--space-1); padding-left: var(--space-4); box-shadow: inset 3px 0 0 var(--clay-sun); }
+  .small { font-size: 14px; }
+  @media (max-width: 767px) { .steps, .past ul { grid-template-columns: 1fr; } }
   @media (max-width: 767px) { .faq { grid-template-columns: 1fr; } }
 </style>

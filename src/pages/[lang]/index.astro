@@ -4,6 +4,8 @@ import ClayCandles from '@/components/ClayCandles.astro';
 import ClayFigure from '@/components/ClayFigure.astro';
 import ClayKline from '@/components/three/ClayKline';
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import advisorPhoto from '@/assets/advisor.jpg';
 import { lab, areas, advisor } from '@/data/lab';
 import { ui, t, href, type Locale } from '@/i18n/ui';
 import { langPaths, membersByCohort } from '@/lib/content';
@@ -26,37 +28,42 @@ const stats = [
   { n: theses.length, label: t(ui.pubs.theses, lang) },
   { n: memberCount, label: zh ? '位成員' : 'members' },
 ];
+const boardEn: Record<string, string> = { empirical: 'Empirical', behavioral: 'Behavioral', pricing: 'Pricing', ai: 'AI / ML', forecast: 'Forecasting', apps: 'Apps & Viz' };
+const titleLines = zh ? ['智能金融', '分析實驗室'] : ['Intelligent Finance', 'Analytics Lab'];
 const description = zh
   ? '國立中央大學資訊管理學系的智能金融分析實驗室（IFA Lab），由邱信瑜副教授主持，研究實證財務、行為財務、資產定價、AI 與機器學習、財務預測與金融應用。'
   : 'IFA Lab (Intelligent Finance Analytics Lab) at National Central University, led by Associate Professor Hsin-Yu Chiu, researches empirical and behavioral finance, asset pricing, AI and machine learning, forecasting and financial applications.';
 ---
 <Base lang={lang} title={lab.short} description={description}>
-  <section class="hero wrap">
-    <div class="copy">
-      <p class="eyebrow">{lab.short} · NCU {zh ? '資訊管理學系' : 'Information Management'}</p>
-      <h1>{t(lab.name, lang)}</h1>
-      <p class="lede">{zh
-        ? '我們把財務理論、資料與 AI 疊在一起：從台股實證、投資人行為到圖神經網路預測，做出決策者用得上的模型。'
-        : 'We stack finance theory, data and AI together: from Taiwan market evidence and investor behavior to graph-network forecasting, building models decision-makers can use.'}</p>
-      <div class="cta">
-        <a class="btn" href={href(lang, 'research')}>{zh ? '看研究成果' : 'See our research'}</a>
-        <a class="btn secondary" href={href(lang, 'join')}>{t(ui.nav.join, lang)}</a>
+  <section class="hero" aria-labelledby="hero-h">
+    <div class="wrap hero-grid">
+      <div class="copy">
+        <p class="eyebrow">{lab.short} · NCU {zh ? '資訊管理學系' : 'Information Management'}</p>
+        <h1 id="hero-h">{titleLines.map((l) => <span>{l}</span>)}</h1>
+        <p class="lede">{zh
+          ? '我們把財務理論、資料與 AI 疊在一起：從台股實證、投資人行為到圖神經網路預測，做出決策者用得上的模型。'
+          : 'We stack finance theory, data and AI together: from Taiwan market evidence and investor behavior to graph-network forecasting, building models decision-makers can use.'}</p>
+        <div class="cta">
+          <a class="btn" href={href(lang, 'research')}>{zh ? '看研究成果' : 'See our research'}</a>
+          <a class="btn secondary" href={href(lang, 'join')}>{t(ui.nav.join, lang)}</a>
+        </div>
+      </div>
+      <div class="visual" data-kline>
+        <ClayCandles label={zh ? '黏土做的 K 線模型：紅色上漲、綠色下跌的積木 K 棒，上方漂著金幣' : 'A clay candlestick model: red rising and green falling blocks with floating coins'} />
+        <ClayKline
+          client:visible
+          bars={areas.map((a) => ({ key: a.key, label: zh ? a.name.zh : boardEn[a.key], name: t(a.name, lang), count: perArea(a.key), href: href(lang, `research#${a.key}`) }))}
+          hint={zh ? '每根 K 棒是一個研究領域，滑過看看、點進去' : 'Each candle is a research area. Hover, then click'}
+          hintTouch={zh ? '每根 K 棒是一個研究領域，點一下看論文' : 'Each candle is a research area. Tap one'}
+          unit={zh ? '篇' : 'works'}
+        />
       </div>
     </div>
-    <div class="visual" data-kline>
-      <ClayCandles label={zh ? '黏土做的 K 線模型：紅色上漲、綠色下跌的積木 K 棒，上方漂著金幣' : 'A clay candlestick model: red rising and green falling blocks with floating coins'} />
-      <ClayKline
-        client:visible
-        bars={areas.map((a) => ({ key: a.key, label: t(a.name, lang), count: perArea(a.key), href: href(lang, `research#${a.key}`) }))}
-        hint={zh ? '每根 K 棒是一個研究領域，滑過看看、點進去' : 'Each candle is a research area. Hover, then click'}
-        hintTouch={zh ? '每根 K 棒是一個研究領域，點一下看論文' : 'Each candle is a research area. Tap one'}
-        unit={zh ? '篇' : 'works'}
-      />
+    <div class="wrap">
+      <dl class="ticker clay" aria-label={zh ? '研究成果數量' : 'Output at a glance'}>
+        {stats.map((s) => <div><dt>{s.label}</dt><dd>{s.n}</dd></div>)}
+      </dl>
     </div>
-  </section>
-
-  <section class="wrap stats" aria-label={zh ? '研究成果數量' : 'Output at a glance'}>
-    {stats.map((s) => <p class="stat clay"><b>{s.n}</b><span>{s.label}</span></p>)}
   </section>
 
   <section class="wrap section" aria-labelledby="areas-h">
@@ -85,6 +92,7 @@ const description = zh
     <div class="section-head">
       <p class="eyebrow">{t(ui.nav.members, lang)}</p>
       <h2 id="shelf-h">{zh ? '一屆一層的成員書架' : 'One shelf per cohort'}</h2>
+      <p class="muted">{zh ? '點一個公仔，看他們在做什麼。' : 'Pick a figure to see what they work on.'}</p>
     </div>
     <div class="shelf">
       {cohorts.map(([c, ms]) => (
@@ -94,7 +102,7 @@ const description = zh
             {ms.map((m) => (
               <li>
                 <a href={href(lang, `members/${m.id}`)}>
-                  <ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} placeholder={m.data.placeholder} size={72} />
+                  <ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} placeholder={m.data.placeholder} size={92} />
                   <span>{t(m.data.name, lang)}</span>
                 </a>
               </li>
@@ -108,45 +116,50 @@ const description = zh
   <section class="wrap section mission" aria-labelledby="mission-h">
     <div>
       <p class="eyebrow">{zh ? '使命' : 'Mission'}</p>
-      <h2 id="mission-h">{t(lab.tagline, lang)}</h2>
-      {lab.mission.map((m) => <p>{t(m, lang)}</p>)}
+      <h2 id="mission-h" class="quote">{t(lab.tagline, lang)}</h2>
+      <p class="lede">{t(lab.mission[0], lang)}</p>
     </div>
     <a class="advisor clay" href={href(lang, 'advisor')}>
-      <ClayFigure clay="sun" accessory="guitar" size={96} />
+      <Image class="advisor-photo" src={advisorPhoto} alt="" width={128} height={128} densities={[1, 2]} format="webp" />
       <span>
         <span class="eyebrow">{t(ui.nav.advisor, lang)}</span>
         <strong>{t(advisor.name, lang)}</strong>
-        <span class="muted">{t(advisor.title, lang)} · {t(lab.dept, lang)}</span>
+        <span class="muted">{t(advisor.title, lang)}</span>
+        <span class="go">{zh ? '認識老師 →' : 'Meet the advisor →'}</span>
       </span>
     </a>
   </section>
 </Base>
 
 <style>
-  .hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: var(--space-7); align-items: center; padding-block: var(--space-7); }
-  .copy { display: grid; gap: var(--space-4); }
-  .lede { font-size: 19px; color: var(--ink-2); max-width: 32em; }
-  .cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-2); }
+  .hero { padding-block: var(--space-6) var(--space-7); overflow-x: clip; }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-5); align-items: center; }
+  .copy { display: grid; gap: var(--space-5); position: relative; z-index: 1; }
+  .hero h1 { font-size: clamp(44px, 6.6vw, 96px); line-height: 1.08; }
+  .hero h1 span { display: block; white-space: nowrap; }
+  :global(html:lang(en)) .hero h1 { font-size: clamp(40px, 5vw, 68px); letter-spacing: -0.02em; }
+  :global(html:lang(en)) .lede { max-width: 26em; }
+  .lede { font-size: 19px; color: var(--ink-2); max-width: 30em; }
+  .cta { display: flex; flex-wrap: wrap; gap: var(--space-3); }
 
-  .visual { position: relative; }
-  .visual :global(.kline-canvas) { position: absolute; inset: 0; border-radius: var(--r-lg); overflow: hidden; }
+  /* the scene bleeds to the right edge of the viewport on wide screens */
+  .visual { position: relative; margin-right: min(0px, calc((var(--page) - 100vw) / 2)); aspect-ratio: 7 / 5.4; }
+  .visual :global(.kline-canvas) { position: absolute; inset: 0; }
   .visual :global(.kline-canvas canvas) { touch-action: pan-y; }
   .visual[data-live] :global(.stage > *) { opacity: 0; transition: opacity var(--dur-base) var(--ease-out); }
   .visual :global(.kline-hint) {
-    position: absolute; left: 14px; bottom: 12px; font: 500 13px/1.4 var(--f-body); color: var(--ink-2);
-    background: var(--surface); padding: 6px 12px; border-radius: var(--r-full);
+    position: absolute; left: 50%; bottom: 4%; transform: translateX(-50%); white-space: nowrap;
+    font: 500 14px/1.4 var(--f-body); color: var(--ink-2);
+    background: var(--surface); padding: 8px 16px; border-radius: var(--r-full); box-shadow: 4px 6px 14px var(--lo);
   }
-  .visual :global(.kline-tip) {
-    display: grid; gap: 2px; white-space: nowrap; padding: 8px 14px; border-radius: 14px;
-    background: var(--surface); color: var(--ink); font: 500 15px/1.3 var(--f-body);
-    box-shadow: 6px 8px 18px var(--lo);
-  }
-  .visual :global(.kline-tip span) { font-size: 13px; color: var(--ink-2); }
+  .visual :global(.kline-hint b) { color: var(--ink); }
 
-  .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-4); }
-  .stat { padding: var(--space-4) var(--space-5); display: grid; }
-  .stat b { font: 600 36px/1.1 var(--f-display); font-variant-numeric: tabular-nums; }
-  .stat span { font-size: 15px; color: var(--ink-2); }
+  .ticker { margin: var(--space-6) 0 0; padding: var(--space-5) var(--space-6); display: grid; grid-template-columns: repeat(5, 1fr); }
+  .ticker > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: var(--space-1); padding-inline: var(--space-5); }
+  .ticker > div + div { box-shadow: inset 1px 0 0 var(--line); }
+  .ticker > div:first-child { padding-left: 0; }
+  .ticker dd { margin: 0; font: 600 clamp(40px, 4.4vw, 60px)/1 var(--f-display); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+  .ticker dt { font-size: 15px; color: var(--ink-2); }
 
   .areas { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
   .area { display: grid; gap: var(--space-2); padding: var(--space-5); text-decoration: none; color: var(--ink); height: 100%; transition: transform var(--dur-fast) var(--ease-out); }
@@ -156,28 +169,45 @@ const description = zh
   .stack i:nth-child(even) { height: 26px; }
   .count { font: 500 14px/1 var(--f-mono); color: var(--ink-2); }
 
-  .shelf { display: grid; gap: var(--space-5); }
-  .row { position: relative; display: grid; grid-template-columns: 200px 1fr; align-items: center; gap: var(--space-4); padding-bottom: var(--space-5); }
-  .row::after { content: ''; position: absolute; inset: auto 0 0; height: 10px; border-radius: var(--r-full); background: var(--surface-2); box-shadow: 0 4px 10px var(--lo); }
-  .row ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-5); }
-  .row a { display: grid; justify-items: center; gap: var(--space-1); text-decoration: none; color: var(--ink); font-size: 15px; font-weight: 500; padding: var(--space-2); border-radius: var(--r-md); }
-  @media (hover: hover) and (pointer: fine) { .row a:hover { background: var(--surface-2); } }
+  /* 2×2 bookcase: each cohort is one shelf with a plank */
+  .shelf { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-7) var(--space-6); }
+  .row { position: relative; display: grid; gap: var(--space-3); padding-bottom: var(--space-4); }
+  .row::after { content: ''; position: absolute; inset: auto 0 0; height: 14px; border-radius: var(--r-full); background: var(--surface-2); box-shadow: 0 6px 14px var(--lo), inset 0 -3px 4px rgb(0 0 0 / 0.08); }
+  .row ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+  .row a { display: grid; justify-items: center; gap: var(--space-1); text-decoration: none; color: var(--ink); font-size: 16px; font-weight: 500; padding: var(--space-2); border-radius: var(--r-md); transition: transform var(--dur-fast) var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .row a:hover { transform: translateY(-4px); } }
 
-  .mission { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--space-7); align-items: start; }
+  .mission { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-8); align-items: center; }
   .mission > div { display: grid; gap: var(--space-4); }
-  .advisor { display: flex; gap: var(--space-5); align-items: center; padding: var(--space-5); text-decoration: none; color: var(--ink); }
+  .quote { font-size: clamp(30px, 3.6vw, 48px); line-height: 1.2; }
+  .advisor { display: flex; gap: var(--space-5); align-items: center; padding: var(--space-5); text-decoration: none; color: var(--ink); transition: transform var(--dur-fast) var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .advisor:hover { transform: translateY(-3px); } }
   .advisor > span:last-child { display: grid; gap: 2px; }
-  .advisor strong { font: 600 24px/1.3 var(--f-display); }
+  .advisor-photo { width: 128px; height: 128px; border-radius: var(--r-lg); object-fit: cover; flex: none; box-shadow: 4px 6px 14px var(--lo); }
+  .advisor strong { font: 600 28px/1.3 var(--f-display); }
+  .go { margin-top: var(--space-2); font-weight: 600; color: var(--accent); }
 
   @media (max-width: 1023px) {
-    .hero, .mission { grid-template-columns: 1fr; }
+    .hero-grid, .mission { grid-template-columns: 1fr; }
+    .visual { margin-right: 0; }
     .areas { grid-template-columns: repeat(2, 1fr); }
-    .stats { grid-template-columns: repeat(3, 1fr); }
+    .ticker { grid-template-columns: repeat(3, 1fr); row-gap: var(--space-5); }
+    .ticker > div:nth-child(4) { padding-left: 0; box-shadow: none; }
   }
   @media (max-width: 767px) {
-    .areas { grid-template-columns: 1fr; }
-    .stats { grid-template-columns: repeat(2, 1fr); }
-    .stat:last-child:nth-child(odd) { grid-column: 1 / -1; }
-    .row { grid-template-columns: 1fr; }
+    .hero { padding-top: var(--space-4); }
+    .visual { margin-inline: -16px; aspect-ratio: 1 / 0.8; margin-bottom: var(--space-6); }
+    .visual :global(.kline-hint) { bottom: calc(-1 * var(--space-6)); }
+    .ticker > div:last-child:nth-child(odd) { grid-column: 1 / -1; padding-left: 0; box-shadow: none; }
+    .area h3 { font-size: 18px; word-break: keep-all; }
+    .areas { gap: var(--space-3); }
+    .area { padding: var(--space-4); }
+    .area .muted { display: none; }
+    .shelf { grid-template-columns: 1fr; }
+    .ticker { grid-template-columns: repeat(2, 1fr); padding: var(--space-5); }
+    .ticker > div, .ticker > div:nth-child(4) { padding: 0 var(--space-4); box-shadow: none; }
+    .ticker > div:nth-child(odd) { padding-left: 0; }
+    .ticker > div:nth-child(even) { box-shadow: inset 1px 0 0 var(--line); }
+    .advisor { flex-direction: column; align-items: start; }
   }
 </style>

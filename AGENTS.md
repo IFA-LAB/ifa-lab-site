@@ -44,6 +44,8 @@ npm run build
 
 It runs the custom-section rules, `astro check`, the build, and the page-weight budget. Done means exit code 0 and the line `✓ 自訂區塊檢查通過` after the budget step. Paste the command and the relevant output (including the `多出的 JS` line for the member) in your reply to the user. If you could not run it, say so and why; do not claim success.
 
+Display font: headings use Huninn (rounded CJK), cut at build time to the glyphs the site uses (`scripts/subset-font.mjs`). New Chinese characters in a heading show in the body font under `npm run dev` until you run `npm run font`; `npm run build` always regenerates it, so nothing to commit.
+
 Preview: `npm run dev`, then open `http://localhost:4321/zh-tw/members/<id>/` and `/en/members/<id>/`.
 
 Start from the example: `src/custom/ju-shen-huang/Section.astro`.

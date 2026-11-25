@@ -198,7 +198,7 @@ const links = [
   [data-face='buddy'] :global(picture) { display: none; }
   [data-face='buddy'] .buddy { animation: pop var(--dur-slow) var(--ease-out); }
   @keyframes pop { from { opacity: 0; transform: scale(0.96); } }
-  .flip { min-height: 44px; cursor: pointer; font: inherit; font-size: 15px; }
+  .flip { min-height: 44px; cursor: pointer; font: inherit; font-size: 15px; border: 0; }
   .stage { position: absolute; inset: 0; display: grid; place-items: center; }
   .buddy[data-live] .stage { opacity: 0; transition: opacity var(--dur-base) var(--ease-out); }
   .buddy :global(.buddy-canvas) { position: absolute; inset: 0; cursor: grab; touch-action: pan-y; }
@@ -213,7 +213,7 @@ const links = [
   .links a { text-decoration: none; min-height: 40px; overflow-wrap: anywhere; }
   .empty { padding: var(--space-6); color: var(--ink-2); max-width: 40em; }
   .blocks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
-  .block { padding: var(--space-5); border-radius: var(--r-md); background: var(--surface); display: grid; gap: var(--space-3); align-content: start; min-width: 0; }
+  .block { padding: var(--space-5) var(--space-6); border-radius: var(--r-lg); background: var(--surface); box-shadow: 8px 10px 22px var(--lo), inset -4px -6px 12px rgb(0 0 0 / 0.04), inset 4px 6px 12px var(--hi); display: grid; gap: var(--space-3); align-content: start; min-width: 0; }
   .block.wide { grid-column: 1 / -1; }
   .block h2 { font-size: 18px; display: flex; align-items: center; gap: var(--space-2); }
   .block h2::before { content: ''; width: 12px; height: 12px; border-radius: 4px; background: var(--accent); }

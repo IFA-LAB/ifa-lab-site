@@ -28,13 +28,13 @@ export const ui = {
   },
   skip: { zh: '跳到主要內容', en: 'Skip to content' },
   langSwitch: { zh: 'English', en: '中文' },
-  langSwitchLabel: { zh: '切換為英文', en: 'Switch to Chinese' },
+  langSwitchLabel: { zh: 'English（切換為英文）', en: '中文 (switch to Chinese)' },
   theme: { zh: '切換深淺色', en: 'Toggle theme' },
   menu: { zh: '選單', en: 'Menu' },
   cohort: (n: number): Bi => {
     const zh = ['一', '二', '三', '四', '五', '六'][n - 1] ?? String(n);
     const en = ['1st', '2nd', '3rd', '4th', '5th', '6th'][n - 1] ?? `${n}th`;
-    return { zh: n <= 3 ? `第${zh}屆研究生` : `第${zh}屆`, en: n <= 3 ? `${en} cohort · graduate students` : `${en} cohort` };
+    return { zh: `第${zh}屆研究生`, en: `${en} grad cohort` };
   },
   graduated: { zh: '已畢業', en: 'Alumni' },
   founder: { zh: '創始成員', en: 'Co-founder' },
