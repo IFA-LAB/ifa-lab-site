@@ -139,7 +139,10 @@ const jsonld = [{
   .cite-box p { font-size: 15px; overflow-wrap: anywhere; }
   .cite-box pre { margin: 0; font: 13px/1.6 var(--f-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
   .copy { min-height: 44px; cursor: pointer; font: inherit; font-size: 14px; white-space: nowrap; border: 0; }
-  details summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600; }
+  details summary { cursor: pointer; min-height: 44px; display: inline-flex; align-items: center; gap: var(--space-2); font-weight: 600; padding: 0 var(--space-4); border-radius: var(--r-full); background: var(--surface-2); list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::before { content: '▸'; transition: transform var(--dur-fast) var(--ease-out); }
+  details[open] summary::before { transform: rotate(90deg); }
   details[open] summary { margin-bottom: var(--space-2); }
   .tags { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .related ul { list-style: none; padding: 0; margin: var(--space-3) 0 0; display: grid; gap: var(--space-3); }

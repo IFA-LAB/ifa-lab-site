@@ -8,6 +8,7 @@ export const CLAY: Record<string, string> = {
   sun: '#f2b544',
   pink: '#ee9aae',
   grey: '#b8c2cf',
+  violet: '#9a86d6',
 };
 export const INK = '#1d2633';
 export const DARK = '#2b3443';

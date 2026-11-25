@@ -32,16 +32,16 @@ function Label({ text, x, dark }: { text: string; x: number; dark: boolean }) {
   // redraw once the web font for these glyphs has arrived
   const [fontReady, setFontReady] = useState(0);
   useEffect(() => {
-    document.fonts?.load(`92px Huninn`, text).then(() => setFontReady(1), () => {});
+    document.fonts?.load(`118px Huninn`, text).then(() => setFontReady(1), () => {});
   }, [text]);
   const tex = useMemo(() => {
     const c = document.createElement('canvas');
-    c.width = 512; c.height = 160;
+    c.width = 512; c.height = 176;
     const g = c.getContext('2d')!;
-    g.fillStyle = dark ? '#dfe6f0' : '#3b4656';
-    g.font = '400 92px Huninn, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif';
+    g.fillStyle = dark ? '#f1f5fa' : '#1d2633';
+    g.font = '400 118px Huninn, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif';
     g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillText(text, 256, 84, 500);
+    g.fillText(text, 256, 92, 504);
     const t = new CanvasTexture(c);
     t.colorSpace = SRGBColorSpace; t.anisotropy = 4;
     return t;
@@ -49,7 +49,7 @@ function Label({ text, x, dark }: { text: string; x: number; dark: boolean }) {
   useEffect(() => () => tex.dispose(), [tex]);
   return (
     <mesh position={[x, 0.011, 1.88]} rotation={[-Math.PI / 2, 0, 0]}>
-      <planeGeometry args={[1.22, 0.38]} />
+      <planeGeometry args={[1.2, 0.41]} />
       <meshBasicMaterial map={tex} transparent toneMapped={false} />
     </mesh>
   );
@@ -125,14 +125,14 @@ function Cat({ reduce, targetX }: { reduce: boolean; targetX: number | null }) {
   const tail = useRef<Mesh>(null);
   const head = useRef<Mesh>(null);
   const body = useRef<Group>(null);
-  const home = 3.25;
+  const home = 3.95;
   useFrame(({ clock }, dt) => {
     if (reduce) return;
     const t = clock.getElapsedTime();
     const b = body.current;
     if (b) {
       // trot along the front edge toward the hovered candle, then sit and face the viewer
-      const goal = targetX === null ? home : Math.min(3.25, Math.max(-3.6, targetX + 0.75));
+      const goal = targetX === null ? home : Math.min(3.95, Math.max(-3.6, targetX + 0.75));
       const dx = goal - b.position.x;
       const step = Math.sign(dx) * Math.min(Math.abs(dx), dt * 3.2);
       b.position.x += step;
@@ -146,7 +146,7 @@ function Cat({ reduce, targetX }: { reduce: boolean; targetX: number | null }) {
   });
   const fur = <meshStandardMaterial color={FUR} roughness={0.9} />;
   return (
-    <group ref={body} position={[home, 0, 1.2]} rotation={[0, -0.5, 0]} scale={0.8}>
+    <group ref={body} position={[home, 0, 0.75]} rotation={[0, -0.5, 0]} scale={0.8}>
       <mesh position={[0, 0.5, 0]} scale={[1.15, 0.85, 0.9]} castShadow><sphereGeometry args={[0.62, 32, 24]} />{fur}</mesh>
       <mesh ref={head} position={[0.55, 1.15, 0]} castShadow><sphereGeometry args={[0.46, 32, 24]} />{fur}</mesh>
       <mesh position={[0.48, 1.6, 0.22]} rotation={[0, 0, 0.15]} castShadow><coneGeometry args={[0.16, 0.32, 16]} />{fur}</mesh>

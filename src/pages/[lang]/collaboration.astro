@@ -1,7 +1,8 @@
 ---
 import Base from '@/layouts/Base.astro';
 import { lab } from '@/data/lab';
-import { ui, t, type Bi, type Locale } from '@/i18n/ui';
+import { ui, t, href, type Bi, type Locale } from '@/i18n/ui';
+import { getCollection } from 'astro:content';
 import { langPaths } from '@/lib/content';
 
 export const getStaticPaths = langPaths;
@@ -9,9 +10,16 @@ const lang = Astro.params.lang as Locale;
 const zh = lang === 'zh-tw';
 const ways: { title: Bi; body: Bi; clay: string }[] = [
   { clay: 'blue', title: { zh: '產業合作', en: 'Industry partners' }, body: { zh: '歡迎企業、金融機構與科技公司一起做聯合研究、顧問或實際落地的解決方案。目前與兆豐進行隨機優勢可預測性的產學合作。', en: 'We welcome businesses, financial institutions and tech companies for joint research, consulting or applied solutions. We currently run an industry-academia project with Mega on the predictability of stochastic dominance.' } },
-  { clay: 'sun', title: { zh: '學術合作', en: 'Academic collaboration' }, body: { zh: '共同研究、交換計畫與合著論文。', en: 'Joint research, exchange programs and co-authored publications.' } },
+  { clay: 'sun', title: { zh: '學術合作', en: 'Academic collaboration' }, body: { zh: '共同研究、交換計畫與合著論文。我們和其他學校的學者合寫過期刊論文，也歡迎一起申請國科會計畫。', en: 'Joint research, exchange programs and co-authored papers. We have co-authored journal papers with researchers at other universities, and welcome joint NSTC proposals.' } },
   { clay: 'pink', title: { zh: '跨領域研究', en: 'Interdisciplinary research' }, body: { zh: '結合資訊科技、經濟學、心理學與資料科學，也歡迎非金融領域的研究者。', en: 'Combining IT, economics, psychology and data science; researchers outside finance are welcome.' } },
 ];
+// Real collaboration record, computed from the publication list
+const pubs = await getCollection('publications');
+const memberNames = new Set((await getCollection('members')).map((m) => m.data.name.en).filter(Boolean));
+const coauthors = new Map<string, number>();
+for (const p of pubs) for (const a of p.data.authors) if (a !== 'Hsin-Yu Chiu' && !memberNames.has(a)) coauthors.set(a, (coauthors.get(a) ?? 0) + 1);
+const people = [...coauthors].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p) => p.data.venue).filter(Boolean))] as string[];
 ---
 <Base lang={lang} title={t(ui.nav.collaboration, lang)} description={zh ? '和 IFA Lab 合作：產業、學術與跨領域研究。' : 'Work with IFA Lab: industry, academic and interdisciplinary collaboration.'}>
   <div class="wrap section">
@@ -29,7 +37,27 @@ const ways: { title: Bi; body: Bi; clay: string }[] = [
         </li>
       ))}
     </ul>
-    <p class="contact">{zh ? '聯絡窗口：' : 'Contact: '}<a href={`mailto:${lab.contact.email}`}>{lab.contact.email}</a></p>
+    <section class="case clay" aria-labelledby="case-h">
+      <p class="eyebrow">{zh ? '進行中的產學合作' : 'Ongoing industry project'}</p>
+      <h2 id="case-h">{zh ? '兆豐 × IFA Lab：隨機優勢能不能預測？' : 'Mega × IFA Lab: can stochastic dominance be predicted?'}</h2>
+      <p>{zh
+        ? '和兆豐金控、兆豐銀行合作，研究「隨機優勢」關係的可預測性與持續性：處理跨時區資料對齊、超參數調整與財務特徵，讓模型的結果能放進實際的投資決策。'
+        : 'With Mega Financial Holding and Mega Bank, we study whether stochastic-dominance relations are predictable and persistent, working through cross-timezone data alignment, tuning and financial features so the results can feed real investment decisions.'}</p>
+      <p class="muted">{zh ? '參與成員：' : 'Team: '}<a href={href(lang, 'members/wei-hua-hou')}>{zh ? '侯威華' : 'Wei-Hua Hou'}</a>{zh ? '、' : ', '}<a href={href(lang, 'members/yu-bin-chen')}>{zh ? '陳昱斌' : 'Yu-Bin Chen'}</a>{zh ? '，指導：邱信瑜' : '; advisor Hsin-Yu Chiu'}</p>
+    </section>
+
+    <div class="record">
+      <section aria-labelledby="co-h">
+        <h2 id="co-h">{zh ? `一起寫過論文的 ${people.length} 位研究者` : `${people.length} researchers we have co-authored with`}</h2>
+        <ul class="tags">{people.map(([n, c]) => <li lang="en">{n}{c > 1 && <b> ×{c}</b>}</li>)}</ul>
+      </section>
+      <section aria-labelledby="ve-h">
+        <h2 id="ve-h">{zh ? `刊登過的 ${venues.length} 本期刊` : `${venues.length} journals we have published in`}</h2>
+        <ul class="venues">{venues.map((v) => <li lang="en">{v}</li>)}</ul>
+      </section>
+    </div>
+
+    <p class="cta"><a class="btn" href={`mailto:${lab.contact.email}?subject=${encodeURIComponent(zh ? '和 IFA Lab 合作' : 'Collaboration with IFA Lab')}`}>{zh ? '寫信談合作' : 'Email us about a project'}</a> <a class="btn secondary" href={href(lang, 'research')}>{zh ? '先看研究成果' : 'See our research first'}</a></p>
   </div>
 </Base>
 
@@ -38,6 +66,15 @@ const ways: { title: Bi; body: Bi; clay: string }[] = [
   .ways li { padding: var(--space-6); display: grid; gap: var(--space-3); align-content: start; }
   .ways h2 { font-size: 22px; }
   .b { width: 36px; height: 28px; border-radius: 8px; background: var(--c); box-shadow: inset -3px -4px 6px rgb(0 0 0 / 0.18), inset 3px 3px 6px rgb(255 255 255 / 0.35); }
-  .contact { margin-top: var(--space-7); font-size: 18px; }
+  .case { margin-top: var(--space-7); padding: var(--space-6); display: grid; gap: var(--space-3); }
+  .case p { max-width: 62em; }
+  .case h2 { font-size: clamp(24px, 2.6vw, 32px); }
+  .record { margin-top: var(--space-8); display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-7); }
+  .record section { display: grid; gap: var(--space-4); align-content: start; }
+  .record h2 { font-size: 22px; }
+  .tags b { font: 600 12px/1 var(--f-mono); color: var(--ink-2); }
+  .venues { margin: 0; padding-left: 1.2em; display: grid; gap: var(--space-2); font-style: italic; }
+  .cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-8); }
+  @media (max-width: 899px) { .record { grid-template-columns: 1fr; } }
   @media (max-width: 899px) { .ways { grid-template-columns: 1fr; } }
 </style>

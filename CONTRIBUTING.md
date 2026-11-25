@@ -81,7 +81,7 @@ npm run build
 
 | 用途 | token |
 |---|---|
-| 黏土色 | `var(--clay-blue)` `var(--clay-up)`（紅，上漲）`var(--clay-down)`（綠，下跌）`var(--clay-sun)` `var(--clay-pink)` `var(--clay-grey)` |
+| 黏土色 | `var(--clay-blue)` `var(--clay-up)`（紅，上漲）`var(--clay-down)`（綠，下跌）`var(--clay-sun)` `var(--clay-pink)` `var(--clay-grey)` `var(--clay-violet)` |
 | 文字 | `var(--ink)`（主要）`var(--ink-2)`（次要） |
 | 底色 | `var(--surface)` `var(--surface-2)` |
 | 強調（連結、按鈕） | `var(--accent)` |

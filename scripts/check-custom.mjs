@@ -95,7 +95,7 @@ function checkStatic() {
       const src = readFileSync(file, 'utf8');
       for (const [re, rule, fix] of FORBIDDEN) if (re.test(src)) fail(rel, rule, fix);
       const colours = (src.replace(COLOR_OK, '').match(RAW_COLOR) ?? []).filter((c) => !/^#\d+$/.test(c) || c.length > 4);
-      if (ext !== '.ts' && colours.length) fail(rel, `R5 顏色只用網站的 token（找到 ${[...new Set(colours)].slice(0, 3).join(' ')}）`, '用 var(--clay-blue／up／down／sun／pink／grey)、var(--ink)、var(--ink-2)、var(--surface)、var(--surface-2)、var(--accent)。深淺主題會自動切換。');
+      if (ext !== '.ts' && colours.length) fail(rel, `R5 顏色只用網站的 token（找到 ${[...new Set(colours)].slice(0, 3).join(' ')}）`, '用 var(--clay-blue／up／down／sun／pink／grey／violet)、var(--ink)、var(--ink-2)、var(--surface)、var(--surface-2)、var(--accent)。深淺主題會自動切換。');
       for (const m of src.matchAll(/(?:import\s[^'"]*?from\s*|import\s*\(\s*|import\s+)['"]([^'"]+)['"]/g)) {
         if (!ALLOWED_IMPORTS.some((re) => re.test(m[1]))) fail(rel, `R8 不能 import「${m[1]}」`, '只能引用你自己的資料夾、three、@react-three/fiber、react、@/i18n/ui、@/components/three/util、astro:assets。需要別的套件先開 issue 找維護者。');
       }

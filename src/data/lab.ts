@@ -41,7 +41,7 @@ export const areas: { key: AreaKey; name: Bi; blurb: Bi; clay: string }[] = [
   { key: 'pricing', clay: 'sun', name: { zh: '資產定價', en: 'Asset Pricing' }, blurb: { zh: '隨機優勢、異常報酬與衍生性商品定價。', en: 'Stochastic dominance, anomalies and derivative pricing.' } },
   { key: 'ai', clay: 'down', name: { zh: 'AI 與機器學習', en: 'AI and Machine Learning' }, blurb: { zh: '可解釋 AI、混合模型與大型語言模型。', en: 'Explainable AI, hybrid models and LLMs.' } },
   { key: 'forecast', clay: 'up', name: { zh: '財務預測', en: 'Financial Forecasting' }, blurb: { zh: '圖神經網路、相似性預測與時序模型。', en: 'Graph networks, similarity-based and time-series forecasting.' } },
-  { key: 'apps', clay: 'grey', name: { zh: '應用與視覺化', en: 'Applications and Visualization' }, blurb: { zh: '投資推薦系統、AI 助手與資料視覺化。', en: 'Investment recommenders, AI assistants and data visualization.' } },
+  { key: 'apps', clay: 'violet', name: { zh: '應用與視覺化', en: 'Applications and Visualization' }, blurb: { zh: '投資推薦系統、AI 助手與資料視覺化。', en: 'Investment recommenders, AI assistants and data visualization.' } },
 ];
 
 export const advisor = {

@@ -11,12 +11,14 @@ type Props = {
   /** Same hint for touch screens, where there is no hover. */
   hintTouch: string;
   unit: string;
+  /** Touch screens, before the scene starts: how to wake it. */
+  wake?: string;
 };
 
 // three.js (~240 KB gzip) is only fetched and parsed when the scene is about to show.
 const KlineScene = lazy(() => import('./KlineScene'));
 
-export default function ClayKline({ bars, hint, hintTouch, unit }: Props) {
+export default function ClayKline({ bars, hint, hintTouch, unit, wake }: Props) {
   const touch = useMedia('(hover: none)');
   const [ok, setOk] = useState(false);
   const [visible, setVisible] = useState(true);
@@ -46,7 +48,7 @@ export default function ClayKline({ bars, hint, hintTouch, unit }: Props) {
   }, [ok]);
 
   // Always render the host div: client:visible needs an element to observe, or it never hydrates.
-  if (!ok) return <div ref={host} className="kline-canvas" aria-hidden="true" />;
+  if (!ok) return <div ref={host} className="kline-canvas" aria-hidden="true">{touch && wake && <span className="kline-hint">{wake}</span>}</div>;
   return (
     <div ref={host} className="kline-canvas" aria-hidden="true">
       <Suspense fallback={null}>

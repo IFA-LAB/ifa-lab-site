@@ -6,7 +6,7 @@ import { z } from 'astro/zod';
 const L = z.object({ zh: z.string().min(1), en: z.string().min(1).optional() });
 
 /** Clay palette names. Members may only pick from these (contrast pre-checked). */
-export const CLAY = ['blue', 'up', 'down', 'sun', 'pink', 'grey'] as const;
+export const CLAY = ['blue', 'up', 'down', 'sun', 'pink', 'grey', 'violet'] as const;
 
 const members = defineCollection({
   loader: glob({ pattern: '*.json', base: './src/data/members' }),
