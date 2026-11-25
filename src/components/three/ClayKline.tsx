@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { canRun3D, usePrefersReducedMotion, useMedia } from './env';
 
 /** label = short text painted on the board; name = full area name for the hint. */
-export type Bar = { key: string; label: string; name: string; count: number; href: string };
+export type Bar = { key: string; label: string; name: string; count: number; href: string; clay: string };
 
 type Props = {
   bars: Bar[];

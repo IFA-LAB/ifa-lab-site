@@ -28,7 +28,7 @@ function useDark() {
 }
 
 /** A clay desk nameplate in front of each candle, tilted toward the viewer so the name reads at a glance. */
-function Label({ text, x, dark, on }: { text: string; x: number; dark: boolean; on: boolean }) {
+function Label({ text, x, dark, on, fill }: { text: string; x: number; dark: boolean; on: boolean; fill: string }) {
   // redraw once the web font for these glyphs has arrived
   const [fontReady, setFontReady] = useState(0);
   useEffect(() => {
@@ -38,7 +38,7 @@ function Label({ text, x, dark, on }: { text: string; x: number; dark: boolean; 
     const c = document.createElement('canvas');
     c.width = 512; c.height = 280;
     const g = c.getContext('2d')!;
-    g.fillStyle = on ? (dark ? '#9cc0ff' : '#2f5ea6') : dark ? '#f1f5fa' : '#1d2633';
+    g.fillStyle = on ? '#1d2633' : dark ? '#f1f5fa' : '#1d2633';
     g.font = '400 120px Huninn, Fredoka, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif';
     g.textAlign = 'center'; g.textBaseline = 'middle';
     // long names: CJK splits in half, Latin splits at a space; a single long word shrinks to fit instead
@@ -59,9 +59,9 @@ function Label({ text, x, dark, on }: { text: string; x: number; dark: boolean; 
   }, [text, dark, fontReady, on]);
   useEffect(() => () => tex.dispose(), [tex]);
   return (
-    <group position={[x, on ? 0.08 : 0, 1.3]} rotation={[-0.62, 0, 0]}>
+    <group position={[x, on ? 0.18 : 0, 1.3]} rotation={[on ? -0.45 : -0.62, 0, 0]}>
       <RoundedBox args={[1.14, 0.62, 0.12]} radius={0.05} smoothness={3} position={[0, 0.31, 0]} castShadow receiveShadow>
-        <meshStandardMaterial color={dark ? '#6d7a92' : '#ffffff'} roughness={0.9} />
+        <meshStandardMaterial color={on ? fill : dark ? '#6d7a92' : '#ffffff'} roughness={0.9} />
       </RoundedBox>
       <mesh position={[0, 0.31, 0.062]}>
         <planeGeometry args={[1.1, 0.6]} />
@@ -72,7 +72,7 @@ function Label({ text, x, dark, on }: { text: string; x: number; dark: boolean; 
 }
 
 /** One candle = one research area. Body height grows with the number of works in that area. */
-function Candle({ bar, x, base, up, reduce, onHover, delay }: { bar: Bar; x: number; base: number; up: boolean; reduce: boolean; onHover: (b: Bar | null) => void; delay: number }) {
+function Candle({ bar, x, base, up, reduce, onHover, delay, on }: { bar: Bar; x: number; base: number; up: boolean; reduce: boolean; onHover: (b: Bar | null) => void; delay: number; on: boolean }) {
   const g = useRef<Group>(null);
   const squish = useRef({ v: 0, x: 0 }); // spring state for the press-and-bounce
   const grow = useRef({ t: reduce ? 1 : 0, age: 0 }); // 0→1 rise on load, staggered
@@ -110,10 +110,10 @@ function Candle({ bar, x, base, up, reduce, onHover, delay }: { bar: Bar; x: num
       >
         <mesh position={[0, bodyH / 2 + 0.35, 0]} castShadow>
           <capsuleGeometry args={[0.07, bodyH + 0.55, 4, 12]} />
-          <meshStandardMaterial color={color} roughness={0.85} />
+          <meshStandardMaterial color={color} roughness={0.85} emissive={color} emissiveIntensity={on ? 0.35 : 0} />
         </mesh>
         <RoundedBox args={[0.7, bodyH, 0.7]} radius={0.2} smoothness={5} position={[0, bodyH / 2 + 0.35, 0]} castShadow receiveShadow>
-          <meshStandardMaterial color={color} roughness={0.85} />
+          <meshStandardMaterial color={color} roughness={0.85} emissive={color} emissiveIntensity={on ? 0.35 : 0} />
         </RoundedBox>
       </group>
     </group>
@@ -137,12 +137,12 @@ function Coin({ position, phase, reduce }: { position: [number, number, number];
 }
 
 /** The advisor's cat, because of course. */
-function Cat({ reduce, targetX }: { reduce: boolean; targetX: number | null }) {
+function Cat({ reduce, targetX, dark }: { reduce: boolean; targetX: number | null; dark: boolean }) {
   const tail = useRef<Mesh>(null);
   const head = useRef<Mesh>(null);
   const body = useRef<Group>(null);
   // rests in the back-right corner, beside the last candle; trots to the front edge when a candle is hovered
-  const home = { x: 4.0, z: -1.1 };
+  const home = { x: 4.0, z: 0.1 };
   useFrame(({ clock }, dt) => {
     if (reduce) return;
     const t = clock.getElapsedTime();
@@ -163,7 +163,7 @@ function Cat({ reduce, targetX }: { reduce: boolean; targetX: number | null }) {
     if (tail.current) tail.current.rotation.z = 0.6 + Math.sin(t * 2.2) * 0.25;
     if (head.current) head.current.rotation.z = Math.sin(t * 0.9) * 0.06;
   });
-  const fur = <meshStandardMaterial color={FUR} roughness={0.9} />;
+  const fur = <meshStandardMaterial color={dark ? '#5d667a' : FUR} roughness={0.9} />;
   return (
     <group ref={body} position={[home.x, 0, home.z]} rotation={[0, -0.5, 0]} scale={0.72}>
       <mesh position={[0, 0.5, 0]} scale={[1.15, 0.85, 0.9]} castShadow><sphereGeometry args={[0.62, 32, 24]} />{fur}</mesh>
@@ -191,6 +191,7 @@ function Lens() {
 }
 
 function World({ bars, reduce, onHover, active, dark }: { bars: Bar[]; reduce: boolean; onHover: (b: Bar | null) => void; active: Bar | null; dark: boolean }) {
+  const compact = useThree((st) => st.size.width) < 560;
   const world = useRef<Group>(null);
   const target = useRef({ x: 0, y: 0 });
 
@@ -201,7 +202,7 @@ function World({ bars, reduce, onHover, active, dark }: { bars: Bar[]; reduce: b
       const up = i % 3 !== 1; // mostly up, a couple of red/green alternations
       const base = level;
       level += up ? 0.32 : -0.12;
-      return { bar: b, x: -3.1 + i * 1.25, base: Math.max(base, 0), up };
+      return { bar: b, x: -3.1 + i * 1.25, base: 0 * base, up };
     });
   }, [bars]);
 
@@ -218,12 +219,12 @@ function World({ bars, reduce, onHover, active, dark }: { bars: Bar[]; reduce: b
       <RoundedBox args={[9, 0.6, 4.4]} radius={0.28} smoothness={6} position={[0, -0.3, 0]} receiveShadow castShadow>
         <meshStandardMaterial color={dark ? PLATE_DARK : PLATE} roughness={0.9} />
       </RoundedBox>
-      {layout.map((l, i) => <Candle key={l.bar.key} {...l} delay={0.15 + i * 0.09} reduce={reduce} onHover={onHover} />)}
-      {layout.map((l) => <Label key={l.bar.key} text={l.bar.label} x={l.x} dark={dark} on={active?.key === l.bar.key} />)}
+      {layout.map((l, i) => <Candle key={l.bar.key} {...l} delay={0.15 + i * 0.09} reduce={reduce} onHover={onHover} on={active?.key === l.bar.key} />)}
+      {!compact && layout.map((l) => <Label key={l.bar.key} text={l.bar.label} x={l.x} dark={dark} on={active?.key === l.bar.key} fill={(CLAY as Record<string, string>)[l.bar.clay] ?? CLAY.grey} />)}
       <Coin position={[-2.4, 3.9, -1.2]} phase={0} reduce={reduce} />
       <Coin position={[0.4, 4.4, -1.0]} phase={1.7} reduce={reduce} />
       <Coin position={[2.6, 3.7, -0.8]} phase={3.4} reduce={reduce} />
-      <Cat reduce={reduce} targetX={active ? layout.find((l) => l.bar.key === active.key)?.x ?? null : null} />
+      <Cat dark={dark} reduce={reduce} targetX={active ? layout.find((l) => l.bar.key === active.key)?.x ?? null : null} />
     </group>
   );
 }

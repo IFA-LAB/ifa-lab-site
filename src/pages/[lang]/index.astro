@@ -52,7 +52,7 @@ const description = zh
         <ClayCandles label={zh ? '黏土做的 K 線模型：紅色上漲、綠色下跌的積木 K 棒，上方漂著金幣' : 'A clay candlestick model: red rising and green falling blocks with floating coins'} />
         <ClayKline
           client:visible
-          bars={areas.map((a) => ({ key: a.key, label: zh ? a.name.zh : boardEn[a.key], name: t(a.name, lang), count: perArea(a.key), href: href(lang, `research#${a.key}`) }))}
+          bars={areas.map((a) => ({ key: a.key, label: zh ? a.name.zh : boardEn[a.key], name: t(a.name, lang), count: perArea(a.key), href: href(lang, `research#${a.key}`), clay: a.clay }))}
           hint={zh ? '每根 K 棒是一個研究領域，滑過看看、點進去' : 'Each candle is a research area. Hover, then click'}
           hintTouch={zh ? '每根 K 棒是一個研究領域，點一下看論文' : 'Each candle is a research area. Tap one'}
           unit={zh ? '篇' : 'works'}
@@ -105,7 +105,7 @@ const description = zh
                 <a href={href(lang, `members/${m.id}`)}>
                   <ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} placeholder={m.data.placeholder} size={92} />
                   <span>{t(m.data.name, lang)}</span>
-                  {m.data.placeholder && <small class="soon">{t(ui.placeholderNote, lang)}</small>}
+                  <small class="soon" aria-hidden={m.data.placeholder ? undefined : 'true'}>{m.data.placeholder ? t(ui.placeholderNote, lang) : '\u00a0'}</small>
                 </a>
               </li>
             ))}
@@ -146,12 +146,12 @@ const description = zh
   .cta .btn { min-height: 52px; padding: 14px 26px; font-size: 17px; }
 
   /* the scene bleeds to the right edge of the viewport on wide screens */
-  .visual { position: relative; margin-right: min(0px, calc((var(--page) - 100vw) / 2)); aspect-ratio: 7 / 5.4; }
+  .visual { position: relative; margin-right: min(0px, calc((var(--page) - 100vw) / 2)); margin-bottom: var(--space-5); aspect-ratio: 7 / 5.4; }
   .visual :global(.kline-canvas) { position: absolute; inset: 0; }
   .visual :global(.kline-canvas canvas) { touch-action: pan-y; }
   .visual[data-live] :global(.stage > *) { opacity: 0; transition: opacity var(--dur-base) var(--ease-out); }
   .visual :global(.kline-hint) {
-    position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%); white-space: nowrap;
+    position: absolute; left: 50%; bottom: -28px; transform: translateX(-50%); white-space: nowrap;
     font: 500 14px/1.4 var(--f-body); color: var(--ink-2);
     background: var(--surface); padding: 8px 16px; border-radius: var(--r-full); box-shadow: 4px 6px 14px var(--lo);
   }
