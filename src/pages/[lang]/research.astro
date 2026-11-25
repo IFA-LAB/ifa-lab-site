@@ -28,12 +28,18 @@ const areaClay = (k: string) => areas.find((a) => a.key === k)?.clay ?? 'grey';
 /** Theses are finished at the end of the ROC academic year: AY 113 → June 2025. */
 const thesisYear = (ay: number) => ay + 1912;
 const works = [
-  ...pubs.map((p) => ({ year: p.data.year, area: p.data.area, kind: p.data.kind })),
-  ...theses.map((x) => ({ year: thesisYear(x.data.academicYear), area: x.data.area, kind: 'thesis' })),
+  ...pubs.map((p) => ({ year: p.data.year, area: p.data.area, kind: p.data.kind, soon: p.data.status === 'forthcoming' })),
+  ...theses.map((x) => ({ year: thesisYear(x.data.academicYear), area: x.data.area, kind: 'thesis', soon: false })),
 ];
-const yrs = works.map((w) => w.year);
+const done = works.filter((w) => !w.soon);
+const yrs = done.map((w) => w.year);
 const wallYears = Array.from({ length: Math.max(...yrs) - Math.min(...yrs) + 1 }, (_, i) => Math.min(...yrs) + i);
-const wall = wallYears.map((y) => ({ year: y, bricks: works.filter((w) => w.year === y).sort((a, b) => areas.findIndex((x) => x.key === a.area) - areas.findIndex((x) => x.key === b.area)) }));
+const byArea = (a: { area: string }, b: { area: string }) => areas.findIndex((x) => x.key === a.area) - areas.findIndex((x) => x.key === b.area);
+// accepted papers sit in their own "forthcoming" pile, not under a future year
+const wall: { year: number | string; bricks: typeof works }[] = [
+  ...wallYears.map((y) => ({ year: y, bricks: done.filter((w) => w.year === y).sort(byArea) })),
+  ...(works.some((w) => w.soon) ? [{ year: zh ? '即將' : 'Soon', bricks: works.filter((w) => w.soon).sort(byArea) }] : []),
+];
 const wallMax = Math.max(...wall.map((c) => c.bricks.length));
 
 const jsonld = journals.map((p) => ({
@@ -61,7 +67,7 @@ const jsonld = journals.map((p) => ({
           <div class:list={['col', { empty: !c.bricks.length }]}>
             <span class="num">{c.bricks.length || ''}</span>
             <span class="pile">{c.bricks.map((b) => <i class:list={[b.kind]} style={`--c: var(--clay-${areaClay(b.area)})`}></i>)}</span>
-            <span class="yr"><span class="cent">{String(c.year).slice(0, 2)}</span>{String(c.year).slice(2)}</span>
+            {typeof c.year === 'number' ? <span class="yr"><span class="cent">{String(c.year).slice(0, 2)}</span>{String(c.year).slice(2)}</span> : <span class="yr soon">{c.year}</span>}
           </div>
         ))}
       </div>
@@ -90,7 +96,7 @@ const jsonld = journals.map((p) => ({
           const c = apa(p.data, lang);
           return (
             <li id={p.id} class="pub" data-area={p.data.area} style={`--c: var(--clay-${areaClay(p.data.area)})`}>
-              <span class="block" aria-hidden="true">{p.data.year}</span>
+              <span class="block" aria-hidden="true">{p.data.status === 'forthcoming' ? (zh ? '即將' : 'Soon') : p.data.year}</span>
               <div>
                 <p class="title" lang="en"><a href={href(lang, `papers/${p.id}`)}>{p.data.title}</a></p>
                 <p class="authors">{p.data.authors.map((a, i) => (
@@ -151,7 +157,7 @@ const jsonld = journals.map((p) => ({
           <li class="clay">
             <p class="mono muted">{g.data.period}{ongoing(g.data.period) && <span class="live">{zh ? '進行中' : 'Ongoing'}</span>}</p>
             <Bi text={g.data.title} lang={lang} />
-            <p class="muted meta">{t(g.data.kind, lang)} · {t(ui.pubs.pi, lang)} {g.data.pi}</p>
+            <p class="muted meta">{t(g.data.kind, lang)} · {t(ui.pubs.pi, lang)} {(() => { const m = members.find((x) => x.data.name.en === g.data.pi); return m ? <a href={href(lang, `members/${m.id}`)}>{t(m.data.name, lang)}</a> : g.data.pi; })()}</p>
           </li>
         ))}
       </ul>
@@ -272,7 +278,7 @@ const jsonld = journals.map((p) => ({
     /* two-digit years on a phone: '14 … '27 */
     .yr { font-size: 11px; }
     .yr .cent { display: none; }
-    .yr::before { content: '’'; }
+    .yr:not(.soon)::before { content: '’'; }
     .col.empty .yr { visibility: hidden; }
     .cols { gap: 3px; }
     .jump::before { display: none; }

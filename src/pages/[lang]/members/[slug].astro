@@ -144,7 +144,7 @@ const links = [
         {d.awards.length > 0 && (
           <section class="block">
             <h2>{t(ui.sections.awards, lang)}</h2>
-            <ul class="plain">{d.awards.map((a) => <li>{t(a, lang)}</li>)}</ul>
+            <ul class="plain">{[...d.awards].sort((a, b) => (b.zh.match(/20\d\d/)?.[0] ?? '').localeCompare(a.zh.match(/20\d\d/)?.[0] ?? '')).map((a) => <li>{t(a, lang)}</li>)}</ul>
           </section>
         )}
         </div>
