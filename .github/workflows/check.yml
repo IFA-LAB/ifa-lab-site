@@ -13,7 +13,8 @@ jobs:
         with: { fetch-depth: 0 }
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
-      - run: npm ci
+      # npm ci rejects a lockfile made on Windows (Linux-only optional deps missing); install still honours the lock.
+      - run: npm install --no-audit --no-fund
       - name: PR scope (one member, own files only)
         if: github.event_name == 'pull_request'
         env:
