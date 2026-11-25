@@ -243,7 +243,7 @@ const description = zh
   @media (max-width: 559px) { .legend { display: flex; } }
   .ticker { margin: var(--space-6) 0 0; padding: var(--space-5) var(--space-6); display: grid; grid-template-columns: repeat(5, 1fr); }
   .ticker > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: var(--space-1); padding-inline: var(--space-5); }
-  .ticker > div + div { box-shadow: inset 1px 0 0 var(--line); }
+  @media (min-width: 768px) { .ticker > div + div { box-shadow: inset 1px 0 0 var(--line); } }
   .ticker > div:first-child { padding-left: 0; }
   .ticker dd { margin: 0; font: 600 clamp(40px, 4.4vw, 60px)/1 var(--f-display); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
   .ticker dt { font-size: 15px; color: var(--ink-2); }

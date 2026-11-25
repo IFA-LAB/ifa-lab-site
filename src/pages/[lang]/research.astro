@@ -63,15 +63,15 @@ const jsonld = journals.map((p) => ({
     </div>
 
     <figure class="wall clay" aria-label={zh ? `成果牆：${wall.map((c) => `${c.year} 年 ${c.bricks.length} 件`).join('、')}` : `Output wall: ${wall.map((c) => `${c.year}: ${c.bricks.length}`).join(', ')}`}>
-      <div class="cols" style={`--rows: ${wallMax}`} aria-hidden="true">
+      <div class="cols" style={`--rows: ${wallMax}`}>
         {wall.map((c) => (
           <div class:list={['col', { empty: !c.bricks.length }]}>
             {c.bricks.length === wallMax && wall.findIndex((x) => x.bricks.length === wallMax) === wall.indexOf(c) && (
               <span class="perch"><LabCat lang={lang} size={58} bubble="left" lines={[{ zh: '這一年疊了最多塊，我坐在最上面看風景。', en: 'This year has the most blocks. Nice view up here.' }, { zh: '空心的是還在寫的工作論文，我不敢踩。', en: 'Hollow ones are working papers, still drying. I do not step on them.' }, { zh: '點下面的顏色，可以只看一個領域。', en: 'Tap a colour below to see just one area.' }]} /></span>
             )}
-            <span class="num">{c.bricks.length || ''}</span>
-            <span class="pile">{c.bricks.map((b) => <i class:list={[b.kind]} style={`--c: var(--clay-${areaClay(b.area)})`}></i>)}</span>
-            {typeof c.year === 'number' ? <span class="yr"><span class="cent">{String(c.year).slice(0, 2)}</span>{String(c.year).slice(2)}</span> : <span class="yr soon">{c.year}</span>}
+            <span class="num" aria-hidden="true">{c.bricks.length || ''}</span>
+            <span class="pile" aria-hidden="true">{c.bricks.map((b) => <i class:list={[b.kind]} style={`--c: var(--clay-${areaClay(b.area)})`}></i>)}</span>
+            {typeof c.year === 'number' ? <span class="yr" aria-hidden="true"><span class="cent">{String(c.year).slice(0, 2)}</span>{String(c.year).slice(2)}</span> : <span class="yr soon" aria-hidden="true">{c.year}</span>}
           </div>
         ))}
       </div>
