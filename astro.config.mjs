@@ -5,7 +5,7 @@ import sitemap from '@astrojs/sitemap';
 
 // Production URL is a placeholder until the department subdomain is assigned.
 export default defineConfig({
-  site: 'https://ifa-lab.pages.dev',
+  site: 'https://ifa-lab.jushenhuang-jason.workers.dev',
   trailingSlash: 'always',
   i18n: {
     locales: ['zh-tw', 'en'],

@@ -24,3 +24,22 @@ jobs:
         run: node scripts/check-custom.mjs --scope
       - name: Rules, types, build, budgets
         run: npm run build
+      # Deploy to Cloudflare (Workers static assets) only from main, after every check passed.
+      # Needs repo secrets CLOUDFLARE_API_TOKEN (Workers Scripts: Edit) and CLOUDFLARE_ACCOUNT_ID.
+      - name: Deploy
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then echo '沒有 CLOUDFLARE_API_TOKEN，略過部署'; exit 0; fi
+          npx wrangler deploy
+      - name: Smoke test the live site
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          base=https://ifa-lab.jushenhuang-jason.workers.dev
+          for p in /zh-tw/ /en/ /zh-tw/research/ /zh-tw/papers/disposition-options/ /llms.txt /robots.txt; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --retry 5 --retry-delay 10 --retry-all-errors "$base$p")
+            echo "$code $p"; [ "$code" = 200 ] || exit 1
+          done
+          code=$(curl -s -o /dev/null -w '%{http_code}' "$base/no-such-page/"); echo "$code /no-such-page/ (want 404)"; [ "$code" = 404 ]
