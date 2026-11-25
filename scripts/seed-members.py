@@ -133,7 +133,7 @@ M["yu-bin-chen"] = dict(
     links=dict(schoolEmail="qwer521463@g.ncu.edu.tw", github="https://github.com/Alvis12"),
     figure=dict(clay="up", accessory="none"))
 
-M["you-ming-xie"] = dict(name=L("謝侑明"), cohort=3, order=3, degree="master", status="enrolled", maintainedBy="self", placeholder=True,
+M["yu-ming-hsieh"] = dict(name=L("謝侑明", "Yu-Ming Hsieh"), cohort=3, order=3, degree="master", status="enrolled", maintainedBy="self", placeholder=True,
                          headline=L("第三屆研究生", "3rd-cohort graduate student"))
 
 M["ju-shen-huang"] = dict(
@@ -166,7 +166,7 @@ M["ju-shen-huang"] = dict(
 
 M["sheng-le-wu"] = dict(name=L("吳聲樂"), cohort=4, order=2, status="enrolled", maintainedBy="self", placeholder=True,
                         headline=L("第四屆", "4th cohort"))
-M["hong-jie-zeng"] = dict(name=L("曾紘杰"), cohort=4, order=3, status="enrolled", maintainedBy="self", placeholder=True,
+M["hong-jie-tseng"] = dict(name=L("曾紘杰", "Hong-Jie Tseng"), cohort=4, order=3, status="enrolled", maintainedBy="self", placeholder=True,
                           headline=L("第四屆", "4th cohort"))
 
 os.makedirs(D, exist_ok=True)
