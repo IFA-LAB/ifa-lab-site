@@ -56,20 +56,20 @@
 }
 
 :root[data-theme='dark'] {
-  --bg: #141a23; --surface: #1e2632; --surface-2: #2c3747;
+  --bg: #131922; --surface: #232d3b; --surface-2: #2f3a4b;
   --ink: #e8edf4; --ink-2: #a9b4c4; --line: rgb(232 237 244 / 0.12);
   --accent: #7fa6e6; --accent-ink: #0f1520; --focus: #7fa6e6;
   --clay-blue: #6e9ad8; --clay-up: #e86a60; --clay-down: #3fb383; --clay-sun: #e9b455; --clay-pink: #e5a2b3; --clay-grey: #7f8a9b; --clay-violet: #a996e0;
-  --hi: rgb(255 255 255 / 0.08); --lo: rgb(0 0 0 / 0.45);
+  --hi: rgb(255 255 255 / 0.09); --lo: rgb(0 0 0 / 0.55);
   color-scheme: dark;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg: #141a23; --surface: #1e2632; --surface-2: #2c3747;
+    --bg: #131922; --surface: #232d3b; --surface-2: #2f3a4b;
     --ink: #e8edf4; --ink-2: #a9b4c4; --line: rgb(232 237 244 / 0.12);
     --accent: #7fa6e6; --accent-ink: #0f1520; --focus: #7fa6e6;
     --clay-blue: #6e9ad8; --clay-up: #e86a60; --clay-down: #3fb383; --clay-sun: #e9b455; --clay-pink: #e5a2b3; --clay-grey: #7f8a9b; --clay-violet: #a996e0;
-    --hi: rgb(255 255 255 / 0.08); --lo: rgb(0 0 0 / 0.45);
+    --hi: rgb(255 255 255 / 0.09); --lo: rgb(0 0 0 / 0.55);
     color-scheme: dark;
   }
 }
@@ -87,7 +87,7 @@ h1, h2, h3, h4 { font-family: var(--f-display); line-height: 1.3; margin: 0; tex
 /* Huninn has one weight: never fake-bold it (Fredoka carries the real 500/600 for Latin). */
 html { font-synthesis-weight: none; }
 h1 { font-size: clamp(32px, 5vw, 56px); }
-h2 { font-size: clamp(24px, 3vw, 34px); }
+h2 { font-size: clamp(28px, 4vw, 48px); line-height: 1.2; }
 h3 { font-size: 20px; }
 p { margin: 0; text-wrap: pretty; }
 /* headings split into phrases: each phrase stays whole, lines break between phrases */
@@ -121,8 +121,13 @@ code, .mono { font-family: var(--f-mono); font-size: 0.88em; }
 .clay {
   background: var(--surface);
   border-radius: var(--r-lg);
-  box-shadow: 10px 14px 28px var(--lo), inset -6px -8px 14px rgb(0 0 0 / 0.06), inset 6px 8px 14px var(--hi);
+  /* lit top edge, a darker clay lip at the bottom, soft cast shadow */
+  box-shadow: 10px 14px 28px var(--lo), inset 0 2px 0 var(--hi), inset 0 -6px 0 rgb(0 0 0 / 0.05), inset -6px -8px 14px rgb(0 0 0 / 0.05), inset 6px 8px 14px var(--hi);
 }
+/* clickable clay: lifts under the pointer, squashes on press */
+a.clay, .clay > a:only-child { transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); }
+@media (hover: hover) and (pointer: fine) { a.clay:hover { transform: translateY(-4px); } }
+a.clay:active { transform: translateY(1px) scale(0.985, 0.97); transition-duration: var(--dur-press); }
 .chip {
   display: inline-flex; align-items: center; gap: 6px;
   font: 500 14px/1 var(--f-body); color: var(--ink);
@@ -141,6 +146,7 @@ code, .mono { font-family: var(--f-mono); font-size: 0.88em; }
 .btn:active { transform: scale(0.97); }
 
 .section { padding-block: var(--space-8); }
+@media (min-width: 900px) { .section { padding-block: var(--space-9); } }
 .section-head { display: grid; gap: var(--space-2); margin-bottom: var(--space-6); max-width: 46em; }
 
 .tags { display: flex; flex-wrap: wrap; gap: var(--space-2); padding: 0; margin: 0; list-style: none; }

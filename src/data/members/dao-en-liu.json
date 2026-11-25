@@ -13,5 +13,9 @@
   "headline": {
     "zh": "第一屆研究生",
     "en": "1st-cohort graduate student"
+  },
+  "figure": {
+    "clay": "violet",
+    "accessory": "none"
   }
 }

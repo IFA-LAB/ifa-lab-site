@@ -11,5 +11,9 @@
   "headline": {
     "zh": "第四屆",
     "en": "4th cohort"
+  },
+  "figure": {
+    "clay": "up",
+    "accessory": "none"
   }
 }

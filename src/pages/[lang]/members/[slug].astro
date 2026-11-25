@@ -212,9 +212,11 @@ const links = [
   .links { list-style: none; padding: 0; margin: var(--space-3) 0 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .links a { text-decoration: none; min-height: 40px; overflow-wrap: anywhere; }
   .empty { padding: var(--space-6); color: var(--ink-2); max-width: 40em; }
-  .blocks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); align-items: start; }
+  /* two columns that pack like a masonry wall: no ragged holes beside a tall card */
+  .blocks { columns: 2; column-gap: var(--space-5); }
+  .blocks > * { break-inside: avoid; margin-bottom: var(--space-5); }
   .block { padding: var(--space-5) var(--space-6); border-radius: var(--r-lg); background: var(--surface); box-shadow: 8px 10px 22px var(--lo), inset -4px -6px 12px rgb(0 0 0 / 0.04), inset 4px 6px 12px var(--hi); display: grid; gap: var(--space-3); align-content: start; min-width: 0; }
-  .block.wide { grid-column: 1 / -1; }
+  .block.wide { column-span: all; }
   .block h2 { font-size: 18px; display: flex; align-items: center; gap: var(--space-2); }
   .block h2::before { content: ''; width: 12px; height: 12px; border-radius: 4px; background: var(--accent); }
   .thesis { font: 600 19px/1.6 var(--f-body); }
@@ -224,7 +226,7 @@ const links = [
   .timeline li { display: grid; grid-template-columns: 9.5em 1fr; gap: var(--space-3); }
   .timeline .mono { color: var(--ink-2); font-variant-numeric: tabular-nums; }
   @media (max-width: 767px) {
-    .blocks { grid-template-columns: 1fr; }
+    .blocks { columns: 1; }
     .timeline li { grid-template-columns: 1fr; gap: 0; }
   }
 </style>

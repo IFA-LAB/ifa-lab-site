@@ -67,6 +67,23 @@ const description = zh
     </div>
   </section>
 
+  <section class="wrap section mission" aria-labelledby="mission-h">
+    <div>
+      <p class="eyebrow">{zh ? '使命' : 'Mission'} · {t(lab.tagline, lang)}</p>
+      <h2 id="mission-h" class="quote">{zh ? '用台灣市場的資料檢驗財務理論，再把它做成用得上的模型。' : 'We test finance theory on Taiwan market data, then turn it into models people can use.'}</h2>
+      <p class="lede">{t(lab.mission[0], lang)}</p>
+    </div>
+    <a class="advisor clay" href={href(lang, 'advisor')}>
+      <Image class="advisor-photo" src={advisorPhoto} alt="" width={128} height={128} densities={[1, 2]} format="webp" />
+      <span>
+        <span class="eyebrow">{t(ui.nav.advisor, lang)}</span>
+        <strong>{t(advisor.name, lang)}</strong>
+        <span class="muted">{t(advisor.title, lang)}</span>
+        <span class="go">{zh ? '認識老師 →' : 'Meet the advisor →'}</span>
+      </span>
+    </a>
+  </section>
+
   <section class="wrap section" aria-labelledby="areas-h">
     <div class="section-head">
       <p class="eyebrow">{zh ? '研究領域' : 'Research areas'}</p>
@@ -79,10 +96,12 @@ const description = zh
       {areas.map((a) => (
         <li>
           <a class="area clay" href={href(lang, `research#${a.key}`)} style={`--c: var(--clay-${a.clay})`}>
-            <span class="stack" aria-hidden="true">{Array.from({ length: Math.min(perArea(a.key), 8) }, () => <i></i>)}</span>
-            <h3>{t(a.name, lang)}</h3>
-            <p class="muted">{t(a.blurb, lang)}</p>
-            <span class="count">{perArea(a.key)} {zh ? '篇' : perArea(a.key) === 1 ? 'work' : 'works'}</span>
+            <span class="txt">
+              <h3>{t(a.name, lang)}</h3>
+              <p class="muted">{t(a.blurb, lang)}</p>
+            </span>
+            <span class="tower" aria-hidden="true">{Array.from({ length: perArea(a.key) }, () => <i></i>)}</span>
+            <span class="count"><b>{perArea(a.key)}</b> {zh ? '篇' : perArea(a.key) === 1 ? 'work' : 'works'}</span>
           </a>
         </li>
       ))}
@@ -105,7 +124,6 @@ const description = zh
                 <a href={href(lang, `members/${m.id}`)}>
                   <ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} placeholder={m.data.placeholder} size={92} />
                   <span>{t(m.data.name, lang)}</span>
-                  <small class="soon" aria-hidden={m.data.placeholder ? undefined : 'true'}>{m.data.placeholder ? t(ui.placeholderNote, lang) : '\u00a0'}</small>
                 </a>
               </li>
             ))}
@@ -113,23 +131,6 @@ const description = zh
         </div>
       ))}
     </div>
-  </section>
-
-  <section class="wrap section mission" aria-labelledby="mission-h">
-    <div>
-      <p class="eyebrow">{zh ? '使命' : 'Mission'} · {t(lab.tagline, lang)}</p>
-      <h2 id="mission-h" class="quote">{zh ? '用台灣市場的資料檢驗財務理論，再把它做成用得上的模型。' : 'We test finance theory on Taiwan market data, then turn it into models people can use.'}</h2>
-      <p class="lede">{t(lab.mission[0], lang)}</p>
-    </div>
-    <a class="advisor clay" href={href(lang, 'advisor')}>
-      <Image class="advisor-photo" src={advisorPhoto} alt="" width={128} height={128} densities={[1, 2]} format="webp" />
-      <span>
-        <span class="eyebrow">{t(ui.nav.advisor, lang)}</span>
-        <strong>{t(advisor.name, lang)}</strong>
-        <span class="muted">{t(advisor.title, lang)}</span>
-        <span class="go">{zh ? '認識老師 →' : 'Meet the advisor →'}</span>
-      </span>
-    </a>
   </section>
 </Base>
 
@@ -165,12 +166,30 @@ const description = zh
   .ticker dt { font-size: 15px; color: var(--ink-2); }
 
   .areas { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
-  .area { display: grid; gap: var(--space-2); padding: var(--space-5); text-decoration: none; color: var(--ink); height: 100%; transition: transform var(--dur-fast) var(--ease-out); }
-  @media (hover: hover) and (pointer: fine) { .area:hover { transform: translateY(-3px); } }
-  .stack { display: flex; gap: 4px; align-items: end; height: 40px; }
-  .stack i { width: 18px; height: 18px; border-radius: 5px; background: var(--c); box-shadow: inset -2px -3px 4px rgb(0 0 0 / 0.18), inset 2px 2px 4px rgb(255 255 255 / 0.35); }
-  .stack i:nth-child(even) { height: 26px; }
-  .count { font: 500 14px/1 var(--f-mono); color: var(--ink-2); }
+  .area {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: 1fr auto; gap: var(--space-3) var(--space-5);
+    padding: var(--space-5) var(--space-5) var(--space-5) var(--space-6); text-decoration: none; color: var(--ink); height: 100%;
+    background: color-mix(in oklab, var(--c) 9%, var(--surface));
+  }
+  .txt { display: grid; align-content: start; gap: var(--space-2); }
+  .area h3 { font-size: 24px; }
+  /* one clay brick per work, two to a course like a wall, growing upward */
+  .tower { grid-row: 1 / 3; grid-column: 2; align-self: end; width: 82px; display: flex; flex-wrap: wrap-reverse; gap: 4px; align-content: flex-start; }
+  .tower i {
+    width: 36px; height: 18px; border-radius: 6px; background: var(--c);
+    box-shadow: inset 0 -4px 0 rgb(0 0 0 / 0.16), inset 2px 3px 3px rgb(255 255 255 / 0.4), 0 3px 5px var(--lo);
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+  /* every other course shifts half a brick, like real bonding */
+  .tower i:nth-child(4n+3), .tower i:nth-child(4n+4) { translate: 6px 0; }
+  @media (hover: hover) and (pointer: fine) {
+    .area:hover .tower i { transform: translateY(-3px); }
+    .area:hover .tower i:nth-child(n+3) { transition-delay: 40ms; }
+    .area:hover .tower i:nth-child(n+5) { transition-delay: 80ms; }
+    .area:hover .tower i:nth-child(n+7) { transition-delay: 120ms; }
+  }
+  .count { font: 500 14px/1 var(--f-mono); color: var(--ink-2); align-self: end; }
+  .count b { font: 600 32px/1 var(--f-display); color: var(--ink); margin-right: 4px; letter-spacing: -0.02em; }
 
   /* 2×2 bookcase: each cohort is one shelf with a plank */
   .shelf { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-7) var(--space-6); }
@@ -181,7 +200,6 @@ const description = zh
   .row a { display: grid; justify-items: center; gap: var(--space-1); text-decoration: none; color: var(--ink); font-size: 16px; font-weight: 500; padding: var(--space-2); border-radius: var(--r-md); transition: transform var(--dur-fast) var(--ease-out); }
   @media (hover: hover) and (pointer: fine) { .row a:hover { transform: translateY(-4px); } }
 
-  .soon { font-size: 13px; font-weight: 400; color: var(--ink-2); margin-top: -2px; }
   .mission { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-8); align-items: center; }
   .mission > div { display: grid; gap: var(--space-4); }
   .quote { font-size: clamp(28px, 3.2vw, 42px); line-height: 1.3; }
@@ -204,8 +222,11 @@ const description = zh
     .visual { margin-inline: -16px; aspect-ratio: 1 / 0.8; margin-bottom: var(--space-6); }
     .visual :global(.kline-hint) { bottom: calc(-1 * var(--space-6)); }
     .area h3 { font-size: 18px; word-break: keep-all; }
+    .area { grid-template-columns: 1fr; grid-template-rows: auto; padding: var(--space-4); }
+    .tower { grid-row: auto; grid-column: 1; width: 68px; order: -1; }
+    .tower i { width: 30px; height: 14px; }
+    .count b { font-size: 26px; }
     .areas { gap: var(--space-3); }
-    .area { padding: var(--space-4); }
     .area .muted { display: none; }
     .shelf { grid-template-columns: 1fr; }
     /* 3 on top, 2 below */

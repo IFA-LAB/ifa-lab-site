@@ -112,9 +112,11 @@ const person = {
   .en { font: 500 20px/1.3 var(--f-display); color: var(--ink-2); }
   .links { list-style: none; padding: 0; margin: var(--space-3) 0 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .links a { text-decoration: none; min-height: 40px; }
-  .blocks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); align-items: start; }
+  /* two columns that pack like a masonry wall: no ragged holes beside a tall card */
+  .blocks { columns: 2; column-gap: var(--space-5); }
+  .blocks > * { break-inside: avoid; margin-bottom: var(--space-5); }
   .block { padding: var(--space-5) var(--space-6); border-radius: var(--r-lg); background: var(--surface); box-shadow: 8px 10px 22px var(--lo), inset -4px -6px 12px rgb(0 0 0 / 0.04), inset 4px 6px 12px var(--hi); display: grid; gap: var(--space-3); align-content: start; min-width: 0; }
-  .block.wide { grid-column: 1 / -1; }
+  .block.wide { column-span: all; }
   .block .sub { margin-top: var(--space-4); }
   .recent { margin: 0; padding-left: 1.4em; display: grid; gap: var(--space-2); }
   .recent .mono { font-size: 13px; margin-left: var(--space-1); }
@@ -124,5 +126,5 @@ const person = {
   .timeline { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2); }
   .timeline li { display: grid; grid-template-columns: 9.5em 1fr; gap: var(--space-3); }
   .timeline .mono { color: var(--ink-2); }
-  @media (max-width: 767px) { .blocks { grid-template-columns: 1fr; } .timeline li { grid-template-columns: 1fr; gap: 0; } }
+  @media (max-width: 767px) { .blocks { columns: 1; } .timeline li { grid-template-columns: 1fr; gap: 0; } }
 </style>

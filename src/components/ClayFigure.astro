@@ -8,7 +8,7 @@ interface Props {
   placeholder?: boolean;
 }
 const { clay = 'grey', accessory = 'none', size = 120, placeholder = false } = Astro.props;
-const colour = placeholder ? 'grey' : clay;
+const colour = clay;
 ---
 <div class:list={['fig', { ghost: placeholder }]} style={`--me: var(--clay-${colour}); --s: ${size / 120};`} data-acc={placeholder ? 'none' : accessory} aria-hidden="true">
   <div class="acc cat l"></div><div class="acc cat r"></div>

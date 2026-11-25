@@ -26,7 +26,6 @@ export default function ClayKline({ bars, hint, hintTouch, unit, wake }: Props) 
   const reduce = usePrefersReducedMotion();
   const [active, setActive] = useState<Bar | null>(null);
 
-  // Desktop: build the scene once the main thread is idle.
   // Touch devices: keep the static clay picture until the first touch/key, so three.js never competes with first load on a phone CPU.
   useEffect(() => {
     let done = false;
@@ -37,8 +36,13 @@ export default function ClayKline({ bars, hint, hintTouch, unit, wake }: Props) 
       evs.forEach((e) => addEventListener(e, go, { passive: true }));
       return () => evs.forEach((e) => removeEventListener(e, go));
     }
-    const ric = (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
-    if (ric) ric(start, { timeout: 1500 }); else setTimeout(start, 300);
+    // Desktop: the first mouse move, scroll or key builds it (the entrance plays as a reveal); otherwise after 6 s,
+    // so parsing three.js never lands inside page load.
+    const evs = ['pointermove', 'pointerdown', 'keydown', 'wheel', 'scroll'] as const;
+    const go = () => { evs.forEach((e) => removeEventListener(e, go)); clearTimeout(timer); start(); };
+    const timer = setTimeout(go, 6000);
+    evs.forEach((e) => addEventListener(e, go, { passive: true }));
+    return () => { clearTimeout(timer); evs.forEach((e) => removeEventListener(e, go)); };
   }, []);
   useEffect(() => {
     if (!host.current) return;
