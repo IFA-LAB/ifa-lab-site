@@ -97,41 +97,30 @@ const links = [
 
     {d.placeholder ? (
       <p class="empty clay">{zh
-        ? '個人資料還在準備中。公仔目前是灰色的，資料補上後就會上色。'
-        : 'This profile is still being prepared. The figure stays grey until it is filled in.'}</p>
+        ? '個人資料還在準備中。公仔還在睡，資料補上後就會醒來。'
+        : 'This profile is still being prepared. The figure is asleep until it is filled in.'}</p>
     ) : (
       <div class="blocks">
+        <div class="main">
         {d.bio && (
-          <section class="block wide">
+          <section class="block">
             <h2>{t(ui.sections.bio, lang)}</h2>
             <Bi text={d.bio} lang={lang} />
           </section>
         )}
         {thesis && (
-          <section class="block wide">
+          <section class="block">
             <h2>{t(ui.sections.thesis, lang)}</h2>
             <p class="thesis">{t(thesis.data.title, lang)}</p>
             <p class="muted small">{zh ? `國立中央大學資訊管理學系，${thesis.data.academicYear} 學年度` : `National Central University, academic year ${thesis.data.academicYear + 1911}–${thesis.data.academicYear + 1912}`}{thesis.data.fullTextFrom && ` · ${t(ui.pubs.fullTextFrom, lang)} ${thesis.data.fullTextFrom}`}</p>
           </section>
         )}
         {myPubs.length > 0 && (
-          <section class="block wide">
+          <section class="block">
             <h2>{zh ? '論文' : 'Papers'}</h2>
             <ul class="plain">
               {myPubs.map((p) => <li><a href={href(lang, `papers/${p.id}`)} lang="en">{p.data.title}</a> <span class="muted small">({p.data.year}{p.data.kind === 'working' ? `, ${t(ui.pubs.working, lang)}` : ''})</span></li>)}
             </ul>
-          </section>
-        )}
-        {d.research.length > 0 && (
-          <section class="block">
-            <h2>{t(ui.sections.research, lang)}</h2>
-            <ul class="tags">{d.research.map((r) => <li lang="en">{r}</li>)}</ul>
-          </section>
-        )}
-        {d.education.length > 0 && (
-          <section class="block">
-            <h2>{t(ui.sections.education, lang)}</h2>
-            <ul class="timeline">{d.education.map((e) => <li><span class="mono">{e.period}</span><span>{t(e.school, lang)}・{t(e.degree, lang)}</span></li>)}</ul>
           </section>
         )}
         {d.experience.length > 0 && (
@@ -143,7 +132,7 @@ const links = [
         {d.projects.length > 0 && (
           <section class="block">
             <h2>{t(ui.sections.projects, lang)}</h2>
-            <ul class="plain">{d.projects.map((p) => (
+            <ul class="plain proj">{d.projects.map((p) => (
               <li>
                 {p.url ? <a href={p.url} target="_blank" rel="noopener">{p.name}</a> : <strong>{p.name}</strong>}
                 <span class="muted small"> {p.year}</span>
@@ -158,12 +147,27 @@ const links = [
             <ul class="plain">{d.awards.map((a) => <li>{t(a, lang)}</li>)}</ul>
           </section>
         )}
+        </div>
+        <aside class="side">
+        {d.research.length > 0 && (
+          <section class="block">
+            <h2>{t(ui.sections.research, lang)}</h2>
+            <ul class="tags">{d.research.map((r) => <li lang="en">{r}</li>)}</ul>
+          </section>
+        )}
+        {d.education.length > 0 && (
+          <section class="block">
+            <h2>{t(ui.sections.education, lang)}</h2>
+            <ul class="timeline">{d.education.map((e) => <li><span class="mono">{e.period}</span><span>{t(e.school, lang)}・{t(e.degree, lang)}</span></li>)}</ul>
+          </section>
+        )}
         {d.interests.length > 0 && (
           <section class="block">
             <h2>{t(ui.sections.interests, lang)}</h2>
             <ul class="tags">{d.interests.map((i) => <li>{t(i, lang)}</li>)}</ul>
           </section>
         )}
+        </aside>
       </div>
     )}
   </article>
@@ -212,11 +216,16 @@ const links = [
   .links { list-style: none; padding: 0; margin: var(--space-3) 0 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .links a { text-decoration: none; min-height: 40px; overflow-wrap: anywhere; }
   .empty { padding: var(--space-6); color: var(--ink-2); max-width: 40em; }
-  /* two columns that pack like a masonry wall: no ragged holes beside a tall card */
-  .blocks { columns: 2; column-gap: var(--space-5); }
-  .blocks > * { break-inside: avoid; margin-bottom: var(--space-5); }
+  /* long story on the left, short facts in a side column: the two can end at different heights without leaving holes */
+  .blocks { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: var(--space-5); align-items: start; }
+  .main, .side { display: grid; gap: var(--space-5); align-content: start; min-width: 0; }
+  /* the side column is narrow: dates sit above their line */
+  .side .timeline li { grid-template-columns: 1fr; gap: 0; }
+  .proj { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4) var(--space-6); }
+  @media (max-width: 767px) { .proj { grid-template-columns: 1fr; } }
+  /* short facts stay in view while the story scrolls */
+  @media (min-width: 900px) and (min-height: 820px) { .side { position: sticky; top: 88px; } }
   .block { padding: var(--space-5) var(--space-6); border-radius: var(--r-lg); background: var(--surface); box-shadow: 8px 10px 22px var(--lo), inset -4px -6px 12px rgb(0 0 0 / 0.04), inset 4px 6px 12px var(--hi); display: grid; gap: var(--space-3); align-content: start; min-width: 0; }
-  .block.wide { column-span: all; }
   .block h2 { font-size: 18px; display: flex; align-items: center; gap: var(--space-2); }
   .block h2::before { content: ''; width: 12px; height: 12px; border-radius: 4px; background: var(--accent); }
   .thesis { font: 600 19px/1.6 var(--f-body); }
@@ -226,7 +235,7 @@ const links = [
   .timeline li { display: grid; grid-template-columns: 9.5em 1fr; gap: var(--space-3); }
   .timeline .mono { color: var(--ink-2); font-variant-numeric: tabular-nums; }
   @media (max-width: 767px) {
-    .blocks { columns: 1; }
+    .blocks { grid-template-columns: 1fr; }
     .timeline li { grid-template-columns: 1fr; gap: 0; }
   }
 </style>

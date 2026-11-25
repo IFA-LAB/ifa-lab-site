@@ -25,6 +25,15 @@ const nameOf = (id: string) => members.find((m) => m.id === id)?.data.name;
 const byName = await memberByEnglishName();
 const areaName = (k: string) => t(areas.find((a) => a.key === k)?.name, lang);
 const areaClay = (k: string) => areas.find((a) => a.key === k)?.clay ?? 'grey';
+/** Theses are finished at the end of the ROC academic year: AY 113 → June 2025. */
+const thesisYear = (ay: number) => ay + 1912;
+const works = [
+  ...pubs.map((p) => ({ year: p.data.year, area: p.data.area, kind: p.data.kind })),
+  ...theses.map((x) => ({ year: thesisYear(x.data.academicYear), area: x.data.area, kind: 'thesis' })),
+];
+const wallYears = [...new Set(works.map((w) => w.year))].sort();
+const wall = wallYears.map((y) => ({ year: y, bricks: works.filter((w) => w.year === y).sort((a, b) => areas.findIndex((x) => x.key === a.area) - areas.findIndex((x) => x.key === b.area)) }));
+const wallMax = Math.max(...wall.map((c) => c.bricks.length));
 
 const jsonld = journals.map((p) => ({
   '@context': 'https://schema.org',
@@ -44,6 +53,19 @@ const jsonld = journals.map((p) => ({
       <h1>{zh ? '研究成果' : 'Research'}</h1>
       <p class="muted">{zh ? '依六個研究領域上色。粗體作者是實驗室成員，* 為通訊作者。' : 'Coloured by research area. Lab members are in bold; * marks the corresponding author.'}</p>
     </div>
+
+    <figure class="wall clay" aria-label={zh ? `成果牆：${wall.map((c) => `${c.year} 年 ${c.bricks.length} 件`).join('、')}` : `Output wall: ${wall.map((c) => `${c.year}: ${c.bricks.length}`).join(', ')}`}>
+      <div class="cols" style={`--rows: ${wallMax}`} aria-hidden="true">
+        {wall.map((c) => (
+          <div class="col">
+            <span class="num">{c.bricks.length}</span>
+            <span class="pile">{c.bricks.map((b) => <i class:list={[b.kind]} style={`--c: var(--clay-${areaClay(b.area)})`}></i>)}</span>
+            <span class="yr">{c.year}</span>
+          </div>
+        ))}
+      </div>
+      <figcaption class="muted">{zh ? '每一塊積木是一篇論文或碩士論文，依完成年份往上疊；顏色是研究領域，半透明的是工作論文。' : 'One brick per paper or thesis, stacked by year; colour is the research area, translucent bricks are working papers.'}</figcaption>
+    </figure>
 
     <div class="filter" role="group" aria-label={zh ? '依研究領域篩選' : 'Filter by research area'}>
       <ul class="areas">
@@ -67,7 +89,7 @@ const jsonld = journals.map((p) => ({
           const c = apa(p.data, lang);
           return (
             <li id={p.id} class="pub" data-area={p.data.area} style={`--c: var(--clay-${areaClay(p.data.area)})`}>
-              <span class="block" aria-hidden="true"></span>
+              <span class="block" aria-hidden="true">{p.data.year}</span>
               <div>
                 <p class="title" lang="en"><a href={href(lang, `papers/${p.id}`)}>{p.data.title}</a></p>
                 <p class="authors">{p.data.authors.map((a, i) => (
@@ -92,7 +114,7 @@ const jsonld = journals.map((p) => ({
       <ol class="pubs">
         {working.map((p) => (
           <li id={p.id} class="pub" data-area={p.data.area} style={`--c: var(--clay-${areaClay(p.data.area)})`}>
-            <span class="block" aria-hidden="true"></span>
+            <span class="block" aria-hidden="true">{p.data.year}</span>
             <div>
               <p class="title" lang="en"><a href={href(lang, `papers/${p.id}`)}>{p.data.title}</a></p>
               <p class="authors">{p.data.authors.map((a, i) => (
@@ -111,7 +133,7 @@ const jsonld = journals.map((p) => ({
       <ol class="pubs">
         {theses.map((x) => (
           <li class="pub" style={`--c: var(--clay-${areaClay(x.data.area)})`}>
-            <span class="block" aria-hidden="true"></span>
+            <span class="block" aria-hidden="true">{thesisYear(x.data.academicYear)}</span>
             <div>
               <Bi text={x.data.title} lang={lang} />
               <p class="muted meta"><a href={href(lang, `members/${x.data.member}`)}>{t(nameOf(x.data.member), lang)}</a> · {zh ? `${x.data.academicYear} 學年度` : `AY ${x.data.academicYear + 1911}–${String(x.data.academicYear + 1912).slice(2)}`} · <span class="area-tag">{areaName(x.data.area)}</span></p>
@@ -205,7 +227,7 @@ const jsonld = journals.map((p) => ({
   .plinks a { text-decoration: none; min-height: 40px; }
   @media (max-width: 899px) { .projects, .projects > li.feature { grid-template-columns: 1fr; } }
   .areas { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-6); }
-  .filter { scroll-margin-top: 88px; margin-bottom: var(--space-6); display: grid; gap: var(--space-2); }
+  .filter { scroll-margin-top: 88px; margin-bottom: var(--space-1); display: grid; gap: var(--space-2); }
   .filter .areas { margin-bottom: 0; }
   .areas button { min-height: 44px; cursor: pointer; font: inherit; font-size: 15px; display: inline-flex; align-items: center; gap: var(--space-2); border: 0; color: var(--ink); }
   .areas button[aria-pressed='true'] { background: var(--ink); color: var(--bg); }
@@ -220,9 +242,34 @@ const jsonld = journals.map((p) => ({
   .group h2 { margin-bottom: var(--space-5); display: flex; align-items: baseline; gap: var(--space-3); }
   .n { font: 500 16px/1 var(--f-mono); color: var(--ink-2); }
   .pubs { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); }
-  .pub { display: grid; grid-template-columns: 20px 1fr; gap: var(--space-4); padding: var(--space-4) 0; border-bottom: 1px solid var(--line); scroll-margin-top: 96px; }
+  .pub { display: grid; grid-template-columns: 64px 1fr; gap: var(--space-5); padding: var(--space-4) 0; border-bottom: 1px solid var(--line); scroll-margin-top: 96px; }
   .pub > div { display: grid; gap: var(--space-1); min-width: 0; }
-  .block { width: 20px; height: 20px; border-radius: 6px; margin-top: 6px; }
+  .block { width: 64px; height: 34px; border-radius: 9px; margin-top: 2px; display: grid; place-items: center; font: 600 15px/1 var(--f-mono); color: #1d2633; box-shadow: inset 0 -5px 0 rgb(0 0 0 / 0.16), inset 2px 3px 4px rgb(255 255 255 / 0.4), 0 4px 8px var(--lo); }
+  @media (max-width: 767px) { .pub { grid-template-columns: 52px 1fr; gap: var(--space-3); } .block { width: 52px; height: 28px; font-size: 13px; } }
+
+  /* output wall: one clay brick per work, piled by year */
+  .wall { margin: 0 0 var(--space-6); padding: var(--space-6) var(--space-6) var(--space-5); display: grid; gap: var(--space-4); }
+  .cols { display: flex; align-items: end; gap: var(--space-5); min-height: calc(var(--rows) * 22px + 60px); overflow-x: auto; }
+  .col { display: grid; justify-items: center; gap: var(--space-2); flex: 1 0 72px; }
+  .pile { display: flex; flex-direction: column-reverse; gap: 4px; width: 100%; max-width: 120px; }
+  .pile i { display: block; height: 18px; border-radius: 6px; background: var(--c); box-shadow: inset 0 -4px 0 rgb(0 0 0 / 0.16), inset 2px 3px 3px rgb(255 255 255 / 0.4), 0 3px 5px var(--lo); }
+  .pile i:nth-child(even) { margin-inline: 6px -6px; }
+  .pile i.working { opacity: 0.55; }
+  .num { font: 600 28px/1 var(--f-display); }
+  .yr { font: 600 14px/1 var(--f-mono); color: var(--ink-2); padding-top: var(--space-2); border-top: 2px solid var(--line); width: 100%; text-align: center; }
+  .wall figcaption { font-size: 14px; }
+  @media (max-width: 767px) {
+    /* every year fits on a phone: narrow piles, no sideways scrolling */
+    .wall { padding: var(--space-5) var(--space-4) var(--space-4); }
+    .cols { gap: 6px; overflow: visible; min-height: calc(var(--rows) * 15px + 48px); }
+    .col { flex: 1 1 0; min-width: 0; gap: 4px; }
+    .pile { gap: 3px; }
+    .pile i { height: 12px; border-radius: 4px; }
+    .pile i:nth-child(even) { margin-inline: 3px -3px; }
+    .num { font-size: 18px; }
+    .yr { font-size: 10px; letter-spacing: -0.03em; }
+    .jump::before { display: none; }
+  }
   .title { font-weight: 700; font-size: 17px; line-height: 1.6; }
   .authors { font-size: 15px; }
   .meta { font-size: 14px; }

@@ -9,6 +9,7 @@ import advisorPhoto from '@/assets/advisor.jpg';
 import { lab, areas, advisor } from '@/data/lab';
 import { ui, t, href, type Locale } from '@/i18n/ui';
 import { langPaths, membersByCohort } from '@/lib/content';
+import { labEvents, newestFirst, type Kind } from '@/lib/history';
 
 export const getStaticPaths = langPaths;
 const lang = Astro.params.lang as Locale;
@@ -28,6 +29,17 @@ const stats = [
   { n: theses.length, label: t(ui.pubs.theses, lang) },
   { n: memberCount, label: zh ? '位成員' : 'Members' },
 ];
+// latest news: the newest event of each kind, three cards
+const latest = (await labEvents(lang)).sort(newestFirst).filter((e, i, all) => all.findIndex((x) => x.kind === e.kind) === i).slice(0, 3);
+const kindLook: Record<Kind, { clay: string; name: { zh: string; en: string } }> = {
+  paper: { clay: 'blue', name: { zh: '論文', en: 'Paper' } },
+  award: { clay: 'up', name: { zh: '獎項', en: 'Award' } },
+  grant: { clay: 'sun', name: { zh: '計畫', en: 'Grant' } },
+  thesis: { clay: 'down', name: { zh: '碩士論文', en: 'Thesis' } },
+  milestone: { clay: 'pink', name: { zh: '里程碑', en: 'Milestone' } },
+};
+const fmtDate = (d: string) => (d.length === 4 ? d : zh ? `${d.slice(0, 4)} 年 ${+d.slice(5, 7)} 月` : new Date(`${d}-01`).toLocaleString('en', { month: 'short', year: 'numeric' }));
+const crew = cohorts.flatMap(([, ms]) => ms).slice(0, 8);
 const boardEn: Record<string, string> = { empirical: 'Empirical', behavioral: 'Behavioral', pricing: 'Pricing', ai: 'AI / ML', forecast: 'Forecasting', apps: 'Apps & Viz' };
 const titleLines = zh ? ['智能金融', '分析實驗室'] : ['Intelligent Finance', 'Analytics Lab'];
 const description = zh
@@ -108,6 +120,24 @@ const description = zh
     </ul>
   </section>
 
+  <section class="wrap section latest" aria-labelledby="news-h">
+    <div class="section-head row-head">
+      <div>
+        <p class="eyebrow">{zh ? '最新動態' : 'Latest'}</p>
+        <h2 id="news-h">{zh ? '最近疊上去的幾塊' : 'The newest blocks on the pile'}</h2>
+      </div>
+      <a class="more" href={href(lang, 'history')}>{zh ? '看完整沿革 →' : 'Full history →'}</a>
+    </div>
+    <ul class="news">
+      {latest.map((e) => (
+        <li class="clay" style={`--c: var(--clay-${kindLook[e.kind].clay})`}>
+          <p class="tag"><i aria-hidden="true"></i>{t(kindLook[e.kind].name, lang)} · <time datetime={e.date}>{fmtDate(e.date)}</time></p>
+          <p class="say">{e.link ? <a href={e.link}>{t(e.text, lang)}</a> : t(e.text, lang)}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
   <section class="wrap section" aria-labelledby="shelf-h">
     <div class="section-head">
       <p class="eyebrow">{t(ui.nav.members, lang)}</p>
@@ -130,6 +160,18 @@ const description = zh
           </ul>
         </div>
       ))}
+    </div>
+  </section>
+  <section class="wrap section">
+    <div class="join clay">
+      <div>
+        <h2>{zh ? '想一起把題目疊起來？' : 'Want to stack a question with us?'}</h2>
+        <p class="muted">{zh ? '修過財務或程式都可以，先寄一封信聊聊你好奇的事。' : 'Finance or programming background both work. Start with an email about what you are curious about.'}</p>
+        <a class="btn" href={href(lang, 'join')}>{t(ui.nav.join, lang)}</a>
+      </div>
+      <div class="crowd" aria-hidden="true">
+        {crew.map((m) => <ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} placeholder={m.data.placeholder} size={64} />)}
+      </div>
     </div>
   </section>
 </Base>
@@ -200,6 +242,19 @@ const description = zh
   .row a { display: grid; justify-items: center; gap: var(--space-1); text-decoration: none; color: var(--ink); font-size: 16px; font-weight: 500; padding: var(--space-2); border-radius: var(--r-md); transition: transform var(--dur-fast) var(--ease-out); }
   @media (hover: hover) and (pointer: fine) { .row a:hover { transform: translateY(-4px); } }
 
+  .row-head { display: flex; justify-content: space-between; align-items: end; gap: var(--space-5); max-width: none; }
+  .more { font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .more:hover { text-decoration: underline; }
+  .news { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
+  .news li { padding: var(--space-5); display: grid; gap: var(--space-3); align-content: start; }
+  .tag { display: flex; align-items: center; gap: var(--space-2); font: 500 14px/1.4 var(--f-mono); color: var(--ink-2); }
+  .tag i { width: 26px; height: 15px; border-radius: 5px; background: var(--c); box-shadow: inset 0 -3px 0 rgb(0 0 0 / 0.16), inset 1px 2px 3px rgb(255 255 255 / 0.4); }
+  .say { font-size: 17px; line-height: 1.65; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+  .say a { color: var(--ink); text-decoration: none; }
+  .say a:hover { color: var(--accent); text-decoration: underline; }
+  .join { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-6); align-items: center; padding: var(--space-7) var(--space-7); background: color-mix(in oklab, var(--clay-sun) 14%, var(--surface)); }
+  .join > div:first-child { display: grid; gap: var(--space-4); justify-items: start; max-width: 34em; }
+  .join .crowd { display: grid; grid-template-columns: repeat(4, auto); gap: var(--space-2) var(--space-3); }
   .mission { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-8); align-items: center; }
   .mission > div { display: grid; gap: var(--space-4); }
   .quote { font-size: clamp(28px, 3.2vw, 42px); line-height: 1.3; }
@@ -216,6 +271,11 @@ const description = zh
     .areas { grid-template-columns: repeat(2, 1fr); }
     .ticker { grid-template-columns: repeat(3, 1fr); row-gap: var(--space-5); }
     .ticker > div:nth-child(4) { padding-left: 0; box-shadow: none; }
+  }
+  @media (max-width: 899px) {
+    .news { grid-template-columns: 1fr; }
+    .join { grid-template-columns: 1fr; padding: var(--space-6) var(--space-5); }
+    .row-head { flex-direction: column; align-items: start; }
   }
   @media (max-width: 767px) {
     .hero { padding-top: var(--space-4); }

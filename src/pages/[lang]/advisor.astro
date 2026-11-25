@@ -55,18 +55,22 @@ const person = {
       </div>
     </header>
     <div class="blocks">
-      <section class="block wide"><h2>{t(ui.sections.bio, lang)}</h2><p>{t(advisor.bio, lang)}</p></section>
-      <section class="block wide"><h2>{zh ? '近期期刊論文' : 'Recent journal papers'}</h2>
+      <div class="main">
+      <section class="block"><h2>{t(ui.sections.bio, lang)}</h2><p>{t(advisor.bio, lang)}</p></section>
+      <section class="block"><h2>{zh ? '近期期刊論文' : 'Recent journal papers'}</h2>
         <ol class="recent">{recent.map((p) => <li><a href={href(lang, `papers/${p.id}`)} lang="en">{p.data.title}</a> <span class="mono muted">{p.data.year > new Date().getFullYear() ? (zh ? `${p.data.year} 即將刊登` : `${p.data.year}, forthcoming`) : p.data.year}</span></li>)}</ol>
         <p><a href={href(lang, 'research')}>{zh ? '全部論文與研究計畫 →' : 'All papers and grants →'}</a></p></section>
+      <section class="block"><h2>{t(ui.sections.experience, lang)}</h2>
+        <ul class="timeline">{advisor.experience.map((e) => <li><span class="mono">{e.period}</span><span>{t(e.title, lang)}・{t(e.org, lang)}</span></li>)}</ul></section>
+      <section class="block"><h2>{zh ? '獎項' : 'Awards'}</h2><ul class="plain">{advisor.awards.map((x) => <li>{t(x, lang)}</li>)}</ul></section>
+      </div>
+      <aside class="side">
       <section class="block"><h2>{t(ui.sections.research, lang)}</h2><ul class="tags">{advisor.research.map((r) => <li lang="en">{r}</li>)}</ul></section>
       <section class="block"><h2>{t(ui.sections.education, lang)}</h2>
         <ul class="timeline">{advisor.education.map((e) => <li><span class="mono">{e.period}</span><span>{t(e.school, lang)}・{t(e.degree, lang)}</span></li>)}</ul></section>
-      <section class="block"><h2>{t(ui.sections.experience, lang)}</h2>
-        <ul class="timeline">{advisor.experience.map((e) => <li><span class="mono">{e.period}</span><span>{t(e.title, lang)}・{t(e.org, lang)}</span></li>)}</ul></section>
-      <section class="block"><h2>{zh ? '獎項' : 'Awards'}</h2><ul class="plain">{advisor.awards.map((x) => <li>{t(x, lang)}</li>)}</ul>
-        <h2 class="sub">{zh ? '證照' : 'Licenses'}</h2><ul class="plain">{advisor.licenses.map((l) => <li>{t(l, lang)}</li>)}</ul></section>
-      <section class="block wide"><h2>{t(ui.sections.interests, lang)}</h2><p>{t(advisor.interests, lang)}</p></section>
+      <section class="block"><h2>{zh ? '證照' : 'Licenses'}</h2><ul class="plain">{advisor.licenses.map((l) => <li>{t(l, lang)}</li>)}</ul></section>
+      <section class="block"><h2>{t(ui.sections.interests, lang)}</h2><p>{t(advisor.interests, lang)}</p></section>
+      </aside>
     </div>
   </article>
 </Base>
@@ -112,11 +116,14 @@ const person = {
   .en { font: 500 20px/1.3 var(--f-display); color: var(--ink-2); }
   .links { list-style: none; padding: 0; margin: var(--space-3) 0 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .links a { text-decoration: none; min-height: 40px; }
-  /* two columns that pack like a masonry wall: no ragged holes beside a tall card */
-  .blocks { columns: 2; column-gap: var(--space-5); }
-  .blocks > * { break-inside: avoid; margin-bottom: var(--space-5); }
+  /* long story on the left, short facts in a side column: the two can end at different heights without leaving holes */
+  .blocks { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: var(--space-5); align-items: start; }
+  .main, .side { display: grid; gap: var(--space-5); align-content: start; min-width: 0; }
+  /* the side column is narrow: dates sit above their line */
+  .side .timeline li { grid-template-columns: 1fr; gap: 0; }
+  /* short facts stay in view while the story scrolls */
+  @media (min-width: 900px) and (min-height: 820px) { .side { position: sticky; top: 88px; } }
   .block { padding: var(--space-5) var(--space-6); border-radius: var(--r-lg); background: var(--surface); box-shadow: 8px 10px 22px var(--lo), inset -4px -6px 12px rgb(0 0 0 / 0.04), inset 4px 6px 12px var(--hi); display: grid; gap: var(--space-3); align-content: start; min-width: 0; }
-  .block.wide { column-span: all; }
   .block .sub { margin-top: var(--space-4); }
   .recent { margin: 0; padding-left: 1.4em; display: grid; gap: var(--space-2); }
   .recent .mono { font-size: 13px; margin-left: var(--space-1); }
@@ -126,5 +133,5 @@ const person = {
   .timeline { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2); }
   .timeline li { display: grid; grid-template-columns: 9.5em 1fr; gap: var(--space-3); }
   .timeline .mono { color: var(--ink-2); }
-  @media (max-width: 767px) { .blocks { columns: 1; } .timeline li { grid-template-columns: 1fr; gap: 0; } }
+  @media (max-width: 767px) { .blocks { grid-template-columns: 1fr; } .timeline li { grid-template-columns: 1fr; gap: 0; } }
 </style>
