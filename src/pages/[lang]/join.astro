@@ -1,0 +1,60 @@
+---
+import Base from '@/layouts/Base.astro';
+import { lab, advisor } from '@/data/lab';
+import { ui, t, href, type Bi, type Locale } from '@/i18n/ui';
+import { langPaths } from '@/lib/content';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Locale;
+const zh = lang === 'zh-tw';
+
+const faq: { q: Bi; a: Bi }[] = [
+  {
+    q: { zh: 'IFA Lab 適合什麼樣的學生？', en: 'Who is IFA Lab for?' },
+    a: { zh: '對資訊科技與金融都有興趣，想用 AI、機器學習與資料科學解決金融問題的大學部與碩士班學生。', en: 'Undergraduate and master’s students interested in both IT and finance who want to solve financial problems with AI, machine learning and data science.' },
+  },
+  {
+    q: { zh: '大學部學生可以做什麼？', en: 'What can undergraduates work on?' },
+    a: { zh: '可以參與金融應用設計、複雜金融資料的網頁視覺化、用機器學習或 AI 預測資產價格，以及破產分析與投資組合管理等專題。', en: 'Projects such as designing financial applications, web visualizations of complex financial data, predicting asset prices with machine learning or AI, and bankruptcy analysis and portfolio management.' },
+  },
+  {
+    q: { zh: '碩士班要先準備什麼？', en: 'What should master’s applicants prepare?' },
+    a: { zh: '扎實的程式基礎（Python、R 或類似語言）、對金融產業的基本理解，以及對系統開發、資料科學或實證財務的興趣。', en: 'A solid programming foundation (Python, R or similar), a good understanding of the financial industry, and interest in system development, data science or empirical finance.' },
+  },
+  {
+    q: { zh: '要怎麼聯絡實驗室？', en: 'How do I get in touch?' },
+    a: { zh: `寄信給邱信瑜老師（${lab.contact.email}），簡單介紹自己和有興趣的題目；也可以到志希館 712 實驗室找我們，或到管理二館 I1-932 找老師。`, en: `Email Prof. Hsin-Yu Chiu (${lab.contact.email}) with a short introduction and the topics you are interested in, or visit the lab in Room 712, Zhixi Building, or Prof. Chiu’s office, I1-932, Management Building II.` },
+  },
+];
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((f) => ({ '@type': 'Question', name: t(f.q, lang), acceptedAnswer: { '@type': 'Answer', text: t(f.a, lang) } })),
+};
+---
+<Base lang={lang} title={t(ui.nav.join, lang)} description={zh ? 'IFA Lab 招收對 AI 與金融有興趣的大學部與碩士班學生：可以做什麼、要準備什麼、怎麼聯絡。' : 'IFA Lab welcomes undergraduate and master’s students interested in AI and finance: what you can work on, what to prepare and how to reach us.'} jsonld={[faqLd]}>
+  <div class="wrap section">
+    <div class="section-head">
+      <p class="eyebrow">{t(ui.nav.join, lang)}</p>
+      <h1>{zh ? '想用 AI 做金融研究？來疊積木吧' : 'Want to do finance research with AI? Come build with us'}</h1>
+      <p class="muted">{zh ? '我們招收大學部專題生與碩士班學生。下面是最常被問到的四個問題。' : 'We recruit undergraduate project students and master’s students. Here are the four questions we get most.'}</p>
+    </div>
+    <div class="faq">
+      {faq.map((f) => (
+        <section class="qa clay">
+          <h2>{t(f.q, lang)}</h2>
+          <p>{t(f.a, lang)}</p>
+        </section>
+      ))}
+    </div>
+    <p class="cta"><a class="btn" href={`mailto:${lab.contact.email}`}>{zh ? `寄信給${advisor.name.zh}老師` : `Email Prof. ${advisor.name.en}`}</a> <a class="btn secondary" href={href(lang, 'members')}>{zh ? '先認識成員' : 'Meet the members'}</a></p>
+  </div>
+</Base>
+
+<style>
+  .faq { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
+  .qa { padding: var(--space-6); display: grid; gap: var(--space-3); align-content: start; }
+  .qa h2 { font-size: 21px; }
+  .cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-7); }
+  @media (max-width: 767px) { .faq { grid-template-columns: 1fr; } }
+</style>

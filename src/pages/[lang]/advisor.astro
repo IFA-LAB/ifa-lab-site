@@ -1,0 +1,73 @@
+---
+import Base from '@/layouts/Base.astro';
+import ClayFigure from '@/components/ClayFigure.astro';
+import { advisor, lab } from '@/data/lab';
+import { ui, t, href, type Locale } from '@/i18n/ui';
+import { langPaths } from '@/lib/content';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Locale;
+const zh = lang === 'zh-tw';
+const site = Astro.site!;
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: advisor.name.en,
+  alternateName: advisor.name.zh,
+  jobTitle: advisor.title.en,
+  email: lab.contact.email,
+  url: new URL(href(lang, 'advisor'), site).href,
+  worksFor: { '@id': new URL('/#org', site).href },
+  knowsAbout: advisor.research,
+  sameAs: [advisor.scholarsUrl, advisor.researchGateUrl],
+  award: advisor.awards.map((a) => a.zh),
+  alumniOf: advisor.education.map((e) => ({ '@type': 'CollegeOrUniversity', name: e.school.en })),
+};
+---
+<Base lang={lang} title={t(advisor.name, lang)} description={t(advisor.bio, lang).slice(0, 150)} jsonld={[person]} ogType="profile">
+  <article class="wrap section">
+    <header class="head">
+      <ClayFigure clay="sun" accessory="guitar" size={160} />
+      <div class="who">
+        <p class="eyebrow">{t(ui.nav.advisor, lang)}</p>
+        <h1>{t(advisor.name, lang)}</h1>
+        {zh && <p class="en" lang="en">{advisor.name.en}</p>}
+        <p class="muted">{t(advisor.title, lang)} · {t(lab.dept, lang)}</p>
+        <ul class="links">
+          <li><a class="chip" href={`mailto:${lab.contact.email}`}>{lab.contact.email}</a></li>
+          <li><a class="chip" href={advisor.scholarsUrl} target="_blank" rel="noopener">NCU Scholars</a></li>
+          <li><a class="chip" href={advisor.researchGateUrl} target="_blank" rel="noopener">ResearchGate</a></li>
+        </ul>
+      </div>
+    </header>
+    <div class="blocks">
+      <section class="block wide"><h2>{t(ui.sections.bio, lang)}</h2><p>{t(advisor.bio, lang)}</p></section>
+      <section class="block"><h2>{t(ui.sections.research, lang)}</h2><ul class="tags">{advisor.research.map((r) => <li lang="en">{r}</li>)}</ul></section>
+      <section class="block"><h2>{t(ui.sections.education, lang)}</h2>
+        <ul class="timeline">{advisor.education.map((e) => <li><span class="mono">{e.period}</span><span>{t(e.school, lang)}・{t(e.degree, lang)}</span></li>)}</ul></section>
+      <section class="block"><h2>{t(ui.sections.experience, lang)}</h2>
+        <ul class="timeline">{advisor.experience.map((e) => <li><span class="mono">{e.period}</span><span>{t(e.title, lang)}・{t(e.org, lang)}</span></li>)}</ul></section>
+      <section class="block"><h2>{zh ? '獎項' : 'Awards'}</h2><ul class="plain">{advisor.awards.map((x) => <li>{t(x, lang)}</li>)}</ul></section>
+      <section class="block"><h2>{zh ? '證照' : 'Licenses'}</h2><ul class="plain">{advisor.licenses.map((l) => <li>{t(l, lang)}</li>)}</ul></section>
+      <section class="block wide"><h2>{t(ui.sections.interests, lang)}</h2><p>{t(advisor.interests, lang)}</p></section>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .head { display: flex; gap: var(--space-6); align-items: center; flex-wrap: wrap; margin-bottom: var(--space-7); }
+  .who { display: grid; gap: var(--space-1); min-width: 0; }
+  .en { font: 500 20px/1.3 var(--f-display); color: var(--ink-2); }
+  .links { list-style: none; padding: 0; margin: var(--space-3) 0 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .links a { text-decoration: none; min-height: 40px; }
+  .blocks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
+  .block { padding: var(--space-5); border-radius: var(--r-md); background: var(--surface); display: grid; gap: var(--space-3); align-content: start; min-width: 0; }
+  .block.wide { grid-column: 1 / -1; }
+  .block h2 { font-size: 18px; display: flex; align-items: center; gap: var(--space-2); }
+  .block h2::before { content: ''; width: 12px; height: 12px; border-radius: 4px; background: var(--clay-sun); }
+  .plain { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2); }
+  .timeline { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2); }
+  .timeline li { display: grid; grid-template-columns: 9.5em 1fr; gap: var(--space-3); }
+  .timeline .mono { color: var(--ink-2); }
+  @media (max-width: 767px) { .blocks { grid-template-columns: 1fr; } .timeline li { grid-template-columns: 1fr; gap: 0; } }
+</style>

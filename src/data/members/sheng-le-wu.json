@@ -1,0 +1,14 @@
+{
+  "name": {
+    "zh": "吳聲樂"
+  },
+  "cohort": 4,
+  "order": 2,
+  "status": "enrolled",
+  "maintainedBy": "self",
+  "placeholder": true,
+  "headline": {
+    "zh": "第四屆",
+    "en": "4th cohort"
+  }
+}

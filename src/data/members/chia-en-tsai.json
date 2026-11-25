@@ -1,0 +1,108 @@
+{
+  "name": {
+    "zh": "蔡嘉恩",
+    "en": "Chia-En Tsai"
+  },
+  "cohort": 1,
+  "order": 3,
+  "degree": "master",
+  "status": "graduated",
+  "founder": true,
+  "maintainedBy": "lab",
+  "headline": {
+    "zh": "資管所碩士・113 學年度畢業",
+    "en": "M.S. in Information Management, 2025"
+  },
+  "bio": {
+    "zh": "中央資管碩士，專長 AI 與軟體開發。研究自然語言處理在財務分析的應用，以及用矩陣分解改善推薦系統；碩士論文以基金持股行為序列建立個人投資推薦系統。曾用 C# .NET 與 Angular 開發應用，做過結合 YOLOv4 與 LINE Bot 的燙傷辨識系統，持有 Java SE 8 與 Microsoft AI Fundamentals 證照。",
+    "en": "Master's graduate of NCU Information Management, specializing in AI and software development. He studied NLP for financial analysis and matrix factorization for recommender systems; his thesis builds a personal investment recommender from fund holding sequences. He has built apps with C# .NET and Angular, including a burn-assessment system combining YOLOv4 with a LINE Bot, and holds Java SE 8 and Microsoft AI Fundamentals certifications."
+  },
+  "education": [
+    {
+      "school": {
+        "zh": "國立中央大學 資訊管理學系",
+        "en": "National Central University, Information Management"
+      },
+      "degree": {
+        "zh": "碩士",
+        "en": "M.S."
+      },
+      "period": "2023–2025"
+    },
+    {
+      "school": {
+        "zh": "輔仁大學 資訊管理學系",
+        "en": "Fu Jen Catholic University, Information Management"
+      },
+      "degree": {
+        "zh": "學士",
+        "en": "B.S."
+      },
+      "period": "2020–2023"
+    }
+  ],
+  "projects": [
+    {
+      "name": "Burn Finder",
+      "year": "2022",
+      "desc": {
+        "zh": "結合 YOLOv4 與 LINE Bot 的燙傷程度辨識系統",
+        "en": "Burn-severity recognition with YOLOv4 and a LINE Bot"
+      }
+    },
+    {
+      "name": "POS System",
+      "year": "2022",
+      "desc": {
+        "zh": "以設計模式實作的銷售點系統",
+        "en": "Point-of-sale system built with design patterns"
+      }
+    }
+  ],
+  "awards": [
+    {
+      "zh": "2024 GenAI Stars 優選：Ched.AI",
+      "en": "2024 GenAI Stars Merit Award: Ched.AI"
+    },
+    {
+      "zh": "2022 全國企業管理競賽 亞軍（CANCER FINDING）",
+      "en": "2022 National Business Management Competition, runner-up (CANCER FINDING)"
+    },
+    {
+      "zh": "IMP 2022 研討會發表",
+      "en": "Presented at IMP 2022"
+    },
+    {
+      "zh": "2022 Technology Innovation and Management 國際研討會發表",
+      "en": "Presented at the 2022 Technology Innovation and Management International Conference"
+    }
+  ],
+  "research": [
+    "AI & Machine Learning",
+    "FinTech",
+    "HealthTech",
+    "NLP",
+    "Software Development",
+    "Cloud & Containers"
+  ],
+  "interests": [
+    {
+      "zh": "吉他",
+      "en": "Guitar"
+    },
+    {
+      "zh": "運動",
+      "en": "Sports"
+    },
+    {
+      "zh": "電玩",
+      "en": "Video games"
+    }
+  ],
+  "thesis": "tsai-chia-en-113",
+  "photo": "../../assets/members/chia-en-tsai.jpg",
+  "figure": {
+    "clay": "down",
+    "accessory": "guitar"
+  }
+}

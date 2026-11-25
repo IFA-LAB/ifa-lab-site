@@ -1,0 +1,15 @@
+{
+  "name": {
+    "zh": "謝侑明"
+  },
+  "cohort": 3,
+  "order": 3,
+  "degree": "master",
+  "status": "enrolled",
+  "maintainedBy": "self",
+  "placeholder": true,
+  "headline": {
+    "zh": "第三屆研究生",
+    "en": "3rd-cohort graduate student"
+  }
+}

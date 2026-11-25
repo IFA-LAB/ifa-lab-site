@@ -1,0 +1,183 @@
+---
+import Base from '@/layouts/Base.astro';
+import ClayCandles from '@/components/ClayCandles.astro';
+import ClayFigure from '@/components/ClayFigure.astro';
+import ClayKline from '@/components/three/ClayKline';
+import { getCollection } from 'astro:content';
+import { lab, areas, advisor } from '@/data/lab';
+import { ui, t, href, type Locale } from '@/i18n/ui';
+import { langPaths, membersByCohort } from '@/lib/content';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Locale;
+const zh = lang === 'zh-tw';
+
+const pubs = await getCollection('publications');
+const theses = await getCollection('theses');
+const grants = await getCollection('grants');
+const cohorts = await membersByCohort();
+const memberCount = cohorts.reduce((n, [, ms]) => n + ms.length, 0);
+
+const perArea = (k: string) => pubs.filter((p) => p.data.area === k).length + theses.filter((x) => x.data.area === k).length;
+const stats = [
+  { n: pubs.filter((p) => p.data.kind === 'journal').length, label: t(ui.pubs.journal, lang) },
+  { n: pubs.filter((p) => p.data.kind === 'working').length, label: t(ui.pubs.working, lang) },
+  { n: grants.length, label: t(ui.pubs.grants, lang) },
+  { n: theses.length, label: t(ui.pubs.theses, lang) },
+  { n: memberCount, label: zh ? '位成員' : 'members' },
+];
+const description = zh
+  ? '國立中央大學資訊管理學系的智能金融分析實驗室（IFA Lab），由邱信瑜副教授主持，研究實證財務、行為財務、資產定價、AI 與機器學習、財務預測與金融應用。'
+  : 'IFA Lab (Intelligent Finance Analytics Lab) at National Central University, led by Associate Professor Hsin-Yu Chiu, researches empirical and behavioral finance, asset pricing, AI and machine learning, forecasting and financial applications.';
+---
+<Base lang={lang} title={lab.short} description={description}>
+  <section class="hero wrap">
+    <div class="copy">
+      <p class="eyebrow">{lab.short} · NCU {zh ? '資訊管理學系' : 'Information Management'}</p>
+      <h1>{t(lab.name, lang)}</h1>
+      <p class="lede">{zh
+        ? '我們把財務理論、資料與 AI 疊在一起：從台股實證、投資人行為到圖神經網路預測，做出決策者用得上的模型。'
+        : 'We stack finance theory, data and AI together: from Taiwan market evidence and investor behavior to graph-network forecasting, building models decision-makers can use.'}</p>
+      <div class="cta">
+        <a class="btn" href={href(lang, 'research')}>{zh ? '看研究成果' : 'See our research'}</a>
+        <a class="btn secondary" href={href(lang, 'join')}>{t(ui.nav.join, lang)}</a>
+      </div>
+    </div>
+    <div class="visual" data-kline>
+      <ClayCandles label={zh ? '黏土做的 K 線模型：紅色上漲、綠色下跌的積木 K 棒，上方漂著金幣' : 'A clay candlestick model: red rising and green falling blocks with floating coins'} />
+      <ClayKline
+        client:visible
+        bars={areas.map((a) => ({ key: a.key, label: t(a.name, lang), count: perArea(a.key), href: href(lang, `research#${a.key}`) }))}
+        hint={zh ? '每根 K 棒是一個研究領域，滑過看看、點進去' : 'Each candle is a research area. Hover, then click'}
+        hintTouch={zh ? '每根 K 棒是一個研究領域，點一下看論文' : 'Each candle is a research area. Tap one'}
+        unit={zh ? '篇' : 'works'}
+      />
+    </div>
+  </section>
+
+  <section class="wrap stats" aria-label={zh ? '研究成果數量' : 'Output at a glance'}>
+    {stats.map((s) => <p class="stat clay"><b>{s.n}</b><span>{s.label}</span></p>)}
+  </section>
+
+  <section class="wrap section" aria-labelledby="areas-h">
+    <div class="section-head">
+      <p class="eyebrow">{zh ? '研究領域' : 'Research areas'}</p>
+      <h2 id="areas-h">{zh ? 'IFA Lab 在研究什麼？' : 'What does IFA Lab research?'}</h2>
+      <p class="muted">{zh
+        ? '六個領域，每一塊積木都是一篇論文或碩士論文。'
+        : 'Six areas. Every block is a paper or a master’s thesis.'}</p>
+    </div>
+    <ul class="areas">
+      {areas.map((a) => (
+        <li>
+          <a class="area clay" href={href(lang, `research#${a.key}`)} style={`--c: var(--clay-${a.clay})`}>
+            <span class="stack" aria-hidden="true">{Array.from({ length: Math.min(perArea(a.key), 8) }, () => <i></i>)}</span>
+            <h3>{t(a.name, lang)}</h3>
+            <p class="muted">{t(a.blurb, lang)}</p>
+            <span class="count">{perArea(a.key)} {zh ? '篇' : perArea(a.key) === 1 ? 'work' : 'works'}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="wrap section" aria-labelledby="shelf-h">
+    <div class="section-head">
+      <p class="eyebrow">{t(ui.nav.members, lang)}</p>
+      <h2 id="shelf-h">{zh ? '一屆一層的成員書架' : 'One shelf per cohort'}</h2>
+    </div>
+    <div class="shelf">
+      {cohorts.map(([c, ms]) => (
+        <div class="row">
+          <p class="eyebrow">{t(ui.cohort(c), lang)}</p>
+          <ul>
+            {ms.map((m) => (
+              <li>
+                <a href={href(lang, `members/${m.id}`)}>
+                  <ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} placeholder={m.data.placeholder} size={72} />
+                  <span>{t(m.data.name, lang)}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap section mission" aria-labelledby="mission-h">
+    <div>
+      <p class="eyebrow">{zh ? '使命' : 'Mission'}</p>
+      <h2 id="mission-h">{t(lab.tagline, lang)}</h2>
+      {lab.mission.map((m) => <p>{t(m, lang)}</p>)}
+    </div>
+    <a class="advisor clay" href={href(lang, 'advisor')}>
+      <ClayFigure clay="sun" accessory="guitar" size={96} />
+      <span>
+        <span class="eyebrow">{t(ui.nav.advisor, lang)}</span>
+        <strong>{t(advisor.name, lang)}</strong>
+        <span class="muted">{t(advisor.title, lang)} · {t(lab.dept, lang)}</span>
+      </span>
+    </a>
+  </section>
+</Base>
+
+<style>
+  .hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: var(--space-7); align-items: center; padding-block: var(--space-7); }
+  .copy { display: grid; gap: var(--space-4); }
+  .lede { font-size: 19px; color: var(--ink-2); max-width: 32em; }
+  .cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-2); }
+
+  .visual { position: relative; }
+  .visual :global(.kline-canvas) { position: absolute; inset: 0; border-radius: var(--r-lg); overflow: hidden; }
+  .visual :global(.kline-canvas canvas) { touch-action: pan-y; }
+  .visual[data-live] :global(.stage > *) { opacity: 0; transition: opacity var(--dur-base) var(--ease-out); }
+  .visual :global(.kline-hint) {
+    position: absolute; left: 14px; bottom: 12px; font: 500 13px/1.4 var(--f-body); color: var(--ink-2);
+    background: var(--surface); padding: 6px 12px; border-radius: var(--r-full);
+  }
+  .visual :global(.kline-tip) {
+    display: grid; gap: 2px; white-space: nowrap; padding: 8px 14px; border-radius: 14px;
+    background: var(--surface); color: var(--ink); font: 500 15px/1.3 var(--f-body);
+    box-shadow: 6px 8px 18px var(--lo);
+  }
+  .visual :global(.kline-tip span) { font-size: 13px; color: var(--ink-2); }
+
+  .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-4); }
+  .stat { padding: var(--space-4) var(--space-5); display: grid; }
+  .stat b { font: 600 36px/1.1 var(--f-display); font-variant-numeric: tabular-nums; }
+  .stat span { font-size: 15px; color: var(--ink-2); }
+
+  .areas { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
+  .area { display: grid; gap: var(--space-2); padding: var(--space-5); text-decoration: none; color: var(--ink); height: 100%; transition: transform var(--dur-fast) var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .area:hover { transform: translateY(-3px); } }
+  .stack { display: flex; gap: 4px; align-items: end; height: 40px; }
+  .stack i { width: 18px; height: 18px; border-radius: 5px; background: var(--c); box-shadow: inset -2px -3px 4px rgb(0 0 0 / 0.18), inset 2px 2px 4px rgb(255 255 255 / 0.35); }
+  .stack i:nth-child(even) { height: 26px; }
+  .count { font: 500 14px/1 var(--f-mono); color: var(--ink-2); }
+
+  .shelf { display: grid; gap: var(--space-5); }
+  .row { position: relative; display: grid; grid-template-columns: 200px 1fr; align-items: center; gap: var(--space-4); padding-bottom: var(--space-5); }
+  .row::after { content: ''; position: absolute; inset: auto 0 0; height: 10px; border-radius: var(--r-full); background: var(--surface-2); box-shadow: 0 4px 10px var(--lo); }
+  .row ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-5); }
+  .row a { display: grid; justify-items: center; gap: var(--space-1); text-decoration: none; color: var(--ink); font-size: 15px; font-weight: 500; padding: var(--space-2); border-radius: var(--r-md); }
+  @media (hover: hover) and (pointer: fine) { .row a:hover { background: var(--surface-2); } }
+
+  .mission { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--space-7); align-items: start; }
+  .mission > div { display: grid; gap: var(--space-4); }
+  .advisor { display: flex; gap: var(--space-5); align-items: center; padding: var(--space-5); text-decoration: none; color: var(--ink); }
+  .advisor > span:last-child { display: grid; gap: 2px; }
+  .advisor strong { font: 600 24px/1.3 var(--f-display); }
+
+  @media (max-width: 1023px) {
+    .hero, .mission { grid-template-columns: 1fr; }
+    .areas { grid-template-columns: repeat(2, 1fr); }
+    .stats { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 767px) {
+    .areas { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .stat:last-child:nth-child(odd) { grid-column: 1 / -1; }
+    .row { grid-template-columns: 1fr; }
+  }
+</style>

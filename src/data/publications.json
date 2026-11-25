@@ -1,0 +1,472 @@
+[
+  {
+    "id": "taiwan-stock-market-review",
+    "kind": "journal",
+    "year": 2027,
+    "status": "forthcoming",
+    "title": "Empirical research on the Taiwan stock market: Review and outlook",
+    "authors": [
+      "Hsin-Yu Chiu",
+      "Kendro Vincent",
+      "Zong-Wei Yeh",
+      "Wei-Che Tsai"
+    ],
+    "corresponding": [
+      3
+    ],
+    "venue": "NTU Management Review",
+    "area": "empirical",
+    "tags": [
+      "Taiwan",
+      "review"
+    ],
+    "plain": {
+      "zh": "整理台灣股市實證研究這些年的成果與缺口，並提出接下來值得研究的方向。",
+      "en": "Reviews what empirical research on the Taiwan stock market has found, where the gaps are, and which directions are worth pursuing next."
+    }
+  },
+  {
+    "id": "cybersecurity-esg-synchronicity",
+    "kind": "journal",
+    "year": 2027,
+    "status": "forthcoming",
+    "title": "Cybersecurity incidents, stock price synchronicity, and the roles of ESG",
+    "authors": [
+      "Chao-Jung Chen",
+      "Hsin-Yu Chiu",
+      "Ya-Ching Chu"
+    ],
+    "corresponding": [
+      0
+    ],
+    "venue": "Taiwan Accounting Review",
+    "area": "empirical",
+    "tags": [
+      "ESG",
+      "cybersecurity"
+    ],
+    "plain": {
+      "zh": "公司被駭之後，股價會不會變得更「跟著大盤走」、少了自己的消息？ESG 表現又能不能緩和這個影響。",
+      "en": "After a cybersecurity incident, does a firm’s stock start moving more with the market and less on its own news, and can strong ESG soften that?"
+    }
+  },
+  {
+    "id": "eua-pde-msr",
+    "kind": "journal",
+    "year": 2026,
+    "status": "published",
+    "title": "Modeling EUA price dynamics: A multistage PDE framework with Market Stability Reserve mechanisms",
+    "authors": [
+      "Ting-Fu Chen",
+      "Hsin-Yu Chiu",
+      "Chieh Shen"
+    ],
+    "corresponding": [
+      1
+    ],
+    "venue": "International Review of Economics and Finance",
+    "volume": "110",
+    "pages": "105626",
+    "doi": "10.1016/j.iref.2026.105626",
+    "area": "pricing",
+    "tags": [
+      "carbon",
+      "PDE"
+    ],
+    "plain": {
+      "zh": "為歐盟碳權（EUA）建立一個把市場穩定儲備（MSR）的吸收、釋出與註銷都算進去的多階段定價模型，並用拍賣價格與期貨期限結構驗證：在第四期的價格走勢上貼合得最好。",
+      "en": "A multistage pricing model for EU carbon allowances that builds in the Market Stability Reserve’s absorption, release and cancellation, checked against auction prices and futures term structures; it fits Phase IV best."
+    }
+  },
+  {
+    "id": "disposition-short-sellers",
+    "kind": "journal",
+    "year": 2024,
+    "status": "published",
+    "title": "The disposition effect on partially informed short sellers",
+    "authors": [
+      "Wei-Che Tsai",
+      "Li-Jung Lin",
+      "Hsin-Yu Chiu"
+    ],
+    "corresponding": [
+      2
+    ],
+    "venue": "Pacific-Basin Finance Journal",
+    "volume": "87",
+    "pages": "102479",
+    "doi": "10.1016/j.pacfin.2024.102479",
+    "area": "behavioral",
+    "tags": [
+      "disposition effect",
+      "short selling"
+    ],
+    "plain": {
+      "zh": "放空者也會「抱著賠錢的部位不放」，而且只掌握部分資訊的放空者更明顯。",
+      "en": "Short sellers also hold on to losing positions, and partially informed ones do so more."
+    },
+    "slides": "https://docs.google.com/presentation/d/1Izy_4tKl0GuKMukeHsyU649g7HrHvkNs/view"
+  },
+  {
+    "id": "asd-momentum-taiwan",
+    "kind": "journal",
+    "year": 2024,
+    "status": "published",
+    "title": "Retrieving almost stochastic dominance momentum in Taiwan stock market",
+    "authors": [
+      "Mi-Hsiu Chiang",
+      "Hsin-Yu Chiu",
+      "Yu-Chin Hsu"
+    ],
+    "corresponding": [
+      1
+    ],
+    "venue": "Pacific-Basin Finance Journal",
+    "volume": "83",
+    "pages": "102268",
+    "doi": "10.1016/j.pacfin.2024.102268",
+    "area": "pricing",
+    "tags": [
+      "stochastic dominance",
+      "momentum"
+    ],
+    "plain": {
+      "zh": "用「近似隨機優勢」挑出報酬分配整體比較好的股票，看看在台股能不能做出動能策略。",
+      "en": "Uses almost stochastic dominance to pick stocks whose whole return distribution looks better, and tests whether that yields a momentum strategy in Taiwan."
+    }
+  },
+  {
+    "id": "p2p-failure-ml",
+    "kind": "journal",
+    "year": 2024,
+    "status": "published",
+    "title": "Predicting failure of P2P lending platforms through machine learning: The case in China",
+    "authors": [
+      "Jen-Yin Yeh",
+      "Hsin-Yu Chiu",
+      "Jhih-Huei Huang"
+    ],
+    "corresponding": [
+      1
+    ],
+    "venue": "Finance Research Letters",
+    "volume": "59",
+    "pages": "104784",
+    "doi": "10.1016/j.frl.2023.104784",
+    "area": "ai",
+    "tags": [
+      "P2P lending",
+      "machine learning"
+    ],
+    "slides": "https://docs.google.com/presentation/d/1XhXFXOnrWaM1xR_9Ub2cqllNk90y7F2Q/view",
+    "plain": {
+      "zh": "用機器學習預測中國 P2P 借貸平台會不會倒，並找出在各種變數篩選方法下都穩定重要的指標；模型 AUC 約 0.96。",
+      "en": "Machine learning predicts which Chinese P2P lending platforms will fail and finds indicators that stay important across variable-selection methods; AUC is about 0.96."
+    }
+  },
+  {
+    "id": "similarity-futures",
+    "kind": "journal",
+    "year": 2021,
+    "status": "published",
+    "title": "Predictive ability of similarity-based futures trading strategies",
+    "authors": [
+      "Mi-Hsiu Chiang",
+      "Hsin-Yu Chiu",
+      "Wei-Yu Kuo"
+    ],
+    "corresponding": [
+      1
+    ],
+    "venue": "Pacific-Basin Finance Journal",
+    "volume": "68",
+    "pages": "101616",
+    "area": "forecast",
+    "tags": [
+      "technical analysis",
+      "futures"
+    ],
+    "doi": "10.1016/j.pacfin.2021.101616",
+    "slides": "https://docs.google.com/presentation/d/10XnOKSViF0OiVhJl6uLtkJA-VWPmIU_M/view",
+    "plain": {
+      "zh": "找出歷史上走勢「長得像」現在的時期，用它們之後的表現來預測期貨，檢驗這種相似性交易策略能不能賺錢。",
+      "en": "Finds past periods whose price paths look like today’s and uses what followed to forecast futures, testing whether such similarity-based strategies pay off."
+    }
+  },
+  {
+    "id": "disposition-options",
+    "kind": "journal",
+    "year": 2021,
+    "status": "published",
+    "title": "Relevance of the disposition effect on the options market: New evidence",
+    "authors": [
+      "Mi-Hsiu Chiang",
+      "Hsin-Yu Chiu",
+      "Robin K. Chou"
+    ],
+    "corresponding": [
+      2
+    ],
+    "venue": "Financial Management",
+    "volume": "50(1)",
+    "pages": "75–106",
+    "area": "behavioral",
+    "tags": [
+      "disposition effect",
+      "options"
+    ],
+    "doi": "10.1111/fima.12309",
+    "slides": "https://docs.google.com/presentation/d/1-AFfIJP56DNKdZhkMj-Vgy0Oa9chY4Xx/view",
+    "plain": {
+      "zh": "選擇權投資人也會急著把賺錢的部位了結、抱著賠錢的不放；用這個偏誤做多空策略，能預測 delta 避險後的選擇權報酬。",
+      "en": "Option holders also cash in winners and hold on to losers; a long–short strategy built on that bias predicts delta-hedged option returns."
+    }
+  },
+  {
+    "id": "volatility-jumps",
+    "kind": "journal",
+    "year": 2020,
+    "status": "published",
+    "title": "Impact of volatility jumps in a mean-reverting model: Derivative pricing and empirical evidence",
+    "authors": [
+      "Hsin-Yu Chiu",
+      "Ting-Fu Chen"
+    ],
+    "corresponding": [
+      1
+    ],
+    "venue": "North American Journal of Economics and Finance",
+    "volume": "52",
+    "pages": "101112",
+    "area": "pricing",
+    "tags": [
+      "derivatives",
+      "volatility"
+    ],
+    "doi": "10.1016/j.najef.2019.101112",
+    "plain": {
+      "zh": "商品價格不只價格會跳，波動度也會突然跳動；把波動跳躍放進均值回歸模型，更貼近實際資料，也會改變選擇權的波動率微笑與定價。",
+      "en": "Commodity prices jump, and so does their volatility; adding volatility jumps to mean-reverting models fits the data better and changes option volatility smiles and prices."
+    }
+  },
+  {
+    "id": "liquidity-bab",
+    "kind": "journal",
+    "year": 2018,
+    "status": "published",
+    "title": "A liquidity-based Betting-against-beta strategy",
+    "authors": [
+      "Hsin-Yu Chiu",
+      "Shu-An Huang",
+      "Mi-Hsiu Chiang"
+    ],
+    "corresponding": [
+      2
+    ],
+    "venue": "Review of Securities and Futures Markets",
+    "volume": "30(3)",
+    "pages": "41–74",
+    "area": "pricing",
+    "tags": [
+      "betting against beta",
+      "liquidity"
+    ],
+    "doi": "10.6529/RSFM.201809_30(3).0002",
+    "plain": {
+      "zh": "把流動性納入「押注低貝他」（Betting-against-beta）策略，檢驗調整後的策略表現。",
+      "en": "Builds liquidity into the betting-against-beta strategy and tests how the adjusted strategy performs."
+    }
+  },
+  {
+    "id": "mortality-linked-products",
+    "kind": "journal",
+    "year": 2016,
+    "status": "published",
+    "title": "Valuations of mortality-linked structured products",
+    "authors": [
+      "Meng-Lan Yueh",
+      "Hsin-Yu Chiu",
+      "Shou-Hsun Tsai"
+    ],
+    "corresponding": [
+      0
+    ],
+    "venue": "Journal of Derivatives",
+    "volume": "24(2)",
+    "pages": "66–87",
+    "area": "pricing",
+    "tags": [
+      "structured products",
+      "insurance"
+    ],
+    "url": "https://www.pm-research.com/content/iijderiv/24/2/66",
+    "plain": {
+      "zh": "人活得越久，壽險公司與年金發行者的「長壽風險」就越大；本文為票息或本金連結死亡率指數的結構型商品建立評價模型。",
+      "en": "Longer lives create longevity risk for insurers and annuity issuers; this paper prices structured notes whose coupon or principal depends on a mortality index."
+    }
+  },
+  {
+    "id": "cdo-default-correlation",
+    "kind": "journal",
+    "year": 2014,
+    "status": "published",
+    "title": "On the characterization and information contents of dynamic default correlation under the Doubly Stochastic assumption: The case of iTraxx CDO tranches",
+    "authors": [
+      "Mi-Hsiu Chiang",
+      "Hsin-Yu Chiu",
+      "Ying-Hsin Wang"
+    ],
+    "corresponding": [
+      0
+    ],
+    "venue": "NTU Management Review",
+    "volume": "24(S1)",
+    "pages": "97–132",
+    "area": "pricing",
+    "tags": [
+      "credit",
+      "CDO"
+    ],
+    "doi": "10.6226/NTURM2014.APR.D08",
+    "plain": {
+      "zh": "用跳躍過程描述一籃子信用資產的違約如何連動，並以 iTraxx Europe 擔保債權憑證的市價校準，反推各分券的隱含相關性。",
+      "en": "Models how defaults in a credit pool move together using jump processes, calibrated to iTraxx Europe CDO prices to back out each tranche’s implied correlation."
+    }
+  },
+  {
+    "id": "wp-two-stage-hybrid",
+    "kind": "working",
+    "year": 2026,
+    "status": "working",
+    "title": "A two-stage hybrid machine learning model based on multi-factor architecture and high-dimensional sequence analysis",
+    "authors": [
+      "Kai-Xiang Chang",
+      "Hsin-Yu Chiu"
+    ],
+    "corresponding": [
+      1
+    ],
+    "area": "ai",
+    "tags": [
+      "asset pricing",
+      "machine learning"
+    ],
+    "plain": {
+      "zh": "兩階段的混合機器學習模型：先用多因子架構，再分析高維度的時間序列，用來做財務預測。",
+      "en": "A two-stage hybrid machine-learning model that combines a multi-factor structure with high-dimensional sequence analysis for financial forecasting."
+    }
+  },
+  {
+    "id": "wp-seqtag",
+    "kind": "working",
+    "year": 2026,
+    "status": "working",
+    "title": "SeqTAG: Validated conditional-Granger equity networks for return forecasting in Taiwan",
+    "authors": [
+      "Zi-Wei Xie",
+      "Hsin-Yu Chiu"
+    ],
+    "corresponding": [
+      1
+    ],
+    "area": "forecast",
+    "tags": [
+      "graph neural network",
+      "Granger causality"
+    ],
+    "plain": {
+      "zh": "用經過驗證的條件式格蘭傑因果關係，建出台股之間「誰領先誰」的網路，再拿來預測報酬。",
+      "en": "Builds a validated conditional-Granger network of which Taiwan stocks lead which, then uses it to forecast returns."
+    }
+  },
+  {
+    "id": "wp-aggregating-sd",
+    "kind": "working",
+    "year": 2026,
+    "status": "working",
+    "title": "Aggregating pairwise stochastic dominance",
+    "authors": [
+      "Hsin-Yu Chiu",
+      "Ting-Fu Chen"
+    ],
+    "corresponding": [
+      1
+    ],
+    "area": "pricing",
+    "tags": [
+      "stochastic dominance"
+    ],
+    "plain": {
+      "zh": "兩兩比較的隨機優勢結果常常彼此矛盾；本文提出把這些兩兩比較彙整成一個整體排序的方法。",
+      "en": "Pairwise stochastic-dominance comparisons often conflict; this paper proposes a way to aggregate them into one overall ranking."
+    }
+  },
+  {
+    "id": "wp-strong-longs",
+    "kind": "working",
+    "year": 2026,
+    "status": "working",
+    "title": "Buy the strong longs, short the weak shorts: Direction-preserving allocation across anomalies",
+    "authors": [
+      "Hsin-Yu Chiu",
+      "Ting-Fu Chen"
+    ],
+    "corresponding": [
+      1
+    ],
+    "area": "pricing",
+    "tags": [
+      "anomalies",
+      "portfolio"
+    ],
+    "plain": {
+      "zh": "同時用很多個市場異常做策略時，只買多方訊號最強的股票、只放空空方訊號最弱的，保留每個訊號原本的方向。",
+      "en": "When combining many market anomalies, buy only the strongest longs and short only the weakest shorts, keeping each signal’s direction intact."
+    }
+  },
+  {
+    "id": "wp-style-transmission",
+    "kind": "working",
+    "year": 2026,
+    "status": "working",
+    "title": "Style transmission networks: Directed predictability across investment styles",
+    "authors": [
+      "Hsin-Yu Chiu",
+      "Ju-Shen Huang",
+      "Ting-Fu Chen"
+    ],
+    "corresponding": [
+      2
+    ],
+    "area": "behavioral",
+    "tags": [
+      "investment styles",
+      "networks"
+    ],
+    "plain": {
+      "zh": "不同投資風格（例如價值、成長、動能）之間，誰的報酬能預測誰？把這些方向性的關係畫成傳遞網路。",
+      "en": "Which investment styles’ returns predict which others? Maps those directed relationships as a transmission network."
+    }
+  },
+  {
+    "id": "wp-llm-financial-reports",
+    "kind": "working",
+    "year": 2024,
+    "status": "working",
+    "title": "Leveraging extended context windows in LLMs for time-series and cross-sectional analysis of financial reports",
+    "authors": [
+      "Hsin-Yu Chiu"
+    ],
+    "corresponding": [],
+    "area": "ai",
+    "tags": [
+      "LLM",
+      "financial reports"
+    ],
+    "url": "https://colab.research.google.com/drive/1Zwbk08sdLAL7I8uXkxnmmMEFVy3OSlpD?usp=sharing",
+    "plain": {
+      "zh": "讓長上下文的大型語言模型一次讀多份財報，測它能不能跨公司、跨年度比較與分析。",
+      "en": "Lets long-context LLMs read many financial reports at once and tests whether they can compare and analyze across firms and years."
+    }
+  }
+]

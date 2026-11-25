@@ -1,0 +1,35 @@
+---
+import { ui, t, type Locale } from '@/i18n/ui';
+import { lab } from '@/data/lab';
+interface Props { lang: Locale }
+const { lang } = Astro.props;
+const built = new Date().toISOString().slice(0, 10);
+---
+<footer class="site-footer">
+  <div class="wrap grid">
+    <div>
+      <p class="name">{lab.short} · {t(lab.name, lang)}</p>
+      <p class="muted">{t(lab.dept, lang)}</p>
+    </div>
+    <div>
+      <h2 class="eyebrow">{t(ui.footer.contact, lang)}</h2>
+      <address>
+        <span>{t(lab.contact.lab, lang)}</span>
+        <span>{t(lab.contact.room, lang)}</span>
+        <span>{t(lab.contact.address, lang)}</span>
+        <span>Tel {lab.contact.phone}</span>
+        <a href={`mailto:${lab.contact.email}`}>{lab.contact.email}</a>
+      </address>
+    </div>
+    <p class="muted small">© {new Date().getFullYear()} {lab.short}. {t(ui.footer.updated, lang)} <time datetime={built}>{built}</time></p>
+  </div>
+</footer>
+
+<style>
+  .site-footer { margin-top: var(--space-9); border-top: 1px solid var(--line); padding-block: var(--space-7) calc(var(--space-7) + env(safe-area-inset-bottom, 0px)); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5) var(--space-7); }
+  .name { font: 600 18px/1.4 var(--f-display); }
+  address { font-style: normal; display: grid; gap: 2px; margin-top: var(--space-2); }
+  .small { grid-column: 1 / -1; font-size: 14px; }
+  @media (max-width: 767px) { .grid { grid-template-columns: 1fr; } }
+</style>

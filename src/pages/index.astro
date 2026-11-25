@@ -1,0 +1,27 @@
+---
+/* Root entry: send visitors to their language. Static, so it works on any host.
+   Search engines follow the canonical + hreflang to /zh-tw/. */
+const site = Astro.site!;
+---
+<!doctype html>
+<html lang="zh-Hant-TW">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>IFA Lab｜智能金融分析實驗室</title>
+    <link rel="canonical" href={new URL('/zh-tw/', site).href} />
+    <link rel="alternate" hreflang="zh-Hant-TW" href={new URL('/zh-tw/', site).href} />
+    <link rel="alternate" hreflang="en" href={new URL('/en/', site).href} />
+    <link rel="alternate" hreflang="x-default" href={new URL('/zh-tw/', site).href} />
+    <meta name="robots" content="noindex, follow" />
+    <script is:inline>
+      var en = (navigator.languages || [navigator.language || '']).some(function (l) { return /^en/i.test(l); }) &&
+        !(navigator.languages || []).some(function (l) { return /^zh/i.test(l); });
+      location.replace(en ? '/en/' : '/zh-tw/');
+    </script>
+    <noscript><meta http-equiv="refresh" content="0; url=/zh-tw/" /></noscript>
+  </head>
+  <body>
+    <p><a href="/zh-tw/">中文</a> · <a href="/en/">English</a></p>
+  </body>
+</html>

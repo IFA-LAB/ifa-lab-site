@@ -1,0 +1,199 @@
+---
+import Base from '@/layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { Picture } from 'astro:assets';
+import chedAi from '@/assets/projects/chad-ai.jpg';
+import { ui, t, href, type Bi, type Locale } from '@/i18n/ui';
+import { langPaths } from '@/lib/content';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Locale;
+const zh = lang === 'zh-tw';
+const members = await getCollection('members');
+const founders = members.filter((m) => m.data.founder).sort((a, b) => a.data.cohort - b.data.cohort || a.data.order - b.data.order);
+const theses = await getCollection('theses');
+const grants = await getCollection('grants');
+const pubs = await getCollection('publications');
+const nameOf = (id: string) => members.find((m) => m.id === id)?.data.name;
+
+type Kind = 'milestone' | 'paper' | 'grant' | 'thesis' | 'award';
+type Event = { date: string; kind: Kind; text: Bi; link?: string; who?: string[]; photo?: 'ched' };
+
+/** The lab's story starts here; earlier items belong to the advisor's own record. */
+const START = '2023-02';
+const THIS_YEAR = String(new Date().getFullYear());
+
+// 1. Hand-written milestones: things no data file records.
+const milestones: Event[] = [
+  { date: '2023-02', kind: 'milestone', text: { zh: '邱信瑜老師到中央大學資訊管理學系任教。', en: 'Prof. Hsin-Yu Chiu joins NCU Information Management.' } },
+  { date: '2023-08', kind: 'milestone', text: { zh: 'IFA Lab 在志希館 712 室成立。', en: 'IFA Lab is founded in Room 712, Zhixi Building.' }, who: founders.map((m) => m.id) },
+  { date: '2024-10', kind: 'award', text: { zh: 'Ched.AI（財報分析與徵信風險評估）獲國科會 GenAI Stars 創意創客組優選。', en: 'Ched.AI (financial-statement analysis and credit-risk assessment) wins a Merit Award at NSTC GenAI Stars.' }, who: ['yun-cheng-chiang', 'dao-en-liu', 'chia-en-tsai', 'ju-shen-huang'], link: href(lang, 'research#s-h'), photo: 'ched' },
+];
+
+// 2. The rest comes from the data files, so the history grows when members add data.
+const fromGrants: Event[] = grants
+  .map((g) => ({ g, date: g.data.period.slice(0, 7).replace('/', '-') }))
+  .filter(({ date }) => date >= START)
+  .map(({ g, date }) => ({
+    date,
+    kind: 'grant' as const,
+    text: { zh: `${t(g.data.kind, 'zh-tw')}開始：${t(g.data.title, 'zh-tw')}`, en: `${t(g.data.kind, 'en')} begins: ${t(g.data.title, 'en')}` },
+    who: members.filter((m) => m.data.name.en === g.data.pi).map((m) => m.id),
+  }));
+
+const fromPubs: Event[] = pubs
+  .filter((p) => p.data.kind === 'journal' && String(p.data.year) >= START.slice(0, 4))
+  .map((p) => {
+    const future = p.data.status === 'forthcoming';
+    return {
+      date: future ? THIS_YEAR : String(p.data.year),
+      kind: 'paper' as const,
+      text: future
+        ? { zh: `〈${p.data.title}〉獲 ${p.data.venue} 接受，即將刊登。`, en: `“${p.data.title}” accepted by ${p.data.venue}.` }
+        : { zh: `〈${p.data.title}〉刊登於 ${p.data.venue}。`, en: `“${p.data.title}” published in ${p.data.venue}.` },
+      link: href(lang, `papers/${p.id}`),
+      who: members.filter((m) => m.data.name.en && p.data.authors.includes(m.data.name.en)).map((m) => m.id),
+    };
+  });
+
+const fromTheses: Event[] = theses.map((x) => ({
+  date: `${x.data.academicYear + 1912}-07`,
+  kind: 'thesis' as const,
+  text: { zh: `完成碩士論文〈${x.data.title.zh}〉。`, en: `Completes the master’s thesis “${x.data.title.en ?? x.data.title.zh}”.` },
+  who: [x.data.member],
+}));
+
+// Member awards carry a year in the text. Ched.AI is covered by the milestone above.
+const fromAwards: Event[] = members.flatMap((m) =>
+  m.data.awards
+    .filter((a) => !/Ched\.AI|發表|助理|研究計畫/.test(a.zh))
+    .map((a) => ({ a, year: a.zh.match(/\b(20\d\d)\b/)?.[1] }))
+    .filter((x): x is { a: Bi; year: string } => !!x.year && x.year >= START.slice(0, 4))
+    .map(({ a, year }) => ({ date: year, kind: 'award' as const, text: a, who: [m.id] })),
+);
+
+const events = [...milestones, ...fromGrants, ...fromPubs, ...fromTheses, ...fromAwards];
+const years = [...new Set(events.map((e) => e.date.slice(0, 4)))].sort().reverse();
+const byYear = years.map((y) => ({
+  year: y,
+  // month-dated events in date order, then year-only ones
+  items: events
+    .filter((e) => e.date.startsWith(y))
+    .sort((a, b) => (a.date.length === 4 ? 1 : 0) - (b.date.length === 4 ? 1 : 0) || a.date.localeCompare(b.date)),
+}));
+
+const KINDS: { key: Kind; clay: string; name: Bi; unit: Bi }[] = [
+  { key: 'paper', clay: 'blue', name: { zh: '論文', en: 'Papers' }, unit: { zh: '篇論文', en: 'papers' } },
+  { key: 'award', clay: 'up', name: { zh: '獎項', en: 'Awards' }, unit: { zh: '座獎', en: 'awards' } },
+  { key: 'grant', clay: 'sun', name: { zh: '計畫', en: 'Grants' }, unit: { zh: '件計畫', en: 'grants' } },
+  { key: 'thesis', clay: 'down', name: { zh: '碩士論文', en: 'Theses' }, unit: { zh: '篇碩論', en: 'theses' } },
+  { key: 'milestone', clay: 'pink', name: { zh: '里程碑', en: 'Milestones' }, unit: { zh: '件大事', en: 'milestones' } },
+];
+/** English units in singular when the count is 1. */
+const unit = (k: (typeof KINDS)[number], n: number) => (zh || n !== 1 ? t(k.unit, lang) : t(k.unit, lang).replace(/s$/, ''));
+const kindOf = (k: Kind) => KINDS.find((x) => x.key === k)!;
+const total = (k: Kind) => events.filter((e) => e.kind === k).length;
+const shown = KINDS.filter((k) => total(k.key) > 0);
+---
+<Base lang={lang} title={t(ui.nav.history, lang)} description={zh ? `IFA Lab 從 2023 年 8 月成立以來的 ${events.length} 個重要時刻：論文、計畫、碩士論文與獎項。` : `IFA Lab since August 2023: ${events.length} moments across papers, grants, theses and awards.`}>
+  <div class="wrap section">
+    <div class="section-head">
+      <p class="eyebrow">{t(ui.nav.history, lang)}</p>
+      <h1>{zh ? '一年疊一層' : 'One floor a year'}</h1>
+      <p>{zh
+        ? 'IFA Lab 在 2023 年 8 月成立，最初由中央資管的大學部與碩士班學生組成，是結合金融、科技與資料分析的專案基地。'
+        : 'IFA Lab was founded in August 2023 by undergraduate and master’s students of NCU Information Management, as a hub for projects combining finance, technology and data analytics.'}</p>
+      <p class="muted">{zh ? '創始成員：' : 'Founding members: '}{founders.map((m, i) => <>{i > 0 && (zh ? '、' : ', ')}<a href={href(lang, `members/${m.id}`)}>{t(m.data.name, lang)}</a></>)}{zh ? '，指導教授邱信瑜。' : ', with advisor Hsin-Yu Chiu.'}</p>
+    </div>
+
+    <ul class="totals" aria-label={zh ? '成立以來累計' : 'Since founding'}>
+      {shown.map((k) => <li style={`--c: var(--clay-${k.clay})`}><b>{total(k.key)}</b><span>{unit(k, total(k.key))}</span></li>)}
+    </ul>
+
+    <div class="filter" role="group" aria-label={zh ? '只看某一類' : 'Show one kind'}>
+      <button type="button" class="chip" data-kind="" aria-pressed="true">{zh ? '全部' : 'All'}</button>
+      {shown.map((k) => (
+        <button type="button" class="chip" data-kind={k.key} aria-pressed="false" style={`--c: var(--clay-${k.clay})`}><i aria-hidden="true"></i>{t(k.name, lang)}</button>
+      ))}
+    </div>
+
+    <ol class="tower">
+      {byYear.map(({ year, items }) => (
+        <li class="floor">
+          <div class="slab">
+            <h2>{year}</h2>
+            <p class="sum">{shown.filter((k) => items.some((e) => e.kind === k.key)).map((k) => (
+              <span style={`--c: var(--clay-${k.clay})`}><i aria-hidden="true"></i>{items.filter((e) => e.kind === k.key).length} {unit(k, items.filter((e) => e.kind === k.key).length)}</span>
+            ))}</p>
+          </div>
+          <ol class="events">
+            {items.map((e) => (
+              <li class="ev" data-kind={e.kind} style={`--c: var(--clay-${kindOf(e.kind).clay})`}>
+                <i class="stud" aria-hidden="true"></i>
+                <div>
+                  <p class="meta mono">{e.date.length > 4 ? e.date.replace('-', '/') : e.date} · {t(kindOf(e.kind).name, lang)}</p>
+                  <p class="txt">{e.link ? <a href={e.link}>{t(e.text, lang)}</a> : t(e.text, lang)}</p>
+                  {e.who && e.who.length > 0 && (
+                    <p class="who">{e.who.map((id, i) => <>{i > 0 && (zh ? '、' : ', ')}<a href={href(lang, `members/${id}`)}>{t(nameOf(id), lang)}</a></>)}</p>
+                  )}
+                  {e.photo === 'ched' && (
+                    <Picture src={chedAi} alt={zh ? 'Ched.AI 團隊四人在 GenAI Stars 合影' : 'The Ched.AI team at GenAI Stars'} widths={[360, 720]} sizes="360px" formats={['avif', 'webp']} class="photo" />
+                  )}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </li>
+      ))}
+    </ol>
+    <p class="muted note">{zh ? '年表由網站資料自動產生：成員在自己的資料裡補上獎項、論文或計畫，這裡就會多一筆。' : 'Generated from the site’s data: when members add awards, papers or grants to their profiles, they appear here.'}</p>
+  </div>
+</Base>
+
+<script>
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('.filter button')];
+  for (const b of buttons) b.addEventListener('click', () => {
+    const k = b.dataset.kind ?? '';
+    for (const x of buttons) x.setAttribute('aria-pressed', String(x === b));
+    for (const ev of document.querySelectorAll<HTMLElement>('.ev')) ev.hidden = !!k && ev.dataset.kind !== k;
+    for (const f of document.querySelectorAll<HTMLElement>('.floor')) f.hidden = !f.querySelector('.ev:not([hidden])');
+  });
+</script>
+
+<style>
+  .totals { list-style: none; margin: 0 0 var(--space-6); padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-3); }
+  .totals li { display: flex; align-items: baseline; gap: var(--space-2); padding: var(--space-3) var(--space-5); border-radius: var(--r-md); background: var(--surface); box-shadow: 6px 8px 16px var(--lo); }
+  .totals li::before { content: ''; align-self: center; width: 12px; height: 12px; border-radius: 4px; background: var(--c); }
+  .totals b { font: 600 30px/1 var(--f-display); font-variant-numeric: tabular-nums; }
+  .totals span { color: var(--ink-2); font-size: 15px; }
+
+  .filter { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-7); }
+  .filter button { min-height: 44px; cursor: pointer; font: inherit; font-size: 15px; display: inline-flex; align-items: center; gap: var(--space-2); border: 0; color: var(--ink); }
+  .filter button[aria-pressed='true'] { background: var(--ink); color: var(--bg); }
+  .filter i, .sum i, .stud { display: inline-block; background: var(--c); box-shadow: inset -2px -2px 3px rgb(0 0 0 / 0.18), inset 2px 2px 3px rgb(255 255 255 / 0.35); }
+  .filter i, .sum i { width: 12px; height: 12px; border-radius: 4px; }
+
+  .tower { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-7); }
+  .floor { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: var(--space-6); align-items: start; }
+  .slab { position: sticky; top: 88px; display: grid; gap: var(--space-3); padding: var(--space-5); border-radius: var(--r-lg); background: var(--surface); box-shadow: 8px 10px 22px var(--lo); }
+  .slab h2 { font: 600 44px/1 var(--f-display); font-variant-numeric: tabular-nums; }
+  .sum { display: grid; gap: var(--space-1); font-size: 14px; color: var(--ink-2); }
+  .sum span { display: flex; align-items: center; gap: var(--space-2); }
+  .events { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); }
+  .ev { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: var(--space-3); padding-bottom: var(--space-4); border-bottom: 1px solid var(--line); }
+  .ev:last-child { border-bottom: 0; }
+  .stud { width: 16px; height: 16px; border-radius: 5px; margin-top: 4px; }
+  .ev > div { display: grid; gap: var(--space-1); min-width: 0; }
+  .meta { font-size: 13px; color: var(--ink-2); }
+  .txt { font-size: 17px; overflow-wrap: anywhere; }
+  .txt a { color: var(--ink); text-underline-offset: 4px; text-decoration-color: color-mix(in oklab, var(--ink) 30%, transparent); }
+  .who { font-size: 14px; color: var(--ink-2); }
+  .ev :global(.photo) { margin-top: var(--space-2); width: min(360px, 100%); height: auto; border-radius: var(--r-md); }
+  .floor[hidden], .ev[hidden] { display: none; }
+  .note { margin-top: var(--space-7); font-size: 14px; }
+  @media (max-width: 767px) {
+    .floor { grid-template-columns: 1fr; gap: var(--space-4); }
+    .slab { position: static; grid-template-columns: auto 1fr; align-items: center; padding: var(--space-4); }
+    .slab h2 { font-size: 32px; }
+  }
+</style>

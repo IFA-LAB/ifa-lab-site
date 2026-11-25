@@ -1,0 +1,139 @@
+{
+  "name": {
+    "zh": "謝子尉",
+    "en": "Zi-Wei Xie"
+  },
+  "cohort": 2,
+  "order": 1,
+  "degree": "master",
+  "status": "graduated",
+  "founder": true,
+  "maintainedBy": "lab",
+  "headline": {
+    "zh": "資管所碩士・114 學年度畢業",
+    "en": "M.S. in Information Management, 2026"
+  },
+  "bio": {
+    "zh": "中央資管學士、碩士，專長時空網路（Spatio-Temporal Network）、LangChain Agent、FastAPI 與 Flask。碩士論文提出 SeqTAG，用條件式格蘭傑因果圖與圖卷積建構台灣股市投資組合。曾在台積電、工研院實習，也擔任統計與 Python 課程助教。",
+    "en": "B.S. and M.S. in Information Management at NCU, working on spatio-temporal networks, LangChain agents, FastAPI and Flask. His thesis proposes SeqTAG, which builds Taiwan equity portfolios from conditional Granger causality graphs and graph convolution. He interned at TSMC and ITRI and taught as a statistics and Python TA."
+  },
+  "education": [
+    {
+      "school": {
+        "zh": "國立中央大學 資訊管理學系",
+        "en": "National Central University, Information Management"
+      },
+      "degree": {
+        "zh": "碩士",
+        "en": "M.S."
+      },
+      "period": "2024–2026"
+    },
+    {
+      "school": {
+        "zh": "國立中央大學 資訊管理學系",
+        "en": "National Central University, Information Management"
+      },
+      "degree": {
+        "zh": "學士",
+        "en": "B.S."
+      },
+      "period": "2020–2024"
+    }
+  ],
+  "experience": [
+    {
+      "title": {
+        "zh": "研究助理",
+        "en": "Research Assistant"
+      },
+      "org": {
+        "zh": "IFA Lab",
+        "en": "IFA Lab"
+      },
+      "period": "2023/09–"
+    },
+    {
+      "title": {
+        "zh": "實習生",
+        "en": "Intern"
+      },
+      "org": {
+        "zh": "台積電",
+        "en": "TSMC"
+      },
+      "period": "2025/07–2025/09"
+    },
+    {
+      "title": {
+        "zh": "實習生",
+        "en": "Intern"
+      },
+      "org": {
+        "zh": "工業技術研究院",
+        "en": "ITRI"
+      },
+      "period": "2023/07–2023/09"
+    },
+    {
+      "title": {
+        "zh": "網站維護",
+        "en": "Website Maintenance"
+      },
+      "org": {
+        "zh": "中央大學秘書室",
+        "en": "NCU Secretariat"
+      },
+      "period": "2024/02–2024/08"
+    },
+    {
+      "title": {
+        "zh": "統計學助教",
+        "en": "Statistics TA"
+      },
+      "org": {
+        "zh": "國立中央大學 資訊管理學系",
+        "en": "National Central University, Information Management"
+      },
+      "period": "2025/02–2025/06"
+    },
+    {
+      "title": {
+        "zh": "Python 助教",
+        "en": "Python TA"
+      },
+      "org": {
+        "zh": "國立中央大學 資訊管理學系",
+        "en": "National Central University, Information Management"
+      },
+      "period": "2023/09–2024/01"
+    }
+  ],
+  "research": [
+    "LangChain Agent",
+    "Financial Analysis",
+    "Time Series Analysis",
+    "Machine Learning",
+    "Deep Learning"
+  ],
+  "interests": [
+    {
+      "zh": "鋼琴",
+      "en": "Piano"
+    },
+    {
+      "zh": "健身",
+      "en": "Gym"
+    },
+    {
+      "zh": "跑步",
+      "en": "Running"
+    }
+  ],
+  "thesis": "xie-zi-wei-114",
+  "photo": "../../assets/members/zi-wei-xie.jpg",
+  "figure": {
+    "clay": "sun",
+    "accessory": "phones"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "name": {
+    "zh": "江昀澄",
+    "en": "Yun-Cheng Chiang"
+  },
+  "cohort": 1,
+  "order": 1,
+  "degree": "master",
+  "status": "graduated",
+  "founder": true,
+  "maintainedBy": "lab",
+  "headline": {
+    "zh": "資管所碩士・113 學年度畢業",
+    "en": "M.S. in Information Management, 2025"
+  },
+  "bio": {
+    "zh": "中央資管碩士，研究可解釋 AI（XAI）在股票報酬預測上的應用，碩士論文以 SHAP-IQ 分析股票特徵之間的交互效果。熟悉 Python、C、Java、SQL 與 JavaScript，曾維護中山大學學務處網站後端，並擔任中央資管財務課程助教。",
+    "en": "Master's graduate of NCU Information Management. His research applies explainable AI (XAI) to stock return prediction; his thesis uses SHAP-IQ to measure interaction effects between stock characteristics. Skilled in Python, C, Java, SQL and JavaScript, he previously maintained the backend of NSYSU's Office of Student Affairs website and was a teaching assistant for finance courses at NCU."
+  },
+  "education": [
+    {
+      "school": {
+        "zh": "國立中央大學 資訊管理學系",
+        "en": "National Central University, Information Management"
+      },
+      "degree": {
+        "zh": "碩士",
+        "en": "M.S."
+      },
+      "period": "2023–2025"
+    },
+    {
+      "school": {
+        "zh": "國立中山大學 資訊管理學系",
+        "en": "National Sun Yat-sen University, Information Management"
+      },
+      "degree": {
+        "zh": "學士",
+        "en": "B.S."
+      },
+      "period": "2019–2023"
+    }
+  ],
+  "awards": [
+    {
+      "zh": "2024 GenAI Stars 優選：Ched.AI 企業金融 AO 助手",
+      "en": "2024 GenAI Stars Merit Award: Ched.AI corporate-finance AO assistant"
+    },
+    {
+      "zh": "2022 科技部大專學生研究計畫",
+      "en": "2022 MOST College Student Research Project"
+    },
+    {
+      "zh": "科技部計畫助理：風格投資人關注程度、事件情緒及風格聯動性",
+      "en": "MOST project assistant: style-based investor attention, event sentiment and style comovement"
+    }
+  ],
+  "research": [
+    "AI & Machine Learning",
+    "Data Science & Fintech",
+    "Big Data Analytics",
+    "Explainable AI (XAI)"
+  ],
+  "interests": [
+    {
+      "zh": "足球",
+      "en": "Soccer"
+    },
+    {
+      "zh": "音樂",
+      "en": "Music"
+    },
+    {
+      "zh": "貓",
+      "en": "Cats"
+    }
+  ],
+  "thesis": "chiang-yun-cheng-113",
+  "photo": "../../assets/members/yun-cheng-chiang.jpg",
+  "figure": {
+    "clay": "blue",
+    "accessory": "none"
+  }
+}

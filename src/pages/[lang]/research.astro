@@ -1,0 +1,223 @@
+---
+import Base from '@/layouts/Base.astro';
+import Bi from '@/components/Bi.astro';
+import { getCollection } from 'astro:content';
+import { areas, studentProjects } from '@/data/lab';
+import { Picture } from 'astro:assets';
+import chadAi from '@/assets/projects/chad-ai.jpg';
+const projectPhotos: Record<string, ImageMetadata> = { 'chad-ai': chadAi };
+import { ui, t, href, type Locale } from '@/i18n/ui';
+import { langPaths, publications, apa, memberByEnglishName, citation } from '@/lib/content';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Locale;
+const zh = lang === 'zh-tw';
+const site = Astro.site!;
+const pubs = await publications();
+const journals = pubs.filter((p) => p.data.kind === 'journal');
+const working = pubs.filter((p) => p.data.kind === 'working');
+const grants = await getCollection('grants');
+const theses = (await getCollection('theses')).sort((a, b) => b.data.academicYear - a.data.academicYear);
+const members = await getCollection('members');
+const nameOf = (id: string) => members.find((m) => m.id === id)?.data.name;
+const byName = await memberByEnglishName();
+const areaName = (k: string) => t(areas.find((a) => a.key === k)?.name, lang);
+const areaClay = (k: string) => areas.find((a) => a.key === k)?.clay ?? 'grey';
+
+const jsonld = journals.map((p) => ({
+  '@context': 'https://schema.org',
+  '@type': 'ScholarlyArticle',
+  headline: p.data.title,
+  author: p.data.authors.map((a) => ({ '@type': 'Person', name: a })),
+  datePublished: String(p.data.year),
+  ...(p.data.venue ? { isPartOf: { '@type': 'Periodical', name: p.data.venue } } : {}),
+  ...(p.data.doi ? { sameAs: `https://doi.org/${p.data.doi}`, identifier: { '@type': 'PropertyValue', propertyID: 'DOI', value: p.data.doi } } : {}),
+  url: new URL(href(lang, `papers/${p.id}`), site).href,
+}));
+---
+<Base lang={lang} title={t(ui.nav.research, lang)} description={zh ? `IFA Lab 的 ${journals.length} 篇期刊論文、${working.length} 篇工作論文、${grants.length} 件國科會計畫與 ${theses.length} 篇碩士論文。` : `IFA Lab's ${journals.length} journal articles, ${working.length} working papers, ${grants.length} NSTC projects and ${theses.length} master's theses.`} jsonld={jsonld}>
+  <div class="wrap section">
+    <div class="section-head">
+      <p class="eyebrow">{t(ui.nav.research, lang)}</p>
+      <h1>{zh ? '研究成果' : 'Research'}</h1>
+      <p class="muted">{zh ? '依六個研究領域上色。粗體作者是實驗室成員，* 為通訊作者。' : 'Coloured by research area. Lab members are in bold; * marks the corresponding author.'}</p>
+    </div>
+
+    <div class="filter" role="group" aria-label={zh ? '依研究領域篩選' : 'Filter by research area'}>
+      <ul class="areas">
+        <li><button type="button" class="chip" data-area="" aria-pressed="true">{zh ? '全部' : 'All'}</button></li>
+        {areas.map((a) => <li id={a.key}><button type="button" class="chip" data-area={a.key} aria-pressed="false" style={`--c: var(--clay-${a.clay})`}><i aria-hidden="true"></i>{t(a.name, lang)}</button></li>)}
+      </ul>
+      <p class="muted status" aria-live="polite" data-status></p>
+    </div>
+
+    <section aria-labelledby="j-h" class="group" data-pubs>
+      <h2 id="j-h">{t(ui.pubs.journal, lang)} <span class="n">{journals.length}</span></h2>
+      <ol class="pubs">
+        {journals.map((p) => {
+          const c = apa(p.data, lang);
+          return (
+            <li id={p.id} class="pub" data-area={p.data.area} style={`--c: var(--clay-${areaClay(p.data.area)})`}>
+              <span class="block" aria-hidden="true"></span>
+              <div>
+                <p class="title" lang="en"><a href={href(lang, `papers/${p.id}`)}>{p.data.title}</a></p>
+                <p class="authors">{p.data.authors.map((a, i) => (
+                  <>{i > 0 && ', '}{byName.has(a) || a === 'Hsin-Yu Chiu' ? <strong>{a}</strong> : a}{p.data.corresponding.includes(i) && '*'}</>
+                ))}</p>
+                <p class="muted meta"><em>{c.tail}</em> · {c.year} · <span class="area-tag">{areaName(p.data.area)}</span>
+                  {p.data.doi && <> · <a href={`https://doi.org/${p.data.doi}`} target="_blank" rel="noopener">DOI</a></>}
+                  {!p.data.doi && p.data.url && <> · <a href={p.data.url} target="_blank" rel="noopener">{zh ? '全文' : 'Full text'}</a></>}
+                  {p.data.slides && <> · <a href={p.data.slides} target="_blank" rel="noopener">{zh ? '簡報' : 'Slides'}</a></>}
+                </p>
+                {p.data.plain && <Bi text={p.data.plain} lang={lang} />}
+                <p><button type="button" class="copy" data-copy={citation(p.data)} data-done={zh ? '已複製引用' : 'Citation copied'}>{zh ? '複製引用' : 'Copy citation'}</button></p>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+
+    <section aria-labelledby="w-h" class="group" data-pubs>
+      <h2 id="w-h">{t(ui.pubs.working, lang)} <span class="n">{working.length}</span></h2>
+      <ol class="pubs">
+        {working.map((p) => (
+          <li id={p.id} class="pub" data-area={p.data.area} style={`--c: var(--clay-${areaClay(p.data.area)})`}>
+            <span class="block" aria-hidden="true"></span>
+            <div>
+              <p class="title" lang="en"><a href={href(lang, `papers/${p.id}`)}>{p.data.title}</a></p>
+              <p class="authors">{p.data.authors.map((a, i) => (
+                <>{i > 0 && ', '}{byName.has(a) || a === 'Hsin-Yu Chiu' ? <strong>{a}</strong> : a}{p.data.corresponding.includes(i) && '*'}</>
+              ))}</p>
+              {p.data.plain && <Bi text={p.data.plain} lang={lang} />}
+              <p class="muted meta">{p.data.year} · <span class="area-tag">{areaName(p.data.area)}</span>{p.data.url && <> · <a href={p.data.url} target="_blank" rel="noopener">{zh ? '全文' : 'Full text'}</a></>}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section aria-labelledby="t-h" class="group">
+      <h2 id="t-h">{t(ui.pubs.theses, lang)} <span class="n">{theses.length}</span></h2>
+      <ol class="pubs">
+        {theses.map((x) => (
+          <li class="pub" style={`--c: var(--clay-${areaClay(x.data.area)})`}>
+            <span class="block" aria-hidden="true"></span>
+            <div>
+              <Bi text={x.data.title} lang={lang} />
+              <p class="muted meta"><a href={href(lang, `members/${x.data.member}`)}>{t(nameOf(x.data.member), lang)}</a> · {zh ? `${x.data.academicYear} 學年度` : `AY ${x.data.academicYear + 1911}–${String(x.data.academicYear + 1912).slice(2)}`} · <span class="area-tag">{areaName(x.data.area)}</span></p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section aria-labelledby="g-h" class="group">
+      <h2 id="g-h">{t(ui.pubs.grants, lang)} <span class="n">{grants.length}</span></h2>
+      <ul class="grants">
+        {grants.map((g) => (
+          <li class="clay">
+            <p class="mono muted">{g.data.period}</p>
+            <Bi text={g.data.title} lang={lang} />
+            <p class="muted meta">{t(g.data.kind, lang)} · {t(ui.pubs.pi, lang)} {g.data.pi}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section aria-labelledby="s-h" class="group">
+      <h2 id="s-h">{t(ui.pubs.projects, lang)}</h2>
+      <ul class="projects">
+        {studentProjects.map((p) => (
+          <li class:list={['clay', { feature: p.photo }]}>
+            {p.photo && projectPhotos[p.photo] && (
+              <Picture src={projectPhotos[p.photo]} alt={t(p.photoAlt!, lang)} widths={[480, 960]} sizes="(min-width: 900px) 480px, 100vw" formats={['avif', 'webp']} class="pphoto" />
+            )}
+            <div class="ptext">
+              <p class="mono muted">{p.year}{p.award && <> · <span class="award">{t(p.award, lang)}</span></>}</p>
+              <p class="title">{p.name}</p>
+              <p>{t(p.desc, lang)}</p>
+              {p.members.length > 0 && <p class="muted meta">{p.members.map((id, i) => <>{i > 0 && (zh ? '、' : ', ')}<a href={href(lang, `members/${id}`)}>{t(nameOf(id), lang)}</a></>)}</p>}
+              {p.by && <p class="muted meta">{t(p.by, lang)}</p>}
+              {p.links.length > 0 && <p class="plinks">{p.links.map((l) => <a class="chip" href={l.url} target="_blank" rel="noopener">{l.label}</a>)}</p>}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+  </div>
+</Base>
+
+<script>
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('.filter button[data-area]')];
+  const items = [...document.querySelectorAll<HTMLElement>('.pub[data-area]')];
+  const status = document.querySelector<HTMLElement>('[data-status]')!;
+  const zh = document.documentElement.lang.startsWith('zh');
+  function apply(area: string, scroll = false) {
+    for (const b of buttons) b.setAttribute('aria-pressed', String(b.dataset.area === area));
+    let n = 0;
+    for (const li of items) { const on = !area || li.dataset.area === area; li.hidden = !on; if (on) n++; }
+    for (const g of document.querySelectorAll<HTMLElement>('.group[data-pubs]')) {
+      const shown = g.querySelectorAll('.pub:not([hidden])').length;
+      g.querySelector('.n')!.textContent = String(shown);
+      g.hidden = shown === 0;
+    }
+    const label = buttons.find((b) => b.dataset.area === area)?.textContent?.trim();
+    status.textContent = area ? (zh ? `只顯示「${label}」：${n} 篇` : `Showing ${label}: ${n}`) : '';
+    if (scroll) document.querySelector('.filter')?.scrollIntoView({ block: 'start' });
+  }
+  for (const b of buttons) b.addEventListener('click', () => {
+    const area = b.dataset.area ?? '';
+    apply(area);
+    history.replaceState(null, '', area ? `#${area}` : location.pathname);
+  });
+  const fromHash = location.hash.slice(1);
+  if (buttons.some((b) => b.dataset.area === fromHash && fromHash)) apply(fromHash, true);
+
+  for (const b of document.querySelectorAll<HTMLButtonElement>('button.copy')) {
+    const label = b.textContent;
+    b.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(b.dataset.copy ?? ''); b.textContent = b.dataset.done ?? label; setTimeout(() => (b.textContent = label), 1600); } catch {}
+    });
+  }
+</script>
+
+<style>
+  .projects { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
+  .projects > li { padding: var(--space-5); display: grid; gap: var(--space-4); align-content: start; min-width: 0; }
+  .projects > li.feature { grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); align-items: center; }
+  .ptext { display: grid; gap: var(--space-2); min-width: 0; }
+  .projects :global(.pphoto) { display: block; width: 100%; height: auto; border-radius: var(--r-md); }
+  .award { color: var(--ink); font-weight: 600; }
+  .plinks { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
+  .plinks a { text-decoration: none; min-height: 40px; }
+  @media (max-width: 899px) { .projects, .projects > li.feature { grid-template-columns: 1fr; } }
+  .areas { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-6); }
+  .filter { scroll-margin-top: 88px; margin-bottom: var(--space-6); display: grid; gap: var(--space-2); }
+  .filter .areas { margin-bottom: 0; }
+  .areas button { min-height: 44px; cursor: pointer; font: inherit; font-size: 15px; display: inline-flex; align-items: center; gap: var(--space-2); border: 0; color: var(--ink); }
+  .areas button[aria-pressed='true'] { background: var(--ink); color: var(--bg); }
+  .status { font-size: 14px; min-height: 1.5em; }
+  .title a { color: var(--ink); text-decoration-color: color-mix(in oklab, var(--ink) 30%, transparent); text-underline-offset: 4px; }
+  .title a:hover { text-decoration-color: currentColor; }
+  .copy { background: none; border: 0; padding: 0; min-height: 32px; color: var(--accent); font: 500 14px/1.4 var(--f-body); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .pub[hidden], .group[hidden] { display: none; }
+  .areas i, .block { display: inline-block; background: var(--c); box-shadow: inset -2px -3px 4px rgb(0 0 0 / 0.18), inset 2px 2px 4px rgb(255 255 255 / 0.35); }
+  .areas i { width: 12px; height: 12px; border-radius: 4px; }
+  .group { margin-top: var(--space-8); }
+  .group h2 { margin-bottom: var(--space-5); display: flex; align-items: baseline; gap: var(--space-3); }
+  .n { font: 500 16px/1 var(--f-mono); color: var(--ink-2); }
+  .pubs { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); }
+  .pub { display: grid; grid-template-columns: 20px 1fr; gap: var(--space-4); padding: var(--space-4) 0; border-bottom: 1px solid var(--line); scroll-margin-top: 96px; }
+  .pub > div { display: grid; gap: var(--space-1); min-width: 0; }
+  .block { width: 20px; height: 20px; border-radius: 6px; margin-top: 6px; }
+  .title { font-weight: 700; font-size: 17px; line-height: 1.6; }
+  .authors { font-size: 15px; }
+  .meta { font-size: 14px; }
+  .pub :global(p:last-child) { overflow-wrap: anywhere; }
+  .grants { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
+  .grants li { padding: var(--space-5); display: grid; gap: var(--space-2); align-content: start; }
+  @media (max-width: 767px) { .grants { grid-template-columns: 1fr; } }
+  .pub:target { background: color-mix(in oklab, var(--clay-sun) 14%, transparent); border-radius: var(--r-sm); }
+</style>

@@ -1,0 +1,32 @@
+---
+/** Frame around a member-built section (src/custom/<id>/Section.astro).
+    `contain` keeps whatever is inside from escaping: position:fixed, overflow and repaints stay in the box. */
+import type { Locale } from '@/i18n/ui';
+interface Props { lang: Locale; name: string; id: string }
+const { lang, name, id } = Astro.props;
+const zh = lang === 'zh-tw';
+---
+<section class="custom" data-custom={id} aria-label={zh ? `${name}自己做的區塊` : `Section built by ${name}`}>
+  <p class="tag">{zh ? `${name} 自己做的區塊` : `Built by ${name}`}</p>
+  <div class="body"><slot /></div>
+</section>
+
+<style>
+  .custom {
+    contain: layout paint style;
+    isolation: isolate;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: var(--space-7);
+    padding: var(--space-6) var(--space-5) var(--space-5);
+    border-radius: var(--r-lg);
+    background: var(--surface);
+    box-shadow: 8px 10px 22px var(--lo);
+  }
+  .tag {
+    position: absolute; top: 0; left: var(--space-5); transform: translateY(-1px);
+    padding: 2px 10px; border-radius: 0 0 8px 8px;
+    font: 600 12px/1.6 var(--f-body); letter-spacing: 0.04em; color: var(--ink-2); background: var(--surface-2);
+  }
+  .body { min-width: 0; }
+</style>

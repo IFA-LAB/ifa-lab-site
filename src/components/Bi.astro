@@ -1,0 +1,16 @@
+---
+/** Renders bilingual text; when English is missing on /en/, shows Chinese with lang="zh-Hant-TW" and a note. */
+import { pick, ui, type Bi, type Locale } from '@/i18n/ui';
+interface Props { text: Bi | undefined; lang: Locale; as?: 'p' | 'span' }
+const { text, lang, as: Tag = 'p' } = Astro.props;
+const r = pick(text, lang);
+---
+{r.text && (
+  <Tag lang={r.fallback ? 'zh-Hant-TW' : undefined}>
+    {r.text}
+    {r.fallback && <small class="fb"> ({ui.fallbackNote.en})</small>}
+  </Tag>
+)}
+<style>
+  .fb { color: var(--ink-2); font-size: 13px; }
+</style>

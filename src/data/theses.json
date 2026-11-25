@@ -1,0 +1,22 @@
+[
+  {
+    "id": "chiang-yun-cheng-113", "member": "yun-cheng-chiang", "academicYear": 113, "area": "ai",
+    "title": { "zh": "股票特徵交互效果於報酬率預測的重要性：基於 SHAP-IQ 框架的實證分析" }
+  },
+  {
+    "id": "tsai-chia-en-113", "member": "chia-en-tsai", "academicYear": 113, "area": "apps", "fullTextFrom": "2030-07-05",
+    "title": { "zh": "基於基金持股行為序列的個人投資推薦系統研究" }
+  },
+  {
+    "id": "xie-zi-wei-114", "member": "zi-wei-xie", "academicYear": 114, "area": "forecast",
+    "title": { "zh": "SeqTAG：條件式格蘭傑因果圖與拓撲自適應圖卷積於台灣股市投資組合建構之應用", "en": "SeqTAG: Conditional Granger causality graphs and topology-adaptive graph convolution for portfolio construction in the Taiwan stock market" }
+  },
+  {
+    "id": "chang-kai-xiang-114", "member": "kai-xiang-chang", "academicYear": 114, "area": "ai",
+    "title": { "zh": "基於多因子架構與高維度序列分析之兩階段混合機器學習模型", "en": "A two-stage hybrid machine learning model based on multi-factor architecture and high-dimensional sequence analysis" }
+  },
+  {
+    "id": "chiang-yu-chieh-114", "member": "yu-chieh-chiang", "academicYear": 114, "area": "apps", "fullTextFrom": "2031-08-31",
+    "title": { "zh": "基於共同基金持股序列之下一籃推薦模型研究：DNNTSP 與外部特徵融合之實證分析" }
+  }
+]

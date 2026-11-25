@@ -1,0 +1,75 @@
+---
+import Base from '@/layouts/Base.astro';
+import ClayFigure from '@/components/ClayFigure.astro';
+import { Image } from 'astro:assets';
+import { ui, t, href, type Locale } from '@/i18n/ui';
+import { langPaths, membersByCohort } from '@/lib/content';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Locale;
+const zh = lang === 'zh-tw';
+const cohorts = await membersByCohort();
+const site = Astro.site!;
+
+const people = cohorts.flatMap(([, ms]) => ms).filter((m) => !m.data.placeholder);
+const jsonld = people.map((m) => ({
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: m.data.name.en ?? m.data.name.zh,
+  alternateName: m.data.name.zh,
+  url: new URL(href(lang, `members/${m.id}`), site).href,
+  affiliation: { '@id': new URL('/#org', site).href },
+}));
+---
+<Base lang={lang} title={t(ui.nav.members, lang)} description={zh ? 'IFA Lab 各屆成員：碩士論文、研究方向與專案。' : 'IFA Lab members by cohort: theses, research interests and projects.'} jsonld={jsonld}>
+  <div class="wrap section">
+    <div class="section-head">
+      <p class="eyebrow">{t(ui.nav.members, lang)}</p>
+      <h1>{zh ? '各屆成員' : 'Members by cohort'}</h1>
+      <p class="muted">{zh ? '2023 年 8 月成立至今，一屆一層。點進去看每個人的研究與專案。' : 'Since August 2023, one shelf per cohort. Open a card to see their research and projects.'}</p>
+    </div>
+
+    {cohorts.map(([c, ms]) => (
+      <section class="cohort" aria-labelledby={`c${c}`}>
+        <h2 id={`c${c}`}>{t(ui.cohort(c), lang)}</h2>
+        <ul class="cards">
+          {ms.map((m) => (
+            <li>
+              <a class="card clay" href={href(lang, `members/${m.id}`)}>
+                {m.data.photo
+                  ? <Image class="avatar" src={m.data.photo} alt="" width={88} height={88} densities={[1, 2]} format="webp" />
+                  : <ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} placeholder={m.data.placeholder} size={88} />}
+                <span class="txt">
+                  <strong>{t(m.data.name, lang)}</strong>
+                  {m.data.name.en && zh && <span class="en">{m.data.name.en}</span>}
+                  <span class="muted">{m.data.placeholder ? t(ui.placeholderNote, lang) : t(m.data.headline, lang)}</span>
+                  <span class="badges">
+                    {m.data.founder && <span class="chip">{t(ui.founder, lang)}</span>}
+                    {m.data.status === 'graduated' && <span class="chip">{t(ui.graduated, lang)}</span>}
+                  </span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .avatar { width: 88px; height: 88px; border-radius: 24px; object-fit: cover; flex: none; box-shadow: 4px 6px 14px var(--lo); }
+  .cohort { margin-top: var(--space-7); }
+  .cohort h2 { margin-bottom: var(--space-4); }
+  .cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
+  .card { display: flex; gap: var(--space-4); align-items: center; padding: var(--space-5); color: var(--ink); text-decoration: none; height: 100%; transition: transform var(--dur-fast) var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .card:hover { transform: translateY(-3px); } }
+  .txt { display: grid; gap: 2px; min-width: 0; }
+  .txt strong { font: 600 22px/1.3 var(--f-display); }
+  .en { font-size: 14px; color: var(--ink-2); }
+  .txt .muted { font-size: 15px; line-height: 1.5; }
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .badges .chip { font-size: 13px; padding: 5px 10px; }
+  @media (max-width: 1023px) { .cards { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 639px) { .cards { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,147 @@
+---
+import Base from '@/layouts/Base.astro';
+import Bi from '@/components/Bi.astro';
+import { areas } from '@/data/lab';
+import { ui, t, href, type Locale } from '@/i18n/ui';
+import { paperPaths, publications, citation, bibtex, memberByEnglishName, type Publication } from '@/lib/content';
+
+export const getStaticPaths = paperPaths;
+const { paper } = Astro.props as { paper: Publication };
+const lang = Astro.params.lang as Locale;
+const zh = lang === 'zh-tw';
+const site = Astro.site!;
+const d = paper.data;
+const area = areas.find((a) => a.key === d.area)!;
+const byName = await memberByEnglishName();
+const cite = citation(d);
+const bib = bibtex(paper.id, d);
+const related = (await publications()).filter((p) => p.data.area === d.area && p.id !== paper.id).slice(0, 4);
+const kindLabel = t(d.kind === 'journal' ? ui.pubs.journal : ui.pubs.working, lang);
+const [first, last] = (d.pages ?? '').split(/[–-]/);
+const url = new URL(href(lang, `papers/${paper.id}`), site).href;
+
+const description = d.plain ? t(d.plain, lang) : d.title;
+const jsonld = [{
+  '@context': 'https://schema.org',
+  '@type': 'ScholarlyArticle',
+  headline: d.title,
+  name: d.title,
+  author: d.authors.map((a) => ({ '@type': 'Person', name: a, ...(byName.has(a) ? { url: new URL(href(lang, `members/${byName.get(a)}`), site).href } : {}) })),
+  datePublished: String(d.year),
+  abstract: d.plain?.en,
+  about: area.name.en,
+  keywords: d.tags.join(', '),
+  ...(d.venue ? { isPartOf: { '@type': 'Periodical', name: d.venue } } : {}),
+  ...(d.doi ? { sameAs: `https://doi.org/${d.doi}`, identifier: { '@type': 'PropertyValue', propertyID: 'DOI', value: d.doi } } : {}),
+  url,
+  sourceOrganization: { '@id': new URL('/#org', site).href },
+}];
+---
+<Base lang={lang} title={d.title} description={description} jsonld={jsonld} ogType="article">
+  <Fragment slot="head">
+    {/* Highwire tags: what Google Scholar reads to index a paper */}
+    <meta name="citation_title" content={d.title} />
+    {d.authors.map((a) => <meta name="citation_author" content={a} />)}
+    <meta name="citation_publication_date" content={String(d.year)} />
+    {d.venue && <meta name="citation_journal_title" content={d.venue} />}
+    {d.volume && <meta name="citation_volume" content={d.volume} />}
+    {first && <meta name="citation_firstpage" content={first} />}
+    {last && <meta name="citation_lastpage" content={last} />}
+    {d.doi && <meta name="citation_doi" content={d.doi} />}
+    {d.kind === 'working' && <meta name="citation_technical_report_institution" content="National Central University, IFA Lab" />}
+  </Fragment>
+
+  <article class="wrap section paper" style={`--c: var(--clay-${area.clay})`}>
+    <p class="crumbs"><a href={href(lang, 'research')}>{t(ui.nav.research, lang)}</a> / <a href={href(lang, `research#${d.area}`)}>{t(area.name, lang)}</a></p>
+    <header class="head">
+      <p class="eyebrow"><i class="stud" aria-hidden="true"></i>{kindLabel} · {d.year}{d.status === 'forthcoming' && (zh ? ' · 即將刊登' : ' · forthcoming')}</p>
+      <h1 lang="en">{d.title}</h1>
+      <p class="authors" lang="en">{d.authors.map((a, i) => (
+        <>{i > 0 && ', '}{byName.has(a) ? <a href={href(lang, `members/${byName.get(a)}`)}><strong>{a}</strong></a> : a === 'Hsin-Yu Chiu' ? <a href={href(lang, 'advisor')}><strong>{a}</strong></a> : a}{d.corresponding.includes(i) && '*'}</>
+      ))}</p>
+      {d.venue && <p class="muted venue" lang="en"><em>{d.venue}</em>{d.volume && `, ${d.volume}`}{d.pages && `, ${d.pages}`}</p>}
+    </header>
+
+    {d.plain && (
+      <section class="plain clay" aria-labelledby="plain-h">
+        <h2 id="plain-h">{zh ? '一句話看懂' : 'In one sentence'}</h2>
+        <Bi text={d.plain} lang={lang} />
+      </section>
+    )}
+
+    <div class="actions">
+      {d.doi && <a class="btn" href={`https://doi.org/${d.doi}`} target="_blank" rel="noopener">{zh ? '讀論文（DOI）' : 'Read the paper (DOI)'}</a>}
+      {!d.doi && d.url && <a class="btn" href={d.url} target="_blank" rel="noopener">{zh ? '讀全文' : 'Read the full text'}</a>}
+      {d.slides && <a class="btn secondary" href={d.slides} target="_blank" rel="noopener">{zh ? '看簡報' : 'Slides'}</a>}
+    </div>
+
+    <section class="cite" aria-labelledby="cite-h">
+      <h2 id="cite-h">{zh ? '引用這篇' : 'Cite this paper'}</h2>
+      <div class="cite-box">
+        <p lang="en" data-copy-src>{cite}</p>
+        <button type="button" class="chip copy" data-copy={cite} data-done={zh ? '已複製' : 'Copied'}>{zh ? '複製引用' : 'Copy citation'}</button>
+      </div>
+      <details>
+        <summary>BibTeX</summary>
+        <div class="cite-box">
+          <pre lang="en"><code>{bib}</code></pre>
+          <button type="button" class="chip copy" data-copy={bib} data-done={zh ? '已複製' : 'Copied'}>{zh ? '複製 BibTeX' : 'Copy BibTeX'}</button>
+        </div>
+      </details>
+    </section>
+
+    {d.tags.length > 0 && <ul class="tags" aria-label={zh ? '關鍵字' : 'Keywords'}>{d.tags.map((x) => <li class="chip" lang="en">{x}</li>)}</ul>}
+
+    {related.length > 0 && (
+      <section class="related" aria-labelledby="rel-h">
+        <h2 id="rel-h">{zh ? `同樣是${t(area.name, lang)}` : `More in ${t(area.name, lang)}`}</h2>
+        <ul>
+          {related.map((p) => <li><a href={href(lang, `papers/${p.id}`)} lang="en">{p.data.title}</a> <span class="muted mono">{p.data.year}</span></li>)}
+        </ul>
+      </section>
+    )}
+  </article>
+</Base>
+
+<script>
+  for (const b of document.querySelectorAll<HTMLButtonElement>('button.copy')) {
+    const label = b.textContent;
+    b.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(b.dataset.copy ?? '');
+        b.textContent = b.dataset.done ?? label;
+        setTimeout(() => (b.textContent = label), 1600);
+      } catch {
+        // clipboard blocked: select the text so the visitor can copy it by hand
+        const el = b.parentElement?.querySelector('p, pre');
+        if (el) getSelection()?.selectAllChildren(el);
+      }
+    });
+  }
+</script>
+
+<style>
+  .paper { display: grid; gap: var(--space-6); max-width: 880px; }
+  .crumbs { font-size: 15px; color: var(--ink-2); }
+  .head { display: grid; gap: var(--space-3); }
+  .eyebrow { display: flex; align-items: center; gap: var(--space-2); }
+  .stud { width: 14px; height: 14px; border-radius: 4px; background: var(--c); box-shadow: inset -2px -2px 3px rgb(0 0 0 / 0.18), inset 2px 2px 3px rgb(255 255 255 / 0.35); }
+  h1 { font-size: clamp(26px, 4vw, 40px); line-height: 1.25; text-wrap: balance; }
+  .authors { font-size: 17px; }
+  .authors a { color: inherit; }
+  .venue { font-size: 16px; }
+  .plain { padding: var(--space-5) var(--space-6); display: grid; gap: var(--space-2); font-size: 18px; }
+  .plain h2 { font-size: 15px; color: var(--ink-2); }
+  .actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+  .cite { display: grid; gap: var(--space-3); }
+  .cite h2, .related h2 { font-size: 20px; }
+  .cite-box { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-3); align-items: start; padding: var(--space-4); border-radius: var(--r-md); background: var(--surface); }
+  .cite-box p { font-size: 15px; overflow-wrap: anywhere; }
+  .cite-box pre { margin: 0; font: 13px/1.6 var(--f-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .copy { min-height: 44px; cursor: pointer; font: inherit; font-size: 14px; white-space: nowrap; }
+  details summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600; }
+  details[open] summary { margin-bottom: var(--space-2); }
+  .tags { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .related ul { list-style: none; padding: 0; margin: var(--space-3) 0 0; display: grid; gap: var(--space-3); }
+  @media (max-width: 639px) { .cite-box { grid-template-columns: 1fr; } }
+</style>

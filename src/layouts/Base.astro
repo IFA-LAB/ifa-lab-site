@@ -1,0 +1,89 @@
+---
+import '@/styles/global.css';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import { htmlLang, ogLocale, locales, swapLocale, ui, t, type Locale } from '@/i18n/ui';
+import { lab } from '@/data/lab';
+
+interface Props {
+  lang: Locale;
+  title: string;
+  description: string;
+  /** Extra JSON-LD objects for this page. The Organization node is always added. */
+  jsonld?: object[];
+  ogType?: 'website' | 'profile' | 'article';
+  /** Absolute or root-relative URL of the share image. */
+  image?: string;
+}
+const { lang, title, description, jsonld = [], ogType = 'website', image } = Astro.props;
+const site = Astro.site!;
+const path = Astro.url.pathname;
+const canonical = new URL(path, site).href;
+const fullTitle = title === lab.short ? `${lab.short}｜${t(lab.name, lang)}` : `${title}｜${lab.short}`;
+
+const org = {
+  '@context': 'https://schema.org',
+  '@type': 'ResearchOrganization',
+  '@id': new URL('/#org', site).href,
+  name: `${lab.short} — ${lab.name.en}`,
+  alternateName: [lab.name.zh, `${lab.short}-${lab.name.zh}`],
+  url: new URL(`/${lang}/`, site).href,
+  foundingDate: lab.founded,
+  email: lab.contact.email,
+  telephone: lab.contact.phone,
+  parentOrganization: {
+    '@type': 'CollegeOrUniversity',
+    name: 'National Central University',
+    alternateName: '國立中央大學',
+    department: { '@type': 'Organization', name: lab.dept.en },
+  },
+  address: { '@type': 'PostalAddress', streetAddress: lab.contact.address.en, addressCountry: 'TW' },
+};
+const graph = [org, ...jsonld];
+---
+<!doctype html>
+<html lang={htmlLang[lang]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {locales.map((l) => <link rel="alternate" hreflang={htmlLang[l]} href={new URL(swapLocale(path, l), site).href} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(swapLocale(path, 'zh-tw'), site).href} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={lab.short} />
+    <meta property="og:locale" content={ogLocale[lang]} />
+    {image && <meta property="og:image" content={new URL(image, site).href} />}
+    {image && <meta name="twitter:card" content="summary" />}
+    <meta name="theme-color" content="#eef2f6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#141a23" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <script is:inline>
+      try { const s = localStorage.getItem('theme'); if (s === 'light' || s === 'dark') document.documentElement.dataset.theme = s; } catch {}
+    </script>
+    <script type="application/ld+json" set:html={JSON.stringify(graph.length === 1 ? graph[0] : { '@context': 'https://schema.org', '@graph': graph.map(({ '@context': _c, ...g }: any) => g) })} />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip" href="#main">{t(ui.skip, lang)}</a>
+    <Header lang={lang} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+  </body>
+</html>
+
+<style>
+  .skip {
+    position: absolute; left: 16px; top: -60px; z-index: 50;
+    background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: var(--r-sm);
+  }
+  .skip:focus { top: 12px; }
+  main:focus { outline: none; }
+</style>

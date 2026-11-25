@@ -1,0 +1,265 @@
+{
+  "name": {
+    "zh": "黃鉅燊",
+    "en": "Ju-Shen Huang"
+  },
+  "cohort": 4,
+  "order": 1,
+  "degree": "master",
+  "status": "enrolled",
+  "founder": true,
+  "maintainedBy": "self",
+  "headline": {
+    "zh": "資管所碩士班・斐闊 Finctory 共同創辦人暨技術長",
+    "en": "M.S. student, Information Management · Co-founder & CTO, Finctory"
+  },
+  "bio": {
+    "zh": "中央資管碩士班學生（2026 年 9 月起），學士班 GPA 4.19／4.3 畢業。斐闊 Finctory 共同創辦人暨技術長、醫數行銷 MedaLink 共同創辦人暨前線部署工程師、工研院產科國際所 AI Intern。在邱信瑜老師指導下做了兩個國科會大專生計畫：結合股市異常指標與生成式 AI 的股票追蹤系統，以及財伴 oSave 個人財務健康管理系統的實證研究。累計 16 項競賽獎，其中 5 座全國首獎。",
+    "en": "M.S. student in Information Management at NCU from September 2026, after a B.S. with a 4.19/4.3 GPA. Co-founder and CTO of Finctory, co-founder and forward-deployed engineer at MedaLink, and AI intern at ITRI's ISTI. Under Prof. Hsin-Yu Chiu he ran two NSTC undergraduate projects: a stock tracking system combining market-anomaly indicators with generative AI, and an empirical study of oSave, a personal financial-health app. 16 competition awards, 5 of them national first prizes."
+  },
+  "education": [
+    {
+      "school": {
+        "zh": "國立中央大學 資訊管理學系",
+        "en": "National Central University, Information Management"
+      },
+      "degree": {
+        "zh": "碩士班",
+        "en": "M.S."
+      },
+      "period": "2026/09–"
+    },
+    {
+      "school": {
+        "zh": "國立中央大學 資訊管理學系",
+        "en": "National Central University, Information Management"
+      },
+      "degree": {
+        "zh": "學士",
+        "en": "B.S."
+      },
+      "period": "2022–2026/06"
+    }
+  ],
+  "experience": [
+    {
+      "title": {
+        "zh": "共同創辦人暨前線部署工程師",
+        "en": "Co-founder & Forward-Deployed Engineer"
+      },
+      "org": {
+        "zh": "醫數行銷 MedaLink",
+        "en": "MedaLink"
+      },
+      "period": "2026/07–"
+    },
+    {
+      "title": {
+        "zh": "AI Intern",
+        "en": "AI Intern"
+      },
+      "org": {
+        "zh": "工研院 產科國際所",
+        "en": "ITRI ISTI"
+      },
+      "period": "2025/07–"
+    },
+    {
+      "title": {
+        "zh": "共同創辦人暨技術長",
+        "en": "Co-founder & CTO"
+      },
+      "org": {
+        "zh": "斐闊 Finctory",
+        "en": "Finctory"
+      },
+      "period": "2024/04–"
+    },
+    {
+      "title": {
+        "zh": "研究助理",
+        "en": "Research Assistant"
+      },
+      "org": {
+        "zh": "IFA Lab",
+        "en": "IFA Lab"
+      },
+      "period": "2023/11–"
+    },
+    {
+      "title": {
+        "zh": "副執行長",
+        "en": "Deputy Leader"
+      },
+      "org": {
+        "zh": "中大新生網 2024",
+        "en": "NCU Fresh Web 2024"
+      },
+      "period": "2023/10–2024/12"
+    },
+    {
+      "title": {
+        "zh": "網管",
+        "en": "Network Manager"
+      },
+      "org": {
+        "zh": "中央大學學習與教學研究所",
+        "en": "NCU Graduate Institute of Learning and Instruction"
+      },
+      "period": "2023/09–2023/12"
+    },
+    {
+      "title": {
+        "zh": "副召集人",
+        "en": "Deputy Convener"
+      },
+      "org": {
+        "zh": "聯合開發者社團",
+        "en": "United Developer Club"
+      },
+      "period": "2023/09–2023/12"
+    },
+    {
+      "title": {
+        "zh": "成員",
+        "en": "Member"
+      },
+      "org": {
+        "zh": "中央大學 SAP 學生團隊",
+        "en": "NCU SAP Student Team"
+      },
+      "period": "2022/10–2024/02"
+    }
+  ],
+  "projects": [
+    {
+      "name": "財伴 oSave",
+      "year": "2025",
+      "desc": {
+        "zh": "用會計邏輯記帳的 App：問三個問題，後端換算成 13 項金流方向與 6 項財務健康指標；國科會大專生計畫的實證對象",
+        "en": "A bookkeeping app built on accounting logic: three questions become 13 cash-flow directions and 6 financial-health indicators; the subject of an NSTC undergraduate study"
+      },
+      "url": "https://ogmatcha.com/work/osave/"
+    },
+    {
+      "name": "Ched.AI",
+      "year": "2024",
+      "desc": {
+        "zh": "自動化財務報表分析與徵信風險評估",
+        "en": "Automated financial-statement analysis and credit-risk assessment"
+      },
+      "url": "https://github.com/OG-Matcha/Credit-Report"
+    },
+    {
+      "name": "NCU Fresh Web Chat Bot",
+      "year": "2024",
+      "desc": {
+        "zh": "中大新生網聊天機器人",
+        "en": "Chat bot for NCU Fresh Web"
+      },
+      "url": "https://github.com/OG-Matcha/NCU_Fresh_Web_ChatBot"
+    },
+    {
+      "name": "Cow of Answer",
+      "year": "2024",
+      "desc": {
+        "zh": "問答遊戲",
+        "en": "Q&A game"
+      },
+      "url": "https://github.com/OG-Matcha/Cow-of-Answer"
+    },
+    {
+      "name": "Python Mock Interview",
+      "year": "2024",
+      "desc": {
+        "zh": "Python 模擬面試",
+        "en": "Python mock interviews"
+      },
+      "url": "https://github.com/OG-Matcha/Python_Mock_Interview"
+    },
+    {
+      "name": "WuXia",
+      "year": "2024",
+      "desc": {
+        "zh": "武俠遊戲",
+        "en": "Wuxia game"
+      },
+      "url": "https://github.com/OG-Matcha/WuXia"
+    },
+    {
+      "name": "BrainLib",
+      "year": "2024",
+      "desc": {
+        "zh": "知識管理工具",
+        "en": "Knowledge tool"
+      },
+      "url": "https://github.com/OG-Matcha/BrainLib"
+    }
+  ],
+  "awards": [
+    {
+      "zh": "2025 第六屆台積電校園黑客松 AI 維運懶人包組 第一名",
+      "en": "1st place, AI Ops track, 6th TSMC IT CareerHack (2025)"
+    },
+    {
+      "zh": "2025 臺東創新創業大賽 最佳創新創業大獎（財伴 oSave）",
+      "en": "Grand prize, Taitung Innovation & Entrepreneurship Competition 2025 (oSave)"
+    },
+    {
+      "zh": "2024 第 29 屆大專校院資訊應用服務創新競賽 資安應用組 第一名",
+      "en": "1st place, Security Applications track, 29th InnoServe Awards (2024)"
+    },
+    {
+      "zh": "2024 臺灣數創大賞 數位＋組 金獎",
+      "en": "Gold, Digital+ track, Taiwan Digital Creativity Award 2024"
+    },
+    {
+      "zh": "2024 第六屆 Startup 創業競技場 國內組 第一名",
+      "en": "1st place, domestic track, 6th Startup Arena (2024)"
+    },
+    {
+      "zh": "2024 GenAI Stars 創意創客組 優選（Ched.AI）",
+      "en": "Merit Award, Creative Maker track, GenAI Stars 2024 (Ched.AI)"
+    },
+    {
+      "zh": "2026 雙北程式設計節 城市儀表板大黑客松 第三名",
+      "en": "3rd place, City Dashboard Hackathon, Taipei–New Taipei Coding Festival 2026"
+    },
+    {
+      "zh": "LAK 2025 Practitioner Track：以知識圖譜與大型語言模型分析學習軌跡",
+      "en": "LAK 2025 Practitioner Track: analyzing learning trajectories with knowledge graphs and LLMs"
+    }
+  ],
+  "research": [
+    "Data Science",
+    "Machine Learning",
+    "Deep Learning",
+    "Generative AI",
+    "System Analysis & Design",
+    "Web Engineering"
+  ],
+  "interests": [
+    {
+      "zh": "動畫、漫畫",
+      "en": "Anime and manga"
+    },
+    {
+      "zh": "電玩",
+      "en": "Video games"
+    },
+    {
+      "zh": "VTuber",
+      "en": "VTubers"
+    }
+  ],
+  "links": {
+    "github": "https://github.com/OG-Matcha",
+    "linkedin": "https://www.linkedin.com/in/ogmatcha/",
+    "website": "https://ogmatcha.com"
+  },
+  "photo": "../../assets/members/ju-shen-huang.jpg",
+  "figure": {
+    "clay": "blue",
+    "accessory": "phones"
+  }
+}

@@ -1,0 +1,79 @@
+[
+  {
+    "id": "nstc-jepa-llm-sandbox",
+    "title": {
+      "zh": "從深度時序股票預測到在地化 AI 沙盒：整合 JEPA、微調 LLM 與生成式代理人模擬"
+    },
+    "period": "2026/08–2028/07",
+    "kind": {
+      "zh": "國科會一般研究計畫",
+      "en": "NSTC General Research Project"
+    },
+    "pi": "Hsin-Yu Chiu"
+  },
+  {
+    "id": "nstc-asd-predictability",
+    "title": {
+      "zh": "（近似）隨機優勢的可預測性與持續性：股票特徵與選擇權隱含資訊的運用",
+      "en": "On the Predictability and Persistence of (Almost) Stochastic Dominance: The Use of Stock Characteristics and Option-Implied Information"
+    },
+    "period": "2024/08–2026/07",
+    "kind": {
+      "zh": "國科會一般研究計畫",
+      "en": "NSTC General Research Project"
+    },
+    "pi": "Hsin-Yu Chiu"
+  },
+  {
+    "id": "nstc-ug-osave",
+    "title": {
+      "zh": "基於生成式 AI 的個人化財務健康管理系統開發與效益評估",
+      "en": "A generative-AI personal financial-health management system: development and evaluation"
+    },
+    "period": "2025/07–2026/02",
+    "kind": {
+      "zh": "國科會大專學生研究計畫",
+      "en": "NSTC College Student Research Scholarship"
+    },
+    "pi": "Ju-Shen Huang"
+  },
+  {
+    "id": "nstc-ug-anomaly-genai",
+    "title": {
+      "zh": "結合股市異常現象指標及生成式 AI 之股票追蹤系統",
+      "en": "A stock tracking system combining market anomaly indicators and generative AI"
+    },
+    "period": "2024/07–2025/02",
+    "kind": {
+      "zh": "國科會大專學生研究計畫",
+      "en": "NSTC College Student Research Scholarship"
+    },
+    "pi": "Ju-Shen Huang"
+  },
+  {
+    "id": "nstc-style-attention",
+    "title": {
+      "zh": "風格投資人關注程度、事件情緒及風格聯動性",
+      "en": "Style-based investor attention, event sentiment and style comovement"
+    },
+    "period": "2022/08–2024/07",
+    "kind": {
+      "zh": "國科會一般研究計畫",
+      "en": "NSTC General Research Project"
+    },
+    "pi": "Hsin-Yu Chiu"
+  },
+  {
+    "id": "most-attention-anomalies",
+    "title": {
+      "zh": "投資人關注、法人與散戶交易行為與股市異常現象：台灣股市的實證與應用",
+      "en": "Investor Attention, Trading Behaviors of Institutional and Retail Investors, and Stock Market Anomalies: Empirical Evidence and Practical Application in Taiwan Stock Market"
+    },
+    "period": "2019/11–2021/10",
+    "kind": {
+      "zh": "科技部一般研究計畫",
+      "en": "MOST General Research Project"
+    },
+    "pi": "Hsin-Yu Chiu"
+  }
+]

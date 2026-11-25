@@ -1,0 +1,124 @@
+{
+  "name": {
+    "zh": "張凱翔",
+    "en": "Kai-Xiang Chang"
+  },
+  "cohort": 2,
+  "order": 3,
+  "degree": "master",
+  "status": "graduated",
+  "maintainedBy": "lab",
+  "headline": {
+    "zh": "資管所碩士・114 學年度畢業",
+    "en": "M.S. in Information Management, 2026"
+  },
+  "bio": {
+    "zh": "中央資管碩士，研究資產定價與機器學習在投資決策、投資組合建構上的應用；碩士論文提出結合多因子架構與高維度序列分析的兩階段混合模型。曾在國網中心實習開發 Kubernetes 教學雲容器，也當過 CloudMile 校園大使、中央大學校務研究辦公室工讀生。",
+    "en": "Master's graduate of NCU Information Management, researching asset pricing and machine learning for investment decisions and portfolio construction. His thesis proposes a two-stage hybrid model combining a multi-factor architecture with high-dimensional sequence analysis. He interned at the National Center for High-performance Computing building Kubernetes teaching containers, was a CloudMile campus ambassador, and worked at NCU's Office of Institutional Research."
+  },
+  "education": [
+    {
+      "school": {
+        "zh": "國立中央大學 資訊管理學系",
+        "en": "National Central University, Information Management"
+      },
+      "degree": {
+        "zh": "碩士",
+        "en": "M.S."
+      },
+      "period": "2024–2026"
+    },
+    {
+      "school": {
+        "zh": "逢甲大學 資訊工程學系",
+        "en": "Feng Chia University, Computer Science"
+      },
+      "degree": {
+        "zh": "學士",
+        "en": "B.S."
+      },
+      "period": "2021–2024"
+    },
+    {
+      "school": {
+        "zh": "國立臺中科技大學 資訊管理系",
+        "en": "National Taichung University of Science and Technology, Information Management"
+      },
+      "degree": {
+        "zh": "五專",
+        "en": "Associate degree"
+      },
+      "period": "2015–2021"
+    }
+  ],
+  "experience": [
+    {
+      "title": {
+        "zh": "暑期實習生",
+        "en": "Summer Intern"
+      },
+      "org": {
+        "zh": "國家高速網路與計算中心",
+        "en": "National Center for High-performance Computing"
+      },
+      "period": "2022/07–2022/08"
+    },
+    {
+      "title": {
+        "zh": "校園大使",
+        "en": "Campus Ambassador"
+      },
+      "org": {
+        "zh": "CloudMile",
+        "en": "CloudMile"
+      },
+      "period": "2023/07–2023/08"
+    },
+    {
+      "title": {
+        "zh": "工讀生",
+        "en": "Part-time Assistant"
+      },
+      "org": {
+        "zh": "中央大學校務研究辦公室",
+        "en": "NCU Office of Institutional Research"
+      },
+      "period": "2024/07–"
+    }
+  ],
+  "research": [
+    "Asset Pricing",
+    "Data Science",
+    "Machine Learning",
+    "Deep Learning"
+  ],
+  "interests": [
+    {
+      "zh": "動畫與電影",
+      "en": "Anime and movies"
+    },
+    {
+      "zh": "投資",
+      "en": "Investing"
+    },
+    {
+      "zh": "羽球、桌球",
+      "en": "Badminton and table tennis"
+    },
+    {
+      "zh": "美食",
+      "en": "Food"
+    }
+  ],
+  "thesis": "chang-kai-xiang-114",
+  "links": {
+    "schoolEmail": "kaixiang@g.ncu.edu.tw",
+    "github": "https://github.com/KaiXiangC",
+    "linkedin": "https://www.linkedin.com/in/kaixiang-chang"
+  },
+  "photo": "../../assets/members/kai-xiang-chang.jpg",
+  "figure": {
+    "clay": "blue",
+    "accessory": "glasses"
+  }
+}

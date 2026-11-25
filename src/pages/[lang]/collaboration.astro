@@ -1,0 +1,43 @@
+---
+import Base from '@/layouts/Base.astro';
+import { lab } from '@/data/lab';
+import { ui, t, type Bi, type Locale } from '@/i18n/ui';
+import { langPaths } from '@/lib/content';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Locale;
+const zh = lang === 'zh-tw';
+const ways: { title: Bi; body: Bi; clay: string }[] = [
+  { clay: 'blue', title: { zh: '產業合作', en: 'Industry partners' }, body: { zh: '歡迎企業、金融機構與科技公司一起做聯合研究、顧問或實際落地的解決方案。目前與兆豐進行隨機優勢可預測性的產學合作。', en: 'We welcome businesses, financial institutions and tech companies for joint research, consulting or applied solutions. We currently run an industry-academia project with Mega on the predictability of stochastic dominance.' } },
+  { clay: 'sun', title: { zh: '學術合作', en: 'Academic collaboration' }, body: { zh: '共同研究、交換計畫與合著論文。', en: 'Joint research, exchange programs and co-authored publications.' } },
+  { clay: 'pink', title: { zh: '跨領域研究', en: 'Interdisciplinary research' }, body: { zh: '結合資訊科技、經濟學、心理學與資料科學，也歡迎非金融領域的研究者。', en: 'Combining IT, economics, psychology and data science; researchers outside finance are welcome.' } },
+];
+---
+<Base lang={lang} title={t(ui.nav.collaboration, lang)} description={zh ? '和 IFA Lab 合作：產業、學術與跨領域研究。' : 'Work with IFA Lab: industry, academic and interdisciplinary collaboration.'}>
+  <div class="wrap section">
+    <div class="section-head">
+      <p class="eyebrow">{t(ui.nav.collaboration, lang)}</p>
+      <h1>{zh ? '一起做金融 × 科技的研究' : 'Research at the intersection of finance and technology'}</h1>
+      <p class="muted">{zh ? '我們專注在預測、分析與 AI 驅動的應用。' : 'We focus on forecasting, analytics and AI-driven applications.'}</p>
+    </div>
+    <ul class="ways">
+      {ways.map((w) => (
+        <li class="clay" style={`--c: var(--clay-${w.clay})`}>
+          <span class="b" aria-hidden="true"></span>
+          <h2>{t(w.title, lang)}</h2>
+          <p>{t(w.body, lang)}</p>
+        </li>
+      ))}
+    </ul>
+    <p class="contact">{zh ? '聯絡窗口：' : 'Contact: '}<a href={`mailto:${lab.contact.email}`}>{lab.contact.email}</a></p>
+  </div>
+</Base>
+
+<style>
+  .ways { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
+  .ways li { padding: var(--space-6); display: grid; gap: var(--space-3); align-content: start; }
+  .ways h2 { font-size: 22px; }
+  .b { width: 36px; height: 28px; border-radius: 8px; background: var(--c); box-shadow: inset -3px -4px 6px rgb(0 0 0 / 0.18), inset 3px 3px 6px rgb(255 255 255 / 0.35); }
+  .contact { margin-top: var(--space-7); font-size: 18px; }
+  @media (max-width: 899px) { .ways { grid-template-columns: 1fr; } }
+</style>

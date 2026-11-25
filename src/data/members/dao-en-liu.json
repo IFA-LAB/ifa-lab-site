@@ -1,0 +1,17 @@
+{
+  "name": {
+    "zh": "劉道恩",
+    "en": "Dao-En Liu"
+  },
+  "cohort": 1,
+  "order": 2,
+  "degree": "master",
+  "status": "enrolled",
+  "founder": true,
+  "maintainedBy": "lab",
+  "placeholder": true,
+  "headline": {
+    "zh": "第一屆研究生",
+    "en": "1st-cohort graduate student"
+  }
+}

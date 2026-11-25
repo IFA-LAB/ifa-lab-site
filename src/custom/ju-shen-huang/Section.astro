@@ -1,0 +1,49 @@
+---
+/**
+ * Example custom section (黃鉅燊). Copy this folder to src/custom/<your-id>/ and make it yours.
+ * Rules: CONTRIBUTING.md. Short version: only your folder, only design tokens for colour and type,
+ * no external scripts/fonts/iframes, stay inside the budgets. `npm run check` tells you if you broke one.
+ */
+import type { Locale } from '@/i18n/ui';
+interface Props { lang: Locale }
+const { lang } = Astro.props;
+const zh = lang === 'zh-tw';
+
+const trophies = [
+  { year: '2025', zh: '台積電校園黑客松', en: 'TSMC IT CareerHack', clay: 'up' },
+  { year: '2025', zh: '臺東創新創業大賽', en: 'Taitung Startup Award', clay: 'sun' },
+  { year: '2024', zh: '大專資訊應用服務創新競賽', en: 'InnoServe Awards', clay: 'blue' },
+  { year: '2024', zh: '臺灣數創大賞 金獎', en: 'Taiwan Digital Creativity, Gold', clay: 'sun' },
+  { year: '2024', zh: 'Startup 創業競技場', en: 'Startup Arena', clay: 'down' },
+];
+---
+<div class="shelf">
+  <h2>{zh ? '獎盃架：五座第一' : 'Trophy shelf: five first places'}</h2>
+  <ul>
+    {trophies.map((x) => (
+      <li style={`--c: var(--clay-${x.clay})`}>
+        <span class="cup" aria-hidden="true"></span>
+        <span class="year">{x.year}</span>
+        <span>{zh ? x.zh : x.en}</span>
+      </li>
+    ))}
+  </ul>
+  <p class="more"><a href="https://ogmatcha.com/resume/" target="_blank" rel="noopener">{zh ? '完整年表在我的個人網站' : 'Full record on my site'}</a></p>
+</div>
+
+<style>
+  .shelf { display: grid; gap: var(--space-4); }
+  h2 { font-size: 20px; }
+  ul { list-style: none; margin: 0; padding: 0 0 var(--space-5); display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--space-4); position: relative; }
+  /* the shelf plank */
+  ul::after { content: ''; position: absolute; inset: auto 0 0; height: 10px; border-radius: var(--r-full); background: var(--surface-2); }
+  li { display: grid; align-content: start; justify-items: center; text-align: center; gap: var(--space-1); font-size: 15px; }
+  .cup {
+    width: 46px; height: 52px; border-radius: 10px 10px 22px 22px; background: var(--c);
+    box-shadow: inset -4px -6px 8px rgb(0 0 0 / 0.18), inset 4px 4px 8px rgb(255 255 255 / 0.35);
+    transition: transform var(--dur-fast) var(--ease-out);
+  }
+  .year { font: 500 13px/1.4 var(--f-mono); color: var(--ink-2); }
+  @media (hover: hover) and (pointer: fine) { li:hover .cup { transform: translateY(-4px); } }
+  .more { font-size: 15px; }
+</style>

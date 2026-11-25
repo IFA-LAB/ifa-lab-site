@@ -1,0 +1,125 @@
+{
+  "name": {
+    "zh": "侯威華",
+    "en": "Wei-Hua Hou"
+  },
+  "cohort": 3,
+  "order": 1,
+  "degree": "master",
+  "status": "enrolled",
+  "maintainedBy": "self",
+  "headline": {
+    "zh": "資管所碩士班",
+    "en": "M.S. student, Information Management"
+  },
+  "bio": {
+    "zh": "中央資管碩士生，專長 AI 模型架構與應用開發。曾與工研院合作處理資料稀少與類別不平衡問題，目前參與兆豐金控產學合作，研究隨機優勢的可預測性與持續性。",
+    "en": "M.S. student at NCU Information Management, focused on AI model architecture and application development. He worked with ITRI on data scarcity and class imbalance, and now works on an industry-academia project with Mega Financial Holding on the predictability and persistence of stochastic dominance."
+  },
+  "education": [
+    {
+      "school": {
+        "zh": "國立中央大學 資訊管理學系",
+        "en": "National Central University, Information Management"
+      },
+      "degree": {
+        "zh": "碩士",
+        "en": "M.S."
+      },
+      "period": "2025–"
+    },
+    {
+      "school": {
+        "zh": "國立雲林科技大學 資訊管理系",
+        "en": "National Yunlin University of Science and Technology, Information Management"
+      },
+      "degree": {
+        "zh": "學士",
+        "en": "B.S."
+      },
+      "period": "2021–2025"
+    }
+  ],
+  "projects": [
+    {
+      "name": "Stochastic Dominance",
+      "year": "2025–",
+      "desc": {
+        "zh": "兆豐金控產學合作：隨機優勢的可預測性與持續性",
+        "en": "Mega Financial Holding: predictability and persistence of stochastic dominance"
+      }
+    },
+    {
+      "name": "Metal Defect Detection",
+      "year": "—",
+      "desc": {
+        "zh": "工研院：金屬表面瑕疵偵測的不平衡資料處理與 AI 模型",
+        "en": "ITRI: imbalanced data handling and AI models for metal surface defect detection"
+      }
+    },
+    {
+      "name": "AI LINE Bot",
+      "year": "—",
+      "desc": {
+        "zh": "聯合通訊：AI LINE Bot 開發",
+        "en": "Allied Communications: AI LINE Bot development"
+      }
+    },
+    {
+      "name": "Base Running Analysis",
+      "year": "—",
+      "desc": {
+        "zh": "長榮大學：AI 跑壘動作分析",
+        "en": "Chang Jung Christian University: AI-based base running motion analysis"
+      }
+    }
+  ],
+  "awards": [
+    {
+      "zh": "ICIM 2024 最佳論文獎",
+      "en": "Best Paper Award, ICIM 2024"
+    },
+    {
+      "zh": "IEEE ICKII 2024 最佳論文獎",
+      "en": "Best Paper Award, IEEE ICKII 2024"
+    },
+    {
+      "zh": "第 6 屆 AIoT 智慧照護競賽 第二名暨企業獎",
+      "en": "2nd place and corporate award, 6th AIoT Smart Care Competition"
+    },
+    {
+      "zh": "第 4 屆巨量資料精準行銷盃 第二名",
+      "en": "2nd place, 4th Big Data Precision Marketing Cup"
+    },
+    {
+      "zh": "第 18 屆數位訊號處理創意設計競賽 佳作（AI 應用組）",
+      "en": "Honorable mention, 18th DSP Creative Design Contest (AI applications)"
+    },
+    {
+      "zh": "第 20 屆校園證券投資理財達人賽 中區第 8 名",
+      "en": "8th place (Central), 20th Campus Securities Investment Contest"
+    }
+  ],
+  "research": [
+    "Machine Learning",
+    "Deep Learning",
+    "Reinforcement Learning",
+    "Feature Engineering",
+    "Data Mining"
+  ],
+  "interests": [
+    {
+      "zh": "跑步",
+      "en": "Running"
+    },
+    {
+      "zh": "探索新領域",
+      "en": "Exploring new frontiers"
+    }
+  ],
+  "photo": "../../assets/members/wei-hua-hou.jpg",
+  "figure": {
+    "clay": "down",
+    "accessory": "none"
+  }
+}

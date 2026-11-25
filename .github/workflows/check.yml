@@ -1,0 +1,25 @@
+# Runs on every PR: member-section rules, PR scope, type/data check, build, page-weight budget.
+# The same checks run locally with `npm run build` (scope check needs BASE_REF).
+name: check
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: PR scope (one member, own files only)
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: origin/${{ github.base_ref }}
+          # Maintainers add the `core` label to PRs that change the site itself.
+          ALLOW_CORE: ${{ contains(github.event.pull_request.labels.*.name, 'core') && '1' || '0' }}
+        run: node scripts/check-custom.mjs --scope
+      - name: Rules, types, build, budgets
+        run: npm run build

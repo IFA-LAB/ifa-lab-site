@@ -1,0 +1,42 @@
+{
+  "name": {
+    "zh": "江昱潔",
+    "en": "Yu-Chieh Chiang"
+  },
+  "cohort": 2,
+  "order": 2,
+  "degree": "master",
+  "status": "graduated",
+  "maintainedBy": "lab",
+  "headline": {
+    "zh": "資管所碩士・114 學年度畢業",
+    "en": "M.S. in Information Management, 2026"
+  },
+  "bio": {
+    "zh": "中央資管碩士，碩士論文研究共同基金持股序列的「下一籃」推薦，結合 DNNTSP 模型與外部特徵做實證分析。",
+    "en": "Master's graduate of NCU Information Management. Her thesis studies next-basket recommendation from mutual fund holding sequences, combining the DNNTSP model with external features."
+  },
+  "education": [
+    {
+      "school": {
+        "zh": "國立中央大學 資訊管理學系",
+        "en": "National Central University, Information Management"
+      },
+      "degree": {
+        "zh": "碩士",
+        "en": "M.S."
+      },
+      "period": "–2026"
+    }
+  ],
+  "research": [
+    "Recommender Systems",
+    "Mutual Funds",
+    "Deep Learning"
+  ],
+  "thesis": "chiang-yu-chieh-114",
+  "figure": {
+    "clay": "pink",
+    "accessory": "none"
+  }
+}

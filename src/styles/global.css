@@ -1,0 +1,133 @@
+@import '@fontsource/fredoka/latin-500.css';
+@import '@fontsource/fredoka/latin-600.css';
+@import '@fontsource/jetbrains-mono/latin-400.css';
+
+/* IFA Lab clay design system.
+   Mode: Experience (members, home) + Read (research). One bold thing: the clay K-line world.
+   Colour rule: Taiwan market convention, red = up, green = down. Neutrals tinted toward --hue. */
+:root {
+  --hue: 250;
+  --bg: #eef2f6;
+  --surface: #ffffff;
+  --surface-2: #e3e9f0;
+  --ink: #1d2633;
+  --ink-2: #4a5668;
+  --line: rgb(29 38 51 / 0.12);
+  --accent: #3c6db5;
+  --accent-ink: #ffffff;
+  --focus: #3c6db5;
+
+  /* clay palette: fills only. Text on these must use --ink. */
+  --clay-blue: #4f7fc4;
+  --clay-up: #e2574c;
+  --clay-down: #2e9d6e;
+  --clay-sun: #f2b544;
+  --clay-pink: #ee9aae;
+  --clay-grey: #b8c2cf;
+
+  --hi: rgb(255 255 255 / 0.75);
+  --lo: rgb(40 60 90 / 0.18);
+
+  --f-display: 'Fredoka', 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
+  --f-body: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  /* Latin-first stack for English text: CJK fonts draw ’ “ ” as full-width glyphs. */
+  --f-body-latin: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px;
+  --space-6: 32px; --space-7: 48px; --space-8: 64px; --space-9: 96px;
+  --r-sm: 10px; --r-md: 18px; --r-lg: 28px; --r-full: 999px;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --dur-press: 120ms; --dur-fast: 160ms; --dur-base: 220ms;
+  --page: 1200px;
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg: #141a23; --surface: #1e2632; --surface-2: #26303e;
+  --ink: #e8edf4; --ink-2: #a9b4c4; --line: rgb(232 237 244 / 0.12);
+  --accent: #7fa6e6; --accent-ink: #0f1520; --focus: #7fa6e6;
+  --clay-blue: #6e9ad8; --clay-up: #e86a60; --clay-down: #3fb383; --clay-sun: #e9b455; --clay-pink: #e5a2b3; --clay-grey: #6b7686;
+  --hi: rgb(255 255 255 / 0.08); --lo: rgb(0 0 0 / 0.45);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #141a23; --surface: #1e2632; --surface-2: #26303e;
+    --ink: #e8edf4; --ink-2: #a9b4c4; --line: rgb(232 237 244 / 0.12);
+    --accent: #7fa6e6; --accent-ink: #0f1520; --focus: #7fa6e6;
+    --clay-blue: #6e9ad8; --clay-up: #e86a60; --clay-down: #3fb383; --clay-sun: #e9b455; --clay-pink: #e5a2b3; --clay-grey: #6b7686;
+    --hi: rgb(255 255 255 / 0.08); --lo: rgb(0 0 0 / 0.45);
+    color-scheme: dark;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 88px; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 17px/1.8 var(--f-body);
+  text-rendering: optimizeLegibility;
+}
+h1, h2, h3, h4 { font-family: var(--f-display); line-height: 1.3; margin: 0; text-wrap: balance; font-weight: 600; }
+h1 { font-size: clamp(32px, 5vw, 56px); }
+h2 { font-size: clamp(24px, 3vw, 34px); }
+h3 { font-size: 20px; }
+p { margin: 0; text-wrap: pretty; }
+a { color: var(--accent); text-underline-offset: 3px; }
+img, svg, canvas { max-width: 100%; }
+html:lang(en) { --f-body: var(--f-body-latin); }
+:lang(en):not(html, h1, h2, h3, h4, code, .mono, .eyebrow) { font-family: var(--f-body-latin); }
+
+code, .mono { font-family: var(--f-mono); font-size: 0.88em; }
+::selection { background: var(--clay-sun); color: #1d2633; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+[hidden] { display: none !important; }
+
+.wrap {
+  max-width: var(--page);
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.eyebrow { font: 600 13px/1.4 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
+.muted { color: var(--ink-2); }
+.visually-hidden {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* clay surface: one outer shadow + two inset highlights. Use only for distinct objects. */
+.clay {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow: 10px 14px 28px var(--lo), inset -6px -8px 14px rgb(0 0 0 / 0.06), inset 6px 8px 14px var(--hi);
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font: 500 14px/1 var(--f-body); color: var(--ink);
+  padding: 8px 12px; border-radius: var(--r-full); background: var(--surface-2);
+}
+
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
+  padding: 10px 20px; border-radius: var(--r-full); border: 0; cursor: pointer;
+  font: 600 16px/1 var(--f-display); text-decoration: none;
+  background: var(--accent); color: var(--accent-ink);
+  box-shadow: 4px 6px 14px var(--lo), inset -3px -4px 8px rgb(0 0 0 / 0.15), inset 3px 4px 8px rgb(255 255 255 / 0.25);
+  transition: transform var(--dur-press) var(--ease-out);
+}
+.btn.secondary { background: var(--surface); color: var(--ink); }
+.btn:active { transform: scale(0.97); }
+
+.section { padding-block: var(--space-8); }
+.section-head { display: grid; gap: var(--space-2); margin-bottom: var(--space-6); max-width: 46em; }
+
+.tags { display: flex; flex-wrap: wrap; gap: var(--space-2); padding: 0; margin: 0; list-style: none; }
+.tags li { font-size: 14px; padding: 6px 12px; border-radius: var(--r-full); background: var(--surface-2); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.1s !important; scroll-behavior: auto !important; }
+}

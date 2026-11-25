@@ -1,0 +1,4 @@
+# Maintainers review everything by default. Replace the team name once the GitHub org is set up.
+* @IFA-LAB/maintainers
+# Members can be added as owners of their own folder, e.g.:
+# /src/custom/ju-shen-huang/ @OG-Matcha
