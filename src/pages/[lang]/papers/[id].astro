@@ -15,7 +15,8 @@ const area = areas.find((a) => a.key === d.area)!;
 const byName = await memberByEnglishName();
 const cite = citation(d);
 const bib = bibtex(paper.id, d);
-const related = (await publications()).filter((p) => p.data.area === d.area && p.id !== paper.id).slice(0, 4);
+const sameArea = (await publications()).filter((p) => p.data.area === d.area).sort((a, b) => b.data.year - a.data.year);
+const related = sameArea.filter((p) => p.id !== paper.id).slice(0, 4);
 const kindLabel = t(d.kind === 'journal' ? ui.pubs.journal : ui.pubs.working, lang);
 const [first, last] = (d.pages ?? '').split(/[–-]/);
 const url = new URL(href(lang, `papers/${paper.id}`), site).href;
@@ -53,6 +54,8 @@ const jsonld = [{
 
   <article class="wrap section paper" style={`--c: var(--clay-${area.clay})`}>
     <p class="crumbs"><a href={href(lang, 'research')}>{t(ui.nav.research, lang)}</a> / <a href={href(lang, `research#${d.area}`)}>{t(area.name, lang)}</a></p>
+    <div class="cols">
+    <div class="main">
     <header class="head">
       <p class="eyebrow"><i class="stud" aria-hidden="true"></i>{kindLabel} · {d.year}{d.status === 'forthcoming' && (zh ? ' · 即將刊登' : ' · forthcoming')}</p>
       <h1 lang="en">{d.title}</h1>
@@ -91,15 +94,26 @@ const jsonld = [{
     </section>
 
     {d.tags.length > 0 && <ul class="tags" aria-label={zh ? '關鍵字' : 'Keywords'}>{d.tags.map((x) => <li class="chip" lang="en">{x}</li>)}</ul>}
+    </div>
 
-    {related.length > 0 && (
-      <section class="related" aria-labelledby="rel-h">
-        <h2 id="rel-h">{zh ? `同樣是${t(area.name, lang)}` : `More in ${t(area.name, lang)}`}</h2>
-        <ul>
-          {related.map((p) => <li><a href={href(lang, `papers/${p.id}`)} lang="en">{p.data.title}</a> <span class="muted mono">{p.data.year}</span></li>)}
-        </ul>
-      </section>
-    )}
+    <aside class="side">
+      <nav class="pile clay" aria-labelledby="rel-h">
+        <p class="eyebrow">{t(area.name, lang)}</p>
+        <h2 id="rel-h">{zh ? `這個領域疊了 ${sameArea.length} 塊` : `${sameArea.length} ${sameArea.length === 1 ? 'block' : 'blocks'} in this area`}</h2>
+        {/* one brick per paper in the area, newest on top; this paper is the lit one */}
+        <ol class="bricks">
+          {sameArea.map((p) => (
+            <li>
+              {p.id === paper.id
+                ? <span class="brick here" aria-current="page"><b>{p.data.year}</b><span lang="en">{p.data.title}</span><em>{zh ? '這篇' : 'This one'}</em></span>
+                : <a class="brick" href={href(lang, `papers/${p.id}`)}><b>{p.data.year}</b><span lang="en">{p.data.title}</span></a>}
+            </li>
+          ))}
+        </ol>
+        <a class="more" href={href(lang, `research#${d.area}`)}>{zh ? `${t(area.name, lang)}的全部成果 →` : `All ${t(area.name, lang)} work →`}</a>
+      </nav>
+    </aside>
+    </div>
   </article>
 </Base>
 
@@ -121,7 +135,31 @@ const jsonld = [{
 </script>
 
 <style>
-  .paper { display: grid; gap: var(--space-6); max-width: 880px; }
+  .paper { display: grid; gap: var(--space-6); }
+  .cols { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: var(--space-8); align-items: start; }
+  .main { display: grid; gap: var(--space-6); min-width: 0; }
+  @media (max-width: 999px) { .cols { grid-template-columns: 1fr; gap: var(--space-7); } }
+  @media (min-width: 1000px) and (min-height: 820px) { .side { position: sticky; top: 88px; } }
+  .pile { padding: var(--space-5); display: grid; gap: var(--space-3); background: color-mix(in oklab, var(--c) 10%, var(--surface)); }
+  .pile h2 { font-size: 22px; }
+  .bricks { list-style: none; margin: var(--space-2) 0 0; padding: 0; display: grid; gap: 6px; }
+  .bricks li:nth-child(even) { padding-left: 14px; }
+  .bricks li:nth-child(odd) { padding-right: 14px; }
+  .brick {
+    display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--space-3); min-height: 48px;
+    padding: 6px var(--space-3); border-radius: 12px; text-decoration: none; color: #1d2633;
+    background: color-mix(in oklab, var(--c) 45%, var(--surface));
+    box-shadow: inset 0 -5px 0 rgb(0 0 0 / 0.12), inset 2px 3px 4px rgb(255 255 255 / 0.35), 0 4px 8px var(--lo);
+    transition: transform var(--dur-fast) var(--ease-out);
+  }
+  .brick b { font: 600 14px/1 var(--f-mono); }
+  .brick span { font-size: 14px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .brick.here { background: var(--c); grid-template-columns: auto minmax(0, 1fr) auto; }
+  .brick.here em { font: 600 12px/1 var(--f-body); font-style: normal; padding: 4px 8px; border-radius: var(--r-full); background: rgb(255 255 255 / 0.7); }
+  @media (hover: hover) and (pointer: fine) { a.brick:hover { transform: translateX(4px); } }
+  a.brick:active { transform: scale(0.98, 0.95); }
+  .more { font-weight: 600; text-decoration: none; margin-top: var(--space-2); }
+  .more:hover { text-decoration: underline; }
   .crumbs { font-size: 15px; color: var(--ink-2); }
   .head { display: grid; gap: var(--space-3); }
   .eyebrow { display: flex; align-items: center; gap: var(--space-2); }
@@ -134,7 +172,7 @@ const jsonld = [{
   .plain h2 { font-size: 15px; color: var(--ink-2); }
   .actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
   .cite { display: grid; gap: var(--space-3); }
-  .cite h2, .related h2 { font-size: 20px; }
+  .cite h2 { font-size: 20px; }
   .cite-box { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-3); align-items: start; padding: var(--space-4); border-radius: var(--r-md); background: var(--surface); }
   .cite-box p { font-size: 15px; overflow-wrap: anywhere; }
   .cite-box pre { margin: 0; font: 13px/1.6 var(--f-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -145,6 +183,5 @@ const jsonld = [{
   details[open] summary::before { transform: rotate(90deg); }
   details[open] summary { margin-bottom: var(--space-2); }
   .tags { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
-  .related ul { list-style: none; padding: 0; margin: var(--space-3) 0 0; display: grid; gap: var(--space-3); }
   @media (max-width: 639px) { .cite-box { grid-template-columns: 1fr; } }
 </style>

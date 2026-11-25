@@ -2,7 +2,8 @@
   {
     "id": "nstc-jepa-llm-sandbox",
     "title": {
-      "zh": "從深度時序股票預測到在地化 AI 沙盒：整合 JEPA、微調 LLM 與生成式代理人模擬"
+      "zh": "從深度時序股票預測到在地化 AI 沙盒：整合 JEPA、微調 LLM 與生成式代理人模擬",
+      "en": "From deep time-series stock prediction to a localized AI sandbox: integrating JEPA, fine-tuned LLMs and generative agent simulation"
     },
     "period": "2026/08–2028/07",
     "kind": {

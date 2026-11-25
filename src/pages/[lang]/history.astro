@@ -57,13 +57,13 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
 
     <p class="eyebrow scope">{zh ? '2023 年起累計（論文只算成立後刊出的）' : 'Since 2023 (papers: published after founding)'}</p>
     <ul class="totals" aria-label={zh ? '成立以來累計' : 'Since founding'}>
-      {shown.map((k) => <li style={`--c: var(--clay-${k.clay})`}><b>{total(k.key)}</b><span>{unit(k, total(k.key))}</span></li>)}
+      {shown.map((k) => <li data-k={k.key}><b>{total(k.key)}</b><span>{unit(k, total(k.key))}</span></li>)}
     </ul>
 
     <div class="filter" role="group" aria-label={zh ? '只看某一類' : 'Show one kind'}>
       <button type="button" class="chip" data-kind="" aria-pressed="true">{zh ? '全部' : 'All'}</button>
       {shown.map((k) => (
-        <button type="button" class="chip" data-kind={k.key} aria-pressed="false" style={`--c: var(--clay-${k.clay})`}><i aria-hidden="true"></i>{t(k.name, lang)}</button>
+        <button type="button" class="chip" data-kind={k.key} aria-pressed="false"><i data-k={k.key} aria-hidden="true"></i>{t(k.name, lang)}</button>
       ))}
     </div>
 
@@ -72,15 +72,15 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
         <li class="floor">
           <div class="slab">
             <h2>{year}</h2>
-            <span class="bricks" aria-hidden="true">{items.map((e) => <i style={`--c: var(--clay-${kindOf(e.kind).clay})`}></i>)}</span>
+            <span class="bricks" aria-hidden="true">{items.map((e) => <i data-k={e.kind}></i>)}</span>
             <p class="sum">{shown.filter((k) => items.some((e) => e.kind === k.key)).map((k) => (
-              <span style={`--c: var(--clay-${k.clay})`}><i aria-hidden="true"></i>{items.filter((e) => e.kind === k.key).length} {unit(k, items.filter((e) => e.kind === k.key).length)}</span>
+              <span><i data-k={k.key} aria-hidden="true"></i>{items.filter((e) => e.kind === k.key).length} {unit(k, items.filter((e) => e.kind === k.key).length)}</span>
             ))}</p>
           </div>
           <ol class="events">
             {items.map((e) => (
-              <li class="ev" data-kind={e.kind} style={`--c: var(--clay-${kindOf(e.kind).clay})`}>
-                <i class="stud" aria-hidden="true"></i>
+              <li class="ev" data-kind={e.kind}>
+                <i class="stud" data-k={e.kind} aria-hidden="true"></i>
                 <div>
                   <p class="meta mono">{e.date.length > 4 ? e.date.replace('-', '/') : e.date} · {t(kindOf(e.kind).name, lang)}</p>
                   <p class="txt">{(() => { const x = e.link ? splitTitle(t(e.text, lang)) : null; return x ? <>{x.before}<a href={e.link}>{x.title}</a>{x.after}</> : e.link ? <a href={e.link}>{t(e.text, lang)}</a> : t(e.text, lang); })()}</p>
@@ -151,4 +151,12 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
     .slab { position: static; grid-template-columns: auto 1fr; align-items: center; padding: var(--space-4); }
     .slab h2 { font-size: 32px; }
   }
+  /* Colour on this site always means research area. Event kinds share one slate clay and differ by shape:
+     paper = brick, thesis = tall brick, grant = flat slab, award = medal (round), milestone = diamond. */
+  .wrap { --c: color-mix(in oklab, var(--ink) 42%, var(--surface)); }
+  .totals li::before { content: none; }
+  i[data-k='thesis'] { scale: 0.8 1.25; }
+  i[data-k='grant'] { scale: 1.35 0.65; }
+  i[data-k='award'] { border-radius: 50%; }
+  i[data-k='milestone'] { rotate: 45deg; scale: 0.8; }
 </style>
