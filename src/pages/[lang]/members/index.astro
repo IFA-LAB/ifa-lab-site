@@ -1,4 +1,5 @@
 ---
+import LabCat from '@/components/LabCat.astro';
 import Base from '@/layouts/Base.astro';
 import ClayFigure from '@/components/ClayFigure.astro';
 import { Image } from 'astro:assets';
@@ -23,7 +24,8 @@ const jsonld = people.map((m) => ({
 ---
 <Base lang={lang} title={t(ui.nav.members, lang)} description={zh ? 'IFA Lab 各屆成員：碩士論文、研究方向與專案。' : 'IFA Lab members by cohort: theses, research interests and projects.'} jsonld={jsonld}>
   <div class="wrap section">
-    <div class="section-head">
+    <div class="section-head has-cat">
+      <span class="cat-perch" style="right: 0; bottom: 0;"><LabCat lang={lang} bubble="left" lines={[{ zh: '每個公仔都是成員自己挑顏色和配件的。', en: 'Each member picks their own figure colour and prop.' }, { zh: '閉著眼睛的還在睡，資料補上就會醒來。', en: 'The sleepy ones wake up once their profile is filled in.' }]} /></span>
       <p class="eyebrow">{t(ui.nav.members, lang)}</p>
       <h1>{zh ? '各屆成員' : 'Members by cohort'}</h1>
       <p class="muted">{zh ? '2023 年 8 月成立至今，一屆一層。點進去看每個人的研究與專案。' : 'Since August 2023, one shelf per cohort. Open a card to see their research and projects.'}</p>

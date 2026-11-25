@@ -1,4 +1,5 @@
 ---
+import LabCat from '@/components/LabCat.astro';
 import Base from '@/layouts/Base.astro';
 import Bi from '@/components/Bi.astro';
 import { areas } from '@/data/lab';
@@ -97,7 +98,8 @@ const jsonld = [{
     </div>
 
     <aside class="side">
-      <nav class="pile clay" aria-labelledby="rel-h">
+      <nav class="pile clay has-cat" aria-labelledby="rel-h">
+        <span class="cat-perch" style="right: 18px; top: -44px;"><LabCat lang={lang} pose="loaf" size={84} bubble="left" lines={[{ zh: '呼……這堆我睡過，每一塊都很好睡。', en: 'Zzz… I have napped on every block in this pile.' }, { zh: '要引用的話，左邊有一鍵複製。', en: 'Citing it? One-click copy is on the left.' }]} /></span>
         <p class="eyebrow">{t(area.name, lang)}</p>
         <h2 id="rel-h">{zh ? `這個領域疊了 ${sameArea.length} 塊` : `${sameArea.length} ${sameArea.length === 1 ? 'block' : 'blocks'} in this area`}</h2>
         {/* one brick per paper in the area, newest on top; this paper is the lit one */}
@@ -148,7 +150,7 @@ const jsonld = [{
   .brick {
     display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--space-3); min-height: 48px;
     padding: 6px var(--space-3); border-radius: 12px; text-decoration: none; color: #1d2633;
-    background: color-mix(in oklab, var(--c) 45%, var(--surface));
+    background: color-mix(in oklab, var(--c) 50%, #ffffff);
     box-shadow: inset 0 -5px 0 rgb(0 0 0 / 0.12), inset 2px 3px 4px rgb(255 255 255 / 0.35), 0 4px 8px var(--lo);
     transition: transform var(--dur-fast) var(--ease-out);
   }

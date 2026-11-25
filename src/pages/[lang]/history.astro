@@ -1,4 +1,5 @@
 ---
+import LabCat from '@/components/LabCat.astro';
 import Base from '@/layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { Picture } from 'astro:assets';
@@ -46,7 +47,8 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
 ---
 <Base lang={lang} title={t(ui.nav.history, lang)} description={zh ? `IFA Lab 從 2023 年 8 月成立以來的 ${events.length} 個重要時刻：論文、計畫、碩士論文與獎項。` : `IFA Lab since August 2023: ${events.length} moments across papers, grants, theses and awards.`}>
   <div class="wrap section">
-    <div class="section-head">
+    <div class="section-head has-cat">
+      <span class="cat-perch" style="right: 0; bottom: 0;"><LabCat lang={lang} bubble="left" lines={[{ zh: '一年疊一層，2023 年是地基。', en: 'One floor a year. 2023 is the foundation.' }, { zh: '圓的是獎項，菱形是里程碑。', en: 'Round ones are awards, diamonds are milestones.' }]} /></span>
       <p class="eyebrow">{t(ui.nav.history, lang)}</p>
       <h1>{zh ? '一年疊一層' : 'One floor a year'}</h1>
       <p>{zh

@@ -77,6 +77,15 @@ function Candle({ bar, x, base, up, reduce, onHover, delay, on }: { bar: Bar; x:
   const squish = useRef({ v: 0, x: 0 }); // spring state for the press-and-bounce
   const grow = useRef({ t: reduce ? 1 : 0, age: 0 }); // 0→1 rise on load, staggered
   const bodyH = 0.45 + bar.count * 0.16;
+  // timeline: when the count changes, the new geometry starts at the old height and eases to the new one;
+  // an area with no work yet shrinks to a stub
+  const hs = useRef({ x: 1, to: 1, prev: bodyH });
+  if (hs.current.prev !== bodyH) {
+    const h = hs.current;
+    h.x = reduce ? 1 : (h.x * (0.45 + h.prev)) / (0.45 + bodyH);
+    h.prev = bodyH;
+  }
+  hs.current.to = bar.count === 0 ? 0.06 : 1;
   const color = up ? UP : DOWN;
 
   useFrame((_, dt) => {
@@ -90,8 +99,10 @@ function Candle({ bar, x, base, up, reduce, onHover, delay, on }: { bar: Bar; x:
     if (r.t < 1 && r.age > delay) r.t = Math.min(1, r.t + dt / 0.7);
     // ease-out-back: overshoot a touch, like a soft block settling
     const k1 = 1.4, u = r.t - 1, e = 1 + (k1 + 1) * u * u * u + k1 * u * u;
+    const h = hs.current;
+    h.x += (h.to - h.x) * (reduce ? 1 : Math.min(1, dt * 9));
     if (g.current) {
-      g.current.scale.set(1 - s.x * 0.5, Math.max(0.001, e) * (1 + s.x), 1 - s.x * 0.5);
+      g.current.scale.set(1 - s.x * 0.5, Math.max(0.001, e * h.x) * (1 + s.x), 1 - s.x * 0.5);
     }
   });
 
@@ -120,16 +131,26 @@ function Candle({ bar, x, base, up, reduce, onHover, delay, on }: { bar: Bar; x:
   );
 }
 
-function Coin({ position, phase, reduce }: { position: [number, number, number]; phase: number; reduce: boolean }) {
+function Coin({ position, phase, reduce, onFlip }: { position: [number, number, number]; phase: number; reduce: boolean; onFlip: () => void }) {
   const m = useRef<Mesh>(null);
-  useFrame(({ clock }) => {
+  const flip = useRef(1); // 0→1 over one flip
+  useFrame(({ clock }, dt) => {
     if (!m.current || reduce) return;
     const t = clock.getElapsedTime();
-    m.current.position.y = position[1] + Math.sin(t * 1.1 + phase) * 0.12;
+    const f = flip.current;
+    if (f < 1) flip.current = Math.min(1, f + dt / 0.7);
+    const arc = Math.sin(Math.PI * flip.current); // up and back down
+    m.current.position.y = position[1] + Math.sin(t * 1.1 + phase) * 0.12 + arc * 0.9;
+    m.current.rotation.x = Math.PI / 2.4 + flip.current * Math.PI * 4 * (f < 1 ? 1 : 0);
     m.current.rotation.z = Math.sin(t * 0.7 + phase) * 0.55; // wobble, never edge-on
   });
   return (
-    <mesh ref={m} position={position} rotation={[Math.PI / 2.4, 0, 0]} castShadow>
+    <mesh
+      ref={m} position={position} rotation={[Math.PI / 2.4, 0, 0]} castShadow
+      onClick={(e) => { e.stopPropagation(); if (flip.current >= 1) flip.current = 0; onFlip(); }}
+      onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer'; }}
+      onPointerOut={() => { document.body.style.cursor = ''; }}
+    >
       <cylinderGeometry args={[0.38, 0.38, 0.14, 40]} />
       <meshStandardMaterial color={SUN} roughness={0.75} />
     </mesh>
@@ -137,8 +158,9 @@ function Coin({ position, phase, reduce }: { position: [number, number, number];
 }
 
 /** The advisor's cat, because of course. */
-function Cat({ reduce, targetX, dark }: { reduce: boolean; targetX: number | null; dark: boolean }) {
+function Cat({ reduce, targetX, dark, onPet }: { reduce: boolean; targetX: number | null; dark: boolean; onPet: () => void }) {
   const tail = useRef<Mesh>(null);
+  const hop = useRef(1);
   const head = useRef<Mesh>(null);
   const body = useRef<Group>(null);
   // rests in the back-right corner, beside the last candle; trots to the front edge when a candle is hovered
@@ -158,14 +180,20 @@ function Cat({ reduce, targetX, dark }: { reduce: boolean; targetX: number | nul
       const moving = d > 0.02;
       const face = moving ? Math.atan2(-dz, dx) : -0.5;
       b.rotation.y += (face - b.rotation.y) * Math.min(1, dt * 8);
-      b.position.y = moving ? Math.abs(Math.sin(t * 14)) * 0.08 : 0;
+      if (hop.current < 1) hop.current = Math.min(1, hop.current + dt / 0.5);
+      b.position.y = (moving ? Math.abs(Math.sin(t * 14)) * 0.08 : 0) + Math.sin(Math.PI * hop.current) * 0.7;
     }
     if (tail.current) tail.current.rotation.z = 0.6 + Math.sin(t * 2.2) * 0.25;
     if (head.current) head.current.rotation.z = Math.sin(t * 0.9) * 0.06;
   });
   const fur = <meshStandardMaterial color={dark ? '#5d667a' : FUR} roughness={0.9} />;
   return (
-    <group ref={body} position={[home.x, 0, home.z]} rotation={[0, -0.5, 0]} scale={0.72}>
+    <group
+      ref={body} position={[home.x, 0, home.z]} rotation={[0, -0.5, 0]} scale={0.72}
+      onClick={(e) => { e.stopPropagation(); if (hop.current >= 1) hop.current = 0; onPet(); }}
+      onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer'; }}
+      onPointerOut={() => { document.body.style.cursor = ''; }}
+    >
       <mesh position={[0, 0.5, 0]} scale={[1.15, 0.85, 0.9]} castShadow><sphereGeometry args={[0.62, 32, 24]} />{fur}</mesh>
       <mesh ref={head} position={[0.55, 1.15, 0]} castShadow><sphereGeometry args={[0.46, 32, 24]} />{fur}</mesh>
       <mesh position={[0.48, 1.6, 0.22]} rotation={[0, 0, 0.15]} castShadow><coneGeometry args={[0.16, 0.32, 16]} />{fur}</mesh>
@@ -190,7 +218,7 @@ function Lens() {
   return null;
 }
 
-function World({ bars, reduce, onHover, active, dark }: { bars: Bar[]; reduce: boolean; onHover: (b: Bar | null) => void; active: Bar | null; dark: boolean }) {
+function World({ bars, reduce, onHover, active, dark, onToy }: { bars: Bar[]; reduce: boolean; onHover: (b: Bar | null) => void; active: Bar | null; dark: boolean; onToy: (what: 'coin' | 'cat') => void }) {
   const compact = useThree((st) => st.size.width) < 560;
   const world = useRef<Group>(null);
   const target = useRef({ x: 0, y: 0 });
@@ -221,15 +249,15 @@ function World({ bars, reduce, onHover, active, dark }: { bars: Bar[]; reduce: b
       </RoundedBox>
       {layout.map((l, i) => <Candle key={l.bar.key} {...l} delay={0.15 + i * 0.09} reduce={reduce} onHover={onHover} on={active?.key === l.bar.key} />)}
       {!compact && layout.map((l) => <Label key={l.bar.key} text={l.bar.label} x={l.x} dark={dark} on={active?.key === l.bar.key} fill={(CLAY as Record<string, string>)[l.bar.clay] ?? CLAY.grey} />)}
-      <Coin position={[-2.4, 3.9, -1.2]} phase={0} reduce={reduce} />
-      <Coin position={[0.4, 4.4, -1.0]} phase={1.7} reduce={reduce} />
-      <Coin position={[2.6, 3.7, -0.8]} phase={3.4} reduce={reduce} />
-      <Cat dark={dark} reduce={reduce} targetX={active ? layout.find((l) => l.bar.key === active.key)?.x ?? null : null} />
+      <Coin position={[-2.4, 3.9, -1.2]} phase={0} reduce={reduce} onFlip={() => onToy('coin')} />
+      <Coin position={[0.4, 4.4, -1.0]} phase={1.7} reduce={reduce} onFlip={() => onToy('coin')} />
+      <Coin position={[2.6, 3.7, -0.8]} phase={3.4} reduce={reduce} onFlip={() => onToy('coin')} />
+      <Cat onPet={() => onToy('cat')} dark={dark} reduce={reduce} targetX={active ? layout.find((l) => l.bar.key === active.key)?.x ?? null : null} />
     </group>
   );
 }
 
-export default function KlineScene({ bars, visible, reduce, active, onHover }: { bars: Bar[]; visible: boolean; reduce: boolean; active: Bar | null; onHover: (b: Bar | null) => void }) {
+export default function KlineScene({ bars, visible, reduce, active, onHover, onToy }: { bars: Bar[]; visible: boolean; reduce: boolean; active: Bar | null; onHover: (b: Bar | null) => void; onToy: (what: 'coin' | 'cat') => void }) {
   const dark = useDark();
   return (
     <Canvas
@@ -258,7 +286,7 @@ export default function KlineScene({ bars, visible, reduce, active, onHover }: {
         shadow-camera-bottom={-8}
       />
       <Lens />
-      <World bars={bars} reduce={reduce} onHover={onHover} active={active} dark={dark} />
+      <World bars={bars} reduce={reduce} onHover={onHover} active={active} dark={dark} onToy={onToy} />
     </Canvas>
   );
 }

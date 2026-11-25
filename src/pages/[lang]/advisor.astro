@@ -1,4 +1,5 @@
 ---
+import LabCat from '@/components/LabCat.astro';
 import Base from '@/layouts/Base.astro';
 import ClayFigure from '@/components/ClayFigure.astro';
 import ClayBuddy from '@/components/three/ClayBuddy';
@@ -69,7 +70,8 @@ const person = {
       <section class="block"><h2>{t(ui.sections.education, lang)}</h2>
         <ul class="timeline">{advisor.education.map((e) => <li><span class="mono">{e.period}</span><span>{t(e.school, lang)}・{t(e.degree, lang)}</span></li>)}</ul></section>
       <section class="block"><h2>{zh ? '證照' : 'Licenses'}</h2><ul class="plain">{advisor.licenses.map((l) => <li>{t(l, lang)}</li>)}</ul></section>
-      <section class="block"><h2>{t(ui.sections.interests, lang)}</h2><p>{t(advisor.interests, lang)}</p></section>
+      <section class="block"><h2>{t(ui.sections.interests, lang)}</h2><p>{t(advisor.interests, lang)}</p>
+        <span class="cat-row"><LabCat lang={lang} size={64} bubble="right" lines={[{ zh: '老師愛貓，所以我住在這一頁。', en: 'The professor loves cats, so I live on this page.' }, { zh: '他也彈電吉他。我比較喜歡安靜的 Fusion。', en: 'He plays electric guitar too. I prefer the quieter fusion.' }]} /></span></section>
       </aside>
     </div>
   </article>
@@ -117,6 +119,7 @@ const person = {
   .links { list-style: none; padding: 0; margin: var(--space-3) 0 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .links a { text-decoration: none; min-height: 40px; }
   /* long story on the left, short facts in a side column: the two can end at different heights without leaving holes */
+  .cat-row { display: flex; justify-content: flex-end; margin-top: calc(-1 * var(--space-3)); }
   .blocks { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: var(--space-5); align-items: start; }
   .main, .side { display: grid; gap: var(--space-5); align-content: start; min-width: 0; }
   /* the side column is narrow: dates sit above their line */

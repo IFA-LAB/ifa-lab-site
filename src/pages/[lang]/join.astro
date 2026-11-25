@@ -1,11 +1,12 @@
 ---
+import LabCat from '@/components/LabCat.astro';
+import Mate from '@/components/Mate.astro';
 import Base from '@/layouts/Base.astro';
 import { lab, advisor } from '@/data/lab';
 import { ui, t, href, type Bi, type Locale } from '@/i18n/ui';
 import { langPaths } from '@/lib/content';
 import { getCollection, getEntry } from 'astro:content';
 import BiText from '@/components/Bi.astro';
-import ClayFigure from '@/components/ClayFigure.astro';
 
 export const getStaticPaths = langPaths;
 const lang = Astro.params.lang as Locale;
@@ -50,10 +51,10 @@ const faqLd = {
       <h1 class="lines">{(zh ? ['想用 AI 做金融研究？', '來疊積木吧'] : ['Want to do finance research with AI?', 'Come build with us']).map((l) => <span>{l}</span>)}</h1>
       <p class="muted">{zh ? '我們招收大學部專題生與碩士班學生。下面是最常被問到的四個問題。' : 'We recruit undergraduate project students and master’s students. Here are the four questions we get most.'}</p>
       <div class="crowd" aria-label={zh ? '現在的成員' : 'Current members'}>
-        {crew.map((m) => <a href={href(lang, `members/${m.id}`)} title={t(m.data.name, lang)}><ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} size={56} /><span class="visually-hidden">{t(m.data.name, lang)}</span></a>)}
+        {crew.map((m) => <Mate member={m} lang={lang} size={56} />)}
       </div>
       <p class="muted when">{zh ? '他們每個人都是從一封信開始的。' : 'Every one of them started with an email.'}</p>
-      <p class="cta top"><a class="btn" href={`mailto:${lab.contact.email}`}>{zh ? `寄信給${advisor.name.zh}老師` : `Email Prof. ${advisor.name.en}`}</a></p>
+      <p class="cta top"><a class="btn" href={`mailto:${lab.contact.email}`}>{zh ? `寄信給${advisor.name.zh}老師` : `Email Prof. ${advisor.name.en}`}</a><LabCat lang={lang} size={64} bubble="right" lines={[{ zh: '信裡寫你好奇的題目，比寫自傳有用。', en: 'Write about a question you are curious about. It beats a CV.' }, { zh: '不會寫程式也沒關係，學長姐會帶。', en: 'Cannot code yet? Seniors will help you start.' }]} /></p>
     </div>
     <div class="faq">
       {faq.map((f) => (
@@ -100,10 +101,8 @@ const faqLd = {
   .past li { display: grid; gap: var(--space-1); padding-left: var(--space-4); box-shadow: inset 3px 0 0 var(--clay-sun); }
   .small { font-size: 14px; }
   @media (max-width: 767px) { .steps { grid-template-columns: 1fr; } }
-  .cta.top { margin-top: var(--space-4); }
+  .cta.top { margin-top: var(--space-4); display: flex; align-items: end; gap: var(--space-4); }
   .crowd { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-4); margin-top: var(--space-5); }
-  .crowd a { border-radius: var(--r-md); transition: transform var(--dur-fast) var(--ease-out); }
-  @media (hover: hover) and (pointer: fine) { .crowd a:hover { transform: translateY(-6px); } }
   .when { margin-top: var(--space-4); }
   @media (max-width: 767px) { .faq { grid-template-columns: 1fr; } }
 </style>

@@ -1,4 +1,5 @@
 ---
+import LabCat from '@/components/LabCat.astro';
 import Base from '@/layouts/Base.astro';
 import { lab } from '@/data/lab';
 import { ui, t, href, type Bi, type Locale } from '@/i18n/ui';
@@ -37,7 +38,8 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
         </li>
       ))}
     </ul>
-    <section class="case clay" aria-labelledby="case-h">
+    <section class="case clay has-cat" aria-labelledby="case-h">
+      <span class="cat-perch" style="right: 40px; top: -56px;"><LabCat lang={lang} size={68} bubble="left" lines={[{ zh: '這是學長姐跟企業一起做的案子。', en: 'Our seniors built this one together with a company.' }, { zh: '有資料、有問題？寄信來，我們聊聊。', en: 'Got data and a question? Email us and let us talk.' }]} /></span>
       <p class="eyebrow">{zh ? '進行中的產學合作' : 'Ongoing industry project'}</p>
       <h2 id="case-h">{zh ? '兆豐 × IFA Lab：隨機優勢能不能預測？' : 'Mega × IFA Lab: can stochastic dominance be predicted?'}</h2>
       <p>{zh

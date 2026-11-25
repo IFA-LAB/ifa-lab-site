@@ -1,7 +1,8 @@
 ---
+import LabCat from '@/components/LabCat.astro';
+import Mate from '@/components/Mate.astro';
 import Base from '@/layouts/Base.astro';
 import ClayCandles from '@/components/ClayCandles.astro';
-import ClayFigure from '@/components/ClayFigure.astro';
 import ClayKline from '@/components/three/ClayKline';
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
@@ -40,6 +41,15 @@ const kindLook: Record<Kind, { clay: string; name: { zh: string; en: string } }>
 };
 const fmtDate = (d: string) => (d.length === 4 ? d : zh ? `${d.slice(0, 4)} 年 ${+d.slice(5, 7)} 月` : new Date(`${d}-01`).toLocaleString('en', { month: 'short', year: 'numeric' }));
 const crew = cohorts.flatMap(([, ms]) => ms).slice(0, 8);
+// timeline for the board: works per area counted up to each year; accepted papers join at "now"
+const dated = [
+  ...pubs.map((p) => ({ area: p.data.area, year: p.data.status === 'forthcoming' ? Infinity : p.data.year })),
+  ...theses.map((x) => ({ area: x.data.area, year: x.data.academicYear + 1912 })),
+];
+const upTo = (y: number) => Object.fromEntries(areas.map((a) => [a.key, dated.filter((w) => w.area === a.key && w.year <= y).length]));
+const stepYears = [...new Set(dated.map((w) => w.year).filter(Number.isFinite))].sort((a, b) => a - b);
+const steps = [...stepYears.map((y) => ({ label: String(y), counts: upTo(y) })), { label: zh ? '現在' : 'Now', counts: upTo(Infinity) }]
+  .filter((st, i, all) => i === all.length - 1 || JSON.stringify(st.counts) !== JSON.stringify(all[all.length - 1].counts));
 const boardEn: Record<string, string> = { empirical: 'Empirical', behavioral: 'Behavioral', pricing: 'Pricing', ai: 'AI / ML', forecast: 'Forecasting', apps: 'Apps & Viz' };
 const titleLines = zh ? ['智能金融', '分析實驗室'] : ['Intelligent Finance', 'Analytics Lab'];
 const description = zh
@@ -69,6 +79,10 @@ const description = zh
           hintTouch={zh ? '每根 K 棒是一個研究領域，點一下看論文' : 'Each candle is a research area. Tap one'}
           unit={zh ? '篇' : 'works'}
           wake={zh ? '點一下，讓 K 棒動起來' : 'Tap to bring the candles to life'}
+          steps={steps}
+          text={zh
+            ? { play: '播放實驗室的成長', pause: '暫停', year: '年份', total: '篇累積', coin: ['叮！研究經費 +1（假的）', '金幣翻面了，論文還是要自己寫。', '再點也不會變成國科會計畫喔。'], cat: ['喵！我是 K 喵。', '按左上角的播放鍵，看 K 棒一年一年長高。', '滑過 K 棒，我就跑過去看。'] }
+            : { play: 'Play the lab’s growth', pause: 'Pause', year: 'Year', total: 'works so far', coin: ['Ding! Funding +1 (not really).', 'The coin flipped. The paper still needs writing.', 'Clicking will not turn it into a grant.'], cat: ['Meow! I am K-meow.', 'Press play, top left, to watch the candles grow year by year.', 'Hover a candle and I will go look.'] }}
         />
       </div>
       <ul class="legend" aria-label={zh ? '六個研究領域' : 'Six research areas'}>
@@ -154,10 +168,7 @@ const description = zh
           <ul>
             {ms.map((m) => (
               <li>
-                <a href={href(lang, `members/${m.id}`)}>
-                  <ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} placeholder={m.data.placeholder} size={92} />
-                  <span>{t(m.data.name, lang)}</span>
-                </a>
+                <Mate member={m} lang={lang} size={92} caption />
               </li>
             ))}
           </ul>
@@ -166,14 +177,15 @@ const description = zh
     </div>
   </section>
   <section class="wrap section">
-    <div class="join clay">
+    <div class="join clay has-cat">
+      <span class="cat-perch" style="right: 56px; top: -64px;"><LabCat lang={lang} bubble="left" lines={[{ zh: '我是 K 喵，IFA Lab 的吉祥物。', en: 'I am K-meow, the IFA Lab mascot.' }, { zh: '上面那隻 3D 的也是我，滑過 K 棒我會跑過去看。', en: 'The 3D cat up top is me too. Hover a candle and I go look.' }, { zh: '想加入？先寄一封信給老師，我幫你顧信箱。', en: 'Want to join? Email the professor first. I will watch the inbox.' }]} /></span>
       <div>
         <h2>{zh ? '想一起把題目疊起來？' : 'Want to stack a question with us?'}</h2>
         <p class="muted">{zh ? '修過財務或程式都可以，先寄一封信聊聊你好奇的事。' : 'Finance or programming background both work. Start with an email about what you are curious about.'}</p>
         <a class="btn" href={href(lang, 'join')}>{t(ui.nav.join, lang)}</a>
       </div>
-      <div class="crowd" aria-hidden="true">
-        {crew.map((m) => <ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} placeholder={m.data.placeholder} size={64} />)}
+      <div class="crowd" aria-label={zh ? '現在的成員' : 'Current members'}>
+        {crew.map((m) => <Mate member={m} lang={lang} size={64} />)}
       </div>
     </div>
   </section>
@@ -202,6 +214,28 @@ const description = zh
     background: var(--surface); padding: 8px 16px; border-radius: var(--r-full); box-shadow: 4px 6px 14px var(--lo);
   }
   .visual :global(.kline-hint b) { color: var(--ink); }
+  /* timeline: a clay ticker in the empty top-left of the scene */
+  .visual :global(.kline-time) {
+    position: absolute; left: 2%; top: 4%; z-index: 2; display: grid; grid-template-columns: auto auto; grid-template-areas: 'play year' 'range range';
+    align-items: center; gap: var(--space-2) var(--space-3); padding: var(--space-3) var(--space-4); border-radius: var(--r-lg);
+    background: var(--surface); box-shadow: 6px 8px 18px var(--lo), inset 0 2px 0 var(--hi), inset 0 -4px 0 rgb(0 0 0 / 0.05);
+  }
+  .visual :global(.kline-play) {
+    grid-area: play; width: 44px; height: 44px; border: 0; border-radius: 50%; cursor: pointer; display: grid; place-items: center;
+    background: var(--accent); color: var(--accent-ink); box-shadow: 3px 4px 10px var(--lo), inset 0 -3px 0 rgb(0 0 0 / 0.15), inset 0 2px 0 rgb(255 255 255 / 0.25);
+    transition: transform var(--dur-press) var(--ease-out);
+  }
+  .visual :global(.kline-play:active) { transform: scale(0.94); }
+  .visual :global(.kline-play svg) { width: 16px; height: 16px; fill: currentColor; }
+  .visual :global(.kline-year) { grid-area: year; display: grid; line-height: 1.1; }
+  .visual :global(.kline-year b) { font: 600 30px/1 var(--f-display); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; min-width: 3.2ch; }
+  .visual :global(.kline-year small) { font: 500 13px/1.4 var(--f-body); color: var(--ink-2); }
+  .visual :global(.kline-time input) { grid-area: range; width: 100%; min-width: 150px; accent-color: var(--accent); height: 24px; cursor: pointer; }
+  @media (max-width: 559px) {
+    .visual :global(.kline-time) { top: 0; left: 16px; padding: var(--space-2) var(--space-3); grid-template-columns: auto auto 1fr; grid-template-areas: 'play year range'; }
+    .visual :global(.kline-year b) { font-size: 22px; }
+    .visual :global(.kline-time input) { min-width: 90px; }
+  }
 
   .legend { display: none; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; justify-content: center; gap: var(--space-2); }
   .legend a { min-height: 40px; text-decoration: none; background: var(--surface); box-shadow: 3px 4px 10px var(--lo); }
@@ -247,8 +281,6 @@ const description = zh
   /* a clay plank: lit top edge, darker front, soft cast shadow */
   .row::after { content: ''; position: absolute; inset: auto -8px 0; height: 18px; border-radius: 9px; background: var(--surface); box-shadow: 0 10px 18px var(--lo), inset 0 3px 0 var(--hi), inset 0 -7px 0 var(--surface-2); }
   .row ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); align-items: end; }
-  .row a { display: grid; justify-items: center; gap: var(--space-1); text-decoration: none; color: var(--ink); font-size: 16px; font-weight: 500; padding: var(--space-2); border-radius: var(--r-md); transition: transform var(--dur-fast) var(--ease-out); }
-  @media (hover: hover) and (pointer: fine) { .row a:hover { transform: translateY(-4px); } }
 
   .row-head { display: flex; justify-content: space-between; align-items: end; gap: var(--space-5); max-width: none; }
   .more { font-weight: 600; text-decoration: none; white-space: nowrap; }

@@ -1,0 +1,147 @@
+---
+/** K 喵 — the lab's clay cat. One per page: it sits somewhere that page is about and says a line when clicked.
+    It carries `view-transition-name: lab-cat`, so in browsers with cross-document view transitions it hops
+    from its spot on one page to its spot on the next. Pure SVG + CSS, no three.js. */
+import type { Locale } from '@/i18n/ui';
+
+type Line = { zh: string; en: string };
+interface Props {
+  lang: Locale;
+  /** What it says, in order, one per click. Keep each under ~30 characters. */
+  lines: Line[];
+  pose?: 'sit' | 'loaf';
+  size?: number;
+  /** Which side the speech bubble opens towards. */
+  bubble?: 'left' | 'right';
+}
+const { lang, lines, pose = 'sit', size = 76, bubble = 'left' } = Astro.props;
+const zh = lang === 'zh-tw';
+const said = lines.map((l) => (zh ? l.zh : l.en));
+const label = zh ? '實驗室的貓 K 喵，點一下聽牠說話' : 'K-meow, the lab cat. Click to hear what it says';
+---
+<span class="labcat" data-pose={pose} data-bubble={bubble} style={`--s: ${size}px`}>
+  <button type="button" class="cat" aria-label={label} data-lines={JSON.stringify(said)}>
+    <svg viewBox="0 0 120 110" aria-hidden="true" focusable="false">
+      <defs>
+        <radialGradient id="kmeow-fur" cx="38%" cy="30%" r="75%">
+          <stop offset="0" style="stop-color: var(--fur-hi)" />
+          <stop offset="1" style="stop-color: var(--fur)" />
+        </radialGradient>
+      </defs>
+      <g class="tail"><path d="M88 92 C112 92 114 62 100 54" fill="none" style="stroke: var(--fur)" stroke-width="11" stroke-linecap="round" /></g>
+      {pose === 'sit'
+        ? <ellipse class="body" cx="60" cy="80" rx="31" ry="27" fill="url(#kmeow-fur)" />
+        : <ellipse class="body" cx="60" cy="88" rx="44" ry="19" fill="url(#kmeow-fur)" />}
+      <g class="head" transform={pose === 'sit' ? undefined : 'translate(-14 26)'}>
+        <path d="M37 40 L33 13 Q34 10 37 12 L55 27 Z" style="fill: var(--fur)" />
+        <path d="M83 40 L87 13 Q86 10 83 12 L65 27 Z" style="fill: var(--fur)" />
+        <path d="M39 33 L37 19 L48 28 Z" fill="#f2a3b3" opacity="0.8" />
+        <path d="M81 33 L83 19 L72 28 Z" fill="#f2a3b3" opacity="0.8" />
+        <ellipse cx="60" cy="44" rx="28" ry="23" fill="url(#kmeow-fur)" />
+        <g class="eyes">
+          <g class="open"><ellipse cx="50" cy="44" rx="3.6" ry="4.4" fill="#f4f7fb" /><ellipse cx="70" cy="44" rx="3.6" ry="4.4" fill="#f4f7fb" /></g>
+          <g class="shut" fill="none" stroke="#f4f7fb" stroke-width="2.4" stroke-linecap="round"><path d="M46 45 Q50 49 54 45" /><path d="M66 45 Q70 49 74 45" /></g>
+        </g>
+        <ellipse cx="43" cy="52" rx="4.5" ry="2.8" fill="#f2a3b3" opacity="0.75" />
+        <ellipse cx="77" cy="52" rx="4.5" ry="2.8" fill="#f2a3b3" opacity="0.75" />
+        <path d="M57 51 Q60 54 63 51" fill="none" stroke="#f2a3b3" stroke-width="2" stroke-linecap="round" />
+      </g>
+      {pose === 'sit' && <g style="fill: var(--fur-hi)"><ellipse cx="49" cy="104" rx="8" ry="5" /><ellipse cx="71" cy="104" rx="8" ry="5" /></g>}
+    </svg>
+  </button>
+  <span class="bubble" role="status" aria-live="polite"></span>
+</span>
+
+<script>
+  // One listener set for every cat on the page (there is normally one).
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  for (const btn of document.querySelectorAll<HTMLButtonElement>('.labcat .cat')) {
+    const root = btn.parentElement!;
+    const bubble = root.querySelector<HTMLElement>('.bubble')!;
+    const lines: string[] = JSON.parse(btn.dataset.lines ?? '[]');
+    let i = 0;
+    let timer = 0;
+    btn.addEventListener('click', () => {
+      if (!lines.length) return;
+      bubble.textContent = lines[i % lines.length];
+      i++;
+      root.classList.add('talking');
+      if (!reduce.matches) { root.classList.remove('hop'); void root.offsetWidth; root.classList.add('hop'); }
+      clearTimeout(timer);
+      timer = window.setTimeout(() => root.classList.remove('talking'), 4200);
+    });
+    root.addEventListener('animationend', () => root.classList.remove('hop'));
+  }
+  // Eyes follow the pointer a little; only while the cat is on screen.
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches && !reduce.matches) {
+    const cats = [...document.querySelectorAll<HTMLElement>('.labcat')];
+    const seen = new Set<HTMLElement>();
+    const io = new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? seen.add(e.target as HTMLElement) : seen.delete(e.target as HTMLElement))));
+    cats.forEach((c) => io.observe(c));
+    let raf = 0, px = 0, py = 0;
+    addEventListener('pointermove', (e) => {
+      px = e.clientX; py = e.clientY;
+      if (raf || !seen.size) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        for (const c of seen) {
+          const r = c.getBoundingClientRect();
+          const dx = px - (r.left + r.width / 2), dy = py - (r.top + r.height * 0.4);
+          const d = Math.hypot(dx, dy) || 1;
+          const k = Math.min(1, d / 300);
+          c.style.setProperty('--ex', `${((dx / d) * 2.4 * k).toFixed(2)}px`);
+          c.style.setProperty('--ey', `${((dy / d) * 2 * k).toFixed(2)}px`);
+        }
+      });
+    }, { passive: true });
+  }
+</script>
+
+<style>
+  .labcat {
+    --fur: #3a4252; --fur-hi: #57627a;
+    position: relative; display: inline-block; width: var(--s); view-transition-name: lab-cat;
+  }
+  :global(:root[data-theme='dark']) .labcat { --fur: #5d667a; --fur-hi: #7d88a0; }
+  @media (prefers-color-scheme: dark) { :global(:root:not([data-theme='light'])) .labcat { --fur: #5d667a; --fur-hi: #7d88a0; } }
+  .cat {
+    display: block; width: 100%; min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer;
+    border-radius: var(--r-md); filter: drop-shadow(0 6px 6px var(--lo));
+  }
+  .cat svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .eyes { transform: translate(var(--ex, 0), var(--ey, 0)); transition: transform var(--dur-fast) var(--ease-out); }
+  .shut { display: none; }
+  .labcat[data-pose='loaf'] .open { display: none; }
+  .labcat[data-pose='loaf'] .shut { display: inline; }
+  .tail { transform-origin: 88px 92px; }
+  .head { transform-box: fill-box; }
+  @media (hover: hover) and (pointer: fine) {
+    /* petting: eyes close, the tail swishes */
+    .cat:hover .open { display: none; }
+    .cat:hover .shut { display: inline; }
+    .cat:hover .tail { animation: swish 0.9s var(--ease-out) infinite alternate; }
+  }
+  @keyframes swish { to { transform: rotate(14deg); } }
+  .hop .cat { animation: hop 420ms var(--ease-out); }
+  @keyframes hop {
+    0% { transform: translateY(0) scale(1, 1); }
+    25% { transform: translateY(2px) scale(1.06, 0.92); }
+    55% { transform: translateY(-14px) scale(0.96, 1.05); }
+    100% { transform: translateY(0) scale(1, 1); }
+  }
+  .bubble {
+    position: absolute; bottom: calc(100% - 4px); z-index: 3; width: max-content; max-width: min(260px, 70vw);
+    padding: 10px 14px; border-radius: var(--r-md); background: var(--surface); color: var(--ink);
+    font: 500 15px/1.5 var(--f-body); box-shadow: 4px 6px 14px var(--lo), inset 0 2px 0 var(--hi);
+    opacity: 0; transform: translateY(6px) scale(0.97); pointer-events: none;
+    transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-base) var(--ease-out);
+  }
+  .labcat[data-bubble='left'] .bubble { right: 30%; transform-origin: 90% 100%; }
+  .labcat[data-bubble='right'] .bubble { left: 30%; transform-origin: 10% 100%; }
+  .bubble:empty { display: none; }
+  .talking .bubble { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .cat:hover .tail { animation: none; }
+    .bubble { transform: none; transition: opacity 120ms linear; }
+  }
+</style>

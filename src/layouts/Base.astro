@@ -67,6 +67,8 @@ const graph = [org, ...jsonld];
       try { const s = localStorage.getItem('theme'); if (s === 'light' || s === 'dark') document.documentElement.dataset.theme = s; } catch {}
     </script>
     <script type="application/ld+json" set:html={JSON.stringify(graph.length === 1 ? graph[0] : { '@context': 'https://schema.org', '@graph': graph.map(({ '@context': _c, ...g }: any) => g) })} />
+    {/* the next page renders in the background while the pointer rests on its link, so arriving is instant */}
+    <script type="speculationrules" set:html={JSON.stringify({ prerender: [{ where: { href_matches: '/*' }, eagerness: 'moderate' }] })} />
     <slot name="head" />
   </head>
   <body>

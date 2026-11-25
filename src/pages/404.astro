@@ -1,12 +1,12 @@
 ---
+import LabCat from '@/components/LabCat.astro';
 import Base from '@/layouts/Base.astro';
-import ClayFigure from '@/components/ClayFigure.astro';
 import { href } from '@/i18n/ui';
 ---
 <Base lang="zh-tw" title="找不到頁面" description="這個頁面不存在。">
   <meta slot="head" name="robots" content="noindex" />
   <div class="wrap section lost">
-    <ClayFigure clay="grey" placeholder size={140} />
+    <LabCat lang="zh-tw" size={120} bubble="right" lines={[{ zh: '我也找不到這塊積木……', en: '' }, { zh: '回首頁看看？', en: '' }]} />
     <h1>這塊積木不見了</h1>
     <p lang="en">This page doesn’t exist.</p>
     <p class="cta">
