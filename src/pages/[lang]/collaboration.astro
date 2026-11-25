@@ -74,7 +74,7 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
   .record section { display: grid; gap: var(--space-4); align-content: start; }
   .record h2 { font-size: 22px; }
   .tags b { font: 600 12px/1 var(--f-mono); color: var(--ink-2); }
-  .venues li { font-style: italic; background: var(--surface); box-shadow: 3px 4px 10px var(--lo); }
+  .venues li { font-style: italic; }
   .cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-5); }
   @media (max-width: 899px) { .record { grid-template-columns: 1fr; } }
   @media (max-width: 899px) { .ways { grid-template-columns: 1fr; } }

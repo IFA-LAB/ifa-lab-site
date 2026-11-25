@@ -91,6 +91,13 @@ const KINDS: { key: Kind; clay: string; name: Bi; unit: Bi }[] = [
 ];
 /** English units in singular when the count is 1. */
 const unit = (k: (typeof KINDS)[number], n: number) => (zh || n !== 1 ? t(k.unit, lang) : t(k.unit, lang).replace(/s$/, ''));
+/** Split a sentence around its quoted title (〈…〉 or “…”) so only the title is linked. */
+const splitTitle = (text: string) => {
+  const m = text.match(/〈([^〉]+)〉|“([^”]+)”/);
+  if (!m || m.index === undefined) return null;
+  const whole = m[0];
+  return { before: text.slice(0, m.index) + whole[0], title: m[1] ?? m[2], after: whole[whole.length - 1] + text.slice(m.index + whole.length) };
+};
 const kindOf = (k: Kind) => KINDS.find((x) => x.key === k)!;
 const total = (k: Kind) => events.filter((e) => e.kind === k).length;
 const shown = KINDS.filter((k) => total(k.key) > 0);
@@ -134,7 +141,7 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
                 <i class="stud" aria-hidden="true"></i>
                 <div>
                   <p class="meta mono">{e.date.length > 4 ? e.date.replace('-', '/') : e.date} · {t(kindOf(e.kind).name, lang)}</p>
-                  <p class="txt">{e.link ? <a href={e.link}>{t(e.text, lang)}</a> : t(e.text, lang)}</p>
+                  <p class="txt">{(() => { const x = e.link ? splitTitle(t(e.text, lang)) : null; return x ? <>{x.before}<a href={e.link}>{x.title}</a>{x.after}</> : e.link ? <a href={e.link}>{t(e.text, lang)}</a> : t(e.text, lang); })()}</p>
                   {e.who && e.who.length > 0 && (
                     <p class="who">{e.who.map((id, i) => <>{i > 0 && (zh ? '、' : ', ')}<a href={href(lang, `members/${id}`)}>{t(nameOf(id), lang)}</a></>)}</p>
                   )}

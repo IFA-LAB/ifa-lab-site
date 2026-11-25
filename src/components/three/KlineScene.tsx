@@ -8,7 +8,7 @@ import type { Bar } from './ClayKline';
 const UP = CLAY.up;
 const DOWN = CLAY.down;
 const PLATE = '#f3f5f8';
-const PLATE_DARK = '#3a4556';
+const PLATE_DARK = '#5a6780';
 const SUN = '#f2b544';
 const FUR = '#3a4252';
 
@@ -27,33 +27,44 @@ function useDark() {
   return attr ? attr === 'dark' : os;
 }
 
-/** A small clay plaque in front of each candle, with the area name on top. */
+/** A clay desk nameplate in front of each candle, tilted toward the viewer so the name reads at a glance. */
 function Label({ text, x, dark, on }: { text: string; x: number; dark: boolean; on: boolean }) {
   // redraw once the web font for these glyphs has arrived
   const [fontReady, setFontReady] = useState(0);
   useEffect(() => {
-    document.fonts?.load(`118px Huninn`, text).then(() => setFontReady(1), () => {});
+    document.fonts?.load(`120px Huninn`, text).then(() => setFontReady(1), () => {});
   }, [text]);
   const tex = useMemo(() => {
     const c = document.createElement('canvas');
-    c.width = 512; c.height = 176;
+    c.width = 512; c.height = 280;
     const g = c.getContext('2d')!;
     g.fillStyle = on ? (dark ? '#9cc0ff' : '#2f5ea6') : dark ? '#f1f5fa' : '#1d2633';
-    g.font = '400 118px Huninn, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif';
+    g.font = '400 120px Huninn, Fredoka, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif';
     g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillText(text, 256, 92, 470);
+    // long names: CJK splits in half, Latin splits at a space; a single long word shrinks to fit instead
+    const w = g.measureText(text).width;
+    const cjk = /[㐀-鿿]/.test(text);
+    const sp = text.lastIndexOf(' ', Math.ceil(text.length / 2) + 1);
+    const lines = w <= 480 ? [text]
+      : cjk ? [text.slice(0, Math.ceil(text.length / 2)).trim(), text.slice(Math.ceil(text.length / 2)).trim()]
+      : sp > 0 ? [text.slice(0, sp).trim(), text.slice(sp).trim()]
+      : [text];
+    if (lines.length === 1) {
+      if (w > 480) g.font = g.font.replace('120px', `${Math.floor((120 * 480) / w)}px`);
+      g.fillText(text, 256, 148);
+    } else { g.font = g.font.replace('120px', '104px'); g.fillText(lines[0], 256, 84, 490); g.fillText(lines[1], 256, 204, 490); }
     const t = new CanvasTexture(c);
-    t.colorSpace = SRGBColorSpace; t.anisotropy = 4;
+    t.colorSpace = SRGBColorSpace; t.anisotropy = 8;
     return t;
   }, [text, dark, fontReady, on]);
   useEffect(() => () => tex.dispose(), [tex]);
   return (
-    <group position={[x, on ? 0.06 : 0, 1.02]}>
-      <RoundedBox args={[1.12, 0.1, 0.46]} radius={0.045} smoothness={3} position={[0, 0.05, 0]} castShadow receiveShadow>
-        <meshStandardMaterial color={dark ? '#4a5668' : '#ffffff'} roughness={0.9} />
+    <group position={[x, on ? 0.08 : 0, 1.3]} rotation={[-0.62, 0, 0]}>
+      <RoundedBox args={[1.14, 0.62, 0.12]} radius={0.05} smoothness={3} position={[0, 0.31, 0]} castShadow receiveShadow>
+        <meshStandardMaterial color={dark ? '#6d7a92' : '#ffffff'} roughness={0.9} />
       </RoundedBox>
-      <mesh position={[0, 0.102, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[1.08, 0.37]} />
+      <mesh position={[0, 0.31, 0.062]}>
+        <planeGeometry args={[1.1, 0.6]} />
         <meshBasicMaterial map={tex} transparent toneMapped={false} />
       </mesh>
     </group>
@@ -137,8 +148,8 @@ function Cat({ reduce, targetX }: { reduce: boolean; targetX: number | null }) {
     const t = clock.getElapsedTime();
     const b = body.current;
     if (b) {
-      const gx = targetX === null ? home.x : Math.min(4.0, Math.max(-3.6, targetX + 0.75));
-      const gz = targetX === null ? home.z : 1.82;
+      const gx = targetX === null ? home.x : Math.min(4.0, Math.max(-3.6, targetX + 0.66));
+      const gz = targetX === null ? home.z : -1.35; // sits behind-right of the hovered candle, never over its nameplate
       const dx = gx - b.position.x, dz = gz - b.position.z;
       const d = Math.hypot(dx, dz);
       const k = d > 0 ? Math.min(d, dt * 3.4) / d : 0;

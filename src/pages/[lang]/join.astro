@@ -53,6 +53,7 @@ const faqLd = {
         {crew.map((m) => <a href={href(lang, `members/${m.id}`)} title={t(m.data.name, lang)}><ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} size={56} /><span class="visually-hidden">{t(m.data.name, lang)}</span></a>)}
       </div>
       <p class="muted when">{zh ? '他們每個人都是從一封信開始的。' : 'Every one of them started with an email.'}</p>
+      <p class="cta top"><a class="btn" href={`mailto:${lab.contact.email}`}>{zh ? `寄信給${advisor.name.zh}老師` : `Email Prof. ${advisor.name.en}`}</a></p>
     </div>
     <div class="faq">
       {faq.map((f) => (
@@ -99,7 +100,8 @@ const faqLd = {
   .past li { display: grid; gap: var(--space-1); padding-left: var(--space-4); box-shadow: inset 3px 0 0 var(--clay-sun); }
   .small { font-size: 14px; }
   @media (max-width: 767px) { .steps { grid-template-columns: 1fr; } }
-  .crowd { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-2); margin-top: var(--space-5); }
+  .cta.top { margin-top: var(--space-4); }
+  .crowd { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-4); margin-top: var(--space-5); }
   .crowd a { border-radius: var(--r-md); transition: transform var(--dur-fast) var(--ease-out); }
   @media (hover: hover) and (pointer: fine) { .crowd a:hover { transform: translateY(-6px); } }
   .when { margin-top: var(--space-4); }
