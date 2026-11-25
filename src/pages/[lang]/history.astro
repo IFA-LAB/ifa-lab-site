@@ -74,7 +74,7 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
         <li class="floor">
           <div class="slab">
             <h2>{year}</h2>
-            <span class="bricks" aria-hidden="true">{items.map((e) => <i data-k={e.kind}></i>)}</span>
+            <span class="bricks" aria-hidden="true">{items.map((e) => <i data-k={e.kind} style={e.clay && `--c: var(--clay-${e.clay})`}></i>)}</span>
             <p class="sum">{shown.filter((k) => items.some((e) => e.kind === k.key)).map((k) => (
               <span><i data-k={k.key} aria-hidden="true"></i>{items.filter((e) => e.kind === k.key).length} {unit(k, items.filter((e) => e.kind === k.key).length)}</span>
             ))}</p>
@@ -82,7 +82,7 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
           <ol class="events">
             {items.map((e) => (
               <li class="ev" data-kind={e.kind}>
-                <i class="stud" data-k={e.kind} aria-hidden="true"></i>
+                <i class="stud" data-k={e.kind} style={e.clay && `--c: var(--clay-${e.clay})`} aria-hidden="true"></i>
                 <div>
                   <p class="meta mono">{e.date.length > 4 ? e.date.replace('-', '/') : e.date} · {t(kindOf(e.kind).name, lang)}</p>
                   <p class="txt">{(() => { const x = e.link ? splitTitle(t(e.text, lang)) : null; return x ? <>{x.before}<a href={e.link}>{x.title}</a>{x.after}</> : e.link ? <a href={e.link}>{t(e.text, lang)}</a> : t(e.text, lang); })()}</p>
@@ -99,7 +99,6 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
         </li>
       ))}
     </ol>
-    <p class="muted note">{zh ? '年表由網站資料自動產生：成員在自己的資料裡補上獎項、論文或計畫，這裡就會多一筆。' : 'Generated from the site’s data: when members add awards, papers or grants to their profiles, they appear here.'}</p>
   </div>
 </Base>
 
@@ -153,9 +152,10 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
     .slab { position: static; grid-template-columns: auto 1fr; align-items: center; padding: var(--space-4); }
     .slab h2 { font-size: 32px; }
   }
-  /* Colour on this site always means research area. Event kinds share one slate clay and differ by shape:
-     paper = brick, thesis = tall brick, grant = flat slab, award = medal (round), milestone = diamond. */
-  .wrap { --c: color-mix(in oklab, var(--ink) 42%, var(--surface)); }
+  /* Colour on this site means research area: papers and theses wear their area's clay (set inline).
+     Other kinds differ by shape: grant = flat slab, award = gold medal (round), milestone = slate diamond. */
+  .wrap { --c: color-mix(in oklab, var(--ink) 58%, var(--surface)); }
+  i[data-k='award'] { --c: var(--clay-sun); }
   .totals li::before { content: none; }
   i[data-k='thesis'] { scale: 0.8 1.25; }
   i[data-k='grant'] { scale: 1.35 0.65; }

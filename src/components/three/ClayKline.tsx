@@ -18,7 +18,7 @@ type Props = {
   /** Touch screens, before the scene starts: how to wake it. */
   wake?: string;
   /** UI strings for the timeline and the toys. */
-  text?: { play: string; pause: string; year: string; total: string; coin: string[]; cat: string[] };
+  text?: { play: string; pause: string; year: string; total: string; more?: string; coin: string[]; cat: string[] };
 };
 
 // three.js (~240 KB gzip) is only fetched and parsed when the scene is about to show.
@@ -82,6 +82,15 @@ export default function ClayKline({ bars, steps = [], hint, hintTouch, unit, wak
   );
   const total = shown.reduce((n, b) => n + b.count, 0);
   const atNow = step >= last;
+  // what this step added: the area that grew most since the previous step (the cat goes to look at it)
+  const grew = useMemo(() => {
+    if (!steps.length || step === 0) return null;
+    const prev = steps[step - 1].counts, cur = steps[step].counts;
+    let best: { bar: Bar; n: number } | null = null;
+    for (const b of bars) { const n = (cur[b.key] ?? 0) - (prev[b.key] ?? 0); if (n > 0 && (!best || n > best.n)) best = { bar: b, n }; }
+    return best;
+  }, [bars, steps, step]);
+  const added = steps.length && step > 0 ? total - bars.reduce((n, b) => n + (steps[step - 1].counts[b.key] ?? 0), 0) : 0;
 
   const onToy = (what: 'coin' | 'cat') => {
     const lines = text?.[what] ?? [];
@@ -98,7 +107,7 @@ export default function ClayKline({ bars, steps = [], hint, hintTouch, unit, wak
     <div ref={host} className="kline-canvas">
       <div aria-hidden="true" style={{ position: 'absolute', inset: 0 }}>
         <Suspense fallback={null}>
-          <KlineScene bars={shown} visible={visible} reduce={reduce} active={active} onHover={setActive} onToy={onToy} />
+          <KlineScene bars={shown} visible={visible} reduce={reduce} active={active} onHover={setActive} onToy={onToy} lookAt={!atNow && grew ? grew.bar.key : null} />
         </Suspense>
       </div>
       {steps.length > 1 && text && (
@@ -122,6 +131,7 @@ export default function ClayKline({ bars, steps = [], hint, hintTouch, unit, wak
       <span className="kline-hint" aria-live="polite">
         {say ? say
           : activeNow ? <><b>{activeNow.name}</b> · {activeNow.count} {unit}{!atNow && steps[step] ? ` (${steps[step].label})` : ''}</>
+          : !atNow && grew ? <><b>{steps[step].label}</b> · {grew.bar.name} +{grew.n}{added > grew.n ? ` · ${text?.more ?? '+'}${added - grew.n}` : ''}</>
           : touch ? hintTouch : hint}
       </span>
     </div>

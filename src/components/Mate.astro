@@ -41,8 +41,8 @@ const sub = [t(ui.cohort(m.data.cohort), lang), m.data.placeholder ? t(ui.placeh
   .caption .tag b { display: none; }
   .mate:hover .tag, .mate:focus-visible .tag { opacity: 1; translate: -50% 0; scale: 1; }
   .mate:hover :global(.fig), .mate:focus-visible :global(.fig) { animation: mate-hop 460ms var(--ease-out); }
-  /* happy squint */
-  .mate:hover :global(.eye), .mate:focus-visible :global(.eye) { scale: 1 0.35; }
+  /* wide, excited eyes (the sleepy dash belongs to profiles still to be filled in, so hover never looks like it) */
+  .mate:hover :global(.fig:not(.ghost) .eye), .mate:focus-visible :global(.fig:not(.ghost) .eye) { scale: 1.25 1.3; }
   .mate :global(.eye) { transition: scale var(--dur-fast) var(--ease-out); }
   @keyframes mate-hop {
     0% { transform: translateY(0) scale(1, 1); }

@@ -71,7 +71,7 @@ const description = zh
         </div>
       </div>
       <div class="visual" data-kline>
-        <ClayCandles label={zh ? '黏土做的 K 線模型：紅色上漲、綠色下跌的積木 K 棒，上方漂著金幣' : 'A clay candlestick model: red rising and green falling blocks with floating coins'} />
+        <ClayCandles bars={areas.map((a) => ({ clay: a.clay, count: perArea(a.key) }))} label={zh ? '黏土做的 K 線模型：每個研究領域一根積木 K 棒，越高代表成果越多，上方漂著金幣' : 'A clay candlestick model: one block per research area, taller for more work, with floating coins'} />
         <ClayKline
           client:visible
           bars={areas.map((a) => ({ key: a.key, label: zh ? a.name.zh : boardEn[a.key], name: t(a.name, lang), count: perArea(a.key), href: href(lang, `research#${a.key}`), clay: a.clay }))}
@@ -81,8 +81,8 @@ const description = zh
           wake={zh ? '點一下，讓 K 棒動起來' : 'Tap to bring the candles to life'}
           steps={steps}
           text={zh
-            ? { play: '播放實驗室的成長', pause: '暫停', year: '年份', total: '篇累積', coin: ['叮！研究經費 +1（假的）', '金幣翻面了，論文還是要自己寫。', '再點也不會變成國科會計畫喔。'], cat: ['喵！我是 K 喵。', '按左上角的播放鍵，看 K 棒一年一年長高。', '滑過 K 棒，我就跑過去看。'] }
-            : { play: 'Play the lab’s growth', pause: 'Pause', year: 'Year', total: 'works so far', coin: ['Ding! Funding +1 (not really).', 'The coin flipped. The paper still needs writing.', 'Clicking will not turn it into a grant.'], cat: ['Meow! I am K-meow.', 'Press play, top left, to watch the candles grow year by year.', 'Hover a candle and I will go look.'] }}
+            ? { play: '播放實驗室的成長', pause: '暫停', year: '年份', total: '篇累積', more: '其他 +', coin: ['叮！研究經費 +1（假的）', '金幣翻面了，論文還是要自己寫。', '再點也不會變成國科會計畫喔。'], cat: ['喵！我是 K 喵。', '按左上角的播放鍵，看 K 棒一年一年長高。', '滑過 K 棒，我就跑過去看。'] }
+            : { play: 'Play the lab’s growth', pause: 'Pause', year: 'Year', total: 'works so far', more: 'others +', coin: ['Ding! Funding +1 (not really).', 'The coin flipped. The paper still needs writing.', 'Clicking will not turn it into a grant.'], cat: ['Meow! I am K-meow.', 'Press play, top left, to watch the candles grow year by year.', 'Hover a candle and I will go look.'] }}
         />
       </div>
       <ul class="legend" aria-label={zh ? '六個研究領域' : 'Six research areas'}>
@@ -148,7 +148,7 @@ const description = zh
     <ul class="news">
       {latest.map((e) => (
         <li class="clay">
-          <p class="tag"><i data-k={e.kind} aria-hidden="true"></i>{t(kindLook[e.kind].name, lang)} · <time datetime={e.date}>{fmtDate(e.date)}</time></p>
+          <p class="tag"><i data-k={e.kind} style={e.clay && `--c: var(--clay-${e.clay})`} aria-hidden="true"></i>{t(kindLook[e.kind].name, lang)} · <time datetime={e.date}>{fmtDate(e.date)}</time></p>
           <p class="say">{e.link ? <a href={e.link}>{t(e.text, lang)}</a> : t(e.text, lang)}</p>
         </li>
       ))}
@@ -288,10 +288,10 @@ const description = zh
   .news { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
   .news li { padding: var(--space-5); display: grid; gap: var(--space-3); align-content: start; }
   .tag { display: flex; align-items: center; gap: var(--space-2); font: 500 14px/1.4 var(--f-mono); color: var(--ink-2); }
-  .tag i { width: 26px; height: 15px; border-radius: 5px; background: color-mix(in oklab, var(--ink) 42%, var(--surface)); box-shadow: inset 0 -3px 0 rgb(0 0 0 / 0.16), inset 1px 2px 3px rgb(255 255 255 / 0.4); }
+  .tag i { width: 26px; height: 15px; border-radius: 5px; background: var(--c, color-mix(in oklab, var(--ink) 58%, var(--surface))); box-shadow: inset 0 -3px 0 rgb(0 0 0 / 0.16), inset 1px 2px 3px rgb(255 255 255 / 0.4); }
   .tag i[data-k='thesis'] { scale: 0.75 1.3; }
   .tag i[data-k='grant'] { scale: 1.2 0.6; }
-  .tag i[data-k='award'] { width: 18px; height: 18px; border-radius: 50%; }
+  .tag i[data-k='award'] { width: 18px; height: 18px; border-radius: 50%; --c: var(--clay-sun); }
   .tag i[data-k='milestone'] { width: 15px; rotate: 45deg; }
   .say { font-size: 17px; line-height: 1.65; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
   .say a { color: var(--ink); text-decoration: none; }

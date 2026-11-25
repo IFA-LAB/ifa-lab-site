@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { CanvasTexture, SRGBColorSpace, type Group, type Mesh, type PerspectiveCamera } from 'three';
+import { CanvasTexture, Color, SRGBColorSpace, type Group, type Mesh, type PerspectiveCamera } from 'three';
 import { RoundedBox, useMedia, CLAY } from './util';
 import type { Bar } from './ClayKline';
 
@@ -38,7 +38,7 @@ function Label({ text, x, dark, on, fill }: { text: string; x: number; dark: boo
     const c = document.createElement('canvas');
     c.width = 512; c.height = 280;
     const g = c.getContext('2d')!;
-    g.fillStyle = on ? '#1d2633' : dark ? '#f1f5fa' : '#1d2633';
+    g.fillStyle = '#1d2633';
     g.font = '400 120px Huninn, Fredoka, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif';
     g.textAlign = 'center'; g.textBaseline = 'middle';
     // long names: CJK splits in half, Latin splits at a space; a single long word shrinks to fit instead
@@ -58,10 +58,12 @@ function Label({ text, x, dark, on, fill }: { text: string; x: number; dark: boo
     return t;
   }, [text, dark, fontReady, on]);
   useEffect(() => () => tex.dispose(), [tex]);
+  // the plate wears a pale coat of its area colour, so board, legend and cards all speak one colour code
+  const tint = useMemo(() => '#' + new Color(fill).lerp(new Color(dark ? '#3a4558' : '#ffffff'), dark ? 0.3 : 0.5).getHexString(), [fill, dark]);
   return (
-    <group position={[x, on ? 0.18 : 0, 1.3]} rotation={[on ? -0.45 : -0.62, 0, 0]}>
+    <group position={[x, on ? 0.18 : 0, 0.82]} rotation={[on ? -0.45 : -0.62, 0, 0]}>
       <RoundedBox args={[1.14, 0.62, 0.12]} radius={0.05} smoothness={3} position={[0, 0.31, 0]} castShadow receiveShadow>
-        <meshStandardMaterial color={on ? fill : dark ? '#6d7a92' : '#ffffff'} roughness={0.9} />
+        <meshStandardMaterial color={on ? fill : tint} roughness={0.9} />
       </RoundedBox>
       <mesh position={[0, 0.31, 0.062]}>
         <planeGeometry args={[1.1, 0.6]} />
@@ -85,8 +87,8 @@ function Candle({ bar, x, base, up, reduce, onHover, delay, on }: { bar: Bar; x:
     h.x = reduce ? 1 : (h.x * (0.45 + h.prev)) / (0.45 + bodyH);
     h.prev = bodyH;
   }
-  hs.current.to = bar.count === 0 ? 0.06 : 1;
-  const color = up ? UP : DOWN;
+  hs.current.to = bar.count === 0 ? 0.001 : 1; // no work yet: the candle is not on the board
+  const color = (CLAY as Record<string, string>)[bar.clay] ?? (up ? UP : DOWN); // area colour, same as the cards below
 
   useFrame((_, dt) => {
     const s = squish.current;
@@ -102,7 +104,9 @@ function Candle({ bar, x, base, up, reduce, onHover, delay, on }: { bar: Bar; x:
     const h = hs.current;
     h.x += (h.to - h.x) * (reduce ? 1 : Math.min(1, dt * 9));
     if (g.current) {
-      g.current.scale.set(1 - s.x * 0.5, Math.max(0.001, e * h.x) * (1 + s.x), 1 - s.x * 0.5);
+      const sy = Math.max(0.001, e * h.x) * (1 + s.x);
+      g.current.scale.set(1 - s.x * 0.5, sy, 1 - s.x * 0.5);
+      g.current.visible = sy > 0.02; // a flattened candle would z-fight with the board
     }
   });
 
@@ -218,7 +222,7 @@ function Lens() {
   return null;
 }
 
-function World({ bars, reduce, onHover, active, dark, onToy }: { bars: Bar[]; reduce: boolean; onHover: (b: Bar | null) => void; active: Bar | null; dark: boolean; onToy: (what: 'coin' | 'cat') => void }) {
+function World({ bars, reduce, onHover, active, dark, onToy, lookAt }: { bars: Bar[]; reduce: boolean; onHover: (b: Bar | null) => void; active: Bar | null; dark: boolean; onToy: (what: 'coin' | 'cat') => void; lookAt: string | null }) {
   const compact = useThree((st) => st.size.width) < 560;
   const world = useRef<Group>(null);
   const target = useRef({ x: 0, y: 0 });
@@ -249,15 +253,15 @@ function World({ bars, reduce, onHover, active, dark, onToy }: { bars: Bar[]; re
       </RoundedBox>
       {layout.map((l, i) => <Candle key={l.bar.key} {...l} delay={0.15 + i * 0.09} reduce={reduce} onHover={onHover} on={active?.key === l.bar.key} />)}
       {!compact && layout.map((l) => <Label key={l.bar.key} text={l.bar.label} x={l.x} dark={dark} on={active?.key === l.bar.key} fill={(CLAY as Record<string, string>)[l.bar.clay] ?? CLAY.grey} />)}
-      <Coin position={[-2.4, 3.9, -1.2]} phase={0} reduce={reduce} onFlip={() => onToy('coin')} />
-      <Coin position={[0.4, 4.4, -1.0]} phase={1.7} reduce={reduce} onFlip={() => onToy('coin')} />
-      <Coin position={[2.6, 3.7, -0.8]} phase={3.4} reduce={reduce} onFlip={() => onToy('coin')} />
-      <Cat onPet={() => onToy('cat')} dark={dark} reduce={reduce} targetX={active ? layout.find((l) => l.bar.key === active.key)?.x ?? null : null} />
+      <Coin position={[-2.4, 3.6, -1.2]} phase={0} reduce={reduce} onFlip={() => onToy('coin')} />
+      <Coin position={[0.4, 3.95, -1.0]} phase={1.7} reduce={reduce} onFlip={() => onToy('coin')} />
+      <Coin position={[2.6, 3.4, -0.8]} phase={3.4} reduce={reduce} onFlip={() => onToy('coin')} />
+      <Cat onPet={() => onToy('cat')} dark={dark} reduce={reduce} targetX={(() => { const k = active?.key ?? lookAt; return k ? layout.find((l) => l.bar.key === k)?.x ?? null : null; })()} />
     </group>
   );
 }
 
-export default function KlineScene({ bars, visible, reduce, active, onHover, onToy }: { bars: Bar[]; visible: boolean; reduce: boolean; active: Bar | null; onHover: (b: Bar | null) => void; onToy: (what: 'coin' | 'cat') => void }) {
+export default function KlineScene({ bars, visible, reduce, active, onHover, onToy, lookAt = null }: { bars: Bar[]; visible: boolean; reduce: boolean; active: Bar | null; onHover: (b: Bar | null) => void; onToy: (what: 'coin' | 'cat') => void; lookAt?: string | null }) {
   const dark = useDark();
   return (
     <Canvas
@@ -286,7 +290,7 @@ export default function KlineScene({ bars, visible, reduce, active, onHover, onT
         shadow-camera-bottom={-8}
       />
       <Lens />
-      <World bars={bars} reduce={reduce} onHover={onHover} active={active} dark={dark} onToy={onToy} />
+      <World bars={bars} reduce={reduce} onHover={onHover} active={active} dark={dark} onToy={onToy} lookAt={lookAt} />
     </Canvas>
   );
 }

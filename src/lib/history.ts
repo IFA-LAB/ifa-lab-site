@@ -1,10 +1,13 @@
 import { getCollection } from 'astro:content';
 import { t, href, type Bi, type Locale } from '@/i18n/ui';
+import { areas } from '@/data/lab';
 
 /** The lab's timeline, built from the data files (so it grows as members add data) plus a few hand-written milestones.
     Used by the history page and the "latest" row on the home page. */
 export type Kind = 'milestone' | 'paper' | 'grant' | 'thesis' | 'award';
-export type Event = { date: string; kind: Kind; text: Bi; link?: string; who?: string[]; photo?: 'ched' };
+export type Event = { date: string; kind: Kind; text: Bi; link?: string; who?: string[]; photo?: 'ched'; /** clay colour of the research area (papers, theses) */ clay?: string };
+
+const clayOf = (area?: string) => areas.find((a) => a.key === area)?.clay;
 
 export async function labEvents(lang: Locale): Promise<Event[]> {
   const members = await getCollection('members');
@@ -41,6 +44,7 @@ export async function labEvents(lang: Locale): Promise<Event[]> {
       return {
         date: future ? THIS_YEAR : String(p.data.year),
         kind: 'paper' as const,
+        clay: clayOf(p.data.area),
         text: future
           ? { zh: `〈${p.data.title}〉獲 ${p.data.venue} 接受，即將刊登。`, en: `“${p.data.title}” accepted by ${p.data.venue}.` }
           : { zh: `〈${p.data.title}〉刊登於 ${p.data.venue}。`, en: `“${p.data.title}” published in ${p.data.venue}.` },
@@ -52,6 +56,7 @@ export async function labEvents(lang: Locale): Promise<Event[]> {
   const fromTheses: Event[] = theses.map((x) => ({
     date: `${x.data.academicYear + 1912}-07`,
     kind: 'thesis' as const,
+    clay: clayOf(x.data.area),
     text: { zh: `完成碩士論文〈${x.data.title.zh}〉。`, en: `Completes the master’s thesis “${x.data.title.en ?? x.data.title.zh}”.` },
     who: [x.data.member],
   }));
