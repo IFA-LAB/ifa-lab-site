@@ -27,8 +27,8 @@ function useDark() {
   return attr ? attr === 'dark' : os;
 }
 
-/** Area name painted on the board in front of its candle. */
-function Label({ text, x, dark }: { text: string; x: number; dark: boolean }) {
+/** A small clay plaque in front of each candle, with the area name on top. */
+function Label({ text, x, dark, on }: { text: string; x: number; dark: boolean; on: boolean }) {
   // redraw once the web font for these glyphs has arrived
   const [fontReady, setFontReady] = useState(0);
   useEffect(() => {
@@ -38,20 +38,25 @@ function Label({ text, x, dark }: { text: string; x: number; dark: boolean }) {
     const c = document.createElement('canvas');
     c.width = 512; c.height = 176;
     const g = c.getContext('2d')!;
-    g.fillStyle = dark ? '#f1f5fa' : '#1d2633';
+    g.fillStyle = on ? (dark ? '#9cc0ff' : '#2f5ea6') : dark ? '#f1f5fa' : '#1d2633';
     g.font = '400 118px Huninn, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif';
     g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillText(text, 256, 92, 504);
+    g.fillText(text, 256, 92, 470);
     const t = new CanvasTexture(c);
     t.colorSpace = SRGBColorSpace; t.anisotropy = 4;
     return t;
-  }, [text, dark, fontReady]);
+  }, [text, dark, fontReady, on]);
   useEffect(() => () => tex.dispose(), [tex]);
   return (
-    <mesh position={[x, 0.011, 1.88]} rotation={[-Math.PI / 2, 0, 0]}>
-      <planeGeometry args={[1.2, 0.41]} />
-      <meshBasicMaterial map={tex} transparent toneMapped={false} />
-    </mesh>
+    <group position={[x, on ? 0.06 : 0, 1.02]}>
+      <RoundedBox args={[1.12, 0.1, 0.46]} radius={0.045} smoothness={3} position={[0, 0.05, 0]} castShadow receiveShadow>
+        <meshStandardMaterial color={dark ? '#4a5668' : '#ffffff'} roughness={0.9} />
+      </RoundedBox>
+      <mesh position={[0, 0.102, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[1.08, 0.37]} />
+        <meshBasicMaterial map={tex} transparent toneMapped={false} />
+      </mesh>
+    </group>
   );
 }
 
@@ -110,7 +115,7 @@ function Coin({ position, phase, reduce }: { position: [number, number, number];
     if (!m.current || reduce) return;
     const t = clock.getElapsedTime();
     m.current.position.y = position[1] + Math.sin(t * 1.1 + phase) * 0.12;
-    m.current.rotation.z = t * 0.6 + phase;
+    m.current.rotation.z = Math.sin(t * 0.7 + phase) * 0.55; // wobble, never edge-on
   });
   return (
     <mesh ref={m} position={position} rotation={[Math.PI / 2.4, 0, 0]} castShadow>
@@ -125,19 +130,22 @@ function Cat({ reduce, targetX }: { reduce: boolean; targetX: number | null }) {
   const tail = useRef<Mesh>(null);
   const head = useRef<Mesh>(null);
   const body = useRef<Group>(null);
-  const home = 3.95;
+  // rests in the back-right corner, beside the last candle; trots to the front edge when a candle is hovered
+  const home = { x: 4.0, z: -1.1 };
   useFrame(({ clock }, dt) => {
     if (reduce) return;
     const t = clock.getElapsedTime();
     const b = body.current;
     if (b) {
-      // trot along the front edge toward the hovered candle, then sit and face the viewer
-      const goal = targetX === null ? home : Math.min(3.95, Math.max(-3.6, targetX + 0.75));
-      const dx = goal - b.position.x;
-      const step = Math.sign(dx) * Math.min(Math.abs(dx), dt * 3.2);
-      b.position.x += step;
-      const moving = Math.abs(dx) > 0.02;
-      const face = moving ? (dx > 0 ? 0 : Math.PI) : -0.5;
+      const gx = targetX === null ? home.x : Math.min(4.0, Math.max(-3.6, targetX + 0.75));
+      const gz = targetX === null ? home.z : 1.82;
+      const dx = gx - b.position.x, dz = gz - b.position.z;
+      const d = Math.hypot(dx, dz);
+      const k = d > 0 ? Math.min(d, dt * 3.4) / d : 0;
+      b.position.x += dx * k;
+      b.position.z += dz * k;
+      const moving = d > 0.02;
+      const face = moving ? Math.atan2(-dz, dx) : -0.5;
       b.rotation.y += (face - b.rotation.y) * Math.min(1, dt * 8);
       b.position.y = moving ? Math.abs(Math.sin(t * 14)) * 0.08 : 0;
     }
@@ -146,7 +154,7 @@ function Cat({ reduce, targetX }: { reduce: boolean; targetX: number | null }) {
   });
   const fur = <meshStandardMaterial color={FUR} roughness={0.9} />;
   return (
-    <group ref={body} position={[home, 0, 0.75]} rotation={[0, -0.5, 0]} scale={0.8}>
+    <group ref={body} position={[home.x, 0, home.z]} rotation={[0, -0.5, 0]} scale={0.72}>
       <mesh position={[0, 0.5, 0]} scale={[1.15, 0.85, 0.9]} castShadow><sphereGeometry args={[0.62, 32, 24]} />{fur}</mesh>
       <mesh ref={head} position={[0.55, 1.15, 0]} castShadow><sphereGeometry args={[0.46, 32, 24]} />{fur}</mesh>
       <mesh position={[0.48, 1.6, 0.22]} rotation={[0, 0, 0.15]} castShadow><coneGeometry args={[0.16, 0.32, 16]} />{fur}</mesh>
@@ -200,7 +208,7 @@ function World({ bars, reduce, onHover, active, dark }: { bars: Bar[]; reduce: b
         <meshStandardMaterial color={dark ? PLATE_DARK : PLATE} roughness={0.9} />
       </RoundedBox>
       {layout.map((l, i) => <Candle key={l.bar.key} {...l} delay={0.15 + i * 0.09} reduce={reduce} onHover={onHover} />)}
-      {layout.map((l) => <Label key={l.bar.key} text={l.bar.label} x={l.x} dark={dark} />)}
+      {layout.map((l) => <Label key={l.bar.key} text={l.bar.label} x={l.x} dark={dark} on={active?.key === l.bar.key} />)}
       <Coin position={[-2.4, 3.9, -1.2]} phase={0} reduce={reduce} />
       <Coin position={[0.4, 4.4, -1.0]} phase={1.7} reduce={reduce} />
       <Coin position={[2.6, 3.7, -0.8]} phase={3.4} reduce={reduce} />

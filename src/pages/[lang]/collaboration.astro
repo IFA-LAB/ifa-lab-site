@@ -45,6 +45,7 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
         : 'With Mega Financial Holding and Mega Bank, we study whether stochastic-dominance relations are predictable and persistent, working through cross-timezone data alignment, tuning and financial features so the results can feed real investment decisions.'}</p>
       <p class="muted">{zh ? '參與成員：' : 'Team: '}<a href={href(lang, 'members/wei-hua-hou')}>{zh ? '侯威華' : 'Wei-Hua Hou'}</a>{zh ? '、' : ', '}<a href={href(lang, 'members/yu-bin-chen')}>{zh ? '陳昱斌' : 'Yu-Bin Chen'}</a>{zh ? '，指導：邱信瑜' : '; advisor Hsin-Yu Chiu'}</p>
     </section>
+    <p class="cta"><a class="btn" href={`mailto:${lab.contact.email}?subject=${encodeURIComponent(zh ? '和 IFA Lab 合作' : 'Collaboration with IFA Lab')}`}>{zh ? '寫信談合作' : 'Email us about a project'}</a> <a class="btn secondary" href={href(lang, 'research')}>{zh ? '先看研究成果' : 'See our research first'}</a></p>
 
     <div class="record">
       <section aria-labelledby="co-h">
@@ -53,11 +54,11 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
       </section>
       <section aria-labelledby="ve-h">
         <h2 id="ve-h">{zh ? `刊登過的 ${venues.length} 本期刊` : `${venues.length} journals we have published in`}</h2>
-        <ul class="venues">{venues.map((v) => <li lang="en">{v}</li>)}</ul>
+        <ul class="tags venues">{venues.map((v) => <li lang="en">{v}</li>)}</ul>
       </section>
     </div>
 
-    <p class="cta"><a class="btn" href={`mailto:${lab.contact.email}?subject=${encodeURIComponent(zh ? '和 IFA Lab 合作' : 'Collaboration with IFA Lab')}`}>{zh ? '寫信談合作' : 'Email us about a project'}</a> <a class="btn secondary" href={href(lang, 'research')}>{zh ? '先看研究成果' : 'See our research first'}</a></p>
+
   </div>
 </Base>
 
@@ -73,8 +74,8 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
   .record section { display: grid; gap: var(--space-4); align-content: start; }
   .record h2 { font-size: 22px; }
   .tags b { font: 600 12px/1 var(--f-mono); color: var(--ink-2); }
-  .venues { margin: 0; padding-left: 1.2em; display: grid; gap: var(--space-2); font-style: italic; }
-  .cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-8); }
+  .venues li { font-style: italic; background: var(--surface); box-shadow: 3px 4px 10px var(--lo); }
+  .cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-5); }
   @media (max-width: 899px) { .record { grid-template-columns: 1fr; } }
   @media (max-width: 899px) { .ways { grid-template-columns: 1fr; } }
 </style>

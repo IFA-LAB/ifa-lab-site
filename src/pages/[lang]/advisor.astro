@@ -57,7 +57,7 @@ const person = {
     <div class="blocks">
       <section class="block wide"><h2>{t(ui.sections.bio, lang)}</h2><p>{t(advisor.bio, lang)}</p></section>
       <section class="block wide"><h2>{zh ? '近期期刊論文' : 'Recent journal papers'}</h2>
-        <ol class="recent">{recent.map((p) => <li><a href={href(lang, `papers/${p.id}`)} lang="en">{p.data.title}</a> <span class="mono muted">{p.data.year}</span></li>)}</ol>
+        <ol class="recent">{recent.map((p) => <li><a href={href(lang, `papers/${p.id}`)} lang="en">{p.data.title}</a> <span class="mono muted">{p.data.year > new Date().getFullYear() ? (zh ? `${p.data.year} 即將刊登` : `${p.data.year}, forthcoming`) : p.data.year}</span></li>)}</ol>
         <p><a href={href(lang, 'research')}>{zh ? '全部論文與研究計畫 →' : 'All papers and grants →'}</a></p></section>
       <section class="block"><h2>{t(ui.sections.research, lang)}</h2><ul class="tags">{advisor.research.map((r) => <li lang="en">{r}</li>)}</ul></section>
       <section class="block"><h2>{t(ui.sections.education, lang)}</h2>
@@ -112,7 +112,7 @@ const person = {
   .en { font: 500 20px/1.3 var(--f-display); color: var(--ink-2); }
   .links { list-style: none; padding: 0; margin: var(--space-3) 0 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .links a { text-decoration: none; min-height: 40px; }
-  .blocks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
+  .blocks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); align-items: start; }
   .block { padding: var(--space-5) var(--space-6); border-radius: var(--r-lg); background: var(--surface); box-shadow: 8px 10px 22px var(--lo), inset -4px -6px 12px rgb(0 0 0 / 0.04), inset 4px 6px 12px var(--hi); display: grid; gap: var(--space-3); align-content: start; min-width: 0; }
   .block.wide { grid-column: 1 / -1; }
   .block .sub { margin-top: var(--space-4); }

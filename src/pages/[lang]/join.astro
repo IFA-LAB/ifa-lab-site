@@ -5,6 +5,7 @@ import { ui, t, href, type Bi, type Locale } from '@/i18n/ui';
 import { langPaths } from '@/lib/content';
 import { getCollection, getEntry } from 'astro:content';
 import BiText from '@/components/Bi.astro';
+import ClayFigure from '@/components/ClayFigure.astro';
 
 export const getStaticPaths = langPaths;
 const lang = Astro.params.lang as Locale;
@@ -30,8 +31,9 @@ const faq: { q: Bi; a: Bi }[] = [
 ];
 const theses = (await getCollection('theses')).sort((a, b) => b.data.academicYear - a.data.academicYear);
 const thesisRows = await Promise.all(theses.map(async (x) => ({ x, m: await getEntry('members', x.data.member) })));
+const crew = (await getCollection('members')).filter((m) => !m.data.placeholder).sort((a, b) => a.data.cohort - b.data.cohort || a.data.order - b.data.order);
 const steps: { t: Bi; d: Bi }[] = [
-  { t: { zh: '寄一封信', en: 'Send an email' }, d: { zh: '三五句話介紹自己、修過的課，和你好奇的題目。', en: 'A few lines about you, the courses you took and what you are curious about.' } },
+  { t: { zh: '寄一封信', en: 'Send an email' }, d: { zh: '三五句話介紹自己、修過的課，和你好奇的題目。想考碩士班的話，在甄試或考試報名之前就來信，比較有時間先聊題目。', en: 'A few lines about you, the courses you took and what you are curious about. Applying for the master’s program? Write before the application window so there is time to talk topics.' } },
   { t: { zh: '來 712 聊聊', en: 'Drop by Room 712' }, d: { zh: '到志希館 712 跟學長姐聊實驗室的日常，再跟老師約時間。', en: 'Chat with current students in Zhixi 712, then book a time with the advisor.' } },
   { t: { zh: '挑一塊積木', en: 'Pick a block' }, d: { zh: '從六個研究領域選題目，先從一個小資料集開始疊。', en: 'Choose a topic from the six research areas and start stacking with a small dataset.' } },
 ];
@@ -47,6 +49,10 @@ const faqLd = {
       <p class="eyebrow">{t(ui.nav.join, lang)}</p>
       <h1 class="lines">{(zh ? ['想用 AI 做金融研究？', '來疊積木吧'] : ['Want to do finance research with AI?', 'Come build with us']).map((l) => <span>{l}</span>)}</h1>
       <p class="muted">{zh ? '我們招收大學部專題生與碩士班學生。下面是最常被問到的四個問題。' : 'We recruit undergraduate project students and master’s students. Here are the four questions we get most.'}</p>
+      <div class="crowd" aria-label={zh ? '現在的成員' : 'Current members'}>
+        {crew.map((m) => <a href={href(lang, `members/${m.id}`)} title={t(m.data.name, lang)}><ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} size={56} /><span class="visually-hidden">{t(m.data.name, lang)}</span></a>)}
+      </div>
+      <p class="muted when">{zh ? '他們每個人都是從一封信開始的。' : 'Every one of them started with an email.'}</p>
     </div>
     <div class="faq">
       {faq.map((f) => (
@@ -89,9 +95,13 @@ const faqLd = {
   .steps li { padding: var(--space-6) var(--space-5) var(--space-5); display: grid; gap: var(--space-2); align-content: start; position: relative; }
   .num { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font: 600 22px/1 var(--f-display); color: var(--ink); background: var(--clay-sun); box-shadow: 3px 5px 10px var(--lo), inset -3px -4px 6px rgb(0 0 0 / 0.15), inset 3px 3px 6px rgb(255 255 255 / 0.35); margin-bottom: var(--space-2); }
   .steps h3 { font-size: 20px; }
-  .past ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4) var(--space-6); }
+  .past ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); max-width: 52em; }
   .past li { display: grid; gap: var(--space-1); padding-left: var(--space-4); box-shadow: inset 3px 0 0 var(--clay-sun); }
   .small { font-size: 14px; }
-  @media (max-width: 767px) { .steps, .past ul { grid-template-columns: 1fr; } }
+  @media (max-width: 767px) { .steps { grid-template-columns: 1fr; } }
+  .crowd { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-2); margin-top: var(--space-5); }
+  .crowd a { border-radius: var(--r-md); transition: transform var(--dur-fast) var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .crowd a:hover { transform: translateY(-6px); } }
+  .when { margin-top: var(--space-4); }
   @media (max-width: 767px) { .faq { grid-template-columns: 1fr; } }
 </style>

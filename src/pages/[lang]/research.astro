@@ -16,7 +16,9 @@ const site = Astro.site!;
 const pubs = await publications();
 const journals = pubs.filter((p) => p.data.kind === 'journal');
 const working = pubs.filter((p) => p.data.kind === 'working');
-const grants = await getCollection('grants');
+const grants = (await getCollection('grants')).sort((a, b) => b.data.period.localeCompare(a.data.period));
+const nowYM = new Date().toISOString().slice(0, 7).replace('-', '/');
+const ongoing = (period: string) => { const [s, e] = period.split(/[–-]/).map((x) => x.trim()); return s <= nowYM && (!e || e >= nowYM); };
 const theses = (await getCollection('theses')).sort((a, b) => b.data.academicYear - a.data.academicYear);
 const members = await getCollection('members');
 const nameOf = (id: string) => members.find((m) => m.id === id)?.data.name;
@@ -50,7 +52,7 @@ const jsonld = journals.map((p) => ({
       </ul>
       <p class="muted status" aria-live="polite" data-status></p>
     </div>
-    <nav class="jump" aria-label={zh ? '跳到' : 'Jump to'}>
+    <nav class="jump" aria-label={zh ? '跳到' : 'Jump to'} data-label={zh ? '跳到' : 'Jump to'}>
       <a href="#j-h">{t(ui.pubs.journal, lang)} <b>{journals.length}</b></a>
       <a href="#w-h">{t(ui.pubs.working, lang)} <b>{working.length}</b></a>
       <a href="#t-h">{t(ui.pubs.theses, lang)} <b>{theses.length}</b></a>
@@ -124,7 +126,7 @@ const jsonld = journals.map((p) => ({
       <ul class="grants">
         {grants.map((g) => (
           <li class="clay">
-            <p class="mono muted">{g.data.period}</p>
+            <p class="mono muted">{g.data.period}{ongoing(g.data.period) && <span class="live">{zh ? '進行中' : 'Ongoing'}</span>}</p>
             <Bi text={g.data.title} lang={lang} />
             <p class="muted meta">{t(g.data.kind, lang)} · {t(ui.pubs.pi, lang)} {g.data.pi}</p>
           </li>
@@ -225,7 +227,9 @@ const jsonld = journals.map((p) => ({
   .authors { font-size: 15px; }
   .meta { font-size: 14px; }
   .jump { position: sticky; top: 64px; z-index: 5; display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-4) calc(-1 * var(--space-3)) var(--space-2); padding: var(--space-2) var(--space-3); background: var(--bg); font-size: 15px; }
-  .jump a { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 var(--space-4); border-radius: var(--r-full); background: var(--surface); box-shadow: 3px 4px 10px var(--lo); color: var(--ink); text-decoration: none; }
+  .jump a { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 var(--space-4); border-radius: var(--r-full); background: var(--surface-2); color: var(--ink); text-decoration: none; }
+  .jump::before { content: attr(data-label); align-self: center; font: 600 13px/1 var(--f-mono); color: var(--ink-2); margin-right: var(--space-2); }
+  .live { margin-left: var(--space-2); padding: 2px 8px; border-radius: var(--r-full); background: var(--clay-down); color: #fff; font: 600 12px/1.4 var(--f-body); }
   .jump a:hover { color: var(--accent); }
   @media (max-width: 767px) { .jump { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; } .jump a { flex: none; } }
   .jump b { font: 600 13px/1 var(--f-mono); padding: 4px 7px; border-radius: var(--r-full); background: var(--surface-2); color: var(--ink); }
