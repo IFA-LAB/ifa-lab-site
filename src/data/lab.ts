@@ -97,17 +97,6 @@ export const studentProjects = [
     photo: 'chad-ai',
     photoAlt: { zh: 'Ched.AI 團隊四人在 2024 GenAI Stars 合影，手比 C 字', en: 'The four-person Ched.AI team at GenAI Stars 2024, making a C with their hands' } satisfies Bi,
   },
-  {
-    name: 'LLM × Financial Reports',
-    year: 2024,
-    desc: {
-      zh: '用 Gemini 1.5 Pro 的長上下文一次讀進多份財報，設計 12 個問題測它能不能從長文件抽出資訊、算對財務比率、看出趨勢與風險因子，並跨公司、跨年度比較與摘要。',
-      en: 'Feeding many financial reports at once into Gemini 1.5 Pro’s long context, with 12 test questions on whether it can extract facts from long filings, compute ratios correctly, spot trends and risk factors, and compare and summarize across firms and years.',
-    } satisfies Bi,
-    members: [],
-    by: { zh: '邱信瑜', en: 'Hsin-Yu Chiu' } satisfies Bi,
-    links: [{ label: 'Colab notebook', url: 'https://colab.research.google.com/drive/1Zwbk08sdLAL7I8uXkxnmmMEFVy3OSlpD?usp=sharing' }],
-  },
 ] as {
   name: string; year: number; desc: Bi; members: string[]; award?: Bi; by?: Bi;
   links: { label: string; url: string }[]; photo?: string; photoAlt?: Bi;
