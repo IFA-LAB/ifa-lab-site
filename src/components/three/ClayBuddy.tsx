@@ -2,11 +2,13 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import type { Group } from 'three';
 import { CLAY, canRun3D, usePrefersReducedMotion, useMedia } from './util';
-import { Accessory, BODY_Y, Face, R, type Accessory as AccessoryKind } from './figure';
+import { Accessory, BODY_Y, Face, MatchaLatte, R, type Accessory as AccessoryKind, type Model } from './figure';
 
 type Props = {
   clay: string;
   accessory: AccessoryKind;
+  /** A whole custom figure instead of the gumdrop. */
+  model?: Model;
   placeholder?: boolean;
   hint: string;
   hintTouch: string;
@@ -15,7 +17,7 @@ type Props = {
 /** Shared between DOM handlers and the render loop: drag spin and jump requests. */
 type Ctl = { spin: number; vel: number; dragging: boolean; jump: number };
 
-function Buddy({ clay, accessory, placeholder, reduce, ctl }: { clay: string; accessory: AccessoryKind; placeholder: boolean; reduce: boolean; ctl: RefObject<Ctl> }) {
+function Buddy({ clay, accessory, model, placeholder, reduce, ctl }: { clay: string; accessory: AccessoryKind; model?: Model; placeholder: boolean; reduce: boolean; ctl: RefObject<Ctl> }) {
   const spin = useRef<Group>(null);
   const lean = useRef<Group>(null);
   const squash = useRef<Group>(null);
@@ -69,16 +71,18 @@ function Buddy({ clay, accessory, placeholder, reduce, ctl }: { clay: string; ac
     <group ref={spin}>
       <group ref={squash}>
         <group ref={lean} position={[0, 0, 0]}>
+          {model && !placeholder ? <MatchaLatte reduce={reduce} phones={accessory === 'phones'} /> : <>
           <mesh position={[0, BODY_Y, 0]} scale={R} castShadow>
             <sphereGeometry args={[1, 48, 36]} />
             <meshStandardMaterial color={body} roughness={0.88} />
           </mesh>
           <Face placeholder={placeholder} reduce={reduce} />
           {!placeholder && <Accessory kind={accessory} body={body} />}
+          </>}
         </group>
       </group>
-      {/* feet keep it from looking like it floats */}
-      {[-0.42, 0.42].map((x) => (
+      {/* feet keep it from looking like it floats (a cup has its saucer) */}
+      {!(model && !placeholder) && [-0.42, 0.42].map((x) => (
         <mesh key={x} position={[x, 0.1, 0.2]} scale={[1, 0.55, 1.2]} castShadow>
           <sphereGeometry args={[0.24, 20, 14]} />
           <meshStandardMaterial color={body} roughness={0.88} />
@@ -90,7 +94,7 @@ function Buddy({ clay, accessory, placeholder, reduce, ctl }: { clay: string; ac
 
 /** Interactive 3D clay figure for a member's page. Drag to spin, click to make it hop.
     Renders an empty host until WebGL is confirmed; the CSS ClayFigure underneath stays as fallback. */
-export default function ClayBuddy({ clay, accessory, placeholder = false, hint, hintTouch }: Props) {
+export default function ClayBuddy({ clay, accessory, model, placeholder = false, hint, hintTouch }: Props) {
   const [ok, setOk] = useState(false);
   const [visible, setVisible] = useState(true);
   const host = useRef<HTMLDivElement>(null);
@@ -164,7 +168,7 @@ export default function ClayBuddy({ clay, accessory, placeholder = false, hint, 
           <circleGeometry args={[2.2, 40]} />
           <shadowMaterial opacity={0.18} />
         </mesh>
-        <Buddy clay={clay} accessory={accessory} placeholder={placeholder} reduce={reduce} ctl={ctl} />
+        <Buddy clay={clay} accessory={accessory} model={model} placeholder={placeholder} reduce={reduce} ctl={ctl} />
       </Canvas>
       <span className="buddy-hint">{touch ? hintTouch : hint}</span>
     </div>

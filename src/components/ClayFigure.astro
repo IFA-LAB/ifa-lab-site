@@ -6,13 +6,15 @@ interface Props {
   accessory?: 'none' | 'cat' | 'phones' | 'glasses' | 'guitar';
   size?: number;
   placeholder?: boolean;
+  /** A whole custom figure instead of the gumdrop (members' own designs). */
+  model?: 'matcha-latte';
 }
-const { clay = 'grey', accessory = 'none', size = 120, placeholder = false } = Astro.props;
+const { clay = 'grey', accessory = 'none', size = 120, placeholder = false, model } = Astro.props;
 const colour = clay;
 ---
-<div class:list={['fig', { ghost: placeholder }]} style={`--me: var(--clay-${colour}); --s: ${size / 120};`} data-acc={placeholder ? 'none' : accessory} aria-hidden="true">
+<div class:list={['fig', { ghost: placeholder }]} style={`--me: var(--clay-${colour}); --s: ${size / 120};`} data-acc={placeholder ? 'none' : accessory} data-model={placeholder ? undefined : model} aria-hidden="true">
   <div class="acc cat l"></div><div class="acc cat r"></div>
-  <div class="body"></div>
+  {model && !placeholder ? <><div class="saucer"></div><div class="handle"></div><div class="cup"></div><div class="foam"></div></> : <div class="body"></div>}
   <div class="eye l"></div><div class="eye r"></div>
   <div class="cheek l"></div><div class="cheek r"></div>
   <div class="acc phones"></div>
@@ -46,5 +48,18 @@ const colour = clay;
   .glasses { top: calc(46px * var(--s)); left: calc(28px * var(--s)); width: calc(64px * var(--s)); height: calc(24px * var(--s)); border: calc(4px * var(--s)) solid #2b3443; border-radius: calc(12px * var(--s)); background: rgb(255 255 255 / 0.25); }
   .guitar { right: calc(-6px * var(--s)); bottom: calc(4px * var(--s)); width: calc(30px * var(--s)); height: calc(40px * var(--s)); border-radius: 45% 45% 50% 50%; background: #c2552d; box-shadow: inset -3px -4px 6px rgb(0 0 0 / 0.25); }
   .guitar::after { content: ''; position: absolute; left: 50%; bottom: 85%; width: calc(6px * var(--s)); height: calc(36px * var(--s)); transform: translateX(-50%) rotate(12deg); background: #6b3a1f; border-radius: 3px; }
+  /* matcha latte (黃鉅燊 / OG_Matcha): a clay cup on a saucer, foam with a latte-art heart, the face on the cup */
+  [data-model='matcha-latte'] { --matcha: #8cb356; --cream: #f6efe0; }
+  .saucer { left: calc(4px * var(--s)); right: calc(4px * var(--s)); bottom: 0; height: calc(14px * var(--s)); border-radius: 50%; background: var(--cream); box-shadow: calc(4px * var(--s)) calc(8px * var(--s)) calc(14px * var(--s)) var(--lo), inset 0 calc(-3px * var(--s)) 0 rgb(0 0 0 / 0.08); }
+  .cup {
+    left: calc(20px * var(--s)); right: calc(20px * var(--s)); top: calc(34px * var(--s)); bottom: calc(7px * var(--s));
+    border-radius: calc(10px * var(--s)) calc(10px * var(--s)) calc(36px * var(--s)) calc(36px * var(--s)); background: var(--matcha);
+    box-shadow: inset calc(-8px * var(--s)) calc(-10px * var(--s)) calc(16px * var(--s)) rgb(0 0 0 / 0.18), inset calc(8px * var(--s)) calc(8px * var(--s)) calc(14px * var(--s)) rgb(255 255 255 / 0.35);
+  }
+  .handle { right: calc(4px * var(--s)); top: calc(48px * var(--s)); width: calc(26px * var(--s)); height: calc(34px * var(--s)); border: calc(8px * var(--s)) solid var(--matcha); border-left: 0; border-radius: 0 50% 50% 0; filter: brightness(0.92); }
+  .foam { left: calc(18px * var(--s)); right: calc(18px * var(--s)); top: calc(26px * var(--s)); height: calc(18px * var(--s)); border-radius: 50%; background: var(--cream); box-shadow: inset 0 calc(-3px * var(--s)) 0 rgb(0 0 0 / 0.06); }
+  .foam::after { content: '♥'; position: absolute; inset: 0; display: grid; place-items: center; font: 700 calc(13px * var(--s)) / 1 sans-serif; color: var(--matcha); }
+  [data-model] .eye { top: calc(58px * var(--s)); } [data-model] .cheek { top: calc(76px * var(--s)); }
+  [data-model] .phones { top: calc(4px * var(--s)); height: calc(60px * var(--s)); }
   [data-acc='cat'] .cat, [data-acc='phones'] .phones, [data-acc='glasses'] .glasses, [data-acc='guitar'] .guitar { display: block; }
 </style>

@@ -10,12 +10,12 @@
   "founder": true,
   "maintainedBy": "self",
   "headline": {
-    "zh": "資管所碩士班・斐闊 Finctory 共同創辦人暨技術長",
-    "en": "M.S. student, Information Management · Co-founder & CTO, Finctory"
+    "zh": "資管所碩士班・Finctory 技術長",
+    "en": "M.S. student · CTO, Finctory"
   },
   "bio": {
-    "zh": "中央資管碩士班學生（2026 年 9 月起），學士班 GPA 4.19／4.3 畢業。斐闊 Finctory 共同創辦人暨技術長、醫數行銷 MedaLink 共同創辦人暨前線部署工程師、工研院產科國際所 AI Intern。在邱信瑜老師指導下做了兩個國科會大專生計畫：結合股市異常指標與生成式 AI 的股票追蹤系統，以及財伴 oSave 個人財務健康管理系統的實證研究。累計 16 項競賽獎，其中 5 座全國首獎。",
-    "en": "M.S. student in Information Management at NCU from September 2026, after a B.S. with a 4.19/4.3 GPA. Co-founder and CTO of Finctory, co-founder and forward-deployed engineer at MedaLink, and AI intern at ITRI's ISTI. Under Prof. Hsin-Yu Chiu he ran two NSTC undergraduate projects: a stock tracking system combining market-anomaly indicators with generative AI, and an empirical study of oSave, a personal financial-health app. 16 competition awards, 5 of them national first prizes."
+    "zh": "我把 AI 從展示品，做到三個月後還有人在用。中央資管碩士班學生（2026 年 9 月起直升），2023 年起在邱信瑜老師的研究計畫當研究助理，做過兩個國科會大專生計畫：把股市異常指標接上生成式 AI 的股票追蹤系統，以及財伴 oSave 的 82 人準實驗（每週記帳天數提升 176%、財務焦慮顯著下降）。課外是斐闊 Finctory 共同創辦人暨技術長、醫數行銷 MedaLink 共同創辦人暨前線部署工程師，也在工研院產科國際所當 AI Intern。累計 16 項競賽獎，5 座全國首獎。",
+    "en": "I take AI from demo to something people still use three months later. M.S. student in Information Management at NCU from September 2026. Since 2023 I have been a research assistant on Prof. Hsin-Yu Chiu's projects, and ran two NSTC undergraduate projects with her: a stock tracker that feeds market-anomaly indicators into generative AI, and an 82-person quasi-experiment on the oSave app (logging days per week up 176%, financial anxiety significantly down). Outside the lab I am co-founder and CTO of Finctory, co-founder and forward-deployed engineer at MedaLink, and an AI intern at ITRI's ISTI. 16 competition awards, 5 of them national first prizes."
   },
   "education": [
     {
@@ -55,8 +55,8 @@
     },
     {
       "title": {
-        "zh": "AI Intern",
-        "en": "AI Intern"
+        "zh": "AI Intern（軟體工程師）",
+        "en": "AI Intern (Software Engineer)"
       },
       "org": {
         "zh": "工研院 產科國際所",
@@ -81,15 +81,15 @@
         "en": "Research Assistant"
       },
       "org": {
-        "zh": "IFA Lab",
-        "en": "IFA Lab"
+        "zh": "邱信瑜老師研究計畫・IFA Lab",
+        "en": "Prof. Hsin-Yu Chiu's projects, IFA Lab"
       },
-      "period": "2023/11–"
+      "period": "2023/07–"
     },
     {
       "title": {
-        "zh": "副執行長",
-        "en": "Deputy Leader"
+        "zh": "副執行長（帶 4 組 30 人）",
+        "en": "Deputy Leader (4 teams, 30 people)"
       },
       "org": {
         "zh": "中大新生網 2024",
@@ -99,30 +99,8 @@
     },
     {
       "title": {
-        "zh": "網管",
-        "en": "Network Manager"
-      },
-      "org": {
-        "zh": "中央大學學習與教學研究所",
-        "en": "NCU Graduate Institute of Learning and Instruction"
-      },
-      "period": "2023/09–2023/12"
-    },
-    {
-      "title": {
-        "zh": "副召集人",
-        "en": "Deputy Convener"
-      },
-      "org": {
-        "zh": "聯合開發者社團",
-        "en": "United Developer Club"
-      },
-      "period": "2023/09–2023/12"
-    },
-    {
-      "title": {
-        "zh": "成員",
-        "en": "Member"
+        "zh": "成員，後任暑期講師",
+        "en": "Member, later summer instructor"
       },
       "org": {
         "zh": "中央大學 SAP 學生團隊",
@@ -133,81 +111,99 @@
   ],
   "projects": [
     {
+      "name": "醫數行銷 MedaLink",
+      "year": "2026",
+      "desc": {
+        "zh": "診所的 AI 櫃檯：LINE、FB、IG 和官網私訊進同一個收件匣，AI 照診所規則回答，把人約進醫師、診間、儀器都空著的時段。AI 那一半由我一個人做，已上線。",
+        "en": "An AI front desk for clinics: messages from LINE, FB, IG and the website land in one inbox, the AI answers by the clinic's rules and books only slots where doctor, room and device are all free. I built the AI half alone; live."
+      },
+      "url": "https://ogmatcha.com/work/medalink/"
+    },
+    {
       "name": "財伴 oSave",
       "year": "2025",
       "desc": {
-        "zh": "用會計邏輯記帳的 App：問三個問題，後端換算成 13 項金流方向與 6 項財務健康指標；國科會大專生計畫的實證對象",
-        "en": "A bookkeeping app built on accounting logic: three questions become 13 cash-flow directions and 6 financial-health indicators; the subject of an NSTC undergraduate study"
+        "zh": "會告訴你財務健不健康的記帳 App：三個問題翻成 13 項金流方向和 6 項健康指標。我負責系統架構與後端；iOS、Android 上架，也是我國科會計畫的實證對象。",
+        "en": "A bookkeeping app that tells you whether your finances are healthy: three questions become 13 cash-flow directions and 6 health indicators. I built the architecture and backend; on iOS and Android, and the subject of my NSTC study."
       },
       "url": "https://ogmatcha.com/work/osave/"
+    },
+    {
+      "name": "斐闊 Finctory",
+      "year": "2024–",
+      "desc": {
+        "zh": "學生時期一起創的金融科技公司，旗下有財伴、找好康、淘換算等產品線；我是技術長，負責架構、AI 選型與工程團隊。",
+        "en": "A fintech company we started as students, with oSave, SurPrice and Taobao Exchange among its products. As CTO I own architecture, AI choices and the engineering team."
+      },
+      "url": "https://ogmatcha.com/work/finctory/"
+    },
+    {
+      "name": "PhishForge",
+      "year": "2024",
+      "desc": {
+        "zh": "依部門和近期情境讓 AI 寫出客製釣魚信與仿冒登入頁的資安演練平台，只記錄行為、不存密碼。大專資訊服務創新賽資安應用組第一名，也是 113 國科會計畫題目。",
+        "en": "A phishing-drill platform where AI writes emails and fake login pages tailored to each department; it records behaviour, never passwords. 1st place in the InnoServe security track and the topic of an NSTC project."
+      },
+      "url": "https://ogmatcha.com/work/phishforge/"
+    },
+    {
+      "name": "Catalyst",
+      "year": "2025",
+      "desc": {
+        "zh": "Multi-Agent 軟體開發自動化平台，從需求分析、產生程式碼一路串到測試部署。台積電校園黑客松 AI 維運懶人包組第一名，我負責介面設計。",
+        "en": "A multi-agent platform that automates software work from requirements through code to tests and deployment. 1st place, AI Ops track, TSMC IT CareerHack; I designed the interface."
+      },
+      "url": "https://ogmatcha.com/work/catalyst/"
     },
     {
       "name": "Ched.AI",
       "year": "2024",
       "desc": {
-        "zh": "自動化財務報表分析與徵信風險評估",
-        "en": "Automated financial-statement analysis and credit-risk assessment"
+        "zh": "研究室團隊作品：給授信人員的生成式 AI 徵信助手，本地 Llama 3 與 OpenAI 雙軌，用向量檢索讀財報。GenAI Stars 創意創客組優選。",
+        "en": "A lab team project: a generative-AI credit assistant for account officers, running on local Llama 3 or OpenAI with vector search over financial statements. Merit Award, GenAI Stars."
       },
       "url": "https://github.com/OG-Matcha/Credit-Report"
     },
     {
-      "name": "NCU Fresh Web Chat Bot",
-      "year": "2024",
+      "name": "找好康 SurPrice",
+      "year": "2025",
       "desc": {
-        "zh": "中大新生網聊天機器人",
-        "en": "Chat bot for NCU Fresh Web"
+        "zh": "把超市、量販、藥妝、超商的 DM 優惠收在同一頁，算好單位價格、標出剩幾天；手機瀏覽器打開就能用。我是主要開發。",
+        "en": "Deals from supermarket, pharmacy and convenience-store flyers on one page, with unit prices and days left; works in a phone browser. I am the main developer."
       },
-      "url": "https://github.com/OG-Matcha/NCU_Fresh_Web_ChatBot"
+      "url": "https://ogmatcha.com/work/surprice/"
     },
     {
-      "name": "Cow of Answer",
-      "year": "2024",
+      "name": "淘換算 Taobao Exchange",
+      "year": "2025",
       "desc": {
-        "zh": "問答遊戲",
-        "en": "Q&A game"
+        "zh": "在淘寶、天貓的價格旁直接標出新台幣的 Chrome 擴充功能，匯率每天更新；獨立開發，278 位使用者、4.8 星。",
+        "en": "A Chrome extension that shows NT$ beside every Taobao and Tmall price, with daily rates; built solo, 278 users, rated 4.8."
       },
-      "url": "https://github.com/OG-Matcha/Cow-of-Answer"
+      "url": "https://ogmatcha.com/work/taobao/"
     },
     {
-      "name": "Python Mock Interview",
-      "year": "2024",
+      "name": "tessera",
+      "year": "2026",
       "desc": {
-        "zh": "Python 模擬面試",
-        "en": "Python mock interviews"
+        "zh": "開源的 Claude Code mod，Windows 與中日韓文字優先：終端機看得到貼上的圖片、中日韓對齊的表格、長 diff 自動摺疊。",
+        "en": "An open-source Claude Code mod built Windows- and CJK-first: pasted images in any terminal, CJK-aligned tables, long diffs folded."
       },
-      "url": "https://github.com/OG-Matcha/Python_Mock_Interview"
-    },
-    {
-      "name": "WuXia",
-      "year": "2024",
-      "desc": {
-        "zh": "武俠遊戲",
-        "en": "Wuxia game"
-      },
-      "url": "https://github.com/OG-Matcha/WuXia"
-    },
-    {
-      "name": "BrainLib",
-      "year": "2024",
-      "desc": {
-        "zh": "知識管理工具",
-        "en": "Knowledge tool"
-      },
-      "url": "https://github.com/OG-Matcha/BrainLib"
+      "url": "https://github.com/OG-Matcha/tessera"
     }
   ],
   "awards": [
     {
-      "zh": "2025 第六屆台積電校園黑客松 AI 維運懶人包組 第一名",
-      "en": "1st place, AI Ops track, 6th TSMC IT CareerHack (2025)"
+      "zh": "2025 第六屆台積電校園黑客松 AI 維運懶人包組 第一名（Catalyst）",
+      "en": "1st place, AI Ops track, 6th TSMC IT CareerHack (2025, Catalyst)"
     },
     {
       "zh": "2025 臺東創新創業大賽 最佳創新創業大獎（財伴 oSave）",
       "en": "Grand prize, Taitung Innovation & Entrepreneurship Competition 2025 (oSave)"
     },
     {
-      "zh": "2024 第 29 屆大專校院資訊應用服務創新競賽 資安應用組 第一名",
-      "en": "1st place, Security Applications track, 29th InnoServe Awards (2024)"
+      "zh": "2024 第 29 屆大專校院資訊應用服務創新競賽 資安應用組 第一名（PhishForge）",
+      "en": "1st place, Security Applications track, 29th InnoServe Awards (2024, PhishForge)"
     },
     {
       "zh": "2024 臺灣數創大賞 數位＋組 金獎",
@@ -218,25 +214,24 @@
       "en": "1st place, domestic track, 6th Startup Arena (2024)"
     },
     {
-      "zh": "2024 GenAI Stars 創意創客組 優選（Ched.AI）",
-      "en": "Merit Award, Creative Maker track, GenAI Stars 2024 (Ched.AI)"
-    },
-    {
       "zh": "2026 雙北程式設計節 城市儀表板大黑客松 第三名",
       "en": "3rd place, City Dashboard Hackathon, Taipei–New Taipei Coding Festival 2026"
     },
     {
-      "zh": "LAK 2025 Practitioner Track：以知識圖譜與大型語言模型分析學習軌跡",
-      "en": "LAK 2025 Practitioner Track: analyzing learning trajectories with knowledge graphs and LLMs"
+      "zh": "2026 臺北秋季程式設計節 城市通微服務大黑客松 佳作（捷伴 Jieban）",
+      "en": "Honourable mention, City Microservices Hackathon, Taipei Autumn Coding Festival 2026 (Jieban)"
+    },
+    {
+      "zh": "2024 GenAI Stars 創意創客組 優選（Ched.AI）",
+      "en": "Merit Award, Creative Maker track, GenAI Stars 2024 (Ched.AI)"
     }
   ],
   "research": [
-    "Data Science",
-    "Machine Learning",
-    "Deep Learning",
-    "Generative AI",
-    "System Analysis & Design",
-    "Web Engineering"
+    "Generative AI & Agent Systems",
+    "Behavioral Finance & Financial Health",
+    "AI Security (Social Engineering)",
+    "FinTech Product Engineering",
+    "Machine Learning"
   ],
   "interests": [
     {
@@ -259,7 +254,8 @@
   },
   "photo": "../../assets/members/ju-shen-huang.jpg",
   "figure": {
-    "clay": "blue",
-    "accessory": "phones"
+    "clay": "down",
+    "accessory": "phones",
+    "model": "matcha-latte"
   }
 }

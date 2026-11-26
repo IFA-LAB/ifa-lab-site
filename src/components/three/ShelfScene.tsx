@@ -2,9 +2,9 @@ import { Canvas, useFrame, type ThreeEvent } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import { CanvasTexture, Color, SRGBColorSpace, type Group, type MeshStandardMaterial } from 'three';
 import { CLAY, RoundedBox } from './util';
-import { Accessory, BODY_Y, Face, R, type Accessory as AccessoryKind } from './figure';
+import { Accessory, BODY_Y, Face, MatchaLatte, R, type Accessory as AccessoryKind, type Model } from './figure';
 
-export type ShelfMember = { id: string; name: string; sub: string; clay: string; accessory: AccessoryKind; href: string };
+export type ShelfMember = { id: string; name: string; sub: string; clay: string; accessory: AccessoryKind; model?: Model; href: string };
 export type ShelfRow = { label: string; members: ShelfMember[] };
 
 const GAP = 2.5; // shelf height
@@ -75,6 +75,7 @@ function Figure({ m, x, y, hot, reduce, onHover, onPick, phase }: {
   const over = (e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); onHover(m); };
   return (
     <group ref={g} position={[x, y, 0.15]} scale={SCALE}>
+      {m.model ? <MatchaLatte reduce={reduce} phones={m.accessory === 'phones'} /> : <>
       <mesh position={[0, BODY_Y, 0]} scale={R} castShadow>
         <sphereGeometry args={[1, 40, 30]} />
         <meshStandardMaterial color={body} roughness={0.88} />
@@ -87,6 +88,7 @@ function Figure({ m, x, y, hot, reduce, onHover, onPick, phase }: {
           <meshStandardMaterial color={body} roughness={0.88} />
         </mesh>
       ))}
+      </>}
       {/* a generous invisible target, so the small figure is easy to hit */}
       <mesh position={[0, 1.2, 0]} onPointerOver={over} onPointerMove={over} onPointerOut={() => onHover(null)} onClick={(e) => { e.stopPropagation(); onPick(m); }}>
         <boxGeometry args={[2.6, 2.9, 2]} />

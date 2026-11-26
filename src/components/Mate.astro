@@ -21,7 +21,7 @@ const parts = [t(ui.cohort(m.data.cohort), lang), ...(m.data.placeholder ? [t(ui
 const sub = parts.join(sep);
 ---
 <a class:list={['mate', { caption }]} href={href(lang, `members/${m.id}`)} aria-label={caption ? undefined : `${name}，${sub}`}>
-  <ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} placeholder={m.data.placeholder} size={size} />
+  <ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} model={m.data.figure.model} placeholder={m.data.placeholder} size={size} />
   {caption && <span class="name">{name}</span>}
   <span class="tag" aria-hidden={caption ? undefined : 'true'}><b>{name}</b><small>{parts.map((x, i) => <>{i > 0 && sep}<span class="seg">{x}</span></>)}</small></span>
 </a>

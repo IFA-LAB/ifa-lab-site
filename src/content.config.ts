@@ -50,6 +50,8 @@ const members = defineCollection({
       .object({
         clay: z.enum(CLAY).default('grey'),
         accessory: z.enum(['none', 'cat', 'phones', 'glasses', 'guitar']).default('none'),
+        /** Optional whole-figure design instead of the gumdrop; ask the maintainers to add a new one. */
+        model: z.enum(['matcha-latte']).optional(),
       })
       .default({ clay: 'grey', accessory: 'none' }),
   }),

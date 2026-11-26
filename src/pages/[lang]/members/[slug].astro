@@ -63,11 +63,12 @@ const links = [
         <Picture class="photo" src={d.photo} alt={zh ? `${name}的照片` : `Photo of ${name}`} widths={[240, 480]} sizes="240px" formats={['avif', 'webp']} loading="eager" />
       )}
       <div class="buddy" data-buddy>
-        <div class="stage"><ClayFigure clay={d.figure.clay} accessory={d.figure.accessory} placeholder={d.placeholder} size={160} /></div>
+        <div class="stage"><ClayFigure clay={d.figure.clay} accessory={d.figure.accessory} model={d.figure.model} placeholder={d.placeholder} size={160} /></div>
         <ClayBuddy
           client:visible
           clay={d.figure.clay}
           accessory={d.figure.accessory}
+          model={d.figure.model}
           placeholder={d.placeholder}
           hint={zh ? '拖曳轉圈，點一下會跳' : 'Drag to spin, click to hop'}
           hintTouch={zh ? '左右滑轉圈，點一下會跳' : 'Swipe to spin, tap to hop'}

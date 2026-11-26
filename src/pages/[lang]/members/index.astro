@@ -18,7 +18,7 @@ const rows = cohorts.map(([c, ms]) => ({
   label: t(ui.cohort(c), lang),
   members: ms.filter((m) => !m.data.placeholder).map((m) => ({
     id: m.id, name: t(m.data.name, lang), sub: t(m.data.headline, lang) ?? '',
-    clay: m.data.figure.clay, accessory: m.data.figure.accessory, href: href(lang, `members/${m.id}`),
+    clay: m.data.figure.clay, accessory: m.data.figure.accessory, model: m.data.figure.model, href: href(lang, `members/${m.id}`),
   })),
 }));
 const people = cohorts.flatMap(([, ms]) => ms).filter((m) => !m.data.placeholder);
@@ -45,7 +45,7 @@ const jsonld = people.map((m) => ({
         <div class="stage" aria-hidden="true">
           {rows.map((r) => (
             <div class="plank-row">
-              <div class="figs">{r.members.map((m) => <ClayFigure clay={m.clay} accessory={m.accessory} size={58} />)}</div>
+              <div class="figs">{r.members.map((m) => <ClayFigure clay={m.clay} accessory={m.accessory} model={m.model} size={58} />)}</div>
               <span class="plank">{r.label}</span>
             </div>
           ))}
@@ -66,8 +66,8 @@ const jsonld = people.map((m) => ({
             <li>
               <a class="card clay" href={href(lang, `members/${m.id}`)}>
                 {m.data.photo
-                  ? <span class="face"><Image class="avatar" src={m.data.photo} alt="" width={88} height={88} densities={[1, 2]} format="webp" /><span class="twin"><ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} size={40} /></span></span>
-                  : <ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} placeholder={m.data.placeholder} size={88} />}
+                  ? <span class="face"><Image class="avatar" src={m.data.photo} alt="" width={88} height={88} densities={[1, 2]} format="webp" /><span class="twin"><ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} model={m.data.figure.model} size={40} /></span></span>
+                  : <ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} model={m.data.figure.model} placeholder={m.data.placeholder} size={88} />}
                 <span class="txt">
                   <strong>{t(m.data.name, lang)}</strong>
                   {m.data.name.en && zh && <span class="en">{m.data.name.en}</span>}
