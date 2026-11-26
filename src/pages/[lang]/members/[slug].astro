@@ -136,7 +136,8 @@ const links = [
             <ul class="plain proj">{d.projects.map((p) => (
               <li>
                 {p.url ? <a href={p.url} target="_blank" rel="noopener">{p.name}</a> : <strong>{p.name}</strong>}
-                <span class="muted small"> {p.year}</span>
+                {/* a placeholder year ("—") shows nothing; an open one ("2025–") reads 至今 / present */}
+                {p.year && !/^[—–-]+$/.test(p.year.trim()) && <span class="muted small"> {p.year.replace(/[–-]$/, zh ? '–至今' : '–present')}</span>}
                 <br /><span>{t(p.desc, lang)}</span>
               </li>
             ))}</ul>
@@ -235,8 +236,9 @@ const links = [
   .timeline { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2); }
   .timeline li { display: grid; grid-template-columns: 9.5em 1fr; gap: var(--space-3); }
   .timeline .mono { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  /* tablets: one column, so the bio is not squeezed to 13 characters a line beside a short sidebar */
+  @media (max-width: 899px) { .blocks { grid-template-columns: 1fr; } }
   @media (max-width: 767px) {
-    .blocks { grid-template-columns: 1fr; }
     .timeline li { grid-template-columns: 1fr; gap: 0; }
   }
 </style>

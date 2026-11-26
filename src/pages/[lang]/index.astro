@@ -327,8 +327,10 @@ const description = zh
     .hero-grid, .mission { grid-template-columns: 1fr; }
     .visual { margin-right: 0; }
     .areas { grid-template-columns: repeat(2, 1fr); }
-    .ticker { grid-template-columns: repeat(3, 1fr); row-gap: var(--space-5); }
-    .ticker > div:nth-child(4) { padding-left: 0; box-shadow: none; }
+    /* tablets keep all five figures on one row: tighter cells instead of a ragged 3 + 2 */
+    .ticker { padding-inline: var(--space-5); }
+    .ticker > div { padding-inline: var(--space-3); }
+    .row::after { inset: auto 0 0; }
   }
   @media (max-width: 899px) {
     .news { grid-template-columns: 1fr; }

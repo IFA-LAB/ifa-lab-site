@@ -71,7 +71,7 @@ const jsonld = journals.map((p) => ({
             )}
             <span class="num" aria-hidden="true">{c.bricks.length || ''}</span>
             {/* each brick jumps to its entry in the list below (pointer only; the list itself is the accessible version) */}
-            <span class="pile" aria-hidden="true">{c.bricks.map((b) => <a href={`#${b.id}`} tabindex="-1" title={b.title} data-brick class:list={[b.kind]} style={`--c: var(--clay-${areaClay(b.area)})`}></a>)}</span>
+            <span class="pile" aria-hidden="true">{c.bricks.map((b) => <a href={`#${b.id}`} tabindex="-1" title={b.title} data-brick data-area={b.area} class:list={[b.kind]} style={`--c: var(--clay-${areaClay(b.area)})`}></a>)}</span>
             {typeof c.year === 'number' ? <span class="yr" aria-hidden="true"><span class="cent">{String(c.year).slice(0, 2)}</span>{String(c.year).slice(2)}</span> : <span class="yr soon" aria-hidden="true">{c.year}</span>}
           </div>
         ))}
@@ -202,6 +202,13 @@ const jsonld = journals.map((p) => ({
       g.querySelector('.n')!.textContent = String(shown);
       g.hidden = shown === 0;
     }
+    // the wall above follows the filter: other areas fade, each year's number counts only this area
+    for (const col of document.querySelectorAll<HTMLElement>('.wall .col')) {
+      let k = 0;
+      for (const a of col.querySelectorAll<HTMLElement>('[data-brick]')) { const on = !area || a.dataset.area === area; a.classList.toggle('off', !on); if (on) k++; }
+      const num = col.querySelector<HTMLElement>('.num');
+      if (num) num.textContent = k ? String(k) : '';
+    }
     const label = buttons.find((b) => b.dataset.area === area)?.textContent?.trim();
     status.textContent = area ? (zh ? `只顯示「${label}」：${n} 篇` : `Showing ${label}: ${n}`) : '';
     if (scroll) document.querySelector('.filter')?.scrollIntoView({ block: 'start' });
@@ -279,6 +286,8 @@ const jsonld = journals.map((p) => ({
   .pile { display: flex; flex-direction: column-reverse; gap: 4px; width: 100%; max-width: 120px; }
   .pile a { display: block; height: 18px; border-radius: 6px; background: var(--c); box-shadow: inset 0 -4px 0 rgb(0 0 0 / 0.16), inset 2px 3px 3px rgb(255 255 255 / 0.4), 0 3px 5px var(--lo); transition: translate var(--dur-fast) var(--ease-out), filter var(--dur-fast) var(--ease-out); }
   .pile a:nth-child(even) { margin-inline: 6px -6px; }
+  .pile a { transition: opacity var(--dur-base) var(--ease-out), filter var(--dur-base) var(--ease-out), translate var(--dur-fast) var(--ease-out); }
+  .pile a.off { opacity: 0.16; filter: saturate(0.2); }
   /* hollow = a solid outline in the area colour around the page colour: reads in both themes (a dashed edge vanished on dark) */
   .pile a.working { background: color-mix(in oklab, var(--c) 14%, var(--bg)); box-shadow: inset 0 0 0 2.5px var(--c), 0 3px 5px var(--lo); }
   .num { font: 600 28px/1 var(--f-display); }
@@ -287,6 +296,12 @@ const jsonld = journals.map((p) => ({
   .col { position: relative; }
   .perch { position: absolute; bottom: 100%; left: 50%; translate: -50% 4px; }
   .wall .cols { padding-top: 64px; }
+  /* tablets too: two-digit years, and empty years drop their label, so '2022' '2023' never run together */
+  @media (max-width: 1023px) {
+    .yr .cent { display: none; }
+    .yr:not(.soon)::before { content: '’'; }
+    .col.empty .yr { visibility: hidden; }
+  }
   @media (max-width: 767px) {
     /* every year fits on a phone: narrow piles, no sideways scrolling */
     .wall { padding: var(--space-5) var(--space-4) var(--space-4); }
