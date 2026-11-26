@@ -2,6 +2,7 @@
 import LabCat from '@/components/LabCat.astro';
 import Base from '@/layouts/Base.astro';
 import ClayFigure from '@/components/ClayFigure.astro';
+import ClayShelf from '@/components/three/ClayShelf';
 import { Image } from 'astro:assets';
 import { ui, t, href, type Locale } from '@/i18n/ui';
 import { langPaths, membersByCohort } from '@/lib/content';
@@ -12,6 +13,14 @@ const zh = lang === 'zh-tw';
 const cohorts = await membersByCohort();
 const site = Astro.site!;
 
+// the cabinet: one plank per cohort, members who have a profile stand on it
+const rows = cohorts.map(([c, ms]) => ({
+  label: t(ui.cohort(c), lang),
+  members: ms.filter((m) => !m.data.placeholder).map((m) => ({
+    id: m.id, name: t(m.data.name, lang), sub: t(m.data.headline, lang) ?? '',
+    clay: m.data.figure.clay, accessory: m.data.figure.accessory, href: href(lang, `members/${m.id}`),
+  })),
+}));
 const people = cohorts.flatMap(([, ms]) => ms).filter((m) => !m.data.placeholder);
 const jsonld = people.map((m) => ({
   '@context': 'https://schema.org',
@@ -24,11 +33,29 @@ const jsonld = people.map((m) => ({
 ---
 <Base lang={lang} title={t(ui.nav.members, lang)} description={zh ? 'IFA Lab 各屆成員：碩士論文、研究方向與專案。' : 'IFA Lab members by cohort: theses, research interests and projects.'} jsonld={jsonld}>
   <div class="wrap section">
-    <div class="section-head has-cat">
-      <span class="cat-perch" style="right: 0; top: 0;"><LabCat lang={lang} bubble="left" lines={[{ zh: '每個公仔都是成員自己挑顏色和配件的。', en: 'Each member picks their own figure colour and prop.' }, { zh: '耳機、吉他、眼鏡……配件會透露他們的興趣。', en: 'Headphones, a guitar, glasses: the props give away their hobbies.' }]} /></span>
-      <p class="eyebrow">{t(ui.nav.members, lang)}</p>
-      <h1>{zh ? '各屆成員' : 'Members by cohort'}</h1>
-      <p class="muted">{zh ? '2023 年 8 月成立至今，一屆一層。點進去看每個人的研究與專案。' : 'Since August 2023, one shelf per cohort. Open a card to see their research and projects.'}</p>
+    <div class="intro">
+      <div class="section-head">
+        <p class="eyebrow">{t(ui.nav.members, lang)}</p>
+        <h1>{zh ? '各屆成員' : 'Members by cohort'}</h1>
+        <p class="muted">{zh ? '2023 年 8 月成立至今，一屆一層，第一屆在最下面。滑過櫃子裡的公仔看是誰，點一下進個人頁；下面是每個人的卡片。' : 'Since August 2023, one shelf per cohort, the first at the bottom. Hover a figure in the cabinet to see who it is, click to open their page; cards for everyone follow below.'}</p>
+      </div>
+      <div class="cabinet has-cat" data-shelf>
+        <span class="cat-perch" style="right: 28px; top: -52px;"><LabCat lang={lang} bubble="left" lines={[{ zh: '每個公仔都是成員自己挑顏色和配件的。', en: 'Each member picks their own figure colour and prop.' }, { zh: '耳機、吉他、眼鏡……配件會透露他們的興趣。', en: 'Headphones, a guitar, glasses: the props give away their hobbies.' }, { zh: '我住在櫃子頂上，最高的那一層歸我。', en: 'I live on top of the cabinet. The top shelf is mine.' }]} /></span>
+        {/* CSS cabinet: what shows before the 3D one draws, and on devices without WebGL */}
+        <div class="stage" aria-hidden="true">
+          {rows.map((r) => (
+            <div class="plank-row">
+              <div class="figs">{r.members.map((m) => <ClayFigure clay={m.clay} accessory={m.accessory} size={58} />)}</div>
+              <span class="plank">{r.label}</span>
+            </div>
+          ))}
+        </div>
+        <ClayShelf client:visible rows={rows}
+          hint={zh ? '滑過公仔看是誰，點一下進個人頁' : 'Hover a figure to see who it is, click to open'}
+          hintTouch={zh ? '點公仔看是誰，再點一次進個人頁' : 'Tap a figure to see who it is, tap again to open'}
+          open={zh ? '點一下進個人頁' : 'click to open'}
+          openTouch={zh ? '再點一次進個人頁' : 'tap again to open'} />
+      </div>
     </div>
 
     {cohorts.map(([c, ms]) => (
@@ -64,6 +91,23 @@ const jsonld = people.map((m) => ({
 </Base>
 
 <style>
+  /* heading on the left, the cabinet on the right; stacked on phones */
+  .intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); gap: var(--space-7); align-items: center; }
+  @media (max-width: 899px) { .intro { grid-template-columns: 1fr; gap: var(--space-6); } .cabinet { justify-self: center; width: min(100%, 460px); } }
+  .cabinet { position: relative; aspect-ratio: 1 / 1.02; margin-block: var(--space-7) var(--space-6); }
+  .stage { position: absolute; inset: 4% 8% 8%; display: flex; flex-direction: column-reverse; padding: var(--space-3); border-radius: var(--r-lg); background: var(--surface-2); box-shadow: inset 0 0 0 12px var(--surface), 8px 12px 24px var(--lo); }
+  .cabinet[data-live] .stage { opacity: 0; transition: opacity var(--dur-base) var(--ease-out); }
+  .plank-row { flex: 1; display: grid; grid-template-rows: 1fr auto; padding-inline: var(--space-3); }
+  .figs { display: flex; justify-content: center; align-items: end; gap: var(--space-5); }
+  .plank { display: block; padding: 4px var(--space-3); border-radius: 8px; background: var(--surface); box-shadow: 0 6px 10px var(--lo), inset 0 2px 0 var(--hi); font: 600 13px/1.4 var(--f-body); color: var(--ink-2); }
+  .cabinet :global(.shelf-canvas) { position: absolute; inset: 0; }
+  .cabinet :global(.shelf-canvas canvas) { touch-action: pan-y; }
+  .cabinet :global(.shelf-hint) {
+    position: absolute; left: 50%; bottom: -30px; transform: translateX(-50%); white-space: nowrap; max-width: calc(100vw - 32px); overflow: hidden; text-overflow: ellipsis;
+    font: 500 14px/1.4 var(--f-body); color: var(--ink-2);
+    background: var(--surface); padding: 8px 16px; border-radius: var(--r-full); box-shadow: 4px 6px 14px var(--lo);
+  }
+  .cabinet :global(.shelf-hint b) { color: var(--ink); }
   .also { margin-top: var(--space-4); font-size: 15px; }
   .avatar { width: 88px; height: 88px; border-radius: 24px; object-fit: cover; flex: none; box-shadow: 4px 6px 14px var(--lo); }
   .face { position: relative; flex: none; }
