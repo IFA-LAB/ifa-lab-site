@@ -1,0 +1,101 @@
+---
+// Preview only (not linked, not indexed): one continuous 3D scene the page scrolls through.
+// If the owner keeps it, it may replace the home page's separate scenes; otherwise this file is deleted.
+import Base from '@/layouts/Base.astro';
+import LabWalk from '@/components/three/LabWalk';
+import { getCollection } from 'astro:content';
+import { areas, lab, advisor } from '@/data/lab';
+import { ui, t, href, type Locale } from '@/i18n/ui';
+import { langPaths, publications, membersByCohort } from '@/lib/content';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Locale;
+const zh = lang === 'zh-tw';
+
+const pubs = await publications();
+const theses = await getCollection('theses');
+const cohorts = await membersByCohort();
+const boardEn: Record<string, string> = { empirical: 'Empirical', behavioral: 'Behavioral', pricing: 'Pricing', ai: 'AI / ML', forecast: 'Forecasting', apps: 'Apps & Viz' };
+const perArea = (k: string) => pubs.filter((p) => p.data.area === k).length + theses.filter((x) => x.data.area === k).length;
+const clayOf = (k: string) => areas.find((a) => a.key === k)?.clay ?? 'grey';
+const bars = areas.map((a) => ({ key: a.key, label: zh ? a.name.zh : boardEn[a.key], count: perArea(a.key), clay: a.clay, href: href(lang, `research#${a.key}`) }));
+
+const works = [
+  ...pubs.map((p) => ({ title: p.data.title, year: p.data.status === 'forthcoming' ? Infinity : p.data.year, area: p.data.area, kind: p.data.kind, href: href(lang, `papers/${p.id}`) })),
+  ...theses.map((x) => ({ title: t(x.data.title, lang), year: x.data.academicYear + 1912, area: x.data.area, kind: 'thesis', href: href(lang, 'research#t-h') })),
+];
+const byArea = (a: { area: string }, b: { area: string }) => areas.findIndex((x) => x.key === a.area) - areas.findIndex((x) => x.key === b.area);
+const years = [...new Set(works.map((w) => w.year))].sort((a, b) => a - b);
+const cols = years.map((y) => ({
+  label: y === Infinity ? (zh ? '即將' : 'Soon') : `’${String(y).slice(2)}`,
+  bricks: works.filter((w) => w.year === y).sort(byArea).map((w) => ({ title: w.title, clay: clayOf(w.area), kind: w.kind, href: w.href })),
+}));
+const rows = cohorts.map(([c, ms]) => ({
+  label: t(ui.cohort(c), lang).replace('研究生', ''),
+  members: ms.filter((m) => !m.data.placeholder).map((m) => ({ id: m.id, name: t(m.data.name, lang), clay: m.data.figure.clay, accessory: m.data.figure.accessory, model: m.data.figure.model, href: href(lang, `members/${m.id}`) })),
+}));
+const people = rows.reduce((n, r) => n + r.members.length, 0);
+
+const beats = [
+  { eyebrow: zh ? '一・研究' : '1 · Research', h: zh ? '六個領域，一根 K 棒一個' : 'Six areas, one candle each', p: zh ? `K 棒越高，那個領域的論文與碩士論文越多。滑過一根看數字，點下去看清單。` : 'The taller the candle, the more papers and theses in that area. Hover one for the count, click for the list.', link: { href: href(lang, 'research'), text: zh ? '看全部研究' : 'All research' } },
+  { eyebrow: zh ? '二・成果' : '2 · Output', h: zh ? `${works.length} 塊積木，一年一疊` : `${works.length} bricks, one pile a year`, p: zh ? '每篇期刊論文、工作論文和碩士論文是一塊積木，顏色是研究領域，半透明的是還在寫的工作論文。點一塊直接打開那篇。' : 'Every journal paper, working paper and thesis is a brick, colored by area; the see-through ones are working papers. Click a brick to open it.', link: { href: href(lang, 'research'), text: zh ? '看成果牆' : 'The output wall' } },
+  { eyebrow: zh ? '三・成員' : '3 · People', h: zh ? `一屆一層，${people} 個公仔` : `One shelf a cohort, ${people} figures`, p: zh ? '每個人自己挑公仔的顏色和配件。滑過看是誰，點一下進個人頁。' : 'Everyone picks their own figure color and prop. Hover to see who it is, click to open their page.', link: { href: href(lang, 'members'), text: zh ? '看全部成員' : 'All members' } },
+  { eyebrow: zh ? '四・加入' : '4 · Join', h: zh ? '下一塊，由你來疊' : 'The next brick is yours', p: zh ? `寄一封信給${advisor.name.zh}老師，說說你好奇的題目。每位成員都是從一封信開始的。` : `Email Prof. ${advisor.name.en} about a question you are curious about. Every member started with one letter.`, link: { href: `mailto:${lab.contact.email}`, text: zh ? `寄信給${advisor.name.zh}老師` : `Email Prof. ${advisor.name.en}`, btn: true } },
+];
+---
+<Base lang={lang} title={zh ? '走一圈實驗室（試作）' : 'Lab walk (preview)'} description={zh ? 'IFA Lab 連續 3D 場景試作' : 'IFA Lab continuous 3D scene preview'}>
+  <meta slot="head" name="robots" content="noindex, nofollow" />
+  <section class="walk" data-walk aria-label={zh ? '走一圈實驗室' : 'A walk through the lab'}>
+    <div class="stage">
+      <LabWalk client:load bars={bars} cols={cols} rows={rows} mail={href(lang, 'join')} mailLabel={zh ? '加入我們' : 'Join us'} hint={zh ? '滑過物件看名字，點一下打開' : 'Hover anything to see what it is, click to open'} />
+    </div>
+    <ol class="beats">
+      {beats.map((b, i) => (
+        <li class="beat" style={`--i: ${i}`}>
+          <div class="card clay">
+            <p class="eyebrow">{b.eyebrow}</p>
+            <h2>{b.h.split(/(?<=，|, )/).map((x) => <span class="nw">{x}</span>)}</h2>
+            <p>{b.p}</p>
+            <p><a class:list={[{ btn: b.link.btn }]} href={b.link.href}>{b.link.text}{!b.link.btn && ' →'}</a></p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+  <p class="wrap note muted">{zh ? '這是試作頁，沒有連到選單，也不會被搜尋引擎收錄。' : 'This is a preview page: not in the menu and not indexed.'} <a href={href(lang, '')}>{zh ? '回首頁' : 'Home'}</a></p>
+</Base>
+
+<style>
+  /* four screens of scroll; the canvas stays pinned while the text cards pass over it */
+  .walk { position: relative; height: calc(var(--n, 4) * 100dvh); }
+  .stage { position: sticky; top: 0; height: 100dvh; overflow: hidden; }
+  .stage :global(.walk-canvas) { position: absolute; inset: 0; }
+  .stage :global(.walk-hint) {
+    position: absolute; left: 50%; bottom: var(--space-5); translate: -50% 0; max-width: calc(100% - 32px);
+    padding: 8px 16px; border-radius: var(--r-full); background: var(--surface); box-shadow: 0 4px 12px var(--lo); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .beats { position: absolute; inset: 0; list-style: none; margin: 0; padding: 0; pointer-events: none; }
+  .beat { height: 100dvh; display: grid; align-items: center; padding-inline: max(clamp(16px, 4vw, 48px), env(safe-area-inset-left)); max-width: calc(var(--page) - 32px + 2 * clamp(16px, 4vw, 48px)); margin-inline: auto; }
+  .card { pointer-events: auto; width: min(400px, 100%); padding: var(--space-6); display: grid; gap: var(--space-3); background: color-mix(in oklab, var(--surface) 92%, transparent); backdrop-filter: blur(8px); }
+  .card h2 { font-size: clamp(26px, 3vw, 34px); line-height: 1.3; }
+  .card h2 .nw { display: inline-block; max-width: 100%; white-space: normal; }
+  .card p { margin: 0; }
+  .card .btn { margin-top: var(--space-2); }
+  /* reduced motion or no WebGL (data-flat, set by LabWalk): no pinned stage, the four cards in a column */
+  .walk[data-flat] { height: auto; }
+  .walk[data-flat] .stage { display: none; }
+  .walk[data-flat] .beats { position: static; display: grid; gap: var(--space-5); padding-block: var(--space-8) 0; }
+  .walk[data-flat] .beat { height: auto; }
+  @media (prefers-reduced-motion: reduce) {
+    .walk { height: auto; }
+    .stage { display: none; }
+    .beats { position: static; display: grid; gap: var(--space-5); padding-block: var(--space-8) 0; }
+    .beat { height: auto; padding-bottom: 0; }
+  }
+  .note { padding-block: var(--space-6) var(--space-8); font-size: 14px; }
+  /* phones and portrait tablets: the scene fills the upper part, the card sits low */
+  @media (max-aspect-ratio: 23/20) {
+    .beat { align-items: end; padding-bottom: calc(var(--space-8) + 24px); }
+    .card { width: 100%; padding: var(--space-5); }
+  }
+</style>

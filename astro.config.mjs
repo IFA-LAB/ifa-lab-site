@@ -15,6 +15,7 @@ export default defineConfig({
   integrations: [
     react(),
     sitemap({
+      filter: (page) => !page.includes('/lab-walk/'),
       i18n: { defaultLocale: 'zh-tw', locales: { 'zh-tw': 'zh-Hant-TW', en: 'en' } },
     }),
   ],
