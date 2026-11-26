@@ -43,7 +43,7 @@ const other = otherLocale(lang);
         <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5 4.5 4.6 1.8 7.4 3.6A10 9 0 0 1 12 2.5c5.2 0 9.5 3.6 9.5 8.2s-4.3 8.2-9.5 8.2c-1 0-1.9-.1-2.8-.4L4 21l.9-4.5A7.7 7.7 0 0 1 2.5 10.7c0-2.4 1-4.6 2.5-6.2Z"/><circle cx="8.5" cy="11" r="1.3" fill="var(--surface-2)"/><circle cx="15.5" cy="11" r="1.3" fill="var(--surface-2)"/></svg>
         <span class="ask-word">{lang === 'zh-tw' ? '問 K 喵' : 'Ask'}</span>
       </button>
-      <a class="tool lang" href={swapLocale(path, other)} hreflang={other === 'en' ? 'en' : 'zh-Hant-TW'} lang={other === 'en' ? 'en' : 'zh-Hant-TW'} aria-label={t(ui.langSwitchLabel, lang)}>{t(ui.langSwitch, lang)}</a>
+      <a class="tool lang" href={swapLocale(path, other)} hreflang={other === 'en' ? 'en' : 'zh-Hant-TW'} lang={other === 'en' ? 'en' : 'zh-Hant-TW'} aria-label={t(ui.langSwitchLabel, lang)}><span class="lang-long">{t(ui.langSwitch, lang)}</span><span class="lang-short" aria-hidden="true">{other === 'en' ? 'EN' : '中'}</span></a>
       <button class="tool theme" type="button" aria-label={t(ui.theme, lang)} data-theme-toggle>
         <svg class="moon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.4 5.4 0 0 1-9.54-5A9 9 0 0 0 12 3Z"/></svg>
         <svg class="sun" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></g></svg>
@@ -135,6 +135,9 @@ const other = otherLocale(lang);
     :global(:root:not([data-theme='light'])) .theme .moon { display: none; }
   }
 
+  .lang-short { display: none; }
+  /* 365–389px phones (iPhone mini/SE): "English" is the widest button; a short label keeps the bar on one line */
+  @media (max-width: 389px) { .lang-long { display: none; } .lang-short { display: inline; } }
   @media (max-width: 420px) {
     .bar { gap: var(--space-2); }
     .word { font-size: 19px; }

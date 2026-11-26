@@ -18,7 +18,7 @@ const cite = citation(d);
 const bib = bibtex(paper.id, d);
 const sameArea = (await publications()).filter((p) => p.data.area === d.area).sort((a, b) => b.data.year - a.data.year);
 const related = sameArea.filter((p) => p.id !== paper.id).slice(0, 4);
-const kindLabel = t(d.kind === 'journal' ? ui.pubs.journal : ui.pubs.working, lang);
+const kindLabel = lang === 'en' ? (d.kind === 'journal' ? 'Journal article' : 'Working paper') : t(d.kind === 'journal' ? ui.pubs.journal : ui.pubs.working, lang);
 const [first, last] = (d.pages ?? '').split(/[–-]/);
 const url = new URL(href(lang, `papers/${paper.id}`), site).href;
 

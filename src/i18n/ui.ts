@@ -35,8 +35,8 @@ export const ui = {
     const zh = ['一', '二', '三', '四', '五', '六'][n - 1] ?? String(n);
     return { zh: `第${zh}屆研究生`, en: `Cohort ${n}` };
   },
-  graduated: { zh: '已畢業', en: 'Alumni' },
-  founder: { zh: '創始成員', en: 'Co-founder' },
+  graduated: { zh: '已畢業', en: 'Alum' },
+  founder: { zh: '創始成員', en: 'Founding member' },
   placeholderNote: { zh: '資料準備中', en: 'Profile coming soon' },
   fallbackNote: { zh: '', en: 'Shown in Chinese until an English version is added.' },
   sections: {

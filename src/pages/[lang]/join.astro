@@ -27,7 +27,7 @@ const faq: { q: Bi; a: Bi }[] = [
   },
   {
     q: { zh: '實驗室平常怎麼運作？', en: 'What is lab life like?' },
-    a: { zh: '每週 meeting 一次，報告進度、一起討論。壓力不大，可以去實習，畢業也沒有硬性規定的標準，進度跟老師討論著走。每年中秋節會去老師家烤肉。', en: 'One meeting a week to share progress and talk it through. The pace is relaxed, internships are fine and there is no fixed graduation quota: you set the pace with Prof. Chiu. Every Mid-Autumn Festival we have a barbecue at his place.' },
+    a: { zh: '每週 meeting 一次，報告進度、一起討論。壓力不大，可以去實習，畢業也沒有硬性規定的標準，進度跟老師討論著走。每年中秋節會去老師家烤肉。', en: 'One meeting a week to share progress and talk it through. The pace is relaxed, internships are fine and there is no fixed bar for graduating: you set the pace with Prof. Chiu. Every Mid-Autumn Festival we have a barbecue at his place.' },
   },
   {
     q: { zh: '大學部可以加入嗎？', en: 'Can undergraduates join?' },
@@ -58,7 +58,7 @@ const faqLd = {
     <div class="section-head">
       <p class="eyebrow">{t(ui.nav.join, lang)}</p>
       <h1 class="lines">{(zh ? ['想做 AI、生成式 AI', '或金融題目？', '來疊積木吧'] : ['AI, generative AI or finance?', 'Come build with us']).map((l) => <span>{l}</span>)}</h1>
-      <p class="muted">{zh ? '今年收了 3 位碩士生。題目不限金融，每週 meeting 一次，壓力不大，可以實習，畢業沒有硬性門檻。' : 'Three master’s students joined this year. Topics are not limited to finance, there is one meeting a week, the pace is relaxed, internships are fine and there is no fixed graduation quota.'}</p>
+      <p class="muted">{zh ? '今年收了 3 位碩士生。題目不限金融，每週 meeting 一次，壓力不大，可以實習，畢業沒有硬性門檻。' : 'Three master’s students joined this year. Topics are not limited to finance, there is one meeting a week, the pace is relaxed, internships are fine and there is no fixed bar for graduating.'}</p>
       <div class="crowd" aria-label={zh ? '現在的成員' : 'Current members'}>
         {crew.map((m) => <Mate member={m} lang={lang} size={56} />)}
       </div>

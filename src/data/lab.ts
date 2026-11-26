@@ -65,7 +65,7 @@ export const advisor = {
   ] satisfies { level: 'ug' | 'grad'; code: string; name: Bi; note: Bi }[],
   // NCU Scholars (scholars.ncu.edu.tw) stopped resolving in 2026-11; the department's faculty page is the official profile
   facultyUrl: 'https://im.mgt.ncu.edu.tw/teacher',
-  awards: [{ zh: '113 學年度管理學院教學優良獎', en: 'Teaching Excellence Award, School of Management, NCU (2024⁠–⁠25)' }] satisfies Bi[],
+  awards: [{ zh: '113 學年度管理學院教學優良獎', en: 'Teaching Excellence Award, College of Management, NCU (2024⁠–⁠25)' }] satisfies Bi[],
   bio: {
     zh: '政治大學金融學博士（指導教授：江彌修），曾任中央研究院經濟研究所博士後研究（與許育進合作）。進入學界前在宏泰人壽與元大銀行從事風險管理、衍生性商品定價與商品開發。研究聚焦資產定價、行為財務、AI 與機器學習，以及用歷史資料建構投資組合；重視教學與學生的學術成長。',
     en: 'PhD in Money and Banking from National Chengchi University (advisor: Mi-Hsiu Chiang), followed by a postdoc at the Institute of Economics, Academia Sinica, with Yu-Chin Hsu. Before academia he worked on risk management, derivatives pricing and product development at Hontai Life Insurance and Yuanta Bank. His research focuses on asset pricing, behavioral finance, AI and machine learning, and portfolio formation from historical data. He values teaching and students’ academic growth.',

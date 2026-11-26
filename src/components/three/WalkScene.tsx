@@ -179,7 +179,9 @@ function Follower({ m, join, slot, L, c }: { m: WalkMember; join: number; slot: 
   const body = CLAY[m.clay] ?? CLAY.grey;
   const top = L[Math.min(L.length - 1, join)];
   const row = Math.floor(slot / 4), col = slot % 4;
-  const x = top.x + (col - 1.5) * 0.32 + row * 0.16, z = -0.22 - row * 0.26;
+  // the advisor stands at the front-left corner of the first candle, clear of the cat
+  const lead = m.id === 'advisor';
+  const x = lead ? top.x - 0.5 : top.x + (col - 1.5) * 0.32 + row * 0.16, z = lead ? 0.12 : -0.22 - row * 0.26;
   useFrame(({ clock }) => {
     const o = g.current; if (!o) return;
     const T = now(c, L);
