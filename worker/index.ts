@@ -17,7 +17,8 @@ let cached: Promise<Index> | null = null;
 /** Latin words plus CJK characters and character bigrams. */
 function grams(s: string): string[] {
   s = s.toLowerCase();
-  const out: string[] = [...(s.match(/[a-z0-9][a-z0-9.+#-]*/g) ?? [])];
+  // English: drop a plural or -ing/-ed ending so "internship" meets "internships" (a light stemmer is enough here)
+  const out: string[] = (s.match(/[a-z0-9][a-z0-9.+#-]*/g) ?? []).map((w) => (w.length > 4 ? w.replace(/(ies|es|s|ing|ed)$/, (m) => (m === 'ies' ? 'y' : '')) : w));
   for (const run of s.match(/[㐀-鿿]+/g) ?? []) {
     const cs = [...run];
     out.push(...cs);
