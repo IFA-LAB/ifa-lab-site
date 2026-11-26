@@ -38,8 +38,8 @@ const person = {
       <div class="portrait" data-face="photo">
         <Picture class="photo" src={photo} alt={zh ? '邱信瑜老師的照片' : 'Photo of Hsin-Yu Chiu'} widths={[240, 336]} sizes="240px" formats={['avif', 'webp']} loading="eager" />
         <div class="buddy" data-buddy>
-          <div class="stage"><ClayFigure clay="sun" accessory="guitar" size={160} /></div>
-          <ClayBuddy client:visible clay="sun" accessory="guitar" hint={zh ? '拖曳轉圈，點一下會跳' : 'Drag to spin, click to hop'} hintTouch={zh ? '左右滑轉圈，點一下會跳' : 'Swipe to spin, tap to hop'} />
+          <div class="stage"><ClayFigure clay="sun" accessory="guitar" size={160} model="prof" /></div>
+          <ClayBuddy client:visible clay="sun" accessory="guitar" model="prof" hint={zh ? '拖曳轉圈，點一下會跳' : 'Drag to spin, click to hop'} hintTouch={zh ? '左右滑轉圈，點一下會跳' : 'Swipe to spin, tap to hop'} />
         </div>
         <button type="button" class="flip chip" aria-pressed="false" data-on={zh ? '換回照片' : 'Show photo'} data-off={zh ? '換成黏土公仔' : 'Show clay figure'}>{zh ? '換成黏土公仔' : 'Show clay figure'}</button>
       </div>

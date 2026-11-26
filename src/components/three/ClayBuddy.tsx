@@ -2,7 +2,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import type { Group } from 'three';
 import { CLAY, canRun3D, usePrefersReducedMotion, useMedia } from './util';
-import { Accessory, BODY_Y, Face, MatchaLatte, R, type Accessory as AccessoryKind, type Model } from './figure';
+import { Accessory, BODY_Y, Face, MatchaLatte, PROF, Professor, R, type Accessory as AccessoryKind, type Model } from './figure';
 
 type Props = {
   clay: string;
@@ -71,7 +71,8 @@ function Buddy({ clay, accessory, model, placeholder, reduce, ctl }: { clay: str
     <group ref={spin}>
       <group ref={squash}>
         <group ref={lean} position={[0, 0, 0]}>
-          {model && !placeholder ? <MatchaLatte reduce={reduce} phones={accessory === 'phones'} /> : <>
+          {model === 'prof' && !placeholder ? <><Professor reduce={reduce} />{accessory !== 'none' && <Accessory kind={accessory} body={PROF.shirt} />}</>
+          : model && !placeholder ? <MatchaLatte reduce={reduce} phones={accessory === 'phones'} /> : <>
           <mesh position={[0, BODY_Y, 0]} scale={R} castShadow>
             <sphereGeometry args={[1, 48, 36]} />
             <meshStandardMaterial color={body} roughness={0.88} />
@@ -82,10 +83,10 @@ function Buddy({ clay, accessory, model, placeholder, reduce, ctl }: { clay: str
         </group>
       </group>
       {/* feet keep it from looking like it floats (a cup has its saucer) */}
-      {!(model && !placeholder) && [-0.42, 0.42].map((x) => (
+      {!(model === 'matcha-latte' && !placeholder) && [-0.42, 0.42].map((x) => (
         <mesh key={x} position={[x, 0.1, 0.2]} scale={[1, 0.55, 1.2]} castShadow>
           <sphereGeometry args={[0.24, 20, 14]} />
-          <meshStandardMaterial color={body} roughness={0.88} />
+          <meshStandardMaterial color={model === 'prof' && !placeholder ? '#2b2f38' : body} roughness={0.88} />
         </mesh>
       ))}
     </group>

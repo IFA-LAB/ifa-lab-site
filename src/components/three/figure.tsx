@@ -1,6 +1,6 @@
 import { useFrame } from '@react-three/fiber';
 import { useMemo, useRef } from 'react';
-import { Vector2, type Group } from 'three';
+import { ExtrudeGeometry, Path, Shape, Vector2, type Group } from 'three';
 import { DARK, INK } from './env';
 
 /** The clay member figure's parts, shared by the single figure (ClayBuddy) and the members shelf (ShelfScene). */
@@ -103,7 +103,7 @@ export function Accessory({ kind, body }: { kind: Accessory; body: string }) {
 }
 
 
-export type Model = 'matcha-latte';
+export type Model = 'matcha-latte' | 'prof';
 
 /** Matcha latte (黃鉅燊 / OG_Matcha): a clay cup on a saucer, cream foam with a latte-art heart, the face on the cup.
     Stands on y = 0 like the gumdrop and is about as tall, so it drops into the same scenes. */
@@ -165,6 +165,78 @@ export function MatchaLatte({ reduce, phones = true }: { reduce: boolean; phones
           ))}
         </>
       )}
+    </group>
+  );
+}
+
+/** Prof. Chiu (the advisor), shaped after the faculty-page photo: the gumdrop in skin clay, a blue-grey polo with a
+    dark undershirt at the collar, thick dark wavy hair, heavy brows and thin dark rectangular glasses. Same footprint
+    as the gumdrop, so it stands in the same scenes. */
+export const PROF = { skin: '#efc6a0', shirt: '#5b6e86', hair: '#22242b' };
+// gumdrop outline at height y (x radius), used to wrap the shirt
+const bodyX = (y: number) => R[0] * Math.sqrt(Math.max(0, 1 - ((y - BODY_Y) / R[1]) ** 2));
+const SHIRT_TOP = 0.74;
+// tufts of hair: [x, y, z, size]; they sit on the cap and make the outline wavy
+const TUFTS: [number, number, number, number][] = [
+  [-0.62, 1.86, 0.1, 0.3], [-0.25, 2.04, 0.15, 0.32], [0.18, 2.08, 0.15, 0.33], [0.55, 1.93, 0.1, 0.3],
+  [-0.84, 1.6, -0.15, 0.24], [0.86, 1.64, -0.15, 0.24], [-0.42, 1.8, 0.45, 0.22], [0.06, 1.86, 0.52, 0.24], [0.45, 1.8, 0.42, 0.21],
+];
+function frameGeo(w: number, h: number, r: number, t: number) {
+  const rect = (p: Shape | Path, w: number, h: number, r: number) => {
+    p.moveTo(-w / 2 + r, -h / 2); p.lineTo(w / 2 - r, -h / 2); p.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + r);
+    p.lineTo(w / 2, h / 2 - r); p.quadraticCurveTo(w / 2, h / 2, w / 2 - r, h / 2); p.lineTo(-w / 2 + r, h / 2);
+    p.quadraticCurveTo(-w / 2, h / 2, -w / 2, h / 2 - r); p.lineTo(-w / 2, -h / 2 + r); p.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + r, -h / 2);
+  };
+  const outer = new Shape(); rect(outer, w, h, r);
+  const hole = new Path(); rect(hole, w - 2 * t, h - 2 * t, Math.max(0.01, r - t)); outer.holes.push(hole);
+  return new ExtrudeGeometry(outer, { depth: 0.03, bevelEnabled: false, curveSegments: 6 });
+}
+export function Professor({ reduce }: { reduce: boolean }) {
+  const shirt = useMemo(() => {
+    const pts: Vector2[] = [new Vector2(0, 0)];
+    for (let i = 0; i <= 14; i++) { const y = (SHIRT_TOP * i) / 14; pts.push(new Vector2(bodyX(y) * 1.025 + 0.002, y)); }
+    return pts;
+  }, []);
+  const lens = useMemo(() => frameGeo(0.4, 0.27, 0.07, 0.035), []);
+  const clay = (c: string, rough = 0.88) => <meshStandardMaterial color={c} roughness={rough} />;
+  const eyeY = 1.27;
+  const cap = [R[0] * 1.05, R[1] * 1.04, R[2] * 1.06] as [number, number, number];
+  return (
+    <group>
+      <mesh position={[0, BODY_Y, 0]} scale={R} castShadow><sphereGeometry args={[1, 48, 36]} />{clay(PROF.skin)}</mesh>
+      {/* ears */}
+      {[-1, 1].map((s) => <mesh key={s} position={[s * 0.98, 1.24, -0.05]} scale={[0.5, 1, 0.8]} castShadow><sphereGeometry args={[0.16, 16, 12]} />{clay(PROF.skin)}</mesh>)}
+      {/* shirt: the lower body wrapped a hair wider, a rolled neckline, the collar flaps and the dark undershirt */}
+      <mesh scale={[1, 1, R[2] / R[0]]} castShadow><latheGeometry args={[shirt, 48]} />{clay(PROF.shirt)}</mesh>
+      <mesh position={[0, SHIRT_TOP, 0]} rotation={[Math.PI / 2, 0, 0]} scale={[1, R[2] / R[0], 1]}><torusGeometry args={[bodyX(SHIRT_TOP) * 1.02, 0.045, 10, 48]} />{clay(PROF.shirt)}</mesh>
+      <mesh position={[0, SHIRT_TOP - 0.02, surfaceZ(0, SHIRT_TOP) + 0.03]} rotation={[0.2, 0, Math.PI]} scale={[1, 1, 0.25]}><coneGeometry args={[0.2, 0.3, 3]} />{clay(PROF.hair)}</mesh>
+      {[-1, 1].map((s) => (
+        <mesh key={s} position={[s * 0.3, SHIRT_TOP - 0.06, surfaceZ(s * 0.3, SHIRT_TOP) + 0.05]} rotation={[0.35, s * 0.4, Math.PI + s * 0.22]} scale={[1.15, 1, 0.14]} castShadow>
+          <coneGeometry args={[0.17, 0.3, 3]} />{clay(PROF.shirt, 0.8)}
+        </mesh>
+      ))}
+      {/* placket buttons */}
+      {[0.5, 0.36].map((y) => <mesh key={y} position={[0, y, surfaceZ(0, y) + 0.04]} scale={[1, 1, 0.5]}><sphereGeometry args={[0.035, 12, 8]} />{clay('#d9dde3', 0.6)}</mesh>)}
+      {/* hair: a cap over the crown, then tufts for the waves */}
+      <mesh position={[0, BODY_Y + 0.02, -0.03]} scale={cap} castShadow>
+        <sphereGeometry args={[1, 40, 20, 0, Math.PI * 2, 0, 0.95]} />{clay(PROF.hair, 0.95)}
+      </mesh>
+      {TUFTS.map(([x, y, z, r], i) => (
+        <mesh key={i} position={[x, y, z]} castShadow><sphereGeometry args={[r, 18, 14]} />{clay(PROF.hair, 0.95)}</mesh>
+      ))}
+      {/* brows, then the gumdrop face, then the glasses in front of the eyes */}
+      {[-1, 1].map((s) => (
+        <mesh key={s} position={[s * 0.31, 1.47, surfaceZ(s * 0.31, 1.47) + 0.02]} rotation={[0, s * 0.3, s * -0.08 + Math.PI / 2]}>
+          <capsuleGeometry args={[0.035, 0.2, 4, 8]} />{clay(PROF.hair)}
+        </mesh>
+      ))}
+      <Face placeholder={false} reduce={reduce} />
+      {[-1, 1].map((s) => (
+        <mesh key={s} geometry={lens} position={[s * 0.3, eyeY, surfaceZ(s * 0.3, eyeY) + 0.05]} rotation={[0, s * 0.32, 0]}><meshStandardMaterial color={DARK} roughness={0.5} /></mesh>
+      ))}
+      <mesh position={[0, eyeY + 0.03, surfaceZ(0, eyeY) + 0.07]} rotation={[0, 0, Math.PI / 2]}><capsuleGeometry args={[0.018, 0.16, 4, 8]} /><meshStandardMaterial color={DARK} roughness={0.5} /></mesh>
+      {/* a small, calm smile */}
+      <mesh position={[0, 1.04, surfaceZ(0, 1.04) + 0.01]} rotation={[0, 0, Math.PI]}><torusGeometry args={[0.08, 0.022, 8, 16, Math.PI]} /><meshStandardMaterial color={INK} roughness={0.5} /></mesh>
     </group>
   );
 }
