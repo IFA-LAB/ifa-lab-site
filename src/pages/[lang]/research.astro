@@ -26,6 +26,11 @@ const nameOf = (id: string) => members.find((m) => m.id === id)?.data.name;
 const byName = await memberByEnglishName();
 const areaName = (k: string) => t(areas.find((a) => a.key === k)?.name, lang);
 const areaClay = (k: string) => areas.find((a) => a.key === k)?.clay ?? 'grey';
+/** Who works on each area: thesis writers plus lab members among a paper's authors (the advisor is in every area, so left out). */
+const peopleByArea = new Map<string, string[]>();
+const addPerson = (area: string, id?: string) => { if (!id || id === 'hsin-yu-chiu') return; const l = peopleByArea.get(area) ?? []; if (!l.includes(id)) l.push(id); peopleByArea.set(area, l); };
+for (const x of theses) addPerson(x.data.area, x.data.member);
+for (const p of pubs) for (const a of p.data.authors) addPerson(p.data.area, byName.get(a));
 /** Theses are finished at the end of the ROC academic year: AY 113 → June 2025. */
 const thesisYear = (ay: number) => ay + 1912;
 const works = [
@@ -93,6 +98,9 @@ const jsonld = journals.map((p) => ({
         {areas.map((a) => <li id={a.key}><button type="button" class="chip" data-area={a.key} aria-pressed="false" style={`--c: var(--clay-${a.clay})`}><i aria-hidden="true"></i>{t(a.short ?? a.name, lang)}</button></li>)}
       </ul>
       <p class="muted status" aria-live="polite" data-status></p>
+      {areas.map((a) => (peopleByArea.get(a.key)?.length ?? 0) > 0 && (
+        <p class="people" data-people={a.key} hidden>{zh ? '做這個領域的人：' : 'Who works on this: '}{peopleByArea.get(a.key)!.map((id, i) => <>{i > 0 && (zh ? '、' : ', ')}<a href={href(lang, `members/${id}`)}>{t(nameOf(id), lang)}</a></>)}</p>
+      ))}
     </div>
     <nav class="jump" aria-label={zh ? '跳到' : 'Jump to'} data-label={zh ? '跳到' : 'Jump to'}>
       <a href="#j-h" data-for="j-h">{t(ui.pubs.journal, lang)} <b>{journals.length}</b></a>
@@ -230,6 +238,7 @@ const jsonld = journals.map((p) => ({
       const num = col.querySelector<HTMLElement>('.num');
       if (num) num.textContent = k ? String(k) : '';
     }
+    for (const p of document.querySelectorAll<HTMLElement>('[data-people]')) p.hidden = p.dataset.people !== area;
     const label = buttons.find((b) => b.dataset.area === area)?.textContent?.trim();
     status.textContent = area ? (zh ? `只顯示「${label}」：${n} 件（論文與碩士論文）` : `Showing ${label}: ${n} ${n === 1 ? 'work' : 'works'} (papers and theses)`) : '';
     if (scroll) document.querySelector('.filter')?.scrollIntoView({ block: 'start' });
@@ -285,6 +294,7 @@ const jsonld = journals.map((p) => ({
   /* tablets: a touch tighter so all seven chips share one row instead of leaving one alone */
   @media (min-width: 768px) and (max-width: 1023px) { .areas { gap: 6px; } .areas button { padding-inline: 10px; gap: 6px; font-size: 14px; } }
   .status { font-size: 14px; min-height: 1.5em; }
+  .people { font-size: 14px; margin-top: calc(-1 * var(--space-1)); }
   .title a { color: var(--ink); text-decoration-color: color-mix(in oklab, var(--ink) 30%, transparent); text-underline-offset: 4px; }
   .title a:hover { text-decoration-color: currentColor; }
   .copy { background: none; border: 0; padding: 0; min-height: 32px; color: var(--accent); font: 500 14px/1.4 var(--f-body); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
