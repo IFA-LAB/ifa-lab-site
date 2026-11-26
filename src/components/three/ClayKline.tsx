@@ -19,7 +19,7 @@ type Props = {
   /** Touch screens, before the scene starts: how to wake it. */
   wake?: string;
   /** UI strings for the timeline and the toys. */
-  text?: { play: string; pause: string; year: string; total: string; more?: string; coin: string[]; cat: string[] };
+  text?: { play: string; pause: string; year: string; total: string; more?: string; replay?: string; coin: string[]; cat: string[] };
 };
 
 // three.js (~240 KB gzip) is only fetched and parsed when the scene is about to show.
@@ -121,7 +121,7 @@ export default function ClayKline({ bars, steps = [], hint, hintTouch, unit, wak
           </button>
           <span className="kline-year">
             <b>{steps[step]?.label}</b>
-            <small>{total} {text.total}</small>
+            <small>{total} {text.total}{atNow && !playing && text.replay ? ` · ${text.replay.replace('{y}', steps[0].label)}` : ''}</small>
           </span>
           <input
             type="range" min={0} max={last} step={1} value={step}

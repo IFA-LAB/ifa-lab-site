@@ -1,6 +1,5 @@
 ---
 import LabCat from '@/components/LabCat.astro';
-import ClayFigure from '@/components/ClayFigure.astro';
 import Mate from '@/components/Mate.astro';
 import Base from '@/layouts/Base.astro';
 import ClayCandles from '@/components/ClayCandles.astro';
@@ -82,12 +81,12 @@ const description = zh
           wake={zh ? '點一下，讓 K 棒動起來' : 'Tap to bring the candles to life'}
           steps={steps}
           text={zh
-            ? { play: '播放實驗室的成長', pause: '暫停', year: '年份', total: '篇累積', more: '其他 +', coin: ['叮！研究經費 +1（假的）', '金幣翻面了，論文還是要自己寫。', '再點也不會變成國科會計畫喔。'], cat: ['喵！我是 K 喵。', '按左上角的播放鍵，看 K 棒一年一年長高。', '滑過 K 棒，我就跑過去看。'] }
-            : { play: 'Play the lab’s growth', pause: 'Pause', year: 'Year', total: 'works so far', more: 'others +', coin: ['Ding! Funding +1 (not really).', 'The coin flipped. The paper still needs writing.', 'Clicking will not turn it into a grant.'], cat: ['Meow! I am K-meow.', 'Press play, top left, to watch the candles grow year by year.', 'Hover a candle and I will go look.'] }}
+            ? { play: '播放實驗室的成長', pause: '暫停', year: '年份', total: '篇累積', replay: '按 ▶ 從 {y} 播', more: '其他 +', coin: ['叮！研究經費 +1（假的）', '金幣翻面了，論文還是要自己寫。', '再點也不會變成國科會計畫喔。'], cat: ['喵！我是 K 喵。', '按左上角的播放鍵，看 K 棒一年一年長高。', '滑過 K 棒，我就跑過去看。'] }
+            : { play: 'Play the lab’s growth', pause: 'Pause', year: 'Year', total: 'works so far', replay: '▶ replays from {y}', more: 'others +', coin: ['Ding! Funding +1 (not really).', 'The coin flipped. The paper still needs writing.', 'Clicking will not turn it into a grant.'], cat: ['Meow! I am K-meow.', 'Press play, top left, to watch the candles grow year by year.', 'Hover a candle and I will go look.'] }}
         />
       </div>
       <ul class="legend" aria-label={zh ? '六個研究領域' : 'Six research areas'}>
-        {areas.map((a) => <li><a class="chip" href={href(lang, `research#${a.key}`)} style={`--c: var(--clay-${a.clay})`}><i aria-hidden="true"></i>{zh ? a.name.zh : boardEn[a.key]}</a></li>)}
+        {areas.map((a) => <li style={`--c: var(--clay-${a.clay})`}><i aria-hidden="true"></i>{zh ? a.name.zh : boardEn[a.key]}</li>)}
       </ul>
     </div>
     <div class="wrap">
@@ -172,11 +171,10 @@ const description = zh
                 <Mate member={m} lang={lang} size={92} caption />
               </li>
             ))}
-            {/* members still setting up a profile: a sleeping figure keeps their seat, so the shelf adds up to the member count */}
-            {(() => { const n = ms.filter((m) => m.data.placeholder).length; return n > 0 && (
-              <li class="seat"><span class="ghost"><ClayFigure clay="grey" placeholder size={92} /></span><span class="muted">{zh ? `+${n} 準備中` : `+${n} coming`}</span></li>
-            ); })()}
           </ul>
+          {(() => { const rest = ms.filter((m) => m.data.placeholder); return rest.length > 0 && (
+            <p class="also muted">{zh ? '同屆還有 ' : 'Also: '}{rest.map((m) => t(m.data.name, lang)).join(zh ? '、' : ', ')}</p>
+          ); })()}
         </div>
       ))}
     </div>
@@ -242,9 +240,10 @@ const description = zh
     .visual :global(.kline-time input) { min-width: 90px; }
   }
 
-  .legend { display: none; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; justify-content: center; gap: var(--space-2); }
-  .legend a { min-height: 40px; text-decoration: none; background: var(--surface); box-shadow: 3px 4px 10px var(--lo); }
-  .legend i { width: 12px; height: 12px; border-radius: 4px; background: var(--c); box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.16); }
+  /* phones: the board has no nameplates, so a quiet colour key sits under it (the research-areas section below has the links) */
+  .legend { display: none; list-style: none; margin: 0; padding: 0 var(--space-4); flex-wrap: wrap; justify-content: center; gap: var(--space-1) var(--space-4); font-size: 14px; color: var(--ink-2); }
+  .legend li { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 10px; height: 10px; border-radius: 3px; background: var(--c); box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.16); }
   @media (max-width: 559px) { .legend { display: flex; } }
   .ticker { margin: var(--space-6) 0 0; padding: var(--space-5) var(--space-6); display: grid; grid-template-columns: repeat(5, 1fr); }
   .ticker > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: var(--space-1); padding-inline: var(--space-5); }
@@ -285,8 +284,7 @@ const description = zh
   .row { position: relative; display: grid; gap: var(--space-3); padding-bottom: var(--space-4); }
   /* a clay plank: lit top edge, darker front, soft cast shadow */
   .row::after { content: ''; position: absolute; inset: auto -8px 0; height: 18px; border-radius: 9px; background: var(--surface); box-shadow: 0 10px 18px var(--lo), inset 0 3px 0 var(--hi), inset 0 -7px 0 var(--surface-2); }
-  .seat { display: inline-grid; justify-items: center; gap: var(--space-1); padding: var(--space-2); font-size: 15px; }
-  .seat .ghost { opacity: 0.7; }
+  .row .also { margin: var(--space-2) 0 0; font-size: 14px; }
   .row ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); align-items: end; }
 
   .row-head { display: flex; justify-content: space-between; align-items: end; gap: var(--space-5); max-width: none; }
@@ -308,7 +306,7 @@ const description = zh
   .join .crowd { display: grid; grid-template-columns: repeat(4, auto); gap: var(--space-2) var(--space-3); }
   /* 320px phones: figures shrink a little so three per shelf and four in the crowd still fit */
   @media (max-width: 400px) {
-    .row :global(.mate), .row .seat { zoom: 0.78; }
+    .row :global(.mate) { zoom: 0.78; }
     .join .crowd { gap: var(--space-1); }
     .join .crowd :global(.mate) { zoom: 0.85; }
   }
