@@ -15,7 +15,15 @@ const zh = lang === 'zh-tw';
 const faq: { q: Bi; a: Bi }[] = [
   {
     q: { zh: 'IFA Lab 適合什麼樣的學生？', en: 'Who is IFA Lab for?' },
-    a: { zh: '對資訊科技與金融都有興趣，想用 AI、機器學習與資料科學解決金融問題的大學部與碩士班學生。', en: 'Undergraduate and master’s students interested in both IT and finance who want to solve financial problems with AI, machine learning and data science.' },
+    a: { zh: '想做研究、想把 AI、機器學習或資料科學用在真實問題上的大學部與碩士班學生。對金融有興趣很好，沒有也沒關係。', en: 'Undergraduate and master’s students who want to do research and apply AI, machine learning or data science to real problems. An interest in finance helps but is not required.' },
+  },
+  {
+    q: { zh: '一定要做金融題目嗎？', en: 'Do I have to work on finance?' },
+    a: { zh: '不用。老師是金融背景，但 AI、生成式 AI 或其他資訊領域的題目，老師都可以接受。', en: 'No. Prof. Chiu’s background is finance, but topics in AI, generative AI or other areas of information technology are all welcome.' },
+  },
+  {
+    q: { zh: '實驗室壓力大嗎？可以去實習嗎？', en: 'Is the lab stressful? Can I do an internship?' },
+    a: { zh: '壓力不大，可以去實習。畢業也沒有硬性規定的標準，進度跟老師討論著走。', en: 'The pace is relaxed and internships are fine. There is no fixed graduation quota either: you set the pace with Prof. Chiu.' },
   },
   {
     q: { zh: '大學部學生可以做什麼？', en: 'What can undergraduates work on?' },
@@ -36,7 +44,7 @@ const crew = (await getCollection('members')).filter((m) => !m.data.placeholder)
 const steps: { t: Bi; d: Bi }[] = [
   { t: { zh: '寄一封信', en: 'Send an email' }, d: { zh: '三五句話介紹自己、修過的課，和你好奇的題目。想考碩士班的話，在甄試或考試報名之前就來信，比較有時間先聊題目。', en: 'A few lines about you, the courses you took and what you are curious about. Applying for the master’s program? Write before the application window so there is time to talk topics.' } },
   { t: { zh: '來 712 聊聊', en: 'Drop by Room 712' }, d: { zh: '到志希館 712 跟學長姐聊實驗室的日常，再跟老師約時間。', en: 'Chat with current students in Zhixi 712, then book a time with the advisor.' } },
-  { t: { zh: '挑一塊積木', en: 'Pick a block' }, d: { zh: '從六個研究領域選題目，先從一個小資料集開始疊。', en: 'Choose a topic from the six research areas and start stacking with a small dataset.' } },
+  { t: { zh: '挑一塊積木', en: 'Pick a block' }, d: { zh: '從六個研究領域挑，或帶你自己想做的 AI／資訊題目來，先從一個小資料集開始疊。', en: 'Pick one of the six research areas or bring your own AI or IT idea, and start stacking with a small dataset.' } },
 ];
 const faqLd = {
   '@context': 'https://schema.org',
@@ -44,12 +52,12 @@ const faqLd = {
   mainEntity: faq.map((f) => ({ '@type': 'Question', name: t(f.q, lang), acceptedAnswer: { '@type': 'Answer', text: t(f.a, lang) } })),
 };
 ---
-<Base lang={lang} title={t(ui.nav.join, lang)} description={zh ? 'IFA Lab 招收對 AI 與金融有興趣的大學部與碩士班學生：可以做什麼、要準備什麼、怎麼聯絡。' : 'IFA Lab welcomes undergraduate and master’s students interested in AI and finance: what you can work on, what to prepare and how to reach us.'} jsonld={[faqLd]}>
+<Base lang={lang} title={t(ui.nav.join, lang)} description={zh ? 'IFA Lab 招收大學部與碩士班學生：AI、生成式 AI、金融或其他資訊題目都可以，壓力不大、可以實習。可以做什麼、要準備什麼、怎麼聯絡。' : 'IFA Lab welcomes undergraduate and master’s students: AI, generative AI, finance or other IT topics, a relaxed pace, internships welcome. What you can work on, what to prepare and how to reach us.'} jsonld={[faqLd]}>
   <div class="wrap section">
     <div class="section-head">
       <p class="eyebrow">{t(ui.nav.join, lang)}</p>
-      <h1 class="lines">{(zh ? ['想用 AI 做金融研究？', '來疊積木吧'] : ['Want to do finance research with AI?', 'Come build with us']).map((l) => <span>{l}</span>)}</h1>
-      <p class="muted">{zh ? '我們招收大學部專題生與碩士班學生。下面是最常被問到的四個問題。' : 'We recruit undergraduate project students and master’s students. Here are the four questions we get most.'}</p>
+      <h1 class="lines">{(zh ? ['想做 AI、生成式 AI', '或金融題目？', '來疊積木吧'] : ['AI, generative AI or finance?', 'Come build with us']).map((l) => <span>{l}</span>)}</h1>
+      <p class="muted">{zh ? '我們招收大學部專題生與碩士班學生：題目不限金融，壓力不大，可以實習，畢業沒有硬性門檻。下面是最常被問到的問題。' : 'We recruit undergraduate project students and master’s students. Topics are not limited to finance, the pace is relaxed, internships are fine and there is no fixed graduation quota. Here are the questions we get most.'}</p>
       <div class="crowd" aria-label={zh ? '現在的成員' : 'Current members'}>
         {crew.map((m) => <Mate member={m} lang={lang} size={56} />)}
       </div>
