@@ -81,8 +81,8 @@ const description = zh
           wake={zh ? '點一下，讓 K 棒動起來' : 'Tap to bring the candles to life'}
           steps={steps}
           text={zh
-            ? { play: '播放實驗室的成長', pause: '暫停', year: '年份', total: '篇累積', replay: '按 ▶ 從 {y} 播', open: '點一下看這個領域的論文', more: '其他 +', coin: ['叮！研究經費 +1（假的）', '金幣翻面了，論文還是要自己寫。', '再點也不會變成國科會計畫喔。'], cat: ['喵！我是 K 喵。', '按左上角的播放鍵，看 K 棒一年一年長高。', '滑過 K 棒，我就跑過去看。'] }
-            : { play: 'Play the lab’s growth', pause: 'Pause', year: 'Year', total: 'works so far', replay: '▶ replays from {y}', open: 'click to see its papers', more: 'others +', coin: ['Ding! Funding +1 (not really).', 'The coin flipped. The paper still needs writing.', 'Clicking will not turn it into a grant.'], cat: ['Meow! I am K-meow.', 'Press play, top left, to watch the candles grow year by year.', 'Hover a candle and I will go look.'] }}
+            ? { play: '播放實驗室的成長', pause: '暫停', year: '年份', total: '篇累積', replay: '按 ▶ 從 {y} 播', open: '點一下看這個領域的論文', more: '其他 +', coin: ['叮！研究經費 +1（假的）', '金幣翻面了，論文還是要自己寫。', '再點也不會變成國科會計畫喔。'], cat: ['喵！我是 K 喵。', '按左上角的播放鍵，看 K 棒一年一年長高。', '滑過或點一下 K 棒，我就跑過去看。'] }
+            : { play: 'Play the lab’s growth', pause: 'Pause', year: 'Year', total: 'works so far', replay: '▶ replays from {y}', open: 'click to see its papers', more: 'others +', coin: ['Ding! Funding +1 (not really).', 'The coin flipped. The paper still needs writing.', 'Clicking will not turn it into a grant.'], cat: ['Meow! I am K-meow.', 'Press play, top left, to watch the candles grow year by year.', 'Point at or tap a candle and I will go look.'] }}
         />
       </div>
       <ul class="legend" aria-label={zh ? '六個研究領域' : 'Six research areas'}>
@@ -181,7 +181,7 @@ const description = zh
   </section>
   <section class="wrap section">
     <div class="join clay has-cat">
-      <span class="cat-perch" style="right: 56px; top: -64px;"><LabCat lang={lang} bubble="left" lines={[{ zh: '我是 K 喵，IFA Lab 的吉祥物。', en: 'I am K-meow, the IFA Lab mascot.' }, { zh: '上面那隻 3D 的也是我，滑過 K 棒我會跑過去看。', en: 'The 3D cat up top is me too. Hover a candle and I go look.' }, { zh: '想加入？先寄一封信給老師，我幫你顧信箱。', en: 'Want to join? Email the professor first. I will watch the inbox.' }]} /></span>
+      <span class="cat-perch" style="right: 56px; top: -64px;"><LabCat lang={lang} bubble="left" lines={[{ zh: '我是 K 喵，IFA Lab 的吉祥物。', en: 'I am K-meow, the IFA Lab mascot.' }, { zh: '上面那隻 3D 的也是我，滑過或點一下 K 棒，我會跑過去看。', en: 'The 3D cat up top is me too. Point at or tap a candle and I go look.' }, { zh: '想加入？先寄一封信給老師，我幫你顧信箱。', en: 'Want to join? Email the professor first. I will watch the inbox.' }]} /></span>
       <div>
         <h2>{zh ? '想一起把題目疊起來？' : 'Want to stack a question with us?'}</h2>
         <p class="muted">{zh ? '修過財務或程式的課都可以，先寄一封信聊聊你好奇的事。' : 'Finance or programming background both work. Start with an email about what you are curious about.'}</p>

@@ -7,16 +7,16 @@ import { type Locale } from '@/i18n/ui';
 const { lang } = Astro.props as { lang: Locale };
 const zh = lang === 'zh-tw';
 const T = {
-  title: zh ? '問 K 喵' : 'Ask K-Cat',
+  title: zh ? '問 K 喵' : 'Ask K-meow',
   close: zh ? '關閉' : 'Close',
   intro: zh ? '這個網站的每一頁我都讀過。問我實驗室的事，我會附上出處。' : 'I have read every page of this site. Ask me about the lab and I will show where the answer comes from.',
   note: zh ? '回答由實驗室 DGX Spark 上的模型產生，可能出錯；重要的事請寄信跟老師確認。' : 'Answers come from a model on the lab’s DGX Spark and can be wrong. For anything important, email Prof. Chiu.',
   chips: zh ? ['碩士班收幾位？', '一定要做金融題目嗎？', '學長姐畢業後去哪？', '老師開哪些課？'] : ['How many master’s students?', 'Do I have to work on finance?', 'Where did graduates go?', 'Which courses does Prof. Chiu teach?'],
   placeholder: zh ? '想問什麼？' : 'Your question',
   send: zh ? '送出' : 'Ask',
-  thinking: zh ? 'K 喵想一下…' : 'K-Cat is thinking…',
-  warming: zh ? 'K 喵的大腦正在 Spark 上開機（大約 1–3 分鐘）。先給你網站上最相關的幾段：' : 'K-Cat’s brain is starting up on the Spark (about 1–3 minutes). Here are the most relevant parts of the site meanwhile:',
-  search: zh ? '現在連不上 K 喵的大腦，先給你網站上最相關的幾段：' : 'K-Cat’s brain is out of reach right now. Here are the most relevant parts of the site:',
+  thinking: zh ? 'K 喵想一下…' : 'K-meow is thinking…',
+  warming: zh ? 'K 喵的大腦正在 Spark 上開機（大約 1–3 分鐘）。先給你網站上最相關的幾段：' : 'K-meow’s brain is starting up on the Spark (about 1–3 minutes). Here are the most relevant parts of the site meanwhile:',
+  search: zh ? '現在連不上 K 喵的大腦，先給你網站上最相關的幾段：' : 'K-meow’s brain is out of reach right now. Here are the most relevant parts of the site:',
   none: zh ? '網站上找不到相關的內容。可以寄信問邱老師：hychiu@ncu.edu.tw' : 'Nothing on the site matches that. You can email Prof. Chiu: hychiu@ncu.edu.tw',
   limited: zh ? '問得太快了，休息一分鐘再問。' : 'Too many questions at once. Try again in a minute.',
   error: zh ? '出了點問題，請再試一次。' : 'Something went wrong. Please try again.',
