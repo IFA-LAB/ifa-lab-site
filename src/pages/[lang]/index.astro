@@ -166,7 +166,7 @@ const description = zh
         <div class="row">
           <p class="eyebrow">{t(ui.cohort(c), lang)}</p>
           <ul>
-            {ms.map((m) => (
+            {ms.filter((m) => !m.data.placeholder).map((m) => (
               <li>
                 <Mate member={m} lang={lang} size={92} caption />
               </li>
