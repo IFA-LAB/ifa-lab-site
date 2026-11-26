@@ -287,8 +287,17 @@ const jsonld = journals.map((p) => ({
     .yr .cent { display: none; }
     .yr:not(.soon)::before { content: '’'; }
     .col.empty .yr { visibility: hidden; }
+    /* a column may be narrower than its label: the track can shrink, the label never pushes the wall wider */
+    .col { grid-template-columns: minmax(0, 1fr); }
+    .yr { overflow: hidden; white-space: nowrap; }
     .cols { gap: 3px; }
     .jump::before { display: none; }
+  }
+  @media (max-width: 400px) {
+    /* 320px: bare two-digit years (14 … 26) fit a 16px column; "soon" may spill into the wall's right padding */
+    .yr { font-size: 10px; letter-spacing: -0.02em; }
+    .yr:not(.soon)::before { content: none; }
+    .yr.soon { overflow: visible; }
   }
   .title { font-weight: 700; font-size: 17px; line-height: 1.6; }
   .authors { font-size: 15px; }

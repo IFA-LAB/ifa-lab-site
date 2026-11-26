@@ -299,6 +299,12 @@ const description = zh
   .join { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-6); align-items: center; padding: var(--space-7) var(--space-7); background: color-mix(in oklab, var(--accent) 9%, var(--surface)); }
   .join > div:first-child { display: grid; gap: var(--space-4); justify-items: start; max-width: 34em; }
   .join .crowd { display: grid; grid-template-columns: repeat(4, auto); gap: var(--space-2) var(--space-3); }
+  /* 320px phones: figures shrink a little so three per shelf and four in the crowd still fit */
+  @media (max-width: 400px) {
+    .row :global(.mate) { zoom: 0.78; }
+    .join .crowd { gap: var(--space-1); }
+    .join .crowd :global(.mate) { zoom: 0.85; }
+  }
   .mission { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-8); align-items: center; }
   .mission > div { display: grid; gap: var(--space-4); }
   .quote { font-size: clamp(28px, 3.2vw, 42px); line-height: 1.3; }

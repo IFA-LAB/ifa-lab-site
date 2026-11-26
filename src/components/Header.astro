@@ -106,6 +106,14 @@ const other = otherLocale(lang);
     .word { font-size: 19px; }
     .tool, .menu summary { padding: 0 10px; }
   }
+  /* 320px phones: logo, menu, language and theme must fit on one line without sideways scroll */
+  @media (max-width: 360px) {
+    .bar { gap: 6px; }
+    .blocks { grid-template-columns: repeat(3, 8px); }
+    .word { font-size: 17px; }
+    .tools { gap: 4px; }
+    .tool, .menu summary { padding: 0 8px; }
+  }
   @media (max-width: 1023px) {
     .desk { display: none; }
     .menu { display: block; }
