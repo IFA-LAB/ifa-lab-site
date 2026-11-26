@@ -99,7 +99,7 @@ const description = zh
   <section class="wrap section mission" aria-labelledby="mission-h">
     <div>
       <p class="eyebrow">{zh ? '使命' : 'Mission'} · {t(lab.tagline, lang)}</p>
-      <h2 id="mission-h" class="quote">{zh ? '用台灣市場的資料檢驗財務理論，再把它做成用得上的模型。' : 'We test finance theory on Taiwan market data, then turn it into models people can use.'}</h2>
+      <h2 id="mission-h" class="quote">{zh ? <><span>用台灣市場的資料檢驗財務理論，</span><span>再把它做成用得上的模型。</span></> : 'We test finance theory on Taiwan market data, then turn it into models people can use.'}</h2>
       <p class="lede">{t(lab.mission[0], lang)}</p>
     </div>
     <a class="advisor clay" href={href(lang, 'advisor')}>
@@ -302,6 +302,7 @@ const description = zh
   .say a:hover { color: var(--accent); text-decoration: underline; }
   .join { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-6); align-items: center; padding: var(--space-7) var(--space-7); background: color-mix(in oklab, var(--accent) 9%, var(--surface)); }
   .join > div:first-child { display: grid; gap: var(--space-4); justify-items: start; max-width: 34em; }
+  .join .btn { margin-top: var(--space-2); }
   .join .crowd { display: grid; grid-template-columns: repeat(4, auto); gap: var(--space-2) var(--space-3); }
   /* 320px phones: figures shrink a little so three per shelf and four in the crowd still fit */
   @media (max-width: 400px) {
@@ -312,7 +313,9 @@ const description = zh
   }
   .mission { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-8); align-items: center; }
   .mission > div { display: grid; gap: var(--space-4); }
-  .quote { font-size: clamp(28px, 3.2vw, 42px); line-height: 1.3; }
+  /* zh: each clause stays on its own line when there is room, so the break falls after the comma, never inside 理論 */
+  .quote { font-size: clamp(28px, 3vw, 38px); line-height: 1.3; text-wrap: balance; }
+  .quote span { display: inline-block; max-width: 100%; }
   .advisor { display: flex; gap: var(--space-5); align-items: center; padding: var(--space-5); text-decoration: none; color: var(--ink); transition: transform var(--dur-fast) var(--ease-out); }
   @media (hover: hover) and (pointer: fine) { .advisor:hover { transform: translateY(-3px); } }
   .advisor > span:last-child { display: grid; gap: 2px; }

@@ -260,7 +260,7 @@ function World({ bars, reduce, onHover, active, dark, onToy, lookAt, unit }: { u
       </RoundedBox>
       {layout.map((l, i) => <Candle key={l.bar.key} {...l} delay={0.15 + i * 0.09} reduce={reduce} onHover={onHover} on={active?.key === l.bar.key} unit={unit} />)}
       {!compact && layout.map((l) => <Label key={l.bar.key} text={l.bar.label} x={l.x} dark={dark} on={active?.key === l.bar.key} fill={(CLAY as Record<string, string>)[l.bar.clay] ?? CLAY.grey} />)}
-      <Coin position={[compact ? -2.4 : -0.9, compact ? 2.4 : 3.7, -1.2]} phase={0} reduce={reduce} onFlip={() => onToy('coin')} />
+      <Coin position={[compact ? -2.4 : -3.6, compact ? 2.4 : 2.1, compact ? -1.2 : -1.6]} phase={0} reduce={reduce} onFlip={() => onToy('coin')} />
       <Coin position={[compact ? 0.4 : 1.1, compact ? 3.2 : 4.05, -1.0]} phase={1.7} reduce={reduce} onFlip={() => onToy('coin')} />
       <Coin position={[compact ? 2.6 : 3.0, compact ? 2.7 : 3.45, -0.8]} phase={3.4} reduce={reduce} onFlip={() => onToy('coin')} />
       <Cat onPet={() => onToy('cat')} dark={dark} reduce={reduce} targetX={(() => { const k = active?.key ?? lookAt; return k ? layout.find((l) => l.bar.key === k)?.x ?? null : null; })()} />

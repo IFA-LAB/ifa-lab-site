@@ -8,9 +8,10 @@ const r = pick(text, lang);
 {r.text && (
   <Tag lang={r.fallback ? 'zh-Hant-TW' : undefined}>
     {r.text}
-    {r.fallback && <small class="fb"> ({ui.fallbackNote.en})</small>}
+    {r.fallback && <small class="fb" lang="en">{ui.fallbackNote.en}</small>}
   </Tag>
 )}
 <style>
-  .fb { color: var(--ink-2); font-size: 13px; }
+  /* its own line under the Chinese text, so it never wraps into the title */
+  .fb { display: block; margin-top: var(--space-1); color: var(--ink-2); font: 400 13px/1.4 var(--f-body); }
 </style>

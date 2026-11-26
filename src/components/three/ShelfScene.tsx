@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { useEffect } from 'react';
-import type { PerspectiveCamera } from 'three';
+import type { PerspectiveCamera, PointLight } from 'three';
 import { useRef } from 'react';
 import { Color, type Group, type MeshStandardMaterial } from 'three';
 import { CLAY, RoundedBox, TagSprite, useTextTexture } from './util';
@@ -22,11 +22,13 @@ const GLOW = new Color('#4f7fc4');
 
 /** The cohort's name plate, fixed to the plank's front edge on the left. */
 function PlankLabel({ text, y }: { text: string; y: number }) {
-  const { t, aspect } = useTextTexture(text, 88, false);
-  const h = 0.54, w = h * aspect;
+  // phones: a shorter, larger plate ("第四屆"), hung a little lower so it stays under the figures' feet
+  const narrow = useThree((s) => s.size.width) < 520;
+  const { t, aspect } = useTextTexture(narrow ? text.replace('研究生', '').replace(' grad cohort', ' cohort') : text, 88, false);
+  const h = narrow ? 0.8 : 0.54, w = h * aspect;
   return (
-    <group position={[-W / 2 + 0.3 + (w + 0.34) / 2, y - 0.23, DEPTH / 2 + 0.03]}>
-      <RoundedBox args={[w + 0.34, 0.72, 0.1]} radius={0.07} smoothness={3}>
+    <group position={[-W / 2 + 0.3 + (w + 0.34) / 2, y - (narrow ? 0.42 : 0.23), DEPTH / 2 + 0.03]}>
+      <RoundedBox args={[w + 0.34, h + 0.18, 0.1]} radius={0.07} smoothness={3}>
         <meshStandardMaterial color="#fffaf1" roughness={0.9} />
       </RoundedBox>
       <mesh position={[0, 0, 0.052]}>
@@ -97,6 +99,21 @@ function Figure({ m, x, y, hot, reduce, onHover, onPick, phase }: {
   );
 }
 
+/** A soft accent light in front of the picked figure, so the pick reads at a glance. Always mounted, dimmed to 0 when nothing is picked. */
+function PickLight({ rows, active }: { rows: ShelfRow[]; active: ShelfMember | null }) {
+  const l = useRef<PointLight>(null);
+  let pos: [number, number, number] | null = null;
+  rows.forEach((r, i) => r.members.forEach((m, j) => {
+    if (m.id === active?.id) pos = [(j - (r.members.length - 1) / 2) * SPACING, i * GAP + 0.9, 1.6];
+  }));
+  useFrame(() => {
+    const o = l.current; if (!o) return;
+    if (pos) o.position.set(...(pos as [number, number, number]));
+    o.intensity += ((pos ? 16 : 0) - o.intensity) * 0.2;
+  });
+  return <pointLight ref={l} color="#8fb2ee" intensity={0} distance={3.6} decay={1.4} />;
+}
+
 /** Pull the camera back just far enough that the whole cabinet fits, whatever the canvas shape. */
 function Fit({ H }: { H: number }) {
   const { camera, size } = useThree();
@@ -131,6 +148,7 @@ export default function ShelfScene({ rows, visible, reduce, active, onHover, onP
       style={{ cursor: active ? 'pointer' : 'auto' }}
     >
       <Fit H={H} />
+      <PickLight rows={rows} active={active} />
       <hemisphereLight args={['#ffffff', '#c9d4e3', 2]} />
       <directionalLight position={[4, H + 4, 9]} intensity={2.2} castShadow shadow-mapSize={[1024, 1024]} shadow-bias={-0.0005}
         shadow-camera-left={-6} shadow-camera-right={6} shadow-camera-top={H + 2} shadow-camera-bottom={-2} />

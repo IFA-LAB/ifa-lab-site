@@ -82,7 +82,7 @@ const jsonld = journals.map((p) => ({
     <div class="filter" role="group" aria-label={zh ? '依研究領域篩選' : 'Filter by research area'}>
       <ul class="areas">
         <li><button type="button" class="chip" data-area="" aria-pressed="true">{zh ? '全部' : 'All'}</button></li>
-        {areas.map((a) => <li id={a.key}><button type="button" class="chip" data-area={a.key} aria-pressed="false" style={`--c: var(--clay-${a.clay})`}><i aria-hidden="true"></i>{t(a.name, lang)}</button></li>)}
+        {areas.map((a) => <li id={a.key}><button type="button" class="chip" data-area={a.key} aria-pressed="false" style={`--c: var(--clay-${a.clay})`}><i aria-hidden="true"></i>{t(a.short ?? a.name, lang)}</button></li>)}
       </ul>
       <p class="muted status" aria-live="polite" data-status></p>
     </div>

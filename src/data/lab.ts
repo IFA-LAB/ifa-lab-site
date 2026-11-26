@@ -35,13 +35,13 @@ export const lab = {
 export type AreaKey = 'empirical' | 'behavioral' | 'pricing' | 'ai' | 'forecast' | 'apps';
 
 /** The six research areas. `clay` picks the block colour on the research city. */
-export const areas: { key: AreaKey; name: Bi; blurb: Bi; clay: string }[] = [
+export const areas: { key: AreaKey; name: Bi; blurb: Bi; clay: string; /** for tight spots like filter chips */ short?: Bi }[] = [
   { key: 'empirical', clay: 'blue', name: { zh: '實證財務', en: 'Empirical Finance' }, blurb: { zh: '用台灣與國際市場資料檢驗理論。', en: 'Testing theory with Taiwan and global market data.' } },
   { key: 'behavioral', clay: 'pink', name: { zh: '行為財務', en: 'Behavioral Finance' }, blurb: { zh: '處分效果、投資人關注與情緒。', en: 'Disposition effect, investor attention and sentiment.' } },
   { key: 'pricing', clay: 'sun', name: { zh: '資產定價', en: 'Asset Pricing' }, blurb: { zh: '隨機優勢、異常報酬與衍生性商品定價。', en: 'Stochastic dominance, anomalies and derivative pricing.' } },
   { key: 'ai', clay: 'down', name: { zh: 'AI 與機器學習', en: 'AI and Machine Learning' }, blurb: { zh: '可解釋 AI、混合模型與大型語言模型。', en: 'Explainable AI, hybrid models and LLMs.' } },
   { key: 'forecast', clay: 'up', name: { zh: '財務預測', en: 'Financial Forecasting' }, blurb: { zh: '圖神經網路、相似性預測與時序模型。', en: 'Graph networks, similarity-based and time-series forecasting.' } },
-  { key: 'apps', clay: 'violet', name: { zh: '應用與視覺化', en: 'Applications and Visualization' }, blurb: { zh: '投資推薦系統、AI 助手與資料視覺化。', en: 'Investment recommenders, AI assistants and data visualization.' } },
+  { key: 'apps', clay: 'violet', name: { zh: '應用與視覺化', en: 'Applications and Visualization' }, short: { zh: '應用與視覺化', en: 'Apps & Viz' }, blurb: { zh: '投資推薦系統、AI 助手與資料視覺化。', en: 'Investment recommenders, AI assistants and data visualization.' } },
 ];
 
 export const advisor = {
@@ -77,10 +77,14 @@ export const advisor = {
     { zh: '理財規劃人員專業能力測驗', en: 'Proficiency Test for Financial Planning Personnel' },
   ] satisfies Bi[],
   research: ['Data Science & Fintech', 'Behavioral & Empirical Finance', 'Asset Pricing', 'Similarity-based Prediction', 'Machine Learning', 'Derivatives Pricing', 'Risk Management', 'Credit Market'],
-  interests: {
-    zh: '電吉他與樂團；搖滾、金屬、Breakbeat、Trance、House、Fusion（The Gathering、Porter Robinson、Snarky Puppy）；愛貓。',
-    en: 'Electric guitar and band play; rock, metal, breakbeat, trance, house and fusion (The Gathering, Porter Robinson, Snarky Puppy); cat lover.',
-  } satisfies Bi,
+  /** Shown as tags; the bands go on their own line so a name like Porter Robinson never splits. */
+  hobbies: [
+    { zh: '電吉他與樂團', en: 'Electric guitar & band' },
+    { zh: '搖滾', en: 'Rock' }, { zh: '金屬', en: 'Metal' },
+    { zh: 'Breakbeat', en: 'Breakbeat' }, { zh: 'Trance', en: 'Trance' }, { zh: 'House', en: 'House' }, { zh: 'Fusion', en: 'Fusion' },
+    { zh: '愛貓', en: 'Cat lover' },
+  ] satisfies Bi[],
+  artists: ['The Gathering', 'Porter Robinson', 'Snarky Puppy'],
 };
 
 export const studentProjects = [

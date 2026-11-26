@@ -136,9 +136,9 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
   .sum { display: grid; gap: var(--space-1); font-size: 14px; color: var(--ink-2); }
   .sum span { display: flex; align-items: center; gap: var(--space-2); }
   .events { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); }
-  .ev { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: var(--space-3); padding-bottom: var(--space-4); border-bottom: 1px solid var(--line); }
+  .ev { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: var(--space-3); padding-bottom: var(--space-4); border-bottom: 1px solid var(--line); }
   .ev:last-child { border-bottom: 0; }
-  .stud { width: 16px; height: 16px; border-radius: 5px; margin-top: 4px; }
+  .stud { width: 16px; height: 16px; border-radius: 5px; margin-top: 4px; justify-self: center; } /* the column fits the widest (grant) shape, so nothing pokes past the page edge */
   .ev > div { display: grid; gap: var(--space-1); min-width: 0; }
   .meta { font-size: 13px; color: var(--ink-2); }
   .txt { font-size: 17px; overflow-wrap: anywhere; }
@@ -151,6 +151,9 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
     .floor { grid-template-columns: 1fr; gap: var(--space-4); }
     .slab { position: static; grid-template-columns: auto 1fr; align-items: center; padding: var(--space-4); }
     .slab h2 { font-size: 32px; }
+    /* five totals as an even 3 × 2 grid, number over label, instead of ragged wrapping */
+    .totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .totals li { flex-direction: column; align-items: flex-start; gap: var(--space-1); padding: var(--space-3) var(--space-4); }
   }
   /* Colour on this site means research area: papers and theses wear their area's clay (set inline).
      Other kinds differ by shape: grant = flat slab, award = gold medal (round), milestone = slate diamond. */
