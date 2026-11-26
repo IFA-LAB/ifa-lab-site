@@ -2,7 +2,7 @@ import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { BoxGeometry, EdgesGeometry, Vector3, type DirectionalLight, type Group, type LineSegments, type Mesh, type PerspectiveCamera } from 'three';
 import { CLAY, TagSprite } from './util';
-import { Accessory, BODY_Y, Face, MatchaLatte, R, type Accessory as AccessoryKind, type Model } from './figure';
+import { Accessory, BODY_Y, Face, MatchaLatte, Professor, R, type Accessory as AccessoryKind, type Model } from './figure';
 
 export type WalkBrick = { title: string; clay: string; kind: string; href: string };
 export type WalkStep = { label: string; caption: string; sub: string; soon: boolean; bricks: WalkBrick[]; joins: string[]; anchor: string };
@@ -198,7 +198,7 @@ function Follower({ m, join, slot, L, c }: { m: WalkMember; join: number; slot: 
   return (
     <group ref={g} visible={false} rotation={[0, -0.25, 0]}>
       <group ref={inner} scale={0.001}>
-        {m.model ? <MatchaLatte reduce={c.reduce} phones={m.accessory === 'phones'} /> : <>
+        {m.model === 'prof' ? <Professor reduce={c.reduce} /> : m.model ? <MatchaLatte reduce={c.reduce} phones={m.accessory === 'phones'} /> : <>
           <mesh position={[0, BODY_Y, 0]} scale={R} castShadow><sphereGeometry args={[1, 32, 24]} /><meshStandardMaterial color={body} roughness={0.88} /></mesh>
           <Face placeholder={false} reduce={c.reduce} />
           <Accessory kind={m.accessory} body={body} />

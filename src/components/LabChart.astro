@@ -73,7 +73,8 @@ const steps = [
     joins: [] as string[], anchor: '',
   }] : []),
 ];
-const crew = members.map((m) => ({ id: m.id, name: t(m.data.name, lang), clay: m.data.placeholder ? 'grey' : m.data.figure.clay, accessory: m.data.placeholder ? 'none' as const : m.data.figure.accessory, model: m.data.placeholder ? undefined : m.data.figure.model, href: href(lang, `members/${m.id}`) }));
+// the advisor stands on the first candle from the start (not counted as a member: the step text says "alone" there)
+const crew = [{ id: 'advisor', name: zh ? `${advisor.name.zh}老師` : `Prof. ${advisor.name.en}`, clay: 'sun', accessory: 'none' as const, model: 'prof' as const, href: href(lang, 'advisor') }, ...members.map((m) => ({ id: m.id, name: t(m.data.name, lang), clay: m.data.placeholder ? 'grey' : m.data.figure.clay, accessory: m.data.placeholder ? 'none' as const : m.data.figure.accessory, model: m.data.placeholder ? undefined : m.data.figure.model, href: href(lang, `members/${m.id}`) }))];
 const text = {
   eyebrow: zh ? 'IFA Lab 的 K 線' : 'The IFA Lab chart',
   totals: zh ? '累積 {w} 件成果・{m} 位成員' : '{w} works so far · {m} members',
@@ -100,7 +101,8 @@ const text = {
   /* about 3/4 of a screen of scroll per year, then the pull-back; the scene stays pinned */
   .walk { position: relative; height: calc(var(--n) * 75dvh + 100dvh); }
   .stage { position: sticky; top: 0; height: 100dvh; overflow: hidden; }
-  .stage :global(.walk-canvas) { position: absolute; inset: 0; }
+  /* the header is see-through: cut the 3D off under it so blocks do not show through the bar */
+  .stage :global(.walk-canvas) { position: absolute; inset: 0; clip-path: inset(var(--header-h, 64px) 0 0 0); }
   .stage :global(.walk-3d) { position: absolute; inset: 0; }
   /* overlay: the year being built, what happened, running totals */
   .stage :global(.walk-card) {
@@ -131,7 +133,7 @@ const text = {
     .stage :global(.walk-card) { top: auto; bottom: var(--space-4); translate: none; left: 16px; right: 16px; width: auto; padding: var(--space-4) var(--space-5); }
     .stage :global(.walk-year) { font-size: 40px; }
     .stage :global(.walk-cap) { font-size: 15px; -webkit-line-clamp: 3; }
-    .stage :global(.walk-hint) { bottom: auto; top: calc(var(--header-h, 64px) + var(--space-3)); font-size: 13px; }
+    .stage :global(.walk-hint) { bottom: auto; top: calc(var(--header-h, 64px) + var(--space-6) + 56px); font-size: 13px; }
   }
   /* without WebGL or with reduced motion the chart is not shown; the record below tells the same story */
   .walk[data-flat] { display: none; }
