@@ -37,7 +37,7 @@ const jsonld = people.map((m) => ({
       <div class="section-head">
         <p class="eyebrow">{t(ui.nav.members, lang)}</p>
         <h1>{zh ? '各屆成員' : 'Members by cohort'}</h1>
-        <p class="muted">{zh ? '2023 年 8 月成立至今，一屆一層，第一屆在最下面。滑過櫃子裡的公仔看是誰，點一下進個人頁；下面是每個人的卡片。' : 'Since August 2023, one shelf per cohort, the first at the bottom. Hover a figure in the cabinet to see who it is, click to open their page; cards for everyone follow below.'}</p>
+        <p class="muted">{zh ? '2023 年 8 月成立至今，一屆一層，第一屆在最下面。指一下櫃子裡的公仔看是誰，再點一下進個人頁；下面是每個人的卡片。' : 'Since August 2023, one shelf per cohort, the first at the bottom. Point at or tap a figure in the cabinet to see who it is, then click to open their page; cards for everyone follow below.'}</p>
       </div>
       <div class="cabinet has-cat" data-shelf>
         <span class="cat-perch" style="right: 28px; top: -52px;"><LabCat lang={lang} bubble="left" lines={[{ zh: '每個公仔都是成員自己挑顏色和配件的。', en: 'Each member picks their own figure colour and prop.' }, { zh: '耳機、吉他、眼鏡……配件會透露他們的興趣。', en: 'Headphones, a guitar, glasses: the props give away their hobbies.' }, { zh: '我住在櫃子頂上，最高的那一層歸我。', en: 'I live on top of the cabinet. The top shelf is mine.' }]} /></span>
@@ -64,7 +64,7 @@ const jsonld = people.map((m) => ({
         <ul class="cards">
           {ms.filter((m) => !m.data.placeholder).map((m) => (
             <li>
-              <a class="card clay" href={href(lang, `members/${m.id}`)}>
+              <a class="card clay" href={href(lang, `members/${m.id}`)} data-member={m.id}>
                 {m.data.photo
                   ? <span class="face"><Image class="avatar" src={m.data.photo} alt="" width={88} height={88} densities={[1, 2]} format="webp" /><span class="twin"><ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} model={m.data.figure.model} size={40} /></span></span>
                   : <ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} model={m.data.figure.model} placeholder={m.data.placeholder} size={88} />}
@@ -118,6 +118,10 @@ const jsonld = people.map((m) => ({
   .cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
   .card { display: flex; gap: var(--space-4); align-items: flex-start; padding: var(--space-5); color: var(--ink); text-decoration: none; height: 100%; transition: transform var(--dur-fast) var(--ease-out); }
   @media (hover: hover) and (pointer: fine) { .card:hover { transform: translateY(-3px); } }
+  /* lit from the cabinet above */
+  .card.lit { transform: translateY(-3px); box-shadow: 0 0 0 3px var(--accent), 8px 12px 24px var(--lo); }
+  /* the small clay twin (and its guitar) sits off the photo's corner: keep the text clear of it */
+  .card:has(.twin) { gap: var(--space-5); }
   .txt { display: grid; gap: 2px; min-width: 0; }
   .txt strong { font: 600 22px/1.3 var(--f-display); }
   .en { font-size: 14px; color: var(--ink-2); }

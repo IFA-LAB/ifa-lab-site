@@ -45,6 +45,12 @@ export default function ClayShelf({ rows, hint, hintTouch, open, openTouch }: Pr
     return () => io.disconnect();
   }, [ok]);
 
+  // the member's card further down lights up too, so the cabinet and the list point at the same person
+  useEffect(() => {
+    document.querySelectorAll('[data-member].lit').forEach((e) => e.classList.remove('lit'));
+    if (active) document.querySelector(`[data-member="${active.id}"]`)?.classList.add('lit');
+  }, [active]);
+
   const onHover = (m: ShelfMember | null) => { if (!touch) setActive(m); };
   const onPick = (m: ShelfMember) => {
     if (touch && active?.id !== m.id) { setActive(m); return; }

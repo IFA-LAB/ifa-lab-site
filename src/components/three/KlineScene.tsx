@@ -45,7 +45,8 @@ function Label({ text, x, dark, on, fill }: { text: string; x: number; dark: boo
     const w = g.measureText(text).width;
     const cjk = /[㐀-鿿]/.test(text);
     const sp = text.lastIndexOf(' ', Math.ceil(text.length / 2) + 1);
-    const lines = w <= 480 ? [text]
+    // short Latin names ("Apps & Viz") shrink onto one line instead of breaking
+    const lines = w <= 480 || (!cjk && text.length <= 12) ? [text]
       : cjk ? [text.slice(0, Math.ceil(text.length / 2)).trim(), text.slice(Math.ceil(text.length / 2)).trim()]
       : sp > 0 ? [text.slice(0, sp).trim(), text.slice(sp).trim()]
       : [text];
