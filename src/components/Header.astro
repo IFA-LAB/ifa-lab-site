@@ -39,6 +39,10 @@ const other = otherLocale(lang);
       </nav>
     </details>
     <div class="tools">
+      <button class="tool ask-open" type="button" data-ask-open aria-label={lang === 'zh-tw' ? '問 K 喵：問實驗室的事' : 'Ask K-Cat about the lab'} aria-haspopup="dialog">
+        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5 4.5 4.6 1.8 7.4 3.6A10 9 0 0 1 12 2.5c5.2 0 9.5 3.6 9.5 8.2s-4.3 8.2-9.5 8.2c-1 0-1.9-.1-2.8-.4L4 21l.9-4.5A7.7 7.7 0 0 1 2.5 10.7c0-2.4 1-4.6 2.5-6.2Z"/><circle cx="8.5" cy="11" r="1.3" fill="var(--surface-2)"/><circle cx="15.5" cy="11" r="1.3" fill="var(--surface-2)"/></svg>
+        <span class="ask-word">{lang === 'zh-tw' ? '問 K 喵' : 'Ask'}</span>
+      </button>
       <a class="tool lang" href={swapLocale(path, other)} hreflang={other === 'en' ? 'en' : 'zh-Hant-TW'} lang={other === 'en' ? 'en' : 'zh-Hant-TW'} aria-label={t(ui.langSwitchLabel, lang)}>{t(ui.langSwitch, lang)}</a>
       <button class="tool theme" type="button" aria-label={t(ui.theme, lang)} data-theme-toggle>
         <svg class="moon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.4 5.4 0 0 1-9.54-5A9 9 0 0 0 12 3Z"/></svg>
@@ -120,6 +124,8 @@ const other = otherLocale(lang);
     font: 500 15px/1 var(--f-body); text-decoration: none; cursor: pointer;
   }
   .tool:active { transform: scale(0.97); }
+  .ask-open { display: inline-flex; gap: 6px; }
+  @media (max-width: 1279px) { .ask-word { display: none; } }
   /* moon in light mode, sun in dark mode: the icon shows where the button takes you */
   .theme .sun { display: none; }
   :global(:root[data-theme='dark']) .theme .sun { display: block; }

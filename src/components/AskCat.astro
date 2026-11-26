@@ -1,0 +1,167 @@
+---
+// 「問 K 喵」: a side sheet where visitors ask about the lab. POST /api/ask (worker/index.ts) finds the matching
+// passages of this site; a model on the lab's DGX Spark writes a short answer from them, with numbered sources.
+// When the Spark is warming up or unreachable, the sheet shows the matching passages instead.
+// Opened by any element with [data-ask-open] (the header button, the join page). Native <dialog>: Esc and focus are handled.
+import { type Locale } from '@/i18n/ui';
+const { lang } = Astro.props as { lang: Locale };
+const zh = lang === 'zh-tw';
+const T = {
+  title: zh ? '問 K 喵' : 'Ask K-Cat',
+  close: zh ? '關閉' : 'Close',
+  intro: zh ? '這個網站的每一頁我都讀過。問我實驗室的事，我會附上出處。' : 'I have read every page of this site. Ask me about the lab and I will show where the answer comes from.',
+  note: zh ? '回答由實驗室 DGX Spark 上的模型產生，可能出錯；重要的事請寄信跟老師確認。' : 'Answers come from a model on the lab’s DGX Spark and can be wrong. For anything important, email Prof. Chiu.',
+  chips: zh ? ['碩士班收幾位？', '一定要做金融題目嗎？', '學長姐畢業後去哪？', '老師開哪些課？'] : ['How many master’s students?', 'Do I have to work on finance?', 'Where did graduates go?', 'Which courses does Prof. Chiu teach?'],
+  placeholder: zh ? '想問什麼？' : 'Your question',
+  send: zh ? '送出' : 'Ask',
+  thinking: zh ? 'K 喵想一下…' : 'K-Cat is thinking…',
+  warming: zh ? 'K 喵的大腦正在 Spark 上開機（大約 1–3 分鐘）。先給你網站上最相關的幾段：' : 'K-Cat’s brain is starting up on the Spark (about 1–3 minutes). Here are the most relevant parts of the site meanwhile:',
+  search: zh ? '現在連不上 K 喵的大腦，先給你網站上最相關的幾段：' : 'K-Cat’s brain is out of reach right now. Here are the most relevant parts of the site:',
+  none: zh ? '網站上找不到相關的內容。可以寄信問邱老師：hychiu@ncu.edu.tw' : 'Nothing on the site matches that. You can email Prof. Chiu: hychiu@ncu.edu.tw',
+  limited: zh ? '問得太快了，休息一分鐘再問。' : 'Too many questions at once. Try again in a minute.',
+  error: zh ? '出了點問題，請再試一次。' : 'Something went wrong. Please try again.',
+  sources: zh ? '出處' : 'Sources',
+  you: zh ? '你' : 'You',
+};
+---
+<dialog id="ask-cat" class="ask" aria-labelledby="ask-h" data-lang={lang} data-t={JSON.stringify(T)}>
+  <div class="head">
+    <svg class="face" width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><path d="M7 15 6 4l8 6M29 15l1-11-8 6" fill="#3a4252"/><ellipse cx="18" cy="21" rx="13" ry="11" fill="#3a4252"/><circle cx="13" cy="20" r="2" fill="#fff"/><circle cx="23" cy="20" r="2" fill="#fff"/><ellipse cx="10" cy="25" rx="2.2" ry="1.3" fill="#f2a3b3"/><ellipse cx="26" cy="25" rx="2.2" ry="1.3" fill="#f2a3b3"/></svg>
+    <h2 id="ask-h">{T.title}</h2>
+    <button type="button" class="x" data-ask-close aria-label={T.close}>×</button>
+  </div>
+  <div class="log" aria-live="polite" data-log>
+    <p class="intro">{T.intro}</p>
+    <ul class="chips">{T.chips.map((c) => <li><button type="button" class="chip" data-q={c}>{c}</button></li>)}</ul>
+  </div>
+  <form class="ask-form" data-form>
+    <label class="visually-hidden" for="ask-q">{T.placeholder}</label>
+    <input id="ask-q" name="q" maxlength="400" autocomplete="off" placeholder={T.placeholder} required minlength="2" />
+    <button class="btn" type="submit">{T.send}</button>
+  </form>
+  <p class="note">{T.note}</p>
+</dialog>
+
+<script>
+  const dlg = document.getElementById('ask-cat') as HTMLDialogElement | null;
+  if (dlg) {
+    const T = JSON.parse(dlg.dataset.t ?? '{}');
+    const lang = dlg.dataset.lang;
+    const log = dlg.querySelector<HTMLElement>('[data-log]')!;
+    const form = dlg.querySelector<HTMLFormElement>('[data-form]')!;
+    const input = form.querySelector<HTMLInputElement>('input')!;
+    let opener: HTMLElement | null = null, busy = false;
+
+    document.addEventListener('click', (e) => {
+      const b = (e.target as Element).closest?.<HTMLElement>('[data-ask-open]');
+      if (!b) return;
+      e.preventDefault();
+      opener = b;
+      dlg.showModal();
+      input.focus();
+    });
+    dlg.querySelector('[data-ask-close]')!.addEventListener('click', () => dlg.close());
+    // a click on the dimmed backdrop closes it
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener('close', () => opener?.focus({ preventScroll: true }));
+    log.addEventListener('click', (e) => { const c = (e.target as Element).closest<HTMLButtonElement>('[data-q]'); if (c) { input.value = c.dataset.q ?? ''; form.requestSubmit(); } });
+
+    const el = (tag: string, cls: string, text?: string) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text) n.textContent = text; return n; };
+    type Src = { title: string; url: string; text: string };
+    /** The answer as text, with [n] turned into links to source n. */
+    function answerNode(text: string, src: Src[]) {
+      const p = el('div', 'a');
+      for (const para of text.split(/\n{2,}/)) {
+        const pp = el('p', '');
+        for (const part of para.split(/(\[\d+\])/)) {
+          const m = part.match(/^\[(\d+)\]$/);
+          const s = m ? src[+m[1] - 1] : undefined;
+          if (s) { const a = el('a', 'cite', m![1]) as HTMLAnchorElement; a.href = s.url; a.title = s.title; pp.append(a); }
+          else if (!m) pp.append(part.replace(/\*\*/g, ''));
+        }
+        p.append(pp);
+      }
+      return p;
+    }
+    function sourcesNode(src: Src[], withText: boolean) {
+      const box = el('div', 'src');
+      box.append(el('p', 'src-h', T.sources));
+      const ol = el('ol', '');
+      for (const s of src) {
+        const li = el('li', '');
+        const a = el('a', '', s.title) as HTMLAnchorElement; a.href = s.url;
+        li.append(a);
+        if (withText) li.append(el('span', 'snip', s.text + '…'));
+        ol.append(li);
+      }
+      box.append(ol);
+      return box;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const q = input.value.trim();
+      if (busy || q.length < 2) return;
+      busy = true;
+      dlg.querySelector('.chips')?.remove();
+      log.append(el('p', 'q', q));
+      const wait = el('p', 'wait', T.thinking);
+      log.append(wait);
+      input.value = '';
+      wait.scrollIntoView({ block: 'end' });
+      try {
+        const r = await fetch('/api/ask', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ q, lang }) });
+        const d = await r.json().catch(() => ({}));
+        wait.remove();
+        const src: Src[] = d.sources ?? [];
+        if (r.status === 429) log.append(el('p', 'a', T.limited));
+        else if (!r.ok) log.append(el('p', 'a', T.error));
+        else if (d.answer) { log.append(answerNode(d.answer, src)); if (src.length) log.append(sourcesNode(src, false)); }
+        else if (!src.length) log.append(el('p', 'a', T.none));
+        else { log.append(el('p', 'a', d.mode === 'warming' ? T.warming : T.search)); log.append(sourcesNode(src.slice(0, 3), true)); }
+      } catch {
+        wait.remove();
+        log.append(el('p', 'a', T.error));
+      }
+      busy = false;
+      log.lastElementChild?.scrollIntoView({ block: 'nearest' });
+      input.focus();
+    });
+  }
+</script>
+
+<style>
+  .ask {
+    margin: 0 0 0 auto; height: 100dvh; max-height: 100dvh; width: min(440px, 100vw); padding: 0; border: 0;
+    display: none; grid-template-rows: auto 1fr auto auto; background: var(--surface); color: var(--ink);
+    box-shadow: -12px 0 40px var(--lo);
+  }
+  .ask[open] { display: grid; }
+  .ask::backdrop { background: rgb(20 28 40 / 0.35); }
+  .head { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--line); }
+  .head h2 { font-size: 22px; flex: 1; }
+  .x { width: 44px; height: 44px; border-radius: var(--r-full); border: 0; background: var(--surface-2); color: var(--ink); font: 400 24px/1 var(--f-body); cursor: pointer; }
+  .log { overflow-y: auto; padding: var(--space-5); display: grid; gap: var(--space-4); align-content: start; overscroll-behavior: contain; }
+  .intro { font-size: 16px; }
+  .chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .chips .chip { border: 0; cursor: pointer; min-height: 40px; }
+  .q { justify-self: end; max-width: 85%; padding: 10px 14px; border-radius: var(--r-md) var(--r-md) 4px var(--r-md); background: var(--accent); color: var(--accent-ink); font-size: 16px; line-height: 1.6; }
+  .a, .wait { max-width: 95%; font-size: 16px; line-height: 1.75; display: grid; gap: var(--space-2); }
+  .wait { color: var(--ink-2); }
+  .cite { display: inline-grid; place-items: center; min-width: 22px; height: 22px; margin: 0 2px; padding: 0 5px; border-radius: var(--r-full); background: var(--surface-2); font: 600 12px/1 var(--f-mono); text-decoration: none; vertical-align: 2px; }
+  .src { padding: var(--space-3) var(--space-4); border-radius: var(--r-md); background: var(--surface-2); font-size: 14px; }
+  .src-h { font: 600 13px/1.4 var(--f-mono); color: var(--ink-2); margin-bottom: var(--space-1); }
+  .src ol { margin: 0; padding-left: 1.4em; display: grid; gap: var(--space-2); }
+  .snip { display: block; color: var(--ink-2); line-height: 1.6; }
+  .ask-form { display: flex; gap: var(--space-2); padding: var(--space-3) var(--space-5); border-top: 1px solid var(--line); }
+  .ask-form input { flex: 1; min-width: 0; min-height: 44px; padding: 0 var(--space-4); border-radius: var(--r-full); border: 1px solid color-mix(in oklab, var(--ink) 35%, transparent); background: var(--bg); color: var(--ink); font: 400 16px/1 var(--f-body); }
+  .note { padding: 0 var(--space-5) var(--space-4); font-size: 13px; line-height: 1.5; color: var(--ink-2); }
+  @media (max-width: 600px) {
+    .ask { width: 100vw; height: 88dvh; max-height: 88dvh; margin: auto 0 0; border-radius: var(--r-lg) var(--r-lg) 0 0; box-shadow: 0 -12px 40px var(--lo); }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .ask[open] { animation: ask-in 260ms var(--ease-out); }
+    @keyframes ask-in { from { translate: 24px 0; opacity: 0; } }
+    @media (max-width: 600px) { @keyframes ask-in { from { translate: 0 32px; opacity: 0; } } }
+  }
+</style>

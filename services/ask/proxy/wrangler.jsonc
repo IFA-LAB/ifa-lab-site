@@ -1,0 +1,11 @@
+// Private proxy: the site's Worker calls it through a service binding, and it forwards to the assistant service on
+// the lab's DGX Spark through a Cloudflare Tunnel (Workers VPC). No public URL. Deploy from here: `npx wrangler deploy`.
+{
+  "$schema": "../../../node_modules/wrangler/config-schema.json",
+  "name": "ifa-ask-proxy",
+  "main": "index.ts",
+  "compatibility_date": "2026-11-26",
+  "workers_dev": false,
+  "preview_urls": false,
+  "vpc_services": [{ "binding": "SPARK", "service_id": "01a218b3-6829-7d12-84f7-0f920ed3afc6", "remote": true }]
+}
