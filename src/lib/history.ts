@@ -46,7 +46,7 @@ export async function labEvents(lang: Locale): Promise<Event[]> {
         kind: 'paper' as const,
         clay: clayOf(p.data.area),
         text: future
-          ? { zh: `〈${p.data.title}〉獲 ${p.data.venue} 接受，預計 ${p.data.year} 年刊登。`, en: `“${p.data.title}” accepted by ${p.data.venue}, to appear in ${p.data.year}.` }
+          ? { zh: `獲 ${p.data.venue} 接受，預計 ${p.data.year} 年刊登：〈${p.data.title}〉`, en: `Accepted by ${p.data.venue}, to appear in ${p.data.year}: “${p.data.title}”` }
           : { zh: `〈${p.data.title}〉刊登於 ${p.data.venue}。`, en: `“${p.data.title}” published in ${p.data.venue}.` },
         link: href(lang, `papers/${p.id}`),
         who: members.filter((m) => m.data.name.en && p.data.authors.includes(m.data.name.en)).map((m) => m.id),

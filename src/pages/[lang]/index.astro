@@ -304,7 +304,8 @@ const description = zh
   .join { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-6); align-items: center; padding: var(--space-7) var(--space-7); background: color-mix(in oklab, var(--accent) 9%, var(--surface)); }
   .join > div:first-child { display: grid; gap: var(--space-4); justify-items: start; max-width: 34em; }
   .join .btn { margin-top: var(--space-2); }
-  .join .crowd { display: grid; grid-template-columns: repeat(4, auto); gap: var(--space-2) var(--space-3); }
+  /* fixed cells: a guitar or headphones never eats into the gap beside its figure */
+  .join .crowd { display: grid; grid-template-columns: repeat(4, 76px); justify-items: center; gap: var(--space-2) var(--space-3); }
   /* 320px phones: figures shrink a little so three per shelf and four in the crowd still fit */
   @media (max-width: 400px) {
     .mission .quote { font-size: 23px; } /* 再把它做成用得上的模型。 fits one 288px line */

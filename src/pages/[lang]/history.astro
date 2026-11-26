@@ -54,7 +54,7 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
       <p>{zh
         ? 'IFA Lab 在 2023 年 8 月成立，最初由中央資管的大學部與碩士班學生組成，是結合金融、科技與資料分析的專案基地。'
         : 'IFA Lab was founded in August 2023 by undergraduate and master’s students of NCU Information Management, as a hub for projects combining finance, technology and data analytics.'}</p>
-      <p class="muted">{zh ? '創始成員：' : 'Founding members: '}{founders.map((m, i) => <>{i > 0 && (zh ? '、' : ', ')}<a href={href(lang, `members/${m.id}`)}>{t(m.data.name, lang)}</a></>)}{zh ? '，指導教授邱信瑜。' : ', with advisor Hsin-Yu Chiu.'}</p>
+      <p class="muted">{zh ? '創始成員：' : 'Founding members: '}{founders.map((m, i) => <>{i > 0 && (zh ? '、' : ', ')}<a class="nw" href={href(lang, `members/${m.id}`)}>{t(m.data.name, lang)}</a></>)}{zh ? <>，指導教授<span class="nw">邱信瑜</span>。</> : <>, with advisor <span class="nw">Hsin-Yu Chiu</span>.</>}</p>
     </div>
 
     <p class="eyebrow scope">{zh ? '2023 年起累計（論文只算成立後刊出的）' : 'Since 2023 (papers: published after founding)'}</p>
@@ -68,6 +68,7 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
         <button type="button" class="chip" data-kind={k.key} aria-pressed="false"><i data-k={k.key} aria-hidden="true"></i>{t(k.name, lang)}</button>
       ))}
     </div>
+    <p class="status" aria-live="polite" data-status></p>
     <p class="muted key">{zh ? '形狀代表類型；論文與碩士論文的顏色是研究領域。' : 'Shape shows the kind; papers and theses are coloured by research area.'}</p>
 
     <ol class="tower">
@@ -88,7 +89,7 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
                   <p class="meta mono">{e.date.length > 4 ? e.date.replace('-', '/') : e.date} · {t(kindOf(e.kind).name, lang)}</p>
                   <p class="txt">{(() => { const x = e.link ? splitTitle(t(e.text, lang)) : null; return x ? <>{x.before}<a href={e.link}>{x.title}</a>{x.after}</> : e.link ? <a href={e.link}>{t(e.text, lang)}</a> : t(e.text, lang); })()}</p>
                   {e.who && e.who.length > 0 && (
-                    <p class="who">{e.who.map((id, i) => <>{i > 0 && (zh ? '、' : ', ')}<a href={href(lang, `members/${id}`)}>{t(nameOf(id), lang)}</a></>)}</p>
+                    <p class="who">{e.who.map((id, i) => <>{i > 0 && (zh ? '、' : ', ')}<a class="nw" href={href(lang, `members/${id}`)}>{t(nameOf(id), lang)}</a></>)}</p>
                   )}
                   {e.photo === 'ched' && (
                     <Picture src={chedAi} alt={zh ? 'Ched.AI 團隊四人在 GenAI Stars 合影' : 'The Ched.AI team at GenAI Stars'} widths={[360, 720]} sizes="360px" formats={['avif', 'webp']} class="photo" />
@@ -110,6 +111,16 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
     for (const x of buttons) x.setAttribute('aria-pressed', String(x === b));
     for (const ev of document.querySelectorAll<HTMLElement>('.ev')) ev.hidden = !!k && ev.dataset.kind !== k;
     for (const f of document.querySelectorAll<HTMLElement>('.floor')) f.hidden = !f.querySelector('.ev:not([hidden])');
+    // the rest of the page follows: other kinds' bricks and counts fade, this kind's total is marked, and a line says how many show
+    for (const x of document.querySelectorAll<HTMLElement>('.bricks i, .sum span, .totals li')) {
+      const kind = x.dataset.k ?? x.querySelector<HTMLElement>('[data-k]')?.dataset.k;
+      x.classList.toggle('off', !!k && kind !== k);
+      x.classList.toggle('on', !!k && kind === k);
+    }
+    const n = document.querySelectorAll('.ev:not([hidden])').length;
+    const zh = document.documentElement.lang.startsWith('zh');
+    const label = b.textContent?.trim();
+    document.querySelector<HTMLElement>('[data-status]')!.textContent = k ? (zh ? `只顯示「${label}」：${n} 項` : `Showing ${label}: ${n}`) : '';
   });
 </script>
 
@@ -122,6 +133,10 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
 
   .filter { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-3); }
   .key { font-size: 14px; margin-bottom: var(--space-7); }
+  .status { font-size: 14px; min-height: 1.5em; margin-bottom: var(--space-1); }
+  .bricks i, .sum span, .totals li { transition: opacity var(--dur-base) var(--ease-out); }
+  .off { opacity: 0.22; }
+  .totals li.on { box-shadow: 6px 8px 16px var(--lo), inset 0 0 0 2px var(--ink); }
   .filter button { min-height: 44px; cursor: pointer; font: inherit; font-size: 15px; display: inline-flex; align-items: center; gap: var(--space-2); border: 0; color: var(--ink); }
   .filter button[aria-pressed='true'] { background: var(--ink); color: var(--bg); }
   .filter i, .sum i, .stud { display: inline-block; background: var(--c); box-shadow: inset -2px -2px 3px rgb(0 0 0 / 0.18), inset 2px 2px 3px rgb(255 255 255 / 0.35); }

@@ -37,8 +37,16 @@ const yrs = done.map((w) => w.year);
 const wallYears = Array.from({ length: Math.max(...yrs) - Math.min(...yrs) + 1 }, (_, i) => Math.min(...yrs) + i);
 const byArea = (a: { area: string }, b: { area: string }) => areas.findIndex((x) => x.key === a.area) - areas.findIndex((x) => x.key === b.area);
 // accepted papers sit in their own "forthcoming" pile, not under a future year
-const wall: { year: number | string; bricks: typeof works }[] = [
-  ...wallYears.map((y) => ({ year: y, bricks: done.filter((w) => w.year === y).sort(byArea) })),
+// a run of empty years shares one narrow column ("2022–23"), so two empty labels never sit side by side
+const yearCols: { year: number; to?: number; bricks: typeof works }[] = [];
+for (const y of wallYears) {
+  const bricks = done.filter((w) => w.year === y).sort(byArea);
+  const last = yearCols.at(-1);
+  if (!bricks.length && last && !last.bricks.length) last.to = y;
+  else yearCols.push({ year: y, bricks });
+}
+const wall: { year: number | string; to?: number; bricks: typeof works }[] = [
+  ...yearCols,
   ...(works.some((w) => w.soon) ? [{ year: zh ? '即將' : 'Soon', bricks: works.filter((w) => w.soon).sort(byArea) }] : []),
 ];
 const wallMax = Math.max(...wall.map((c) => c.bricks.length));
@@ -65,14 +73,14 @@ const jsonld = journals.map((p) => ({
     <figure class="wall clay" aria-label={zh ? `成果牆：${wall.map((c) => `${c.year} 年 ${c.bricks.length} 件`).join('、')}` : `Output wall: ${wall.map((c) => `${c.year}: ${c.bricks.length}`).join(', ')}`}>
       <div class="cols" style={`--rows: ${wallMax}`}>
         {wall.map((c) => (
-          <div class:list={['col', { empty: !c.bricks.length }]}>
+          <div class:list={['col', { empty: !c.bricks.length, run: !!c.to }]}>
             {c.bricks.length === wallMax && wall.findIndex((x) => x.bricks.length === wallMax) === wall.indexOf(c) && (
               <span class="perch"><LabCat lang={lang} size={58} bubble="left" lines={[{ zh: '這一年疊了最多塊，我坐在最上面看風景。', en: 'This year has the most blocks. Nice view up here.' }, { zh: '空心的是還在寫的工作論文，我不敢踩。', en: 'Hollow ones are working papers, still drying. I do not step on them.' }, { zh: '點下面的顏色，可以只看一個領域。', en: 'Tap a colour below to see just one area.' }]} /></span>
             )}
             <span class="num" aria-hidden="true">{c.bricks.length || ''}</span>
             {/* each brick jumps to its entry in the list below (pointer only; the list itself is the accessible version) */}
             <span class="pile" aria-hidden="true">{c.bricks.map((b) => <a href={`#${b.id}`} tabindex="-1" title={b.title} data-brick data-area={b.area} class:list={[b.kind]} style={`--c: var(--clay-${areaClay(b.area)})`}></a>)}</span>
-            {typeof c.year === 'number' ? <span class="yr" aria-hidden="true"><span class="cent">{String(c.year).slice(0, 2)}</span>{String(c.year).slice(2)}</span> : <span class="yr soon" aria-hidden="true">{c.year}</span>}
+            {typeof c.year === 'number' ? <span class="yr" aria-hidden="true"><span class="cent">{String(c.year).slice(0, 2)}</span>{String(c.year).slice(2)}{c.to && `–${String(c.to).slice(2)}`}</span> : <span class="yr soon" aria-hidden="true">{c.year}</span>}
           </div>
         ))}
       </div>
@@ -264,7 +272,8 @@ const jsonld = journals.map((p) => ({
   .projects > li.feature { grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); align-items: center; }
   .ptext { display: grid; gap: var(--space-2); min-width: 0; }
   .projects :global(.pphoto) { display: block; width: 100%; height: auto; border-radius: var(--r-md); }
-  .award { color: var(--ink); font-weight: 600; }
+  /* the award reads as words, not code: body face even inside the mono year line */
+  .award { font: 600 15px/1.4 var(--f-body); color: var(--ink); }
   .plinks { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
   .plinks a { text-decoration: none; min-height: 40px; }
   @media (max-width: 899px) { .projects, .projects > li.feature { grid-template-columns: 1fr; } }
@@ -297,6 +306,8 @@ const jsonld = journals.map((p) => ({
   .col { display: grid; justify-items: center; gap: var(--space-2); flex: 1 1 0; min-width: 0; }
   /* years with no work take less room, so the wall's weight is not all in one corner */
   .col.empty { flex-grow: 0.45; }
+  .col.run { flex-grow: 0.9; } /* a merged run of empty years (2022–23) gets room for its label */
+  .col.run .yr { white-space: nowrap; }
   .col.empty .yr { font-weight: 400; border-top-style: dashed; }
   .pile { display: flex; flex-direction: column-reverse; gap: 4px; width: 100%; max-width: 120px; }
   .pile a { display: block; height: 18px; border-radius: 6px; background: var(--c); box-shadow: inset 0 -4px 0 rgb(0 0 0 / 0.16), inset 2px 3px 3px rgb(255 255 255 / 0.4), 0 3px 5px var(--lo); transition: translate var(--dur-fast) var(--ease-out), filter var(--dur-fast) var(--ease-out); }

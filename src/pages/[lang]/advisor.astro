@@ -141,7 +141,11 @@ const person = {
   .timeline li { display: grid; grid-template-columns: 9.5em 1fr; gap: var(--space-3); }
   .timeline .mono { color: var(--ink-2); }
   /* six short names: two columns, so the main column ends near the sidebar */
-  @media (min-width: 768px) { .lic { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-5); } }
+  /* licence names stay whole: two columns only when each column can hold the longest name */
+  .lic li { word-break: keep-all; }
+  @media (min-width: 768px) { .lic { display: grid; grid-template-columns: repeat(auto-fit, minmax(14em, 1fr)); column-gap: var(--space-5); } }
+  /* tablets: one column, like the member pages, so the timeline is not squeezed beside a short sidebar */
+  @media (max-width: 899px) { .blocks { grid-template-columns: 1fr; } }
   @media (max-width: 767px) { .blocks { grid-template-columns: 1fr; } .timeline li { grid-template-columns: 1fr; gap: 0; } }
   /* the title and 國立中央大學 管理學院 資訊管理學系 break only at their spaces */
   .role { word-break: keep-all; }
