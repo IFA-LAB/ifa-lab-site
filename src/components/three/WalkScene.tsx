@@ -1,71 +1,84 @@
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
-import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
-import { Vector3, type DirectionalLight, type Group, type Mesh, type PerspectiveCamera } from 'three';
-import { CLAY, RoundedBox, TagSprite, useTextTexture } from './util';
+import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { BoxGeometry, EdgesGeometry, Vector3, type DirectionalLight, type Group, type LineSegments, type Mesh, type PerspectiveCamera } from 'three';
+import { CLAY, TagSprite } from './util';
 import { Accessory, BODY_Y, Face, MatchaLatte, R, type Accessory as AccessoryKind, type Model } from './figure';
 
-export type WalkBar = { key: string; label: string; count: number; clay: string; href: string };
 export type WalkBrick = { title: string; clay: string; kind: string; href: string };
-export type WalkCol = { label: string; bricks: WalkBrick[] };
+export type WalkStep = { label: string; caption: string; sub: string; soon: boolean; bricks: WalkBrick[]; joins: string[] };
 export type WalkMember = { id: string; name: string; clay: string; accessory: AccessoryKind; model?: Model; href: string };
-export type WalkRow = { label: string; members: WalkMember[] };
 export type Pick = { text: string; href: string; at: [number, number, number] } | null;
 
-/** Stations sit along x; the camera flies from one to the next as the page scrolls. */
-export const STATIONS = 4;
-const SX = 18;
-const WOOD = '#ecdcc2';
+// The chart: one candle a year. Open = works so far, close = works after the year; the body is that year's bricks.
+const GX = 2.1; // candle spacing
+const BW = 1.35, BH = 0.5, BD = 1.0, GAPY = 0.04;
+const FUR = '#3a4252';
 const clamp = (x: number, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const ease = (x: number) => x * x * (3 - 2 * x);
-/** How far the walk has reached station i: 0 before, 1 once the camera has settled there. */
-const arrive = (p: number, i: number) => clamp((p * (STATIONS - 1) - (i - 1)) / 0.8);
 
-type Ctx = { p: MutableRefObject<number>; reduce: boolean; pick: (x: Pick) => void; open: (href: string) => void };
-
-function Label({ text, position, h = 0.42 }: { text: string; position: [number, number, number]; h?: number }) {
-  const { t, aspect } = useTextTexture(text, 72, false);
-  return (
-    <mesh position={position}>
-      <planeGeometry args={[h * aspect, h]} />
-      <meshBasicMaterial map={t} transparent toneMapped={false} />
-    </mesh>
-  );
+type Layout = { x: number; open: number; close: number }[];
+export function layoutOf(steps: WalkStep[]): Layout {
+  let cum = 0;
+  return steps.map((s, i) => { const open = cum * (BH + GAPY); cum += s.bricks.length; return { x: i * GX, open, close: cum * (BH + GAPY) }; });
 }
 
-/** Station 1: one clay candle per research area, height by the number of works; they grow on arrival. */
-function Board({ bars, c }: { bars: WalkBar[]; c: Ctx }) {
-  const max = Math.max(...bars.map((b) => b.count), 1);
+/** Where a climber stands at time T: walks across a candle's top, then hops to the next one. */
+function pathAt(L: Layout, T: number, out: Vector3) {
+  const last = L.length - 1;
+  const t = clamp(T, 0, last);
+  const i = Math.min(last, Math.floor(t)), f = t - i;
+  const a = L[i];
+  if (i === last || f < 0.6) {
+    const w = i === last ? 0.6 : f;
+    return out.set(a.x - 0.4 + (w / 0.6) * 0.8, a.close, 0);
+  }
+  const b = L[i + 1], u = (f - 0.6) / 0.4;
+  return out.set(a.x + 0.4 + (b.x - a.x - 0.8) * u, a.close + (b.close - a.close) * u + Math.sin(u * Math.PI) * (0.8 + Math.max(0, b.close - a.close) * 0.4), 0);
+}
+
+type Ctx = { T: RefObject<number>; reduce: boolean; pick: (x: Pick) => void; open: (href: string) => void };
+const now = (c: Ctx, L: Layout) => (c.reduce ? L.length - 1 : c.T.current ?? 0);
+
+function Candle({ i, s, L, c }: { i: number; s: WalkStep; L: Layout; c: Ctx }) {
+  const { x, open, close } = L[i];
   const refs = useRef<(Group | null)[]>([]);
-  const t0 = useRef<number | null>(null);
-  useFrame(({ clock }) => {
-    if (t0.current === null) t0.current = clock.getElapsedTime();
-    const k = c.reduce ? 1 : clamp((clock.getElapsedTime() - t0.current) / 1.4);
-    refs.current.forEach((g, i) => { if (g) g.scale.y = 0.02 + 0.98 * ease(clamp(k * 1.6 - i * 0.1)); });
+  const wick = useRef<Group>(null);
+  useFrame(() => {
+    // candle i is built while the climber stands on candle i-1, so it is finished before the hop
+    const b = i === 0 ? 1 : clamp((now(c, L) - (i - 1) - 0.02) / 0.5);
+    const n = Math.max(1, s.bricks.length);
+    refs.current.forEach((g, j) => {
+      if (!g) return;
+      const k = ease(clamp((b - (j / n) * 0.55) / 0.45));
+      g.position.y = open + j * (BH + GAPY) + BH / 2 + (1 - k) * 6;
+      g.rotation.z = (1 - k) * (j % 2 ? 0.6 : -0.6);
+      g.visible = k > 0.001;
+    });
+    if (wick.current) { const k = ease(clamp(b * 1.4 - 0.4)); wick.current.scale.set(1, Math.max(0.001, k), 1); wick.current.visible = k > 0.001; }
   });
-  const gap = 1.7, x0 = -((bars.length - 1) * gap) / 2;
+  const top = close + 0.32, bottom = open - 0.32;
   return (
-    <group>
-      <RoundedBox args={[bars.length * gap + 1.4, 0.4, 3]} radius={0.15} position={[0, -0.2, 0]} receiveShadow castShadow>
-        <meshStandardMaterial color={WOOD} roughness={0.92} />
-      </RoundedBox>
-      {bars.map((b, i) => {
-        const h = 0.6 + (b.count / max) * 4.2, x = x0 + i * gap;
-        const over = (e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); c.pick({ text: `${b.label} · ${b.count}`, href: b.href, at: [x, h + 1.1, 0.6] }); };
+    <group position={[x, 0, 0]}>
+      <group ref={wick} position={[0, bottom, 0]}>
+        <mesh position={[0, (top - bottom) / 2, 0]}>
+          <cylinderGeometry args={[0.05, 0.05, top - bottom, 10]} />
+          <meshStandardMaterial color="#4a5566" roughness={0.6} />
+        </mesh>
+        {/* a year without new work is a doji: a flat line where open meets close */}
+        {s.bricks.length === 0 && (
+          <mesh position={[0, open - bottom, 0]} castShadow>
+            <boxGeometry args={[BW, 0.08, BD * 0.6]} />
+            <meshStandardMaterial color="#8a95a6" roughness={0.8} />
+          </mesh>
+        )}
+      </group>
+      {s.bricks.map((b, j) => {
+        const over = (e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); c.pick({ text: b.title.length > 48 ? b.title.slice(0, 46) + '…' : b.title, href: b.href, at: [x, open + j * (BH + GAPY) + 1.2, 0.9] }); };
         return (
-          <group key={b.key} position={[x, 0, 0]}>
-            <group ref={(g) => { refs.current[i] = g; }}>
-              <mesh position={[0, h / 2, 0]} castShadow>
-                <cylinderGeometry args={[0.05, 0.05, h + 0.9, 10]} />
-                <meshStandardMaterial color="#4a5566" roughness={0.6} />
-              </mesh>
-              <RoundedBox args={[0.9, h, 0.9]} radius={0.2} position={[0, h / 2, 0]} castShadow>
-                <meshStandardMaterial color={CLAY[b.clay] ?? CLAY.grey} roughness={0.85} />
-              </RoundedBox>
-            </group>
-            <Label text={b.label} position={[0, -0.05, 1.52]} h={0.34} />
-            <mesh position={[0, h / 2, 0]} onPointerOver={over} onPointerMove={over} onPointerOut={() => c.pick(null)} onClick={(e) => { e.stopPropagation(); c.open(b.href); }}>
-              <boxGeometry args={[1.4, h + 1.2, 1.4]} />
-              <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+          <group key={j} ref={(g) => { refs.current[j] = g; }} position={[0, open + j * (BH + GAPY) + BH / 2 + 6, 0]} visible={false}>
+            <mesh castShadow receiveShadow onPointerOver={over} onPointerMove={over} onPointerOut={() => c.pick(null)} onClick={(e) => { e.stopPropagation(); c.open(b.href); }}>
+              <boxGeometry args={[BW, BH, BD]} />
+              <meshStandardMaterial color={CLAY[b.clay] ?? CLAY.grey} roughness={0.82} transparent={s.soon || b.kind === 'working'} opacity={s.soon ? 0.6 : b.kind === 'working' ? 0.72 : 1} />
             </mesh>
           </group>
         );
@@ -74,233 +87,205 @@ function Board({ bars, c }: { bars: WalkBar[]; c: Ctx }) {
   );
 }
 
-/** Station 2: every work is a brick, piled by year; they drop into place as the camera arrives. */
-function Wall({ cols, c, x }: { cols: WalkCol[]; c: Ctx; x: number }) {
-  const bw = 0.95, bh = 0.34, gap = 1.12, x0 = -((cols.length - 1) * gap) / 2;
-  const flat = useMemo(() => cols.flatMap((col, i) => col.bricks.map((b, j) => ({ b, i, j, n: 0 }))).map((o, n) => ({ ...o, n })), [cols]);
-  const refs = useRef<(Mesh | null)[]>([]);
-  useFrame(() => {
-    const a = c.reduce ? 1 : arrive(c.p.current, 1);
-    flat.forEach((o) => {
-      const m = refs.current[o.n]; if (!m) return;
-      const k = ease(clamp(a * 1.8 - o.n / flat.length));
-      const y = 0.2 + bh / 2 + o.j * (bh + 0.05);
-      m.position.y = y + (1 - k) * 7;
-      m.rotation.z = (1 - k) * (o.n % 2 ? 0.5 : -0.5);
-    });
+/** The next candle, drawn in dashes: where the visitor's work would go. */
+function Ghost({ x, y, c, L }: { x: number; y: number; c: Ctx; L: Layout }) {
+  const g = useRef<Group>(null);
+  const line = useRef<LineSegments>(null);
+  const h = BH * 3 + GAPY * 2;
+  const edges = useMemo(() => new EdgesGeometry(new BoxGeometry(BW, h, BD)), [h]);
+  useEffect(() => { line.current?.computeLineDistances(); }, []);
+  useFrame(({ clock }) => {
+    if (!g.current) return;
+    const a = clamp((now(c, L) - (L.length - 1.7)) / 0.6);
+    g.current.scale.setScalar(Math.max(0.001, ease(a)));
+    g.current.position.y = y + h / 2 + (c.reduce ? 0 : Math.sin(clock.getElapsedTime() * 1.6) * 0.08);
   });
   return (
-    <group position={[x, 0, 0]}>
-      <RoundedBox args={[cols.length * gap + 1, 0.4, 2]} radius={0.15} position={[0, 0, 0]} receiveShadow castShadow>
-        <meshStandardMaterial color={WOOD} roughness={0.92} />
-      </RoundedBox>
-      {cols.map((col, i) => <Label key={i} text={col.label} position={[x0 + i * gap, -0.05, 1.04]} h={0.3} />)}
-      {flat.map((o) => {
-        const bx = x0 + o.i * gap, by = 0.2 + bh / 2 + o.j * (bh + 0.05);
-        const over = (e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); c.pick({ text: o.b.title.length > 46 ? o.b.title.slice(0, 44) + '…' : o.b.title, href: o.b.href, at: [x + bx, by + 0.9, 0.8] }); };
-        return (
-          <mesh key={o.n} ref={(m) => { refs.current[o.n] = m; }} position={[bx, by + 7, 0]} castShadow
-            onPointerOver={over} onPointerMove={over} onPointerOut={() => c.pick(null)} onClick={(e) => { e.stopPropagation(); c.open(o.b.href); }}>
-            <boxGeometry args={[bw, bh, 0.62]} />
-            <meshStandardMaterial color={CLAY[o.b.clay] ?? CLAY.grey} roughness={0.8} transparent={o.b.kind === 'working'} opacity={o.b.kind === 'working' ? 0.55 : 1} />
-          </mesh>
-        );
-      })}
+    <group ref={g} position={[x, y, 0]}>
+      <lineSegments ref={line} geometry={edges}>
+        <lineDashedMaterial color="#4f7fc4" dashSize={0.12} gapSize={0.08} />
+      </lineSegments>
+      <mesh><boxGeometry args={[BW, h, BD]} /><meshBasicMaterial color="#4f7fc4" transparent opacity={0.12} depthWrite={false} /></mesh>
     </group>
   );
 }
 
-function Figure({ m, c, at }: { m: WalkMember; c: Ctx; at: [number, number, number] }) {
-  const g = useRef<Group>(null);
-  const body = CLAY[m.clay] ?? CLAY.grey;
-  const phase = useMemo(() => Math.random() * 6, []);
-  useFrame(({ clock }) => {
-    if (!g.current || c.reduce) return;
-    const a = arrive(c.p.current, 2);
-    // they hop up once as you arrive, then breathe
-    g.current.position.y = Math.abs(Math.sin(clamp(a * 1.4 - phase / 20) * Math.PI)) * 0.5 + Math.sin(clock.getElapsedTime() * 2 + phase) * 0.02;
+/** A three-year moving average of the closes, as clay beads, drawn up to where the climber is. */
+function Beads({ L, c }: { L: Layout; c: Ctx }) {
+  const pts = useMemo(() => {
+    const ma = L.map((_, i) => { const w = L.slice(Math.max(0, i - 2), i + 1); return w.reduce((s, p) => s + p.close, 0) / w.length; });
+    const out: { p: [number, number, number]; at: number; col: string }[] = [];
+    for (let i = 0; i < L.length - 1; i++) for (let k = 0; k < 6; k++) {
+      const u = k / 6;
+      out.push({ p: [L[i].x + (L[i + 1].x - L[i].x) * u, ma[i] + (ma[i + 1] - ma[i]) * u - 0.15, -1.1], at: i + u, col: (i * 6 + k) % 2 ? CLAY.violet : CLAY.blue });
+    }
+    return out;
+  }, [L]);
+  const refs = useRef<(Mesh | null)[]>([]);
+  useFrame(() => {
+    const T = now(c, L);
+    pts.forEach((b, i) => { const m = refs.current[i]; if (m) m.scale.setScalar(Math.max(0.001, ease(clamp((T - b.at) * 3)))); });
   });
-  const over = (e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); c.pick({ text: m.name, href: m.href, at: [at[0], at[1] + 1.7, at[2] + 0.6] }); };
+  return <>{pts.map((b, i) => (
+    <mesh key={i} ref={(m) => { refs.current[i] = m; }} position={b.p} scale={0.001}><sphereGeometry args={[0.09, 12, 8]} /><meshStandardMaterial color={b.col} roughness={0.7} /></mesh>
+  ))}</>;
+}
+
+function CatBody({ reduce }: { reduce: boolean }) {
+  const tail = useRef<Mesh>(null);
+  useFrame(({ clock }) => { if (tail.current && !reduce) tail.current.rotation.z = 0.6 + Math.sin(clock.getElapsedTime() * 2.2) * 0.25; });
+  const fur = <meshStandardMaterial color={FUR} roughness={0.9} />;
   return (
-    <group position={at}>
-      <group ref={g} scale={0.55}>
+    <group scale={0.55}>
+      <mesh position={[0, 0.5, 0]} scale={[1.15, 0.85, 0.9]} castShadow><sphereGeometry args={[0.62, 32, 24]} />{fur}</mesh>
+      <mesh position={[0.55, 1.15, 0]} castShadow><sphereGeometry args={[0.46, 32, 24]} />{fur}</mesh>
+      <mesh position={[0.48, 1.6, 0.22]} rotation={[0, 0, 0.15]} castShadow><coneGeometry args={[0.16, 0.32, 16]} />{fur}</mesh>
+      <mesh position={[0.48, 1.6, -0.22]} rotation={[0, 0, 0.15]} castShadow><coneGeometry args={[0.16, 0.32, 16]} />{fur}</mesh>
+      <mesh position={[0.98, 1.1, 0]}><sphereGeometry args={[0.06, 12, 8]} /><meshStandardMaterial color="#f2a3b3" roughness={0.8} /></mesh>
+      <mesh position={[0.9, 1.25, 0.17]}><sphereGeometry args={[0.07, 12, 8]} /><meshStandardMaterial color="#ffffff" roughness={0.6} /></mesh>
+      <mesh position={[0.9, 1.25, -0.17]}><sphereGeometry args={[0.07, 12, 8]} /><meshStandardMaterial color="#ffffff" roughness={0.6} /></mesh>
+      <mesh ref={tail} position={[-0.75, 0.85, 0]} rotation={[0, 0, 0.6]} castShadow><capsuleGeometry args={[0.1, 0.8, 4, 12]} />{fur}</mesh>
+    </group>
+  );
+}
+
+/** K 喵 leads the climb, turned a little toward the camera so its face reads. */
+function Climber({ L, c, at }: { L: Layout; c: Ctx; at: RefObject<Vector3> }) {
+  const g = useRef<Group>(null);
+  const v = useMemo(() => new Vector3(), []);
+  useFrame(({ clock }) => {
+    if (!g.current) return;
+    const T = now(c, L);
+    pathAt(L, T, v);
+    const walking = !c.reduce && T % 1 < 0.6 && T < L.length - 1;
+    g.current.position.set(v.x, v.y + (walking ? Math.abs(Math.sin(clock.getElapsedTime() * 12)) * 0.05 : 0), 0.1);
+    at.current!.copy(v);
+  });
+  return <group ref={g} rotation={[0, -0.45, 0]}><CatBody reduce={c.reduce} /></group>;
+}
+
+/** A member joins in the year their cohort arrived and stands on a candle top behind the cat, three to a candle;
+    when the cat moves on, everyone hops forward to their new spot. */
+function Follower({ m, join, rank, L, c, crewJoin }: { m: WalkMember; join: number; rank: number; L: Layout; c: Ctx; crewJoin: number[] }) {
+  const g = useRef<Group>(null), inner = useRef<Group>(null);
+  const cur = useRef<Vector3 | null>(null);
+  const tgt = useMemo(() => new Vector3(), []);
+  const body = CLAY[m.clay] ?? CLAY.grey;
+  useFrame(({ clock }, dt) => {
+    const o = g.current; if (!o) return;
+    const T = now(c, L);
+    const shown = clamp((T - join + 0.2) / 0.3);
+    o.visible = shown > 0.001;
+    if (!o.visible) { cur.current = null; return; }
+    // place in line: the newest members stand nearest the cat
+    let place = 0;
+    crewJoin.forEach((j, k) => { if (k !== rank && T >= j - 0.2 && (j > join || (j === join && k > rank))) place++; });
+    const cat = Math.min(L.length - 1, Math.floor(Math.max(0, T) + 0.4));
+    // the first three share the cat's own candle, in the back row; the rest fill the candles behind it
+    const ci = Math.max(0, cat - Math.floor(place / 3)), slot = place % 3;
+    const top = L[ci];
+    tgt.set(top.x + (slot - 1) * 0.4, top.close, -0.38);
+    if (!cur.current) cur.current = tgt.clone();
+    const before = cur.current.distanceTo(tgt);
+    cur.current.lerp(tgt, 1 - Math.exp(-Math.min(dt, 0.1) * (c.reduce ? 60 : 7)));
+    const hop = c.reduce ? 0 : Math.min(1, before) * 0.5;
+    o.position.set(cur.current.x, cur.current.y + hop, cur.current.z);
+    if (inner.current) {
+      inner.current.scale.setScalar(Math.max(0.001, 0.3 * ease(shown)));
+      inner.current.position.y = c.reduce ? 0 : Math.abs(Math.sin(clock.getElapsedTime() * 3 + rank)) * 0.04;
+    }
+  });
+  const over = (e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); const p = g.current!.position; c.pick({ text: m.name, href: m.href, at: [p.x, p.y + 1.1, 0.8] }); };
+  return (
+    <group ref={g} visible={false} rotation={[0, -0.3, 0]}>
+      <group ref={inner} scale={0.001}>
         {m.model ? <MatchaLatte reduce={c.reduce} phones={m.accessory === 'phones'} /> : <>
-          <mesh position={[0, BODY_Y, 0]} scale={R} castShadow>
-            <sphereGeometry args={[1, 32, 24]} />
-            <meshStandardMaterial color={body} roughness={0.88} />
-          </mesh>
+          <mesh position={[0, BODY_Y, 0]} scale={R} castShadow><sphereGeometry args={[1, 32, 24]} /><meshStandardMaterial color={body} roughness={0.88} /></mesh>
           <Face placeholder={false} reduce={c.reduce} />
           <Accessory kind={m.accessory} body={body} />
         </>}
       </group>
-      <mesh position={[0, 0.7, 0]} onPointerOver={over} onPointerMove={over} onPointerOut={() => c.pick(null)} onClick={(e) => { e.stopPropagation(); c.open(m.href); }}>
-        <boxGeometry args={[1.3, 1.6, 1.2]} />
+      <mesh position={[0, 0.4, 0]} onPointerOver={over} onPointerMove={over} onPointerOut={() => c.pick(null)} onClick={(e) => { e.stopPropagation(); c.open(m.href); }}>
+        <boxGeometry args={[0.5, 0.8, 0.5]} />
         <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
     </group>
   );
 }
 
-/** Station 3: the members cabinet, one plank per cohort, first cohort at the bottom. */
-function Cabinet({ rows, c, x }: { rows: WalkRow[]; c: Ctx; x: number }) {
-  const GAP = 1.75, W = 7.2, H = rows.length * GAP;
-  return (
-    <group position={[x, 0, 0]}>
-      <mesh position={[0, H / 2, -0.75]} receiveShadow>
-        <boxGeometry args={[W + 0.5, H + 0.4, 0.1]} />
-        <meshStandardMaterial color="#f7efe1" roughness={0.95} />
-      </mesh>
-      {[-1, 1].map((s) => (
-        <RoundedBox key={s} args={[0.36, H + 0.7, 1.6]} radius={0.12} position={[s * (W / 2 + 0.25), H / 2 - 0.1, 0]} castShadow receiveShadow>
-          <meshStandardMaterial color={WOOD} roughness={0.92} />
-        </RoundedBox>
-      ))}
-      <RoundedBox args={[W + 0.9, 0.36, 1.6]} radius={0.12} position={[0, H + 0.2, 0]} castShadow>
-        <meshStandardMaterial color={WOOD} roughness={0.92} />
-      </RoundedBox>
-      {rows.map((r, i) => {
-        const y = i * GAP, sp = Math.min(1.5, (W - 2.2) / Math.max(1, r.members.length - 1));
-        return (
-          <group key={r.label}>
-            <RoundedBox args={[W + 0.5, 0.32, 1.6]} radius={0.1} position={[0, y - 0.16, 0]} castShadow receiveShadow>
-              <meshStandardMaterial color={WOOD} roughness={0.92} />
-            </RoundedBox>
-            <Label text={r.label} position={[-W / 2 + 0.9, y - 0.16, 0.82]} h={0.26} />
-            {r.members.map((m, j) => <Figure key={m.id} m={m} c={c} at={[(j - (r.members.length - 1) / 2) * sp + 0.6, y, 0.1]} />)}
-          </group>
-        );
-      })}
-    </group>
-  );
-}
-
-/** Station 4: a clay mailbox; the letter slides in and the flag goes up as you arrive. */
-function Mailbox({ c, x, href, label }: { c: Ctx; x: number; href: string; label: string }) {
-  const letter = useRef<Group>(null), flag = useRef<Group>(null);
-  useFrame(({ clock }) => {
-    const a = c.reduce ? 1 : ease(arrive(c.p.current, 3));
-    if (letter.current) { letter.current.position.set(-2.6 * (1 - a), 2.75 + (1 - a) * 1.4 - a * 0.25, 0.2); letter.current.rotation.z = (1 - a) * 0.6 + (c.reduce ? 0 : Math.sin(clock.getElapsedTime() * 2) * 0.03 * (1 - a)); }
-    if (flag.current) flag.current.rotation.z = -Math.PI / 2 * (1 - clamp(a * 1.5 - 0.5));
-  });
-  const over = (e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); c.pick({ text: label, href, at: [x, 4.6, 0.8] }); };
-  return (
-    <group position={[x, 0, 0]}>
-      <mesh position={[0, 1, 0]} castShadow>
-        <cylinderGeometry args={[0.16, 0.2, 2, 16]} />
-        <meshStandardMaterial color={WOOD} roughness={0.9} />
-      </mesh>
-      <group position={[0, 2.6, 0]}>
-        <RoundedBox args={[1.5, 1.1, 2]} radius={0.3} castShadow>
-          <meshStandardMaterial color={CLAY.blue} roughness={0.85} />
-        </RoundedBox>
-        <mesh position={[0, 0.55, 0]} rotation={[-Math.PI / 2, 0, 0]} castShadow>
-          <cylinderGeometry args={[0.75, 0.75, 2, 32, 1, false, -Math.PI / 2, Math.PI]} />
-          <meshStandardMaterial color={CLAY.blue} roughness={0.85} />
-        </mesh>
-        <mesh position={[0, 0.35, 1.01]}>
-          <boxGeometry args={[0.9, 0.12, 0.02]} />
-          <meshStandardMaterial color="#2b3443" roughness={0.6} />
-        </mesh>
-        <group ref={flag} position={[0.78, 0.1, -0.4]}>
-          <mesh position={[0, 0.5, 0]}><boxGeometry args={[0.06, 1, 0.06]} /><meshStandardMaterial color="#2b3443" /></mesh>
-          <mesh position={[0, 0.9, 0.22]}><boxGeometry args={[0.05, 0.3, 0.4]} /><meshStandardMaterial color={CLAY.up} roughness={0.8} /></mesh>
-        </group>
-      </group>
-      <group ref={letter}>
-        <RoundedBox args={[1.1, 0.7, 0.06]} radius={0.03} castShadow>
-          <meshStandardMaterial color="#fffaf1" roughness={0.9} />
-        </RoundedBox>
-        <mesh position={[0, 0.08, 0.035]} rotation={[0, 0, Math.PI / 4]} scale={[1, 1, 0.1]}>
-          <boxGeometry args={[0.5, 0.5, 0.1]} />
-          <meshStandardMaterial color={CLAY.sun} roughness={0.85} />
-        </mesh>
-      </group>
-      <mesh position={[0, 2.8, 0]} onPointerOver={over} onPointerMove={over} onPointerOut={() => c.pick(null)} onClick={(e) => { e.stopPropagation(); c.open(href); }}>
-        <boxGeometry args={[2, 2.4, 2.4]} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
-      </mesh>
-    </group>
-  );
-}
-
-/** Camera rig: holds at each station, then flies to the next on an arc. Distance is fitted to each station's size;
-    wide screens keep the subject right of the text column, tall screens keep it in the upper half above the card. */
-function Rig({ p, boxes }: { p: MutableRefObject<number>; boxes: { w: number; h: number }[] }) {
+/** Camera: follows the cat up the chart. Wide screens keep it right of the text; tall screens keep it in the upper half. */
+function Rig({ at }: { at: RefObject<Vector3> }) {
   const { camera, size } = useThree();
+  const cur = useRef<Vector3 | null>(null);
   const look = useMemo(() => new Vector3(), []);
-  const cur = useRef<number | null>(null);
   useFrame((_, dt) => {
-    const target = p.current * (STATIONS - 1);
-    // frame-rate independent catch-up, so a slow device lags by time, not by frames
-    cur.current = cur.current === null ? target : cur.current + (target - cur.current) * (1 - Math.exp(-Math.min(dt, 0.1) * 7));
-    const s = cur.current, i = Math.min(STATIONS - 2, Math.floor(s)), f = s - i;
-    const m = ease(clamp((f - 0.25) / 0.5)), arc = Math.sin(m * Math.PI);
+    const a = at.current!;
+    if (!cur.current) cur.current = a.clone();
+    cur.current.lerp(a, 1 - Math.exp(-Math.min(dt, 0.1) * 4));
     const c = camera as PerspectiveCamera;
-    const aspect = size.width / size.height, wide = aspect > 1.15, tan = Math.tan((c.fov * Math.PI) / 360);
-    const fit = (b: { w: number; h: number }) => wide
-      ? Math.max(b.w / (0.52 * 2 * tan * aspect), b.h / (0.72 * 2 * tan))
-      : Math.max(b.w / (0.9 * 2 * tan * aspect), b.h / (0.46 * 2 * tan));
-    const A = boxes[i], B = boxes[i + 1];
-    const d = fit(A) + (fit(B) - fit(A)) * m + arc * 6;
-    const h = A.h + (B.h - A.h) * m;
+    const aspect = size.width / size.height, wide = aspect > 1.15;
+    const tan = Math.tan((c.fov * Math.PI) / 360);
+    // enough of the chart to read the climb: about 5 candles across on desktop, 3 on phones
+    const d = wide ? (GX * 5.2) / (2 * tan * aspect) : (GX * 3) / (2 * tan * aspect);
     const visW = 2 * d * tan * aspect, visH = 2 * d * tan;
-    const x = (i + m) * SX - (wide ? visW * 0.17 : 0);
-    const cy = h / 2 - (wide ? 0 : visH * 0.2);
-    c.position.set(x, cy + d * 0.12 + arc * 2, d);
-    look.set(x, cy, 0);
+    const x = cur.current.x - (wide ? visW * 0.1 : GX * 0.35);
+    const y = cur.current.y + 0.4 - (wide ? 0 : visH * 0.1);
+    c.position.set(x - 1.4, y + d * 0.18, d);
+    look.set(x, y, 0);
     c.lookAt(look);
   });
   return null;
 }
 
-/** The key light travels with the camera, so its shadow box only has to cover the station in view. */
+/** The key light follows the camera, so its shadow box only covers what is in view. */
 function Sun({ small }: { small: boolean }) {
   const l = useRef<DirectionalLight>(null);
   const { camera, scene } = useThree();
-  useEffect(() => { if (l.current) scene.add(l.current.target); }, [scene]);
+  useEffect(() => { const o = l.current; if (o) { scene.add(o.target); return () => { scene.remove(o.target); }; } }, [scene]);
   useFrame(() => {
     const o = l.current; if (!o) return;
-    o.position.set(camera.position.x + 6, 14, 10);
-    o.target.position.set(camera.position.x, 2, 0);
+    o.position.set(camera.position.x + 5, camera.position.y + 10, 8);
+    o.target.position.set(camera.position.x + 1, camera.position.y - 3, 0);
   });
   return <directionalLight ref={l} intensity={2.2} castShadow={!small} shadow-mapSize={[1024, 1024]} shadow-bias={-0.0005}
-    shadow-camera-left={-14} shadow-camera-right={14} shadow-camera-top={12} shadow-camera-bottom={-6} shadow-camera-far={40} />;
+    shadow-camera-left={-14} shadow-camera-right={14} shadow-camera-top={12} shadow-camera-bottom={-12} shadow-camera-far={50} />;
 }
 
-export default function WalkScene({ p, bars, cols, rows, mail, mailLabel, reduce, visible, small, onPick }: {
-  p: MutableRefObject<number>; bars: WalkBar[]; cols: WalkCol[]; rows: WalkRow[]; mail: string; mailLabel: string;
+export default function WalkScene({ T, steps, crew, joinOf, reduce, visible, small, onPick }: {
+  T: RefObject<number>; steps: WalkStep[]; crew: WalkMember[]; joinOf: Record<string, number>;
   reduce: boolean; visible: boolean; small: boolean; onPick: (x: Pick) => void;
 }) {
   const [picked, setPicked] = useState<Pick>(null);
   const pick = (x: Pick) => { setPicked(x); onPick(x); };
-  const c: Ctx = { p, reduce, pick, open: (href) => window.location.assign(href) };
-  const tallest = Math.max(...cols.map((x) => x.bricks.length), 1) * 0.39 + 0.6;
-  // what each station must fit on screen (width, height), in scene units
-  const boxes = [{ w: bars.length * 1.7 + 1.6, h: 6.4 }, { w: cols.length * 1.12 + 1.2, h: Math.max(3.4, tallest + 1) }, { w: 8.4, h: rows.length * 1.75 + 0.8 }, { w: 7, h: 5.4 }];
+  const c: Ctx = { T, reduce, pick, open: (href) => window.location.assign(href) };
+  const L = useMemo(() => layoutOf(steps), [steps]);
+  const at = useRef(new Vector3());
+  const crewJoin = crew.map((m) => joinOf[m.id] ?? 0);
+  const end = L[L.length - 1];
   return (
     <Canvas
       shadows={small ? false : 'percentage'}
       dpr={small ? [1, 1.5] : [1, 2]}
       frameloop={visible ? 'always' : 'never'}
-      camera={{ position: [0, 4, 12], fov: 34 }}
+      camera={{ position: [0, 3, 14], fov: 32 }}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       onCreated={({ gl }) => gl.domElement.closest('[data-walk]')?.setAttribute('data-live', '')}
       onPointerMissed={() => pick(null)}
       style={{ cursor: picked ? 'pointer' : 'auto' }}
     >
-      <Rig p={p} boxes={boxes} />
+      <Rig at={at} />
       <hemisphereLight args={['#ffffff', '#c9d4e3', 2]} />
       <Sun small={small} />
-      {/* one long clay table the whole walk stands on */}
-      <mesh position={[((STATIONS - 1) * SX) / 2, -0.42, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[(STATIONS - 1) * SX + 40, 30]} />
-        <shadowMaterial opacity={0.12} />
+      <mesh position={[end.x / 2, -0.4, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[end.x + 60, 30]} />
+        <shadowMaterial opacity={0.1} />
       </mesh>
-      <Board bars={bars} c={c} />
-      <Wall cols={cols} c={c} x={SX} />
-      <Cabinet rows={rows} c={c} x={SX * 2} />
-      <Mailbox c={c} x={SX * 3} href={mail} label={mailLabel} />
-      {picked && <TagSprite text={picked.text} position={picked.at} height={0.5} />}
+      {steps.map((s, i) => <Candle key={i} i={i} s={s} L={L} c={c} />)}
+      <Beads L={L} c={c} />
+      <Ghost x={end.x + GX} y={end.close + 0.15} c={c} L={L} />
+      <Climber L={L} c={c} at={at} />
+      {crew.map((m, k) => <Follower key={m.id} m={m} rank={k} join={joinOf[m.id] ?? 0} L={L} c={c} crewJoin={crewJoin} />)}
+      {picked && <TagSprite text={picked.text} position={picked.at} height={0.45} />}
     </Canvas>
   );
 }

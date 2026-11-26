@@ -22,6 +22,14 @@ const zh = lang === 'zh-tw';
 const d = m.data;
 const site = Astro.site!;
 const thesis = d.thesis ? await getEntry('theses', d.thesis) : undefined;
+// A graduate's lab and on-campus student roles (research assistant, TA, campus jobs) ended when they graduated,
+// so an open period ("2023/09–") reads as ending in the graduation year, not 至今. Other open roles stay 至今.
+const gradYear = d.status === 'graduated' && thesis ? thesis.data.academicYear + 1912 : undefined;
+const campus = /IFA|邱信瑜|Chiu|中央大學|National Central/i;
+const expPeriod = (e: (typeof d.experience)[number]) =>
+  /[–-]$/.test(e.period) && gradYear && (campus.test(e.org.zh) || campus.test(e.org.en ?? ''))
+    ? `${e.period}${gradYear}`
+    : e.period.replace(/[–-]$/, zh ? '–至今' : '–present');
 const enName = d.name.en;
 const myPubs = enName ? (await publications()).filter((p) => p.data.authors.includes(enName)) : [];
 const name = t(d.name, lang);
@@ -127,7 +135,7 @@ const links = [
         {d.experience.length > 0 && (
           <section class="block">
             <h2>{t(ui.sections.experience, lang)}</h2>
-            <ul class="timeline">{d.experience.map((e) => <li><span class="mono">{e.period.replace(/[–-]$/, zh ? '–至今' : '–present')}</span><span>{t(e.title, lang)}{zh ? '・' : ' · '}{t(e.org, lang)}</span></li>)}</ul>
+            <ul class="timeline">{d.experience.map((e) => <li><span class="mono">{expPeriod(e)}</span><span>{t(e.title, lang)}{zh ? '・' : ' · '}{t(e.org, lang)}</span></li>)}</ul>
           </section>
         )}
         {d.projects.length > 0 && (

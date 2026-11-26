@@ -47,8 +47,11 @@ export const areas: { key: AreaKey; name: Bi; blurb: Bi; clay: string; /** for t
 export const advisor = {
   name: { zh: '邱信瑜', en: 'Hsin-Yu Chiu' } satisfies Bi,
   title: { zh: '副教授兼副系主任', en: 'Associate Professor and Deputy Chair' } satisfies Bi,
-  scholarsUrl: 'https://scholars.ncu.edu.tw/en/persons/hsin-yu-chiu/',
+  /** College office role, from the College of Management site (mgt.ncu.edu.tw, 2025-08). The office runs AACSB accreditation. */
+  office: { zh: '管理學院 學習確保與國際認證辦公室執行長', en: 'Executive Director, Office of Assurance of Learning and International Accreditation (AACSB), College of Management' } satisfies Bi,
+  officeUrl: 'https://www.mgt.ncu.edu.tw/zh-TW/article/2025-08-01%2016:00:26',
   researchGateUrl: 'https://www.researchgate.net/profile/Hsin-Yu-Chiu-qiuxinyu',
+  // NCU Scholars (scholars.ncu.edu.tw) stopped resolving in 2026-11; the department's faculty page is the official profile
   facultyUrl: 'https://im.mgt.ncu.edu.tw/teacher',
   awards: [{ zh: '113 學年度管理學院教學優良獎', en: 'Teaching Excellence Award, School of Management, NCU (2024⁠–⁠25)' }] satisfies Bi[],
   bio: {

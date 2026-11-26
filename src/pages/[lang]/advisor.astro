@@ -21,13 +21,13 @@ const person = {
   '@type': 'Person',
   name: advisor.name.en,
   alternateName: advisor.name.zh,
-  jobTitle: advisor.title.en,
+  jobTitle: [advisor.title.en, advisor.office.en],
   image: new URL(share.src, site).href,
   email: lab.contact.email,
   url: new URL(href(lang, 'advisor'), site).href,
   worksFor: { '@id': new URL('/#org', site).href },
   knowsAbout: advisor.research,
-  sameAs: [advisor.scholarsUrl, advisor.researchGateUrl],
+  sameAs: [advisor.facultyUrl, advisor.researchGateUrl],
   award: advisor.awards.map((a) => a.zh),
   alumniOf: advisor.education.map((e) => ({ '@type': 'CollegeOrUniversity', name: e.school.en })),
 };
@@ -48,9 +48,10 @@ const person = {
         <h1>{t(advisor.name, lang)}</h1>
         {zh && <p class="en" lang="en">{advisor.name.en}</p>}
         <p class="muted role">{t(advisor.title, lang)} · {t(lab.dept, lang)}</p>
+        <p class="muted role"><a href={advisor.officeUrl} target="_blank" rel="noopener">{t(advisor.office, lang)}</a></p>
         <ul class="links">
           <li><a class="chip" href={`mailto:${lab.contact.email}`}>{lab.contact.email}</a></li>
-          <li><a class="chip" href={advisor.scholarsUrl} target="_blank" rel="noopener">NCU Scholars</a></li>
+          <li><a class="chip" href={advisor.facultyUrl} target="_blank" rel="noopener">{zh ? '資管系師資頁' : 'NCU IM faculty page'}</a></li>
           <li><a class="chip" href={advisor.researchGateUrl} target="_blank" rel="noopener">ResearchGate</a></li>
         </ul>
       </div>

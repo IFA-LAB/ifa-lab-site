@@ -1,12 +1,14 @@
 ---
-// Preview only (not linked, not indexed): one continuous 3D scene the page scrolls through.
-// If the owner keeps it, it may replace the home page's separate scenes; otherwise this file is deleted.
+// Preview only (not linked, not indexed): the lab's history as its own candlestick chart.
+// One candle a year: open = works so far, close = works after that year, the body built from that year's bricks.
+// K 喵 climbs it as the page scrolls; each cohort joins the climb in the year it arrived.
 import Base from '@/layouts/Base.astro';
 import LabWalk from '@/components/three/LabWalk';
 import { getCollection } from 'astro:content';
 import { areas, lab, advisor } from '@/data/lab';
-import { ui, t, href, type Locale } from '@/i18n/ui';
-import { langPaths, publications, membersByCohort } from '@/lib/content';
+import { t, href, type Locale } from '@/i18n/ui';
+import { langPaths, publications } from '@/lib/content';
+import { labEvents } from '@/lib/history';
 
 export const getStaticPaths = langPaths;
 const lang = Astro.params.lang as Locale;
@@ -14,88 +16,140 @@ const zh = lang === 'zh-tw';
 
 const pubs = await publications();
 const theses = await getCollection('theses');
-const cohorts = await membersByCohort();
-const boardEn: Record<string, string> = { empirical: 'Empirical', behavioral: 'Behavioral', pricing: 'Pricing', ai: 'AI / ML', forecast: 'Forecasting', apps: 'Apps & Viz' };
-const perArea = (k: string) => pubs.filter((p) => p.data.area === k).length + theses.filter((x) => x.data.area === k).length;
-const clayOf = (k: string) => areas.find((a) => a.key === k)?.clay ?? 'grey';
-const bars = areas.map((a) => ({ key: a.key, label: zh ? a.name.zh : boardEn[a.key], count: perArea(a.key), clay: a.clay, href: href(lang, `research#${a.key}`) }));
+const members = (await getCollection('members')).filter((m) => !m.data.placeholder)
+  .sort((a, b) => a.data.cohort - b.data.cohort || a.data.order - b.data.order);
+const events = await labEvents(lang);
+const areaOf = (k: string) => areas.find((a) => a.key === k);
+const areaName = (k: string) => t(areaOf(k)?.name, lang);
 
 const works = [
-  ...pubs.map((p) => ({ title: p.data.title, year: p.data.status === 'forthcoming' ? Infinity : p.data.year, area: p.data.area, kind: p.data.kind, href: href(lang, `papers/${p.id}`) })),
+  ...pubs.map((p) => ({ title: p.data.title, year: p.data.status === 'forthcoming' ? 0 : p.data.year, area: p.data.area, kind: p.data.kind as string, href: href(lang, `papers/${p.id}`) })),
   ...theses.map((x) => ({ title: t(x.data.title, lang), year: x.data.academicYear + 1912, area: x.data.area, kind: 'thesis', href: href(lang, 'research#t-h') })),
 ];
 const byArea = (a: { area: string }, b: { area: string }) => areas.findIndex((x) => x.key === a.area) - areas.findIndex((x) => x.key === b.area);
-const years = [...new Set(works.map((w) => w.year))].sort((a, b) => a - b);
-const cols = years.map((y) => ({
-  label: y === Infinity ? (zh ? '即將' : 'Soon') : `’${String(y).slice(2)}`,
-  bricks: works.filter((w) => w.year === y).sort(byArea).map((w) => ({ title: w.title, clay: clayOf(w.area), kind: w.kind, href: w.href })),
-}));
-const rows = cohorts.map(([c, ms]) => ({
-  label: t(ui.cohort(c), lang).replace('研究生', ''),
-  members: ms.filter((m) => !m.data.placeholder).map((m) => ({ id: m.id, name: t(m.data.name, lang), clay: m.data.figure.clay, accessory: m.data.figure.accessory, model: m.data.figure.model, href: href(lang, `members/${m.id}`) })),
-}));
-const people = rows.reduce((n, r) => n + r.members.length, 0);
+const brick = (w: (typeof works)[number]) => ({ title: w.title, clay: areaOf(w.area)?.clay ?? 'grey', kind: w.kind, href: w.href });
+// founders were there when the lab opened (2023); everyone else from the September their cohort started (cohort 1 = 2023)
+const joinYear = (m: (typeof members)[number]) => (m.data.founder ? 2023 : 2022 + m.data.cohort);
+const done = works.filter((w) => w.year > 0);
+const first = Math.min(...done.map((w) => w.year)), last = Math.max(...done.map((w) => w.year), ...members.map(joinYear));
+const yearList = Array.from({ length: last - first + 1 }, (_, i) => first + i);
 
-const beats = [
-  { eyebrow: zh ? '一・研究' : '1 · Research', h: zh ? '六個領域，一根 K 棒一個' : 'Six areas, one candle each', p: zh ? `K 棒越高，那個領域的論文與碩士論文越多。滑過一根看數字，點下去看清單。` : 'The taller the candle, the more papers and theses in that area. Hover one for the count, click for the list.', link: { href: href(lang, 'research'), text: zh ? '看全部研究' : 'All research' } },
-  { eyebrow: zh ? '二・成果' : '2 · Output', h: zh ? `${works.length} 塊積木，一年一疊` : `${works.length} bricks, one pile a year`, p: zh ? '每篇期刊論文、工作論文和碩士論文是一塊積木，顏色是研究領域，半透明的是還在寫的工作論文。點一塊直接打開那篇。' : 'Every journal paper, working paper and thesis is a brick, colored by area; the see-through ones are working papers. Click a brick to open it.', link: { href: href(lang, 'research'), text: zh ? '看成果牆' : 'The output wall' } },
-  { eyebrow: zh ? '三・成員' : '3 · People', h: zh ? `一屆一層，${people} 個公仔` : `One shelf a cohort, ${people} figures`, p: zh ? '每個人自己挑公仔的顏色和配件。滑過看是誰，點一下進個人頁。' : 'Everyone picks their own figure color and prop. Hover to see who it is, click to open their page.', link: { href: href(lang, 'members'), text: zh ? '看全部成員' : 'All members' } },
-  { eyebrow: zh ? '四・加入' : '4 · Join', h: zh ? '下一塊，由你來疊' : 'The next brick is yours', p: zh ? `寄一封信給${advisor.name.zh}老師，說說你好奇的題目。每位成員都是從一封信開始的。` : `Email Prof. ${advisor.name.en} about a question you are curious about. Every member started with one letter.`, link: { href: `mailto:${lab.contact.email}`, text: zh ? `寄信給${advisor.name.zh}老師` : `Email Prof. ${advisor.name.en}`, btn: true } },
+const pick = (y: number) => {
+  const evs = events.filter((e) => e.date.startsWith(String(y)));
+  return evs.find((e) => e.kind === 'milestone' && e.date.slice(5) === '08') ?? evs.find((e) => e.kind === 'milestone') ?? evs.find((e) => e.kind === 'award' && e.photo);
+};
+const steps = [
+  ...yearList.map((y) => {
+    const ws = done.filter((w) => w.year === y).sort(byArea);
+    const ms = members.filter((m) => joinYear(m) === y);
+    const ev = pick(y);
+    const names = ms.map((m) => t(m.data.name, lang));
+    const firstPaper = ws.find((w) => w.kind === 'journal') ?? ws[0];
+    const caption = ev ? t(ev.text, lang)
+      : ms.length ? (zh ? `${names.join('、')}加入，跟著 K 喵一起往上爬。` : `${names.join(', ')} joined the climb.`)
+      : firstPaper ? (zh ? `〈${firstPaper.title}〉` : `“${firstPaper.title}”`)
+      : zh ? '這年沒有新成果，K 線上是一根十字線。' : 'No new work this year: a doji on the chart.';
+    const areasHere = [...new Set(ws.map((w) => areaName(w.area)))];
+    const sub = [
+      ws.length ? (zh ? `${ws.length} 件新成果：${areasHere.join('、')}` : `${ws.length} new ${ws.length > 1 ? 'works' : 'work'}: ${areasHere.join(', ')}`) : '',
+      ev && ms.length ? (zh ? `${names.join('、')}加入` : `${names.join(', ')} joined`) : '',
+    ].filter(Boolean).join(zh ? '；' : '; ');
+    return { label: String(y), caption, sub, soon: false, bricks: ws.map(brick), joins: ms.map((m) => m.id) };
+  }),
+  ...(works.some((w) => w.year === 0) ? [{
+    label: zh ? '即將' : 'Soon',
+    caption: zh ? '已被期刊接受、即將刊登的論文。' : 'Accepted papers, about to be published.',
+    sub: '', soon: true,
+    bricks: works.filter((w) => w.year === 0).sort(byArea).map(brick),
+    joins: [] as string[],
+  }] : []),
 ];
+const crew = members.map((m) => ({ id: m.id, name: t(m.data.name, lang), clay: m.data.figure.clay, accessory: m.data.figure.accessory, model: m.data.figure.model, href: href(lang, `members/${m.id}`) }));
+const text = {
+  eyebrow: zh ? 'IFA Lab 的 K 線' : 'The IFA Lab chart',
+  totals: zh ? '累積 {w} 件成果・{m} 位成員' : '{w} works so far · {m} members',
+  hint: zh ? '往下捲，跟著 K 喵往上爬；滑過積木或公仔看是誰，點一下打開' : 'Scroll to climb with K-Cat. Hover a brick or a figure, click to open',
+  endH: zh ? '下一根 K 棒，由你來畫' : 'The next candle is yours',
+  endP: zh ? `寄一封信給${advisor.name.zh}老師，說說你好奇的題目。每位成員都是從一封信開始的。` : `Email Prof. ${advisor.name.en} about a question you are curious about. Every member started with one letter.`,
+  mail: zh ? `寄信給${advisor.name.zh}老師` : `Email Prof. ${advisor.name.en}`,
+  mailHref: `mailto:${lab.contact.email}`,
+  join: zh ? '先看怎麼加入' : 'How to join',
+  joinHref: href(lang, 'join'),
+};
 ---
-<Base lang={lang} title={zh ? '走一圈實驗室（試作）' : 'Lab walk (preview)'} description={zh ? 'IFA Lab 連續 3D 場景試作' : 'IFA Lab continuous 3D scene preview'}>
-  <meta slot="head" name="robots" content="noindex, nofollow" />
-  <section class="walk" data-walk aria-label={zh ? '走一圈實驗室' : 'A walk through the lab'}>
+<Base lang={lang} title={zh ? 'IFA Lab 的 K 線（試作）' : 'The IFA Lab chart (preview)'} description={zh ? 'IFA Lab 歷年成果畫成的 K 線，試作頁' : 'IFA Lab output drawn as a candlestick chart, preview'}>
+  <Fragment slot="head">
+    <meta name="robots" content="noindex, nofollow" />
+    <noscript><style>.walk { height: auto !important; } .walk .stage { display: none; } .walk .years { position: static !important; width: auto !important; height: auto !important; clip-path: none !important; }</style></noscript>
+  </Fragment>
+  <section class="walk" data-walk style={`--n: ${steps.length + 1}`} aria-label={text.eyebrow}>
     <div class="stage">
-      <LabWalk client:load bars={bars} cols={cols} rows={rows} mail={href(lang, 'join')} mailLabel={zh ? '加入我們' : 'Join us'} hint={zh ? '滑過物件看名字，點一下打開' : 'Hover anything to see what it is, click to open'} />
+      <LabWalk client:load steps={steps} crew={crew} text={text} />
     </div>
-    <ol class="beats">
-      {beats.map((b, i) => (
-        <li class="beat" style={`--i: ${i}`}>
-          <div class="card clay">
-            <p class="eyebrow">{b.eyebrow}</p>
-            <h2>{b.h.split(/(?<=，|, )/).map((x) => <span class="nw">{x}</span>)}</h2>
-            <p>{b.p}</p>
-            <p><a class:list={[{ btn: b.link.btn }]} href={b.link.href}>{b.link.text}{!b.link.btn && ' →'}</a></p>
-          </div>
+    {/* the same story as plain text: shown with reduced motion or without WebGL, and read by screen readers */}
+    <ol class="years">
+      {steps.map((s) => (
+        <li>
+          <span class="y">{s.label}</span>
+          <p>{s.caption}</p>
+          {s.sub && <p class="muted">{s.sub}</p>}
         </li>
       ))}
+      <li>
+        <span class="y">{zh ? '下一年' : 'Next'}</span>
+        <p><strong>{text.endH}</strong></p>
+        <p class="muted">{text.endP}</p>
+        <p><a class="btn" href={text.mailHref}>{text.mail}</a></p>
+      </li>
     </ol>
   </section>
   <p class="wrap note muted">{zh ? '這是試作頁，沒有連到選單，也不會被搜尋引擎收錄。' : 'This is a preview page: not in the menu and not indexed.'} <a href={href(lang, '')}>{zh ? '回首頁' : 'Home'}</a></p>
 </Base>
 
 <style>
-  /* four screens of scroll; the canvas stays pinned while the text cards pass over it */
-  .walk { position: relative; height: calc(var(--n, 4) * 100dvh); }
+  /* about 45% of a screen of scroll per year; the scene stays pinned */
+  .walk { position: relative; height: calc(var(--n) * 45dvh + 100dvh); }
   .stage { position: sticky; top: 0; height: 100dvh; overflow: hidden; }
   .stage :global(.walk-canvas) { position: absolute; inset: 0; }
+  .stage :global(.walk-3d) { position: absolute; inset: 0; }
+  /* overlay: the year being built, what happened, running totals */
+  .stage :global(.walk-card) {
+    position: absolute; left: max(clamp(16px, 4vw, 48px), calc((100% - var(--page)) / 2 + 16px)); top: 50%; translate: 0 -50%;
+    width: min(380px, calc(100% - 32px)); display: grid; gap: var(--space-2); padding: var(--space-5) var(--space-6);
+    border-radius: var(--r-lg); background: color-mix(in oklab, var(--surface) 88%, transparent); backdrop-filter: blur(8px); box-shadow: 0 12px 32px var(--lo);
+  }
+  .stage :global(.walk-card p) { margin: 0; }
+  .stage :global(.walk-year) { font: 700 clamp(56px, 7vw, 88px)/1 var(--f-display); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; animation: year-in var(--dur-base) var(--ease-out); }
+  .stage :global(.walk-h) { font: 600 clamp(26px, 3vw, 32px)/1.3 var(--f-display); }
+  .stage :global(.walk-cap) { font-size: 17px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+  .stage :global(.walk-sub) { font-size: 14px; color: var(--ink-2); }
+  .stage :global(.walk-tot) { margin-top: var(--space-2) !important; padding-top: var(--space-2); border-top: 1px solid var(--line); font: 600 14px/1.5 var(--f-body); font-variant-numeric: tabular-nums; color: var(--ink-2); }
+  .stage :global(.walk-cta) { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-top: var(--space-2) !important; }
   .stage :global(.walk-hint) {
     position: absolute; left: 50%; bottom: var(--space-5); translate: -50% 0; max-width: calc(100% - 32px);
     padding: 8px 16px; border-radius: var(--r-full); background: var(--surface); box-shadow: 0 4px 12px var(--lo); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .beats { position: absolute; inset: 0; list-style: none; margin: 0; padding: 0; pointer-events: none; }
-  .beat { height: 100dvh; display: grid; align-items: center; padding-inline: max(clamp(16px, 4vw, 48px), env(safe-area-inset-left)); max-width: calc(var(--page) - 32px + 2 * clamp(16px, 4vw, 48px)); margin-inline: auto; }
-  .card { pointer-events: auto; width: min(400px, 100%); padding: var(--space-6); display: grid; gap: var(--space-3); background: color-mix(in oklab, var(--surface) 92%, transparent); backdrop-filter: blur(8px); }
-  .card h2 { font-size: clamp(26px, 3vw, 34px); line-height: 1.3; }
-  .card h2 .nw { display: inline-block; max-width: 100%; white-space: normal; }
-  .card p { margin: 0; }
-  .card .btn { margin-top: var(--space-2); }
-  /* reduced motion or no WebGL (data-flat, set by LabWalk): no pinned stage, the four cards in a column */
+  @keyframes year-in { from { opacity: 0; translate: 0 8px; } }
+  /* phones and portrait tablets: the chart fills the top, the card sits at the bottom */
+  @media (max-aspect-ratio: 23/20) {
+    .stage :global(.walk-card) { top: auto; bottom: var(--space-4); translate: none; left: 16px; right: 16px; width: auto; padding: var(--space-4) var(--space-5); }
+    .stage :global(.walk-year) { font-size: 48px; }
+    .stage :global(.walk-cap) { font-size: 15px; -webkit-line-clamp: 3; }
+    .stage :global(.walk-hint) { bottom: auto; top: calc(var(--header-h, 64px) + var(--space-3)); font-size: 13px; }
+  }
+  /* the text version: visually hidden while the live scene tells the story */
+  .years { position: absolute; top: 0; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); margin: 0; list-style: none;
+    max-width: calc(var(--page) - 32px + 2 * clamp(16px, 4vw, 48px)); margin-inline: auto; padding: var(--space-8) clamp(16px, 4vw, 48px) 0; gap: var(--space-4); }
+  .years li { display: grid; grid-template-columns: 5em 1fr; column-gap: var(--space-4); }
+  .years li > :not(.y) { grid-column: 2; margin: 0; }
+  .years .y { grid-row: span 3; font: 600 20px/1.6 var(--f-display); }
   .walk[data-flat] { height: auto; }
   .walk[data-flat] .stage { display: none; }
-  .walk[data-flat] .beats { position: static; display: grid; gap: var(--space-5); padding-block: var(--space-8) 0; }
-  .walk[data-flat] .beat { height: auto; }
+  .walk[data-flat] .years { position: static; width: auto; height: auto; overflow: visible; clip-path: none; display: grid; }
   @media (prefers-reduced-motion: reduce) {
     .walk { height: auto; }
     .stage { display: none; }
-    .beats { position: static; display: grid; gap: var(--space-5); padding-block: var(--space-8) 0; }
-    .beat { height: auto; padding-bottom: 0; }
+    .years { position: static; width: auto; height: auto; overflow: visible; clip-path: none; display: grid; }
   }
   .note { padding-block: var(--space-6) var(--space-8); font-size: 14px; }
-  /* phones and portrait tablets: the scene fills the upper part, the card sits low */
-  @media (max-aspect-ratio: 23/20) {
-    .beat { align-items: end; padding-bottom: calc(var(--space-8) + 24px); }
-    .card { width: 100%; padding: var(--space-5); }
-  }
 </style>
