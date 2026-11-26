@@ -71,8 +71,11 @@ const text = zh
     const target = () => TOP + progress() * (innerHeight - TOP - BOTTOM - rider.offsetHeight);
     const pose = (p: string) => { if (root.dataset.pose !== p) root.dataset.pose = p; };
     // after it settles: face you, then look at the page, or sleep at the very bottom
+    let rest = 0;
     const settle = () => {
       clearTimeout(idle);
+      clearTimeout(rest);
+      rest = window.setTimeout(() => root.classList.remove('moving'), 1500);
       pose(progress() > 0.985 ? 'sleep' : 'front');
       if (root.dataset.pose === 'front') idle = window.setTimeout(() => pose('peek'), 5000);
     };
@@ -83,6 +86,8 @@ const text = zh
       const d = t - y;
       if (Math.abs(d) < 1.5) { y = t; rider.style.translate = `0 ${y}px`; settle(); return; }
       clearTimeout(idle);
+      clearTimeout(rest);
+      root.classList.add('moving');
       y += d * 0.12;
       rider.style.translate = `0 ${y.toFixed(1)}px`;
       root.dataset.dir = d > 0 ? 'down' : 'up';
@@ -131,6 +136,9 @@ const text = zh
   :global(:root[data-theme='dark']) .scrollcat { --fur: #5d667a; --fur-hi: #7d88a0; }
   @media (prefers-color-scheme: dark) { :global(:root:not([data-theme='light'])) .scrollcat { --fur: #5d667a; --fur-hi: #7d88a0; } }
   .scrollcat.away { opacity: 0; translate: 24px 0; }
+  /* the wick only shows while the cat is on the move, so it never reads as a second scrollbar */
+  .wick { opacity: 0; transition: opacity var(--dur-slow) var(--ease-out); }
+  .moving .wick { opacity: 1; }
   .scrollcat.away .cat { pointer-events: none; }
   /* the wick: a faint clay line the whole height of the window */
   .wick { position: absolute; top: 72px; bottom: 12px; right: 31px; width: 2px; border-radius: 1px; background: color-mix(in oklab, var(--ink) 9%, transparent); }
@@ -142,6 +150,10 @@ const text = zh
     .scrollcat { width: 44px; }
     .rider, .cat { width: 44px; } .cat { height: 58px; }
     .wick { right: 21px; }
+    /* the gutter is too narrow to park in: the cat shows while you scroll, then steps out of the way */
+    .rider { transition: opacity var(--dur-slow) var(--ease-out); }
+    .scrollcat:not(.moving):not(.talking) .rider { opacity: 0; }
+    .scrollcat:not(.moving):not(.talking) .cat { pointer-events: none; }
   }
 
   /* --- poses --- */

@@ -253,9 +253,9 @@ function World({ bars, reduce, onHover, active, dark, onToy, lookAt }: { bars: B
       </RoundedBox>
       {layout.map((l, i) => <Candle key={l.bar.key} {...l} delay={0.15 + i * 0.09} reduce={reduce} onHover={onHover} on={active?.key === l.bar.key} />)}
       {!compact && layout.map((l) => <Label key={l.bar.key} text={l.bar.label} x={l.x} dark={dark} on={active?.key === l.bar.key} fill={(CLAY as Record<string, string>)[l.bar.clay] ?? CLAY.grey} />)}
-      <Coin position={[-2.4, 3.6, -1.2]} phase={0} reduce={reduce} onFlip={() => onToy('coin')} />
-      <Coin position={[0.4, 3.95, -1.0]} phase={1.7} reduce={reduce} onFlip={() => onToy('coin')} />
-      <Coin position={[2.6, 3.4, -0.8]} phase={3.4} reduce={reduce} onFlip={() => onToy('coin')} />
+      <Coin position={[-2.4, compact ? 2.4 : 3.6, -1.2]} phase={0} reduce={reduce} onFlip={() => onToy('coin')} />
+      <Coin position={[0.4, compact ? 3.2 : 3.95, -1.0]} phase={1.7} reduce={reduce} onFlip={() => onToy('coin')} />
+      <Coin position={[2.6, compact ? 2.7 : 3.4, -0.8]} phase={3.4} reduce={reduce} onFlip={() => onToy('coin')} />
       <Cat onPet={() => onToy('cat')} dark={dark} reduce={reduce} targetX={(() => { const k = active?.key ?? lookAt; return k ? layout.find((l) => l.bar.key === k)?.x ?? null : null; })()} />
     </group>
   );

@@ -15,13 +15,15 @@ interface Props {
 const { member: m, lang, size = 64, caption = false } = Astro.props;
 const name = t(m.data.name, lang);
 const zh = lang === 'zh-tw';
-const sub = [t(ui.cohort(m.data.cohort), lang), m.data.placeholder ? t(ui.placeholderNote, lang) : m.data.headline ? t(m.data.headline, lang) : '']
-  .filter(Boolean).join(zh ? '・' : ' · ');
+const sep = zh ? '・' : ' · ';
+// each part of the line stays whole when the tag wraps (no "114 學 / 年度畢業")
+const parts = [t(ui.cohort(m.data.cohort), lang), ...(m.data.placeholder ? [t(ui.placeholderNote, lang)] : m.data.headline ? t(m.data.headline, lang).split(/・| · /) : [])].filter(Boolean);
+const sub = parts.join(sep);
 ---
 <a class:list={['mate', { caption }]} href={href(lang, `members/${m.id}`)} aria-label={caption ? undefined : `${name}，${sub}`}>
   <ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} placeholder={m.data.placeholder} size={size} />
   {caption && <span class="name">{name}</span>}
-  <span class="tag" aria-hidden={caption ? undefined : 'true'}><b>{name}</b><small>{sub}</small></span>
+  <span class="tag" aria-hidden={caption ? undefined : 'true'}><b>{name}</b><small>{parts.map((x, i) => <>{i > 0 && sep}<span class="seg">{x}</span></>)}</small></span>
 </a>
 
 <style>
@@ -39,11 +41,12 @@ const sub = [t(ui.cohort(m.data.cohort), lang), m.data.placeholder ? t(ui.placeh
   .mate:hover .tag, .mate:focus-visible .tag { display: grid; }
   @starting-style { .mate:hover .tag, .mate:focus-visible .tag { opacity: 0; translate: -50% 6px; scale: 0.96; } }
   /* a little pointer under the tag */
-  .tag::after { content: ''; position: absolute; top: 100%; left: 50%; translate: -50% -1px; border: 6px solid transparent; border-top-color: var(--ink); }
+  .tag::after { content: ''; position: absolute; top: 100%; left: calc(50% - var(--nudge, 0px)); translate: -50% -1px; border: 6px solid transparent; border-top-color: var(--ink); }
   .tag b { font: 600 15px/1.3 var(--f-body); }
+  .seg { white-space: nowrap; }
   .tag small { font: 400 13px/1.45 var(--f-body); opacity: 0.85; }
   .caption .tag b { display: none; }
-  .mate:hover .tag, .mate:focus-visible .tag { opacity: 1; translate: -50% 0; scale: 1; }
+  .mate:hover .tag, .mate:focus-visible .tag { opacity: 1; translate: calc(-50% + var(--nudge, 0px)) 0; scale: 1; }
   .mate:hover :global(.fig), .mate:focus-visible :global(.fig) { animation: mate-hop 460ms var(--ease-out); }
   /* wide, excited eyes (the sleepy dash belongs to profiles still to be filled in, so hover never looks like it) */
   .mate:hover :global(.fig:not(.ghost) .eye), .mate:focus-visible :global(.fig:not(.ghost) .eye) { scale: 1.25 1.3; }
@@ -57,7 +60,23 @@ const sub = [t(ui.cohort(m.data.cohort), lang), m.data.placeholder ? t(ui.placeh
   @media (hover: none) { .mate:hover .tag { display: none; } }
   @media (prefers-reduced-motion: reduce) {
     .mate:hover :global(.fig), .mate:focus-visible :global(.fig) { animation: none; }
-    .tag { translate: -50% 0; scale: 1; transition: opacity 120ms linear, display 120ms allow-discrete; }
+    .tag { translate: calc(-50% + var(--nudge, 0px)) 0; scale: 1; transition: opacity 120ms linear, display 120ms allow-discrete; }
     @starting-style { .mate:hover .tag, .mate:focus-visible .tag { translate: -50% 0; scale: 1; } }
   }
 </style>
+
+<script>
+  // keep a tag inside the window: measure it when it opens and push it back in from the edge
+  for (const a of document.querySelectorAll<HTMLElement>('.mate')) {
+    const tag = a.querySelector<HTMLElement>('.tag');
+    if (!tag) continue;
+    const fit = () => requestAnimationFrame(() => {
+      tag.style.removeProperty('--nudge');
+      const r = tag.getBoundingClientRect(), W = document.documentElement.clientWidth - 8;
+      const n = r.right > W ? W - r.right : r.left < 8 ? 8 - r.left : 0;
+      if (n) tag.style.setProperty('--nudge', `${Math.round(n)}px`);
+    });
+    a.addEventListener('pointerenter', fit);
+    a.addEventListener('focus', fit);
+  }
+</script>

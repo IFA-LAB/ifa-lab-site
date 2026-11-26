@@ -59,7 +59,7 @@ const person = {
       <div class="main">
       <section class="block"><h2>{t(ui.sections.bio, lang)}</h2><p>{t(advisor.bio, lang)}</p></section>
       <section class="block"><h2>{zh ? '近期期刊論文' : 'Recent journal papers'}</h2>
-        <ol class="recent">{recent.map((p) => <li><a href={href(lang, `papers/${p.id}`)} lang="en">{p.data.title}</a> <span class="mono muted">{p.data.year > new Date().getFullYear() ? (zh ? `${p.data.year} 即將刊登` : `${p.data.year}, forthcoming`) : p.data.year}</span></li>)}</ol>
+        <ol class="recent">{recent.map((p) => <li><a href={href(lang, `papers/${p.id}`)} lang="en">{p.data.title}</a> <span class="mono muted nowrap">{p.data.year > new Date().getFullYear() ? (zh ? `${p.data.year} 即將刊登` : `${p.data.year}, forthcoming`) : p.data.year}</span></li>)}</ol>
         <p><a href={href(lang, 'research')}>{zh ? '全部論文與研究計畫 →' : 'All papers and grants →'}</a></p></section>
       <section class="block"><h2>{t(ui.sections.experience, lang)}</h2>
         <ul class="timeline">{advisor.experience.map((e) => <li><span class="mono">{e.period}</span><span>{t(e.title, lang)}・{t(e.org, lang)}</span></li>)}</ul></section>
@@ -91,6 +91,7 @@ const person = {
 </script>
 
 <style>
+  .nowrap { white-space: nowrap; }
   .portrait { position: relative; width: 240px; display: grid; justify-items: center; gap: var(--space-3); flex: none; }
   .portrait > :global(picture), .buddy { grid-area: 1 / 1; }
   .portrait :global(.photo) {
