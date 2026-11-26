@@ -1,0 +1,78 @@
+---
+// On a computer a mailto: link often does nothing (no mail app is set up), so on fine-pointer devices any
+// mailto: link opens this small menu instead: write in Gmail, write in Outlook, use the mail app, or copy the address.
+// Phones keep the plain mailto:, which opens the Gmail / Mail app directly.
+import type { Locale } from '@/i18n/ui';
+const { lang } = Astro.props as { lang: Locale };
+const zh = lang === 'zh-tw';
+---
+<div id="mail-pick" popover class="mail-pick" role="menu" aria-label={zh ? '用什麼寫信' : 'How to write'}>
+  <p class="addr" data-addr></p>
+  <a role="menuitem" data-via="gmail" target="_blank" rel="noopener">{zh ? '用 Gmail 寫信' : 'Write in Gmail'}</a>
+  <a role="menuitem" data-via="outlook" target="_blank" rel="noopener">{zh ? '用 Outlook 寫信' : 'Write in Outlook'}</a>
+  <a role="menuitem" data-via="app">{zh ? '用電腦的郵件程式' : 'Open my mail app'}</a>
+  <button type="button" role="menuitem" data-via="copy" data-done={zh ? '已複製 ✓' : 'Copied ✓'}>{zh ? '複製信箱' : 'Copy address'}</button>
+</div>
+
+<script>
+  const pick = document.getElementById('mail-pick') as HTMLElement | null;
+  if (pick && 'showPopover' in pick && matchMedia('(pointer: fine)').matches) {
+    const addr = pick.querySelector<HTMLElement>('[data-addr]')!;
+    const via = (k: string) => pick.querySelector<HTMLElement>(`[data-via="${k}"]`)!;
+    const copy = via('copy') as HTMLButtonElement;
+    const copyLabel = copy.textContent ?? '';
+    let opener: HTMLElement | null = null;
+    document.addEventListener('click', (e) => {
+      const a = (e.target as Element).closest?.<HTMLAnchorElement>('a[href^="mailto:"]');
+      if (!a || pick.contains(a) || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      const url = new URL(a.href);
+      const to = decodeURIComponent(url.pathname), su = url.searchParams.get('subject') ?? '';
+      addr.textContent = to;
+      (via('gmail') as HTMLAnchorElement).href = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}${su ? `&su=${encodeURIComponent(su)}` : ''}`;
+      (via('outlook') as HTMLAnchorElement).href = `https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(to)}${su ? `&subject=${encodeURIComponent(su)}` : ''}`;
+      (via('app') as HTMLAnchorElement).href = a.href;
+      copy.dataset.addr = to; copy.textContent = copyLabel;
+      opener = a;
+      pick.showPopover();
+      // place it under the link, kept inside the window
+      const r = a.getBoundingClientRect(), w = pick.offsetWidth, h = pick.offsetHeight;
+      const left = Math.min(innerWidth - w - 12, Math.max(12, r.left)), below = r.bottom + 8 + h < innerHeight;
+      pick.style.left = `${left}px`;
+      pick.style.top = `${below ? r.bottom + 8 : Math.max(12, r.top - 8 - h)}px`;
+      via('gmail').focus();
+    });
+    copy.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(copy.dataset.addr ?? ''); copy.textContent = copy.dataset.done ?? ''; } catch { copy.textContent = copy.dataset.addr ?? ''; }
+    });
+    pick.addEventListener('click', (e) => { if ((e.target as Element).closest('a')) pick.hidePopover(); });
+    pick.addEventListener('toggle', (e) => { if ((e as ToggleEvent).newState === 'closed') opener?.focus({ preventScroll: true }); });
+    // arrow keys move between the four choices
+    pick.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      const items = [...pick.querySelectorAll<HTMLElement>('[role=menuitem]')];
+      const i = items.indexOf(document.activeElement as HTMLElement);
+      items[(i + (e.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length].focus();
+      e.preventDefault();
+    });
+  }
+</script>
+
+<style>
+  .mail-pick {
+    position: fixed; inset: auto; margin: 0; padding: var(--space-2); min-width: 220px;
+    border: 0; border-radius: var(--r-md); background: var(--surface); color: var(--ink);
+    box-shadow: 0 12px 32px var(--lo), 0 2px 6px var(--lo);
+  }
+  .mail-pick:popover-open { display: grid; gap: 2px; }
+  .addr { padding: 6px 12px 8px; font: 500 13px/1.4 var(--f-mono); color: var(--ink-2); border-bottom: 1px solid var(--line); margin-bottom: 4px; }
+  .mail-pick a, .mail-pick button {
+    display: flex; align-items: center; min-height: 40px; padding: 8px 12px; border-radius: var(--r-sm);
+    font: 500 15px/1.3 var(--f-body); color: var(--ink); text-decoration: none; background: none; border: 0; cursor: pointer; text-align: left;
+  }
+  .mail-pick a:hover, .mail-pick button:hover, .mail-pick a:focus-visible, .mail-pick button:focus-visible { background: var(--surface-2); }
+  @media (prefers-reduced-motion: no-preference) {
+    .mail-pick { transition: opacity var(--dur-fast) var(--ease-out), translate var(--dur-fast) var(--ease-out), display var(--dur-fast) allow-discrete, overlay var(--dur-fast) allow-discrete; }
+    @starting-style { .mail-pick:popover-open { opacity: 0; translate: 0 -4px; } }
+  }
+</style>

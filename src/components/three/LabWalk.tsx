@@ -4,7 +4,7 @@ import type { Pick, WalkMember, WalkStep } from './WalkScene';
 
 const WalkScene = lazy(() => import('./WalkScene'));
 
-type Text = { eyebrow: string; totals: string; hint: string; endH: string; endP: string; mail: string; mailHref: string; join: string; joinHref: string };
+type Text = { eyebrow: string; totals: string; solo: string; more: string; skip: string; skipHref: string; hint: string; endH: string; endP: string; mail: string; mailHref: string; join: string; joinHref: string };
 
 /** The lab's history as its own candlestick chart, climbed by K 喵 as the page scrolls.
     Scroll progress through [data-walk] becomes time T (0 = first year, steps-1 = the last candle).
@@ -17,6 +17,7 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
   const [pick, setPick] = useState<Pick>(null);
   const [idx, setIdx] = useState(0);
   const [end, setEnd] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const T = useRef(0);
   const reveal = useRef(0);
   const host = useRef<HTMLDivElement>(null);
@@ -25,6 +26,13 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
   const joinOf = useMemo(() => Object.fromEntries(steps.flatMap((s, i) => s.joins.map((id) => [id, i]))), [steps]);
   const cumWorks = useMemo(() => { let n = 0; return steps.map((s) => (n += s.bricks.length)); }, [steps]);
   const cumPeople = useMemo(() => { let n = 0; return steps.map((s) => (n += s.joins.length)); }, [steps]);
+  // scroll budget: a short hold on the first candle, then each year gets more scroll the more it built
+  const segs = useMemo(() => {
+    const w = [0.8, ...steps.slice(1).map((s) => 0.8 + 0.15 * s.bricks.length)];
+    const sum = w.reduce((a, b) => a + b, 0);
+    let acc = 0;
+    return w.map((x) => { const a = acc / sum; acc += x; return [a, acc / sum] as const; });
+  }, [steps]);
 
   useEffect(() => {
     const can = canRun3D() && !matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -42,17 +50,22 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
       const r = walk.getBoundingClientRect();
       const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - innerHeight)));
       // the climb takes the first 86% of the section, the pull-back to the whole chart the rest
-      T.current = Math.min(N - 1, (p / 0.86) * (N - 1));
+      const u = Math.min(1, p / 0.86);
+      const k = Math.max(0, segs.findIndex(([, b]) => u <= b));
+      const [a, b] = segs[k];
+      T.current = k === 0 ? 0 : Math.min(N - 1, k - 1 + (u - a) / Math.max(1e-6, b - a));
       reveal.current = Math.min(1, Math.max(0, (p - 0.88) / 0.1));
-      const i = Math.min(N - 1, Math.max(0, Math.ceil(T.current - 0.05)));
+      // the card turns to a year once most of its bricks are down
+      const i = Math.min(N - 1, Math.max(0, Math.ceil(T.current - 0.35)));
       if (i !== lastIdx) { lastIdx = i; setIdx(i); }
       const e = p > 0.9;
       if (e !== lastEnd) { lastEnd = e; setEnd(e); }
+      if (p > 0.03) setScrolled(true);
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => { cancelAnimationFrame(raf); io.disconnect(); };
-  }, [ok, N]);
+  }, [ok, N, segs]);
 
   if (!ok || reduce) return <div ref={host} className="walk-canvas" aria-hidden="true" />;
   const s = steps[idx];
@@ -74,10 +87,12 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
           <p className="walk-year" key={s.label}>{s.label}</p>
           <p className="walk-cap">{s.caption}</p>
           {s.sub && <p className="walk-sub">{s.sub}</p>}
+          {s.anchor && <a className="walk-more" href={s.anchor} tabIndex={-1}>{text.more}</a>}
         </>}
-        <p className="walk-tot">{text.totals.replace('{w}', String(cumWorks[idx])).replace('{m}', String(cumPeople[idx]))}</p>
+        <p className="walk-tot">{(cumPeople[idx] ? text.totals : text.solo).replace('{w}', String(cumWorks[idx])).replace('{m}', String(cumPeople[idx]))}</p>
       </div>
-      <span className="walk-hint" aria-hidden="true">{text.hint}</span>
+      <span className="walk-hint" aria-hidden="true" data-off={scrolled ? '' : undefined}>{text.hint}</span>
+      {!end && <a className="walk-skip btn secondary" href={text.skipHref} tabIndex={-1}>{text.skip}</a>}
       {pick && <Tip pick={pick} host={host.current} />}
     </div>
   );

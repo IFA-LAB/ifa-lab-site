@@ -1,22 +1,20 @@
 ---
-// Preview only (not linked, not indexed): the lab's history as its own candlestick chart.
+// The lab's history as its own candlestick chart (top of the history page).
 // One candle a year: open = works so far, close = works after that year, the body built from that year's bricks.
 // K 喵 climbs it as the page scrolls; each cohort joins the climb in the year it arrived.
-import Base from '@/layouts/Base.astro';
 import LabWalk from '@/components/three/LabWalk';
 import { getCollection } from 'astro:content';
 import { areas, lab, advisor } from '@/data/lab';
 import { t, href, type Locale } from '@/i18n/ui';
-import { langPaths, publications } from '@/lib/content';
+import { publications } from '@/lib/content';
 import { labEvents } from '@/lib/history';
 
-export const getStaticPaths = langPaths;
-const lang = Astro.params.lang as Locale;
+const { lang, listId = 'record' } = Astro.props as { lang: Locale; listId?: string };
 const zh = lang === 'zh-tw';
 
 const pubs = await publications();
 const theses = await getCollection('theses');
-const members = (await getCollection('members')).filter((m) => !m.data.placeholder)
+const members = (await getCollection('members'))
   .sort((a, b) => a.data.cohort - b.data.cohort || a.data.order - b.data.order);
 const events = await labEvents(lang);
 const areaOf = (k: string) => areas.find((a) => a.key === k);
@@ -48,7 +46,7 @@ const steps = [
     caption: zh ? `實驗室成立前，${advisor.name.zh}老師 ${first}–${OPEN - 1} 年已經累積 ${before.length} 件研究，這是 K 線的第一根。`
       : `Before the lab opened, Prof. ${advisor.name.en} had published ${before.length} works (${first}–${OPEN - 1}): the first candle.`,
     sub: zh ? `領域：${beforeAreas.join('、')}` : `Areas: ${beforeAreas.join(', ')}`,
-    soon: false, bricks: before.map(brick), joins: [] as string[],
+    soon: false, bricks: before.map(brick), joins: [] as string[], anchor: '',
   }] : []),
   ...yearList.map((y) => {
     const ws = done.filter((w) => w.year === y).sort(byArea);
@@ -65,21 +63,24 @@ const steps = [
       ws.length ? (zh ? `${ws.length} 件新成果：${areasHere.join('、')}` : `${ws.length} new ${ws.length > 1 ? 'works' : 'work'}: ${areasHere.join(', ')}`) : '',
       ev && ms.length ? (zh ? `${names.join('、')}加入` : `${names.join(', ')} joined`) : '',
     ].filter(Boolean).join(zh ? '；' : '; ');
-    return { label: String(y), caption, sub, soon: false, bricks: ws.map(brick), joins: ms.map((m) => m.id) };
+    return { label: String(y), caption, sub, soon: false, bricks: ws.map(brick), joins: ms.map((m) => m.id), anchor: events.some((e) => e.date.startsWith(String(y))) ? `#${listId}-${y}` : '' };
   }),
   ...(works.some((w) => w.year === 0) ? [{
     label: zh ? '即將' : 'Soon',
     caption: zh ? '已被期刊接受、即將刊登的論文。' : 'Accepted papers, about to be published.',
     sub: '', soon: true,
     bricks: works.filter((w) => w.year === 0).sort(byArea).map(brick),
-    joins: [] as string[],
+    joins: [] as string[], anchor: '',
   }] : []),
 ];
-const crew = members.map((m) => ({ id: m.id, name: t(m.data.name, lang), clay: m.data.figure.clay, accessory: m.data.figure.accessory, model: m.data.figure.model, href: href(lang, `members/${m.id}`) }));
+const crew = members.map((m) => ({ id: m.id, name: t(m.data.name, lang), clay: m.data.placeholder ? 'grey' : m.data.figure.clay, accessory: m.data.placeholder ? 'none' as const : m.data.figure.accessory, model: m.data.placeholder ? undefined : m.data.figure.model, href: href(lang, `members/${m.id}`) }));
 const text = {
   eyebrow: zh ? 'IFA Lab 的 K 線' : 'The IFA Lab chart',
   totals: zh ? '累積 {w} 件成果・{m} 位成員' : '{w} works so far · {m} members',
-  hint: zh ? '往下捲，跟著 K 喵往上爬；滑過積木或公仔看是誰，點一下打開' : 'Scroll to climb with K-Cat. Hover a brick or a figure, click to open',
+  solo: zh ? `累積 {w} 件成果・${advisor.name.zh}老師一個人` : `{w} works so far · Prof. ${advisor.name.en} alone`,
+  more: zh ? '這年的紀錄 ↓' : 'This year’s record ↓',
+  skip: zh ? '跳到逐筆紀錄 ↓' : 'Skip to the full record ↓', skipHref: `#${listId}`,
+  hint: zh ? '往下捲，跟 K 喵爬上去' : 'Scroll to climb with K-Cat',
   endH: zh ? '下一根 K 棒，由你來畫' : 'The next candle is yours',
   endP: zh ? `寄一封信給${advisor.name.zh}老師，說說你好奇的題目。每位成員都是從一封信開始的。` : `Email Prof. ${advisor.name.en} about a question you are curious about. Every member started with one letter.`,
   mail: zh ? `寄信給${advisor.name.zh}老師` : `Email Prof. ${advisor.name.en}`,
@@ -88,34 +89,12 @@ const text = {
   joinHref: href(lang, 'join'),
 };
 ---
-<Base lang={lang} title={zh ? 'IFA Lab 的 K 線（試作）' : 'The IFA Lab chart (preview)'} description={zh ? 'IFA Lab 歷年成果畫成的 K 線，試作頁' : 'IFA Lab output drawn as a candlestick chart, preview'}>
-  <Fragment slot="head">
-    <meta name="robots" content="noindex, nofollow" />
-    <noscript><style>.walk { height: auto !important; } .walk .stage { display: none; } .walk .years { position: static !important; width: auto !important; height: auto !important; clip-path: none !important; }</style></noscript>
-  </Fragment>
-  <section class="walk" data-walk style={`--n: ${steps.length + 1}`} aria-label={text.eyebrow}>
-    <div class="stage">
-      <LabWalk client:load steps={steps} crew={crew} text={text} />
-    </div>
-    {/* the same story as plain text: shown with reduced motion or without WebGL, and read by screen readers */}
-    <ol class="years">
-      {steps.map((s) => (
-        <li>
-          <span class="y">{s.label}</span>
-          <p>{s.caption}</p>
-          {s.sub && <p class="muted">{s.sub}</p>}
-        </li>
-      ))}
-      <li>
-        <span class="y">{zh ? '下一年' : 'Next'}</span>
-        <p><strong>{text.endH}</strong></p>
-        <p class="muted">{text.endP}</p>
-        <p><a class="btn" href={text.mailHref}>{text.mail}</a></p>
-      </li>
-    </ol>
-  </section>
-  <p class="wrap note muted">{zh ? '這是試作頁，沒有連到選單，也不會被搜尋引擎收錄。' : 'This is a preview page: not in the menu and not indexed.'} <a href={href(lang, '')}>{zh ? '回首頁' : 'Home'}</a></p>
-</Base>
+{/* Decorative for screen readers: the record list below it on the page carries the same history. Hidden without WebGL or with reduced motion. */}
+<section class="walk" data-walk style={`--n: ${steps.length + 1}`} aria-hidden="true">
+  <div class="stage">
+    <LabWalk client:load steps={steps} crew={crew} text={text} />
+  </div>
+</section>
 
 <style>
   /* about 3/4 of a screen of scroll per year, then the pull-back; the scene stays pinned */
@@ -154,19 +133,12 @@ const text = {
     .stage :global(.walk-cap) { font-size: 15px; -webkit-line-clamp: 3; }
     .stage :global(.walk-hint) { bottom: auto; top: calc(var(--header-h, 64px) + var(--space-3)); font-size: 13px; }
   }
-  /* the text version: visually hidden while the live scene tells the story */
-  .years { position: absolute; top: 0; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); margin: 0; list-style: none;
-    max-width: calc(var(--page) - 32px + 2 * clamp(16px, 4vw, 48px)); margin-inline: auto; padding: var(--space-8) clamp(16px, 4vw, 48px) 0; gap: var(--space-4); }
-  .years li { display: grid; grid-template-columns: 5em 1fr; column-gap: var(--space-4); }
-  .years li > :not(.y) { grid-column: 2; margin: 0; }
-  .years .y { grid-row: span 3; font: 600 20px/1.6 var(--f-display); }
-  .walk[data-flat] { height: auto; }
-  .walk[data-flat] .stage { display: none; }
-  .walk[data-flat] .years { position: static; width: auto; height: auto; overflow: visible; clip-path: none; display: grid; }
-  @media (prefers-reduced-motion: reduce) {
-    .walk { height: auto; }
-    .stage { display: none; }
-    .years { position: static; width: auto; height: auto; overflow: visible; clip-path: none; display: grid; }
-  }
-  .note { padding-block: var(--space-6) var(--space-8); font-size: 14px; }
+  /* without WebGL or with reduced motion the chart is not shown; the record below tells the same story */
+  .walk[data-flat] { display: none; }
+  @media (prefers-reduced-motion: reduce) { .walk { display: none; } }
+  /* jump past the chart */
+  .stage :global(.walk-skip) { position: absolute; right: max(clamp(16px, 4vw, 48px), calc((100% - var(--page)) / 2 + 16px)); top: calc(var(--header-h, 64px) + var(--space-6)); z-index: 1; }
+  .stage :global(.walk-more) { font-size: 14px; }
+  .stage :global(.walk-hint) { transition: opacity var(--dur-base) var(--ease-out); }
+  .stage :global(.walk-hint[data-off]) { opacity: 0; }
 </style>

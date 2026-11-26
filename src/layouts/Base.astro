@@ -1,4 +1,5 @@
 ---
+import MailPick from '@/components/MailPick.astro';
 import '@/styles/global.css';
 import ScrollCat from '@/components/ScrollCat.astro';
 import Header from '@/components/Header.astro';
@@ -108,6 +109,7 @@ const graph = [org, ...jsonld];
     </main>
     <Footer lang={lang} />
     <ScrollCat lang={lang} />
+    <MailPick lang={lang} />
   </body>
 </html>
 

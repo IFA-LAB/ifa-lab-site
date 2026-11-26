@@ -1,11 +1,11 @@
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { BoxGeometry, EdgesGeometry, Vector3, type DirectionalLight, type Group, type LineSegments, type Mesh, type PerspectiveCamera } from 'three';
-import { CLAY } from './util';
+import { CLAY, TagSprite } from './util';
 import { Accessory, BODY_Y, Face, MatchaLatte, R, type Accessory as AccessoryKind, type Model } from './figure';
 
 export type WalkBrick = { title: string; clay: string; kind: string; href: string };
-export type WalkStep = { label: string; caption: string; sub: string; soon: boolean; bricks: WalkBrick[]; joins: string[] };
+export type WalkStep = { label: string; caption: string; sub: string; soon: boolean; bricks: WalkBrick[]; joins: string[]; anchor: string };
 export type WalkMember = { id: string; name: string; clay: string; accessory: AccessoryKind; model?: Model; href: string };
 /** What the pointer is over, with the pointer's position in the viewport (the page draws the label). */
 export type Pick = { text: string; href: string; x: number; y: number } | null;
@@ -88,11 +88,18 @@ function Candle({ i, s, L, c }: { i: number; s: WalkStep; L: Layout; c: Ctx }) {
   );
 }
 
+/** The year under each candle, shown once the climb reaches it. */
+function YearTag({ i, s, L, c }: { i: number; s: WalkStep; L: Layout; c: Ctx }) {
+  const g = useRef<Group>(null);
+  useFrame(() => { const o = g.current; if (o) { const k = ease(clamp((now(c, L) - (i - 1) - 0.2) / 0.3)); o.visible = k > 0.001 || i === 0; o.scale.setScalar(i === 0 ? 1 : Math.max(0.001, k)); } });
+  return <group ref={g} position={[L[i].x, L[i].open - 0.55, 0.55]}><TagSprite text={s.label} position={[0, 0, 0]} height={0.3} /></group>;
+}
+
 /** The next candle, drawn in dashes: where the visitor's work would go. */
 function Ghost({ x, y, c, L }: { x: number; y: number; c: Ctx; L: Layout }) {
   const g = useRef<Group>(null);
   const line = useRef<LineSegments>(null);
-  const h = BH * 3 + GAPY * 2;
+  const h = BH * 4 + GAPY * 3;
   const edges = useMemo(() => new EdgesGeometry(new BoxGeometry(BW, h, BD)), [h]);
   useEffect(() => { line.current?.computeLineDistances(); }, []);
   useFrame(({ clock }) => {
@@ -159,46 +166,37 @@ function Climber({ L, c, at }: { L: Layout; c: Ctx; at: RefObject<Vector3> }) {
     const T = now(c, L);
     pathAt(L, T, v);
     const walking = !c.reduce && T % 1 < 0.6 && T < L.length - 1;
-    g.current.position.set(v.x, v.y + (walking ? Math.abs(Math.sin(clock.getElapsedTime() * 12)) * 0.05 : 0), 0.1);
+    g.current.position.set(v.x, v.y + (walking ? Math.abs(Math.sin(clock.getElapsedTime() * 12)) * 0.05 : 0), 0.42);
     at.current!.copy(v);
   });
   return <group ref={g} rotation={[0, -0.45, 0]}><CatBody reduce={c.reduce} /></group>;
 }
 
-/** A member joins in the year their cohort arrived and stands on a candle top behind the cat, three to a candle;
-    when the cat moves on, everyone hops forward to their new spot. */
-function Follower({ m, join, rank, L, c, crewJoin }: { m: WalkMember; join: number; rank: number; L: Layout; c: Ctx; crewJoin: number[] }) {
-  // a fixed place in the queue: whoever joined earlier stands nearer the cat, newcomers fall in at the back,
-  // so nobody already on the chart changes places when a new cohort arrives
-  const place = useMemo(() => crewJoin.filter((j, k) => j < join || (j === join && k < rank)).length, [crewJoin, join, rank]);
+/** A member drops onto the candle of the year they joined and stays there, so the finished chart shows who arrived when.
+    Up to four stand in a back row; more fill a second row behind it. The cat walks along the front edge. */
+function Follower({ m, join, slot, L, c }: { m: WalkMember; join: number; slot: number; L: Layout; c: Ctx }) {
   const g = useRef<Group>(null), inner = useRef<Group>(null);
-  const cur = useRef<Vector3 | null>(null);
-  const tgt = useMemo(() => new Vector3(), []);
   const body = CLAY[m.clay] ?? CLAY.grey;
-  useFrame(({ clock }, dt) => {
+  const top = L[Math.min(L.length - 1, join)];
+  const row = Math.floor(slot / 4), col = slot % 4;
+  const x = top.x + (col - 1.5) * 0.32 + row * 0.16, z = -0.22 - row * 0.26;
+  useFrame(({ clock }) => {
     const o = g.current; if (!o) return;
     const T = now(c, L);
-    const shown = clamp((T - join + 0.2) / 0.3);
+    // they land just after the year's bricks, one after another
+    const shown = clamp((T - (join - 1) - 0.5 - slot * 0.04) / 0.25);
     o.visible = shown > 0.001;
-    if (!o.visible) { cur.current = null; return; }
-    const cat = Math.min(L.length - 1, Math.floor(Math.max(0, T) + 0.4));
-    // the first three share the cat's own candle, in the back row; the rest fill the candles behind it
-    const ci = Math.max(0, cat - Math.floor(place / 3)), slot = place % 3;
-    const top = L[ci];
-    tgt.set(top.x + (slot - 1) * 0.4, top.close, -0.38);
-    if (!cur.current) cur.current = tgt.clone();
-    const before = cur.current.distanceTo(tgt);
-    cur.current.lerp(tgt, 1 - Math.exp(-Math.min(dt, 0.1) * (c.reduce ? 60 : 7)));
-    const hop = c.reduce ? 0 : Math.min(1, before) * 0.5;
-    o.position.set(cur.current.x, cur.current.y + hop, cur.current.z);
+    if (!o.visible) return;
+    const k = ease(shown);
+    o.position.set(x, top.close + (1 - k) * 2.5, z);
     if (inner.current) {
-      inner.current.scale.setScalar(Math.max(0.001, 0.3 * ease(shown)));
-      inner.current.position.y = c.reduce ? 0 : Math.abs(Math.sin(clock.getElapsedTime() * 3 + rank)) * 0.04;
+      inner.current.scale.setScalar(Math.max(0.001, 0.28 * (0.6 + 0.4 * k)));
+      inner.current.position.y = c.reduce ? 0 : Math.abs(Math.sin(clock.getElapsedTime() * 3 + slot)) * 0.03;
     }
   });
   const over = (e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); c.pick({ text: m.name, href: m.href, x: e.nativeEvent.clientX, y: e.nativeEvent.clientY }); };
   return (
-    <group ref={g} visible={false} rotation={[0, -0.3, 0]}>
+    <group ref={g} visible={false} rotation={[0, -0.25, 0]}>
       <group ref={inner} scale={0.001}>
         {m.model ? <MatchaLatte reduce={c.reduce} phones={m.accessory === 'phones'} /> : <>
           <mesh position={[0, BODY_Y, 0]} scale={R} castShadow><sphereGeometry args={[1, 32, 24]} /><meshStandardMaterial color={body} roughness={0.88} /></mesh>
@@ -304,10 +302,11 @@ export default function WalkScene({ T, reveal, steps, crew, joinOf, reduce, visi
         <shadowMaterial opacity={0.1} />
       </mesh>
       {steps.map((s, i) => <Candle key={i} i={i} s={s} L={L} c={c} />)}
+      {steps.map((s, i) => <YearTag key={'y' + i} i={i} s={s} L={L} c={c} />)}
       <Beads L={L} c={c} />
       <Ghost x={end.x + GX} y={end.close + 0.15} c={c} L={L} />
       <Climber L={L} c={c} at={at} />
-      {crew.map((m, k) => <Follower key={m.id} m={m} rank={k} join={joinOf[m.id] ?? 0} L={L} c={c} crewJoin={crewJoin} />)}
+      {crew.map((m, k) => <Follower key={m.id} m={m} join={joinOf[m.id] ?? 0} slot={crewJoin.slice(0, k).filter((j) => j === crewJoin[k]).length} L={L} c={c} />)}
     </Canvas>
   );
 }
