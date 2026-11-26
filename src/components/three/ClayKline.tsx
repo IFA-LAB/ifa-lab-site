@@ -19,7 +19,7 @@ type Props = {
   /** Touch screens, before the scene starts: how to wake it. */
   wake?: string;
   /** UI strings for the timeline and the toys. */
-  text?: { play: string; pause: string; year: string; total: string; more?: string; replay?: string; coin: string[]; cat: string[] };
+  text?: { play: string; pause: string; year: string; total: string; more?: string; replay?: string; open?: string; coin: string[]; cat: string[] };
 };
 
 // three.js (~240 KB gzip) is only fetched and parsed when the scene is about to show.
@@ -109,7 +109,7 @@ export default function ClayKline({ bars, steps = [], hint, hintTouch, unit, wak
     <div ref={host} className="kline-canvas">
       <div aria-hidden="true" style={{ position: 'absolute', inset: 0 }}>
         <Suspense fallback={null}>
-          <KlineScene bars={shown} visible={visible} reduce={reduce} active={active} onHover={setActive} onToy={onToy} lookAt={!atNow && grew ? grew.bar.key : null} />
+          <KlineScene bars={shown} visible={visible} reduce={reduce} active={active} onHover={setActive} onToy={onToy} lookAt={!atNow && grew ? grew.bar.key : null} unit={unit} />
         </Suspense>
       </div>
       {steps.length > 1 && text && (
@@ -132,7 +132,7 @@ export default function ClayKline({ bars, steps = [], hint, hintTouch, unit, wak
       )}
       <span className="kline-hint" aria-live="polite">
         {say ? say
-          : activeNow ? <><b>{activeNow.name}</b> · {activeNow.count} {unit}{!atNow && steps[step] ? ` (${steps[step].label})` : ''}</>
+          : activeNow ? (text?.open ? <><b>{activeNow.name}</b> · {text.open}</> : <><b>{activeNow.name}</b> · {activeNow.count} {unit}</>)
           : !atNow && grew ? <><b>{steps[step].label}</b> · {grew.bar.name} +{grew.n}{added > grew.n ? ` · ${text?.more ?? '+'}${added - grew.n}` : ''}</>
           : touch ? hintTouch : hint}
       </span>

@@ -145,8 +145,6 @@ const jsonld = [{
   .pile { padding: var(--space-5); display: grid; gap: var(--space-3); background: color-mix(in oklab, var(--c) 10%, var(--surface)); }
   .pile h2 { font-size: 22px; }
   .bricks { list-style: none; margin: var(--space-2) 0 0; padding: 0; display: grid; gap: 6px; }
-  .bricks li:nth-child(even) { padding-left: 14px; }
-  .bricks li:nth-child(odd) { padding-right: 14px; }
   .brick {
     display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--space-3); min-height: 48px;
     padding: 6px var(--space-3); border-radius: 12px; text-decoration: none; color: #1d2633;
@@ -155,7 +153,9 @@ const jsonld = [{
     transition: transform var(--dur-fast) var(--ease-out);
   }
   .brick b { font: 600 14px/1 var(--f-mono); }
-  .brick span { font-size: 14px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  /* one left edge for every brick so titles scan; three lines, and this paper's title in full */
+  .brick.here span { -webkit-line-clamp: unset; display: block; }
+  .brick span { font-size: 14px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   .brick.here { background: var(--c); grid-template-columns: auto minmax(0, 1fr) auto; }
   .brick.here em { font: 600 12px/1 var(--f-body); font-style: normal; padding: 4px 8px; border-radius: var(--r-full); background: rgb(255 255 255 / 0.7); }
   @media (hover: hover) and (pointer: fine) { a.brick:hover { transform: translateX(4px); } }

@@ -81,8 +81,8 @@ const description = zh
           wake={zh ? '點一下，讓 K 棒動起來' : 'Tap to bring the candles to life'}
           steps={steps}
           text={zh
-            ? { play: '播放實驗室的成長', pause: '暫停', year: '年份', total: '篇累積', replay: '按 ▶ 從 {y} 播', more: '其他 +', coin: ['叮！研究經費 +1（假的）', '金幣翻面了，論文還是要自己寫。', '再點也不會變成國科會計畫喔。'], cat: ['喵！我是 K 喵。', '按左上角的播放鍵，看 K 棒一年一年長高。', '滑過 K 棒，我就跑過去看。'] }
-            : { play: 'Play the lab’s growth', pause: 'Pause', year: 'Year', total: 'works so far', replay: '▶ replays from {y}', more: 'others +', coin: ['Ding! Funding +1 (not really).', 'The coin flipped. The paper still needs writing.', 'Clicking will not turn it into a grant.'], cat: ['Meow! I am K-meow.', 'Press play, top left, to watch the candles grow year by year.', 'Hover a candle and I will go look.'] }}
+            ? { play: '播放實驗室的成長', pause: '暫停', year: '年份', total: '篇累積', replay: '按 ▶ 從 {y} 播', open: '點一下看這個領域的論文', more: '其他 +', coin: ['叮！研究經費 +1（假的）', '金幣翻面了，論文還是要自己寫。', '再點也不會變成國科會計畫喔。'], cat: ['喵！我是 K 喵。', '按左上角的播放鍵，看 K 棒一年一年長高。', '滑過 K 棒，我就跑過去看。'] }
+            : { play: 'Play the lab’s growth', pause: 'Pause', year: 'Year', total: 'works so far', replay: '▶ replays from {y}', open: 'click to see its papers', more: 'others +', coin: ['Ding! Funding +1 (not really).', 'The coin flipped. The paper still needs writing.', 'Clicking will not turn it into a grant.'], cat: ['Meow! I am K-meow.', 'Press play, top left, to watch the candles grow year by year.', 'Hover a candle and I will go look.'] }}
         />
       </div>
       <ul class="legend" aria-label={zh ? '六個研究領域' : 'Six research areas'}>
@@ -305,6 +305,7 @@ const description = zh
   .join .crowd { display: grid; grid-template-columns: repeat(4, auto); gap: var(--space-2) var(--space-3); }
   /* 320px phones: figures shrink a little so three per shelf and four in the crowd still fit */
   @media (max-width: 400px) {
+    .row::after { inset: auto 0 0; }
     .row :global(.mate) { zoom: 0.78; }
     .join .crowd { gap: var(--space-1); }
     .join .crowd :global(.mate) { zoom: 0.85; }

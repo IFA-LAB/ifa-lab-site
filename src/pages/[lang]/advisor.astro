@@ -62,14 +62,14 @@ const person = {
         <ol class="recent">{recent.map((p) => <li><a href={href(lang, `papers/${p.id}`)} lang="en">{p.data.title}</a> <span class="mono muted nowrap">{p.data.year > new Date().getFullYear() ? (zh ? `${p.data.year} 即將刊登` : `${p.data.year}, forthcoming`) : p.data.year}</span></li>)}</ol>
         <p><a href={href(lang, 'research')}>{zh ? '全部論文與研究計畫 →' : 'All papers and grants →'}</a></p></section>
       <section class="block"><h2>{t(ui.sections.experience, lang)}</h2>
-        <ul class="timeline">{advisor.experience.map((e) => <li><span class="mono">{e.period}</span><span>{t(e.title, lang)}・{t(e.org, lang)}</span></li>)}</ul></section>
+        <ul class="timeline">{advisor.experience.map((e) => <li><span class="mono">{e.period.replace(/[–-]$/, zh ? '–至今' : '–present')}</span><span>{t(e.title, lang)}・{t(e.org, lang)}</span></li>)}</ul></section>
       <section class="block"><h2>{zh ? '獎項' : 'Awards'}</h2><ul class="plain">{advisor.awards.map((x) => <li>{t(x, lang)}</li>)}</ul></section>
       <section class="block"><h2>{zh ? '證照' : 'Licenses'}</h2><ul class="plain lic">{advisor.licenses.map((l) => <li>{t(l, lang)}</li>)}</ul></section>
       </div>
       <aside class="side">
       <section class="block"><h2>{t(ui.sections.research, lang)}</h2><ul class="tags">{advisor.research.map((r) => <li lang="en">{r}</li>)}</ul></section>
       <section class="block"><h2>{t(ui.sections.education, lang)}</h2>
-        <ul class="timeline">{advisor.education.map((e) => <li><span class="mono">{e.period}</span><span>{t(e.school, lang)}・{t(e.degree, lang)}</span></li>)}</ul></section>
+        <ul class="timeline">{advisor.education.map((e) => <li><span class="mono">{e.period.replace(/[–-]$/, zh ? '–至今' : '–present')}</span><span>{t(e.school, lang)}・{t(e.degree, lang)}</span></li>)}</ul></section>
       <section class="block"><h2>{t(ui.sections.interests, lang)}</h2><p>{t(advisor.interests, lang)}</p>
         <span class="cat-row"><LabCat lang={lang} size={64} bubble="right" lines={[{ zh: '老師愛貓，所以我住在這一頁。', en: 'The professor loves cats, so I live on this page.' }, { zh: '他也彈電吉他。我比較喜歡安靜的 Fusion。', en: 'He plays electric guitar too. I prefer the quieter fusion.' }]} /></span></section>
       </aside>

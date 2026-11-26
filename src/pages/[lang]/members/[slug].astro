@@ -127,7 +127,7 @@ const links = [
         {d.experience.length > 0 && (
           <section class="block">
             <h2>{t(ui.sections.experience, lang)}</h2>
-            <ul class="timeline">{d.experience.map((e) => <li><span class="mono">{e.period}</span><span>{t(e.title, lang)}・{t(e.org, lang)}</span></li>)}</ul>
+            <ul class="timeline">{d.experience.map((e) => <li><span class="mono">{e.period.replace(/[–-]$/, zh ? '–至今' : '–present')}</span><span>{t(e.title, lang)}・{t(e.org, lang)}</span></li>)}</ul>
           </section>
         )}
         {d.projects.length > 0 && (
@@ -159,7 +159,7 @@ const links = [
         {d.education.length > 0 && (
           <section class="block">
             <h2>{t(ui.sections.education, lang)}</h2>
-            <ul class="timeline">{d.education.map((e) => <li><span class="mono">{e.period}</span><span>{t(e.school, lang)}・{t(e.degree, lang)}</span></li>)}</ul>
+            <ul class="timeline">{d.education.map((e) => <li><span class="mono">{e.period.replace(/[–-]$/, zh ? '–至今' : '–present')}</span><span>{t(e.school, lang)}・{t(e.degree, lang)}</span></li>)}</ul>
           </section>
         )}
         {d.interests.length > 0 && (

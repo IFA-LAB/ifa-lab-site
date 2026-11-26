@@ -79,7 +79,7 @@ const text = zh
     // the cat hugs the middle of the candle
     const target = () => Math.min(innerHeight - rider.offsetHeight - 4, Math.max(TOP - 8, thumbTop() + thumbH() / 2 - rider.offsetHeight / 2));
     const pose = (p: string) => { if (root.dataset.pose !== p) root.dataset.pose = p; };
-    const place = () => { thumb.style.height = `${thumbH()}px`; thumb.style.translate = `0 ${thumbTop().toFixed(1)}px`; };
+    const place = () => { thumb.style.height = `${thumbH()}px`; thumb.style.translate = `0 ${thumbTop().toFixed(1)}px`; thumb.dataset.pct = `${Math.round(progress() * 100)}%`; };
     // after it settles: face you, then look at the page, or sleep at the very bottom
     const settle = () => {
       clearTimeout(idle); clearTimeout(rest);
@@ -183,7 +183,15 @@ const text = zh
     box-shadow: inset -3px -4px 5px rgb(0 0 0 / 0.18), inset 3px 3px 5px rgb(255 255 255 / 0.35), 2px 4px 8px var(--lo);
     transition: scale var(--dur-fast) var(--ease-out), filter var(--dur-fast) var(--ease-out);
   }
-  .rail:hover .thumb { scale: 1.2 1; filter: brightness(1.06); }
+  .rail:hover .thumb { scale: 1.3 1; filter: brightness(1.08); box-shadow: inset -3px -4px 5px rgb(0 0 0 / 0.18), inset 3px 3px 5px rgb(255 255 255 / 0.35), 0 0 0 3px color-mix(in oklab, var(--clay-blue) 30%, transparent), 2px 4px 8px var(--lo); }
+  /* pointing at or dragging the candle: how far down the page you are */
+  .thumb::after {
+    content: attr(data-pct); position: absolute; right: calc(100% + 10px); top: 50%; translate: 4px -50%; scale: calc(1 / 1.3) 1;
+    padding: 3px 8px; border-radius: var(--r-full); background: var(--surface); color: var(--ink); box-shadow: 2px 3px 8px var(--lo);
+    font: 600 12px/1.3 var(--f-mono); white-space: nowrap; opacity: 0; pointer-events: none;
+    transition: opacity var(--dur-fast) var(--ease-out), translate var(--dur-fast) var(--ease-out);
+  }
+  .rail:hover .thumb::after, .dragging .thumb::after { opacity: 1; translate: 0 -50%; }
   .dragging .thumb { cursor: grabbing; filter: brightness(1.1); }
   :global(html:has(.scrollcat.dragging)) { user-select: none; }
 

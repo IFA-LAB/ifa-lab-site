@@ -105,13 +105,9 @@ const jsonld = journals.map((p) => ({
               <div>
                 <p class="title" lang="en"><a href={href(lang, `papers/${p.id}`)}>{p.data.title}</a></p>
                 <p class="authors">{p.data.authors.map((a, i) => (
-                  <>{i > 0 && ', '}{byName.has(a) || a === 'Hsin-Yu Chiu' ? <strong>{a}</strong> : a}{p.data.corresponding.includes(i) && '*'}</>
+                  <>{i > 0 && ', '}<span class="nm">{byName.has(a) || a === 'Hsin-Yu Chiu' ? <strong>{a}</strong> : a}{p.data.corresponding.includes(i) && '*'}</span></>
                 ))}</p>
-                <p class="muted meta"><em>{c.tail}</em> · {c.year} · <span class="area-tag">{areaName(p.data.area)}</span>
-                  {p.data.doi && <> · <a href={`https://doi.org/${p.data.doi}`} target="_blank" rel="noopener">DOI</a></>}
-                  {!p.data.doi && p.data.url && <> · <a href={p.data.url} target="_blank" rel="noopener">{zh ? '全文' : 'Full text'}</a></>}
-                  {p.data.slides && <> · <a href={p.data.slides} target="_blank" rel="noopener">{zh ? '簡報' : 'Slides'}</a></>}
-                  {' · '}<button type="button" class="copy" data-copy={citation(p.data)} data-done={zh ? '已複製引用' : 'Citation copied'}>{zh ? '複製引用' : 'Copy citation'}</button>
+                <p class="muted meta"><em>{c.tail}</em>&nbsp;· {c.year}&nbsp;· <span class="area-tag">{areaName(p.data.area)}</span>{p.data.doi && <>&nbsp;· <a href={`https://doi.org/${p.data.doi}`} target="_blank" rel="noopener">DOI</a></>}{!p.data.doi && p.data.url && <>&nbsp;· <a href={p.data.url} target="_blank" rel="noopener">{zh ? '全文' : 'Full text'}</a></>}{p.data.slides && <>&nbsp;· <a href={p.data.slides} target="_blank" rel="noopener">{zh ? '簡報' : 'Slides'}</a></>}{' · '}<button type="button" class="copy" data-copy={citation(p.data)} data-done={zh ? '已複製引用' : 'Citation copied'}>{zh ? '複製引用' : 'Copy citation'}</button>
                 </p>
                 {p.data.plain && <Bi text={p.data.plain} lang={lang} />}
               </div>
@@ -130,10 +126,10 @@ const jsonld = journals.map((p) => ({
             <div>
               <p class="title" lang="en"><a href={href(lang, `papers/${p.id}`)}>{p.data.title}</a></p>
               <p class="authors">{p.data.authors.map((a, i) => (
-                <>{i > 0 && ', '}{byName.has(a) || a === 'Hsin-Yu Chiu' ? <strong>{a}</strong> : a}{p.data.corresponding.includes(i) && '*'}</>
+                <>{i > 0 && ', '}<span class="nm">{byName.has(a) || a === 'Hsin-Yu Chiu' ? <strong>{a}</strong> : a}{p.data.corresponding.includes(i) && '*'}</span></>
               ))}</p>
               {p.data.plain && <Bi text={p.data.plain} lang={lang} />}
-              <p class="muted meta">{p.data.year} · <span class="area-tag">{areaName(p.data.area)}</span>{p.data.url && <> · <a href={p.data.url} target="_blank" rel="noopener">{zh ? '全文' : 'Full text'}</a></>}</p>
+              <p class="muted meta">{p.data.year}&nbsp;· <span class="area-tag">{areaName(p.data.area)}</span>{p.data.url && <>&nbsp;· <a href={p.data.url} target="_blank" rel="noopener">{zh ? '全文' : 'Full text'}</a></>}</p>
             </div>
           </li>
         ))}
@@ -148,7 +144,7 @@ const jsonld = journals.map((p) => ({
             <span class="block" aria-hidden="true">{thesisYear(x.data.academicYear)}</span>
             <div>
               <Bi text={x.data.title} lang={lang} />
-              <p class="muted meta"><a href={href(lang, `members/${x.data.member}`)}>{t(nameOf(x.data.member), lang)}</a> · {zh ? `${x.data.academicYear} 學年度` : `AY ${x.data.academicYear + 1911}–${String(x.data.academicYear + 1912).slice(2)}`} · <span class="area-tag">{areaName(x.data.area)}</span></p>
+              <p class="muted meta"><a href={href(lang, `members/${x.data.member}`)}>{t(nameOf(x.data.member), lang)}</a>&nbsp;· {zh ? `${x.data.academicYear} 學年度` : `AY ${x.data.academicYear + 1911}–${String(x.data.academicYear + 1912).slice(2)}`}&nbsp;· <span class="area-tag">{areaName(x.data.area)}</span></p>
             </div>
           </li>
         ))}
@@ -162,7 +158,7 @@ const jsonld = journals.map((p) => ({
           <li class="clay">
             <p class="mono muted">{g.data.period}{ongoing(g.data.period) && <span class="live">{zh ? '進行中' : 'Ongoing'}</span>}</p>
             <Bi text={g.data.title} lang={lang} />
-            <p class="muted meta">{t(g.data.kind, lang)} · {t(ui.pubs.pi, lang)} {(() => { const m = members.find((x) => x.data.name.en === g.data.pi); return m ? <a href={href(lang, `members/${m.id}`)}>{t(m.data.name, lang)}</a> : g.data.pi; })()}</p>
+            <p class="muted meta">{t(g.data.kind, lang)}&nbsp;· {t(ui.pubs.pi, lang)} {(() => { const m = members.find((x) => x.data.name.en === g.data.pi); return m ? <a href={href(lang, `members/${m.id}`)}>{t(m.data.name, lang)}</a> : g.data.pi; })()}</p>
           </li>
         ))}
       </ul>
@@ -308,7 +304,7 @@ const jsonld = journals.map((p) => ({
     /* a column may be narrower than its label: the track can shrink, the label never pushes the wall wider */
     .col { grid-template-columns: minmax(0, 1fr); }
     .yr { overflow: hidden; white-space: nowrap; }
-    .cols { gap: 3px; }
+    .cols { gap: 6px; }
     .jump::before { display: none; }
   }
   @media (max-width: 360px) {
@@ -319,6 +315,8 @@ const jsonld = journals.map((p) => ({
   }
   .title { font-weight: 700; font-size: 17px; line-height: 1.6; }
   .authors { font-size: 15px; }
+  /* a name never splits at its hyphen (Ya-|Ching), and a ' · ' never starts a line */
+  .nm { white-space: nowrap; }
   .meta { font-size: 14px; }
   .pub .title a { text-decoration: none; color: var(--ink); }
   .pub .title a:hover, .pub .title a:focus-visible { text-decoration: underline; color: var(--accent); }

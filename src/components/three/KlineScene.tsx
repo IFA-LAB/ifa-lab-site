@@ -75,7 +75,7 @@ function Label({ text, x, dark, on, fill }: { text: string; x: number; dark: boo
 }
 
 /** One candle = one research area. Body height grows with the number of works in that area. */
-function Candle({ bar, x, base, up, reduce, onHover, delay, on }: { bar: Bar; x: number; base: number; up: boolean; reduce: boolean; onHover: (b: Bar | null) => void; delay: number; on: boolean }) {
+function Candle({ bar, x, base, up, reduce, onHover, delay, on, unit }: { bar: Bar; x: number; base: number; up: boolean; reduce: boolean; onHover: (b: Bar | null) => void; delay: number; on: boolean; unit: string }) {
   const g = useRef<Group>(null);
   const lift = useRef<Group>(null);
   const squish = useRef({ v: 0, x: 0 }); // spring state for the press-and-bounce
@@ -121,7 +121,7 @@ function Candle({ bar, x, base, up, reduce, onHover, delay, on }: { bar: Bar; x:
 
   return (
     <group position={[x, base, 0]}>
-      {on && <TagSprite text={`${bar.name} · ${bar.count}`} position={[0, bodyH + 1.2, 0.9]} height={0.46} />}
+      {on && <TagSprite text={`${bar.name} · ${bar.count} ${unit}`} position={[0, bodyH + 1.2, 0.9]} height={0.46} />}
       <group ref={lift}>
       <group
         ref={g}
@@ -182,7 +182,7 @@ function Cat({ reduce, targetX, dark, onPet }: { reduce: boolean; targetX: numbe
     const b = body.current;
     if (b) {
       const gx = targetX === null ? home.x : Math.min(4.0, Math.max(-3.6, targetX + 0.66));
-      const gz = targetX === null ? home.z : 1.85; // sits at the front edge, beside the hovered candle's nameplate, where no candle can hide it
+      const gz = targetX === null ? home.z : -1.15; // behind the picked candle's shoulder: it looks on without covering the nameplate or the tag
       const dx = gx - b.position.x, dz = gz - b.position.z;
       const d = Math.hypot(dx, dz);
       const k = d > 0 ? Math.min(d, dt * 3.4) / d : 0;
@@ -229,7 +229,7 @@ function Lens() {
   return null;
 }
 
-function World({ bars, reduce, onHover, active, dark, onToy, lookAt }: { bars: Bar[]; reduce: boolean; onHover: (b: Bar | null) => void; active: Bar | null; dark: boolean; onToy: (what: 'coin' | 'cat') => void; lookAt: string | null }) {
+function World({ bars, reduce, onHover, active, dark, onToy, lookAt, unit }: { unit: string; bars: Bar[]; reduce: boolean; onHover: (b: Bar | null) => void; active: Bar | null; dark: boolean; onToy: (what: 'coin' | 'cat') => void; lookAt: string | null }) {
   const compact = useThree((st) => st.size.width) < 560;
   const world = useRef<Group>(null);
   const target = useRef({ x: 0, y: 0 });
@@ -258,7 +258,7 @@ function World({ bars, reduce, onHover, active, dark, onToy, lookAt }: { bars: B
       <RoundedBox args={[9, 0.6, 4.4]} radius={0.28} smoothness={6} position={[0, -0.3, 0]} receiveShadow castShadow>
         <meshStandardMaterial color={dark ? PLATE_DARK : PLATE} roughness={0.9} />
       </RoundedBox>
-      {layout.map((l, i) => <Candle key={l.bar.key} {...l} delay={0.15 + i * 0.09} reduce={reduce} onHover={onHover} on={active?.key === l.bar.key} />)}
+      {layout.map((l, i) => <Candle key={l.bar.key} {...l} delay={0.15 + i * 0.09} reduce={reduce} onHover={onHover} on={active?.key === l.bar.key} unit={unit} />)}
       {!compact && layout.map((l) => <Label key={l.bar.key} text={l.bar.label} x={l.x} dark={dark} on={active?.key === l.bar.key} fill={(CLAY as Record<string, string>)[l.bar.clay] ?? CLAY.grey} />)}
       <Coin position={[compact ? -2.4 : -0.9, compact ? 2.4 : 3.7, -1.2]} phase={0} reduce={reduce} onFlip={() => onToy('coin')} />
       <Coin position={[compact ? 0.4 : 1.1, compact ? 3.2 : 4.05, -1.0]} phase={1.7} reduce={reduce} onFlip={() => onToy('coin')} />
@@ -268,7 +268,7 @@ function World({ bars, reduce, onHover, active, dark, onToy, lookAt }: { bars: B
   );
 }
 
-export default function KlineScene({ bars, visible, reduce, active, onHover, onToy, lookAt = null }: { bars: Bar[]; visible: boolean; reduce: boolean; active: Bar | null; onHover: (b: Bar | null) => void; onToy: (what: 'coin' | 'cat') => void; lookAt?: string | null }) {
+export default function KlineScene({ bars, visible, reduce, active, onHover, onToy, lookAt = null, unit = '' }: { unit?: string; bars: Bar[]; visible: boolean; reduce: boolean; active: Bar | null; onHover: (b: Bar | null) => void; onToy: (what: 'coin' | 'cat') => void; lookAt?: string | null }) {
   const dark = useDark();
   return (
     <Canvas
@@ -297,7 +297,7 @@ export default function KlineScene({ bars, visible, reduce, active, onHover, onT
         shadow-camera-bottom={-8}
       />
       <Lens />
-      <World bars={bars} reduce={reduce} onHover={onHover} active={active} dark={dark} onToy={onToy} lookAt={lookAt} />
+      <World bars={bars} reduce={reduce} onHover={onHover} active={active} dark={dark} onToy={onToy} lookAt={lookAt} unit={unit} />
     </Canvas>
   );
 }
