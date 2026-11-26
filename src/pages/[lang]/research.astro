@@ -169,7 +169,7 @@ const jsonld = journals.map((p) => ({
     </section>
 
     <section aria-labelledby="s-h" class="group">
-      <h2 id="s-h">{t(ui.pubs.projects, lang)}</h2>
+      <h2 id="s-h">{t(ui.pubs.projects, lang)} <span class="n">{studentProjects.length}</span></h2>
       <ul class="projects">
         {studentProjects.map((p) => (
           <li class:list={['clay', { feature: p.photo }]}>
