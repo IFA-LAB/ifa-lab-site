@@ -269,7 +269,7 @@ const jsonld = journals.map((p) => ({
   .n { font: 500 16px/1 var(--f-mono); color: var(--ink-2); }
   .pubs { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); }
   .pub { display: grid; grid-template-columns: 64px 1fr; gap: var(--space-5); padding: var(--space-4) 0; border-bottom: 1px solid var(--line); scroll-margin-top: 96px; }
-  .pub > div { display: grid; gap: var(--space-1); min-width: 0; }
+  .pub > div { display: grid; gap: var(--space-1); min-width: 0; align-content: start; }
   .block { width: 64px; height: 34px; border-radius: 9px; margin-top: 2px; display: grid; place-items: center; font: 600 15px/1 var(--f-mono); color: #1d2633; box-shadow: inset 0 -5px 0 rgb(0 0 0 / 0.16), inset 2px 3px 4px rgb(255 255 255 / 0.4), 0 4px 8px var(--lo); }
   @media (max-width: 767px) { .pub { grid-template-columns: 52px 1fr; gap: var(--space-3); } .block { width: 52px; height: 28px; font-size: 13px; } }
 
@@ -311,7 +311,7 @@ const jsonld = journals.map((p) => ({
     .cols { gap: 3px; }
     .jump::before { display: none; }
   }
-  @media (max-width: 400px) {
+  @media (max-width: 360px) {
     /* 320px: bare two-digit years (14 … 26) fit a 16px column; "soon" may spill into the wall's right padding */
     .yr { font-size: 10px; letter-spacing: -0.02em; }
     .yr:not(.soon)::before { content: none; }
@@ -331,7 +331,7 @@ const jsonld = journals.map((p) => ({
   .jump a:hover { color: var(--accent); }
   @media (max-width: 767px) { .jump { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; } .jump a { flex: none; }
     /* a fade at the right edge says the row scrolls sideways */
-    .jump::after { content: ''; position: sticky; right: calc(-1 * var(--space-3)); flex: none; width: 40px; margin-left: -40px; background: linear-gradient(to right, transparent, var(--bg) 80%); pointer-events: none; } }
+    .jump::after { position: sticky; right: calc(-1 * var(--space-3)); flex: none; width: 56px; margin-left: -56px; display: grid; place-items: center end; padding-right: 6px; content: '›'; font: 600 22px/1 var(--f-body); color: var(--ink-2); background: linear-gradient(to right, transparent, var(--bg) 55%); pointer-events: none; } }
   .jump b { font: 600 13px/1 var(--f-mono); padding: 4px 7px; border-radius: var(--r-full); background: var(--surface-2); color: var(--ink); }
   /* short links (DOI, 簡報) get a 24px+ hit area without changing the line */
   .meta a { display: inline-block; padding-block: 3px; margin-block: -3px; min-width: 24px; text-align: center; }

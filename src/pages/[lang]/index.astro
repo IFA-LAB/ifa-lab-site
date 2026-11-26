@@ -235,7 +235,7 @@ const description = zh
   .visual :global(.kline-year small) { font: 500 13px/1.4 var(--f-body); color: var(--ink-2); }
   .visual :global(.kline-time input) { grid-area: range; width: 100%; min-width: 150px; accent-color: var(--accent); height: 24px; cursor: pointer; }
   @media (max-width: 559px) {
-    .visual :global(.kline-time) { top: 0; left: 16px; padding: var(--space-2) var(--space-3); grid-template-columns: auto auto 1fr; grid-template-areas: 'play year range'; }
+    .visual :global(.kline-time) { top: 0; left: 16px; right: 16px; padding: var(--space-2) var(--space-3); grid-template-columns: auto auto 1fr; grid-template-areas: 'play year range'; }
     .visual :global(.kline-year b) { font-size: 22px; }
     .visual :global(.kline-time input) { min-width: 90px; }
   }
@@ -284,7 +284,8 @@ const description = zh
   .row { position: relative; display: grid; gap: var(--space-3); padding-bottom: var(--space-4); }
   /* a clay plank: lit top edge, darker front, soft cast shadow */
   .row::after { content: ''; position: absolute; inset: auto -8px 0; height: 18px; border-radius: 9px; background: var(--surface); box-shadow: 0 10px 18px var(--lo), inset 0 3px 0 var(--hi), inset 0 -7px 0 var(--surface-2); }
-  .row .also { margin: var(--space-2) 0 0; font-size: 14px; }
+  /* under the plank, out of flow: every plank stays level with its neighbour */
+  .row .also { position: absolute; top: calc(100% + var(--space-3)); left: 0; margin: 0; font-size: 14px; }
   .row ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); align-items: end; }
 
   .row-head { display: flex; justify-content: space-between; align-items: end; gap: var(--space-5); max-width: none; }
