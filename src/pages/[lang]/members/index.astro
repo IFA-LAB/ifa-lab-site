@@ -53,15 +53,21 @@ const jsonld = people.map((m) => ({
               </a>
             </li>
           ))}
+          {(() => { const n = ms.filter((m) => m.data.placeholder).length; return n > 0 && (
+            <li class="pending">
+              <ClayFigure clay="grey" placeholder size={64} />
+              <span class="muted">{zh ? `還有 ${n} 位成員的資料準備中，公仔先幫他們佔位子。` : `${n} more ${n > 1 ? 'members are' : 'member is'} still setting up a profile. This figure is saving the seat.`}</span>
+            </li>
+          ); })()}
         </ul>
-        {(() => { const n = ms.filter((m) => m.data.placeholder).length; return n > 0 && <p class="muted pending">{zh ? `還有 ${n} 位成員的資料準備中。` : `${n} more ${n > 1 ? 'members are' : 'member is'} still setting up a profile.`}</p>; })()}
       </section>
     ))}
   </div>
 </Base>
 
 <style>
-  .pending { margin-top: var(--space-3); font-size: 15px; }
+  /* a saved seat: dashed outline instead of a clay card, so it fills the row without pretending to be a profile */
+  .pending { display: flex; gap: var(--space-4); align-items: center; padding: var(--space-5); border: 2px dashed color-mix(in oklab, var(--ink) 22%, transparent); border-radius: var(--r-lg); font-size: 15px; line-height: 1.6; }
   .avatar { width: 88px; height: 88px; border-radius: 24px; object-fit: cover; flex: none; box-shadow: 4px 6px 14px var(--lo); }
   .face { position: relative; flex: none; }
   .twin { position: absolute; right: -14px; bottom: -12px; transition: transform var(--dur-base) var(--ease-out); }
