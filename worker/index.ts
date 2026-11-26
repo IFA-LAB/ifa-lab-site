@@ -14,11 +14,15 @@ interface Env {
 type Index = { ps: Passage[]; docs: Map<string, number>[]; lens: number[]; df: Map<string, number>; avg: number };
 let cached: Promise<Index> | null = null;
 
+// Function words carry no topic. Most passages are Chinese, so English words are rare corpus-wide and even "i" or
+// "do" would get a high idf and outrank the word the visitor actually asked about.
+const STOP = new Set('a an and are as at be but by can could do does for from had has have how i if in is it its me my of on or our so than that the their them then there these they this to was we were what when where which who why will with would you your'.split(' '));
+
 /** Latin words plus CJK characters and character bigrams. */
 function grams(s: string): string[] {
   s = s.toLowerCase();
   // English: drop a plural or -ing/-ed ending so "internship" meets "internships" (a light stemmer is enough here)
-  const out: string[] = (s.match(/[a-z0-9][a-z0-9.+#-]*/g) ?? []).map((w) => (w.length > 4 ? w.replace(/(ies|es|s|ing|ed)$/, (m) => (m === 'ies' ? 'y' : '')) : w));
+  const out: string[] = (s.match(/[a-z0-9][a-z0-9.+#-]*/g) ?? []).filter((w) => !STOP.has(w)).map((w) => (w.length > 4 ? w.replace(/(ies|es|s|ing|ed)$/, (m) => (m === 'ies' ? 'y' : '')) : w));
   for (const run of s.match(/[㐀-鿿]+/g) ?? []) {
     const cs = [...run];
     out.push(...cs);
@@ -31,7 +35,8 @@ const count = (ts: string[]) => { const m = new Map<string, number>(); for (cons
 async function loadIndex(env: Env, origin: string): Promise<Index> {
   const r = await env.ASSETS.fetch(new Request(`${origin}/ask-corpus.json`));
   const ps = (await r.json()) as Passage[];
-  const docs = ps.map((p) => count(grams(`${p.section} ${p.text}`)));
+  // the section heading counts three times: it names the topic, while long sections would otherwise drown it
+  const docs = ps.map((p) => count(grams(`${p.section} ${p.section} ${p.section} ${p.text}`)));
   const lens = docs.map((d) => [...d.values()].reduce((a, b) => a + b, 0));
   const df = new Map<string, number>();
   for (const d of docs) for (const t of d.keys()) df.set(t, (df.get(t) ?? 0) + 1);
