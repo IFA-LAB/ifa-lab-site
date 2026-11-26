@@ -245,7 +245,7 @@
     ],
     "doi": "10.1016/j.najef.2019.101112",
     "plain": {
-      "zh": "商品價格不只價格會跳，波動度也會突然跳動；把波動跳躍放進均值回歸模型，更貼近實際資料，也會改變選擇權的波動率微笑與定價。",
+      "zh": "商品不只價格會跳，波動度也會突然跳動；把波動跳躍放進均值回歸模型，更貼近實際資料，也會改變選擇權的波動率微笑與定價。",
       "en": "Commodity prices jump, and so does their volatility; adding volatility jumps to mean-reverting models fits the data better and changes option volatility smiles and prices."
     }
   },

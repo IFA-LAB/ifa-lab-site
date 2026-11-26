@@ -13,7 +13,7 @@ export const lab = {
       en: 'IFA Lab is a fintech and AI research lab in the Department of Information Management at National Central University. Our work spans financial intelligence, data analytics, AI and machine learning, asset pricing, behavioral finance, empirical finance, forecasting, and application development and visualization.',
     },
     {
-      zh: '我們用創新研究推動金融領域的發展，建立能提高預測準確度的模型，協助決策者做出更好的判斷。',
+      zh: '我們做能把預測做得更準的模型，讓要做決策的人多一份可靠的依據。',
       en: 'We advance finance through innovative research and build models that improve forecast accuracy for decision-makers.',
     },
     {
