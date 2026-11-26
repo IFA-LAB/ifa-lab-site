@@ -66,6 +66,8 @@ const graph = [org, ...jsonld];
     <link rel="sitemap" href="/sitemap-index.xml" />
     <script is:inline>
       try { const s = localStorage.getItem('theme'); if (s === 'light' || s === 'dark') document.documentElement.dataset.theme = s; } catch {}
+      // desktop with a mouse: the scrollbar becomes K 喵's candle (ScrollCat.astro); decided before paint so nothing shifts
+      if (matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches) document.documentElement.classList.add('cat-scroll');
     </script>
     <script type="application/ld+json" set:html={JSON.stringify(graph.length === 1 ? graph[0] : { '@context': 'https://schema.org', '@graph': graph.map(({ '@context': _c, ...g }: any) => g) })} />
     {/* the next page renders in the background while the pointer rests on its link, so arriving is instant */}

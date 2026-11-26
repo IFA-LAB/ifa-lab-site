@@ -1,18 +1,21 @@
 ---
-/** K 喵 keeps you company while you scroll: the right edge of the window is a K-line wick and the cat climbs it.
-    Scroll down → it climbs down (tail first, like a real cat); scroll up → it climbs up; a fling → it slides.
-    Stops → turns round to face you; idle a while → looks at the page; bottom of the page → sleeps.
-    Click → meow, and back to the top. Hidden while the page's own K 喵 is on screen (it is the same cat),
-    on touch screens, narrow windows, short pages and with reduced motion. */
+/** K 喵 keeps you company while you scroll. On desktop the page's scrollbar itself becomes a K-line candle:
+    the track is the wick, the thumb is a clay candle body, and the cat hugs the candle and climbs after it.
+    Drag the candle (or the cat) to scroll; press the track to jump. The native scrollbar is hidden only where this
+    runs: Base.astro sets `html.cat-scroll` before paint (desktop, mouse, ≥1024px, no reduced motion).
+    Cat: scroll down → climbs down tail first; up → climbs up; a fling → slides. Stops → turns round to face you;
+    idle → looks at the page; bottom → sleeps. Click → meow, and back to the top. Steps away while the page's own
+    K 喵 is on screen (it is the same cat); the candle stays. */
 import type { Locale } from '@/i18n/ui';
 interface Props { lang: Locale }
 const zh = Astro.props.lang === 'zh-tw';
 const text = zh
-  ? { label: 'K 喵：回到頁面頂端', top: '回到上面囉！', lines: ['我在旁邊陪你看。', '往下滾，我就跟著爬。', '這根是 K 線的影線，很好爬。'] }
-  : { label: 'K-meow: back to top', top: 'Back to the top!', lines: ['I will keep you company.', 'Scroll down and I climb along.', 'This is a candle wick. Great for climbing.'] };
+  ? { label: 'K 喵：回到頁面頂端', top: '回到上面囉！', lines: ['我在旁邊陪你看。', '我抱著的這根 K 棒就是捲軸，拖我也能捲。', '往下滾，我就跟著爬。'] }
+  : { label: 'K-meow: back to top', top: 'Back to the top!', lines: ['I will keep you company.', 'The candle I am hugging is the scrollbar. Drag me to scroll.', 'Scroll down and I climb along.'] };
 ---
 <div class="scrollcat" data-pose="front" hidden>
-  <span class="wick" aria-hidden="true"></span>
+  {/* the page's scrollbar: a candle wick (track) with a clay candle body (thumb) */}
+  <div class="rail" aria-hidden="true"><span class="wick"></span><span class="thumb"></span></div>
   <div class="rider">
     <button type="button" class="cat" aria-label={text.label} data-top={text.top} data-lines={JSON.stringify(text.lines)}>
       <svg viewBox="0 0 64 84" aria-hidden="true" focusable="false">
@@ -24,7 +27,7 @@ const text = zh
         </defs>
         <!-- tail hangs below; it swishes while idle and streams up while sliding -->
         <g class="tail"><path d="M32 64 C32 76 44 80 46 72" fill="none" style="stroke: var(--fur)" stroke-width="6" stroke-linecap="round" /></g>
-        <!-- hind legs and front paws grip the wick (x = 32) -->
+        <!-- hind legs and front paws grip the candle (x = 32) -->
         <g class="limbs" style="fill: var(--fur-hi)">
           <ellipse class="paw fl" cx="21" cy="36" rx="5" ry="4" />
           <ellipse class="paw fr" cx="43" cy="36" rx="5" ry="4" />
@@ -57,24 +60,29 @@ const text = zh
 <script>
   import { meow } from '@/lib/sfx';
   const root = document.querySelector<HTMLElement>('.scrollcat');
-  const fit = matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
-  if (root && fit.matches) {
+  const doc = document.documentElement;
+  // Base.astro adds `cat-scroll` (and hides the native scrollbar) only where this should run
+  if (root && doc.classList.contains('cat-scroll')) {
     const rider = root.querySelector<HTMLElement>('.rider')!;
+    const rail = root.querySelector<HTMLElement>('.rail')!;
+    const thumb = root.querySelector<HTMLElement>('.thumb')!;
     const btn = root.querySelector<HTMLButtonElement>('.cat')!;
     const bubble = root.querySelector<HTMLElement>('.bubble')!;
     const lines: string[] = JSON.parse(btn.dataset.lines ?? '[]');
-    const TOP = 84, BOTTOM = 20; // px kept clear under the header and above the window edge
-    let y = -1, raf = 0, idle = 0, said = 0, talk = 0, still = 0;
-    const doc = document.documentElement;
+    const TOP = 72, BOTTOM = 10; // the track runs from under the header to near the window edge
+    let y = -1, raf = 0, idle = 0, said = 0, talk = 0, still = 0, rest = 0;
     const range = () => doc.scrollHeight - innerHeight;
     const progress = () => (range() > 0 ? Math.min(1, Math.max(0, scrollY / range())) : 0);
-    const target = () => TOP + progress() * (innerHeight - TOP - BOTTOM - rider.offsetHeight);
+    const trackH = () => innerHeight - TOP - BOTTOM;
+    const thumbH = () => Math.max(40, Math.round((trackH() * innerHeight) / doc.scrollHeight));
+    const thumbTop = () => TOP + progress() * (trackH() - thumbH());
+    // the cat hugs the middle of the candle
+    const target = () => Math.min(innerHeight - rider.offsetHeight - 4, Math.max(TOP - 8, thumbTop() + thumbH() / 2 - rider.offsetHeight / 2));
     const pose = (p: string) => { if (root.dataset.pose !== p) root.dataset.pose = p; };
+    const place = () => { thumb.style.height = `${thumbH()}px`; thumb.style.translate = `0 ${thumbTop().toFixed(1)}px`; };
     // after it settles: face you, then look at the page, or sleep at the very bottom
-    let rest = 0;
     const settle = () => {
-      clearTimeout(idle);
-      clearTimeout(rest);
+      clearTimeout(idle); clearTimeout(rest);
       rest = window.setTimeout(() => root.classList.remove('moving'), 1500);
       pose(progress() > 0.985 ? 'sleep' : 'front');
       if (root.dataset.pose === 'front') idle = window.setTimeout(() => pose('peek'), 5000);
@@ -85,27 +93,53 @@ const text = zh
       if (y < 0) y = t;
       const d = t - y;
       if (Math.abs(d) < 1.5) { y = t; rider.style.translate = `0 ${y}px`; settle(); return; }
-      clearTimeout(idle);
-      clearTimeout(rest);
+      clearTimeout(idle); clearTimeout(rest);
       root.classList.add('moving');
-      y += d * 0.12;
+      y += d * 0.12; // the candle moves at once; the cat climbs after it
       rider.style.translate = `0 ${y.toFixed(1)}px`;
       root.dataset.dir = d > 0 ? 'down' : 'up';
       pose(Math.abs(d) > 140 ? 'slide' : 'climb');
       raf = requestAnimationFrame(step);
     };
     const kick = () => {
+      place();
       if (!raf) raf = requestAnimationFrame(step);
       // scrolling stopped a moment ago: arrive and turn round even if frames were throttled
       clearTimeout(still);
       still = window.setTimeout(() => { cancelAnimationFrame(raf); raf = 0; y = target(); rider.style.translate = `0 ${y.toFixed(1)}px`; settle(); }, 700);
     };
-    // only on pages long enough to be worth climbing
-    const sizeUp = () => { root.hidden = range() < innerHeight * 0.6; kick(); };
+    // any scrollable page gets the candle; the cat only comes out on pages worth climbing
+    const sizeUp = () => { root.hidden = range() <= 0; root.classList.toggle('short', range() < innerHeight * 0.6); kick(); };
     addEventListener('scroll', kick, { passive: true });
     addEventListener('resize', sizeUp, { passive: true });
+    new ResizeObserver(sizeUp).observe(document.body);
     sizeUp();
-    // the page's own K 喵 is the same cat: when it is on screen, the climber steps away
+
+    // drag the candle (or the cat) to scroll; press the track to jump there
+    let grab: number | null = null, moved = false, startY = 0;
+    const scrollToThumb = (top: number) => {
+      const p = Math.min(1, Math.max(0, (top - TOP) / (trackH() - thumbH())));
+      scrollTo({ top: p * range(), behavior: 'instant' });
+    };
+    const down = (e: PointerEvent, onThumb: boolean) => {
+      if (e.button !== 0) return;
+      grab = onThumb ? e.clientY - thumbTop() : thumbH() / 2;
+      startY = e.clientY; moved = false;
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      root.classList.add('dragging');
+      if (!onThumb) { moved = true; scrollToThumb(e.clientY - grab); }
+    };
+    const move = (e: PointerEvent) => {
+      if (grab === null) return;
+      if (Math.abs(e.clientY - startY) > 4) moved = true;
+      if (moved) scrollToThumb(e.clientY - grab);
+    };
+    const up = () => { grab = null; root.classList.remove('dragging'); };
+    rail.addEventListener('pointerdown', (e) => down(e, e.target === thumb));
+    btn.addEventListener('pointerdown', (e) => down(e, true));
+    for (const el of [rail, btn]) { el.addEventListener('pointermove', move); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up); }
+
+    // the page's own K 喵 is the same cat: when it is on screen, the climber steps away (the candle stays)
     const homes = document.querySelectorAll('.labcat');
     if (homes.length) {
       const near = new Set<Element>();
@@ -115,7 +149,8 @@ const text = zh
       });
       homes.forEach((h) => io.observe(h));
     }
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      if (moved) { e.preventDefault(); moved = false; return; } // that was a drag, not a click
       meow();
       const goUp = progress() > 0.25;
       bubble.textContent = goUp ? btn.dataset.top ?? '' : lines[said++ % lines.length];
@@ -128,34 +163,46 @@ const text = zh
 </script>
 
 <style>
+  /* only where the cat runs: the native scrollbar steps aside for the candle */
+  :global(html.cat-scroll) { scrollbar-width: none; }
+  :global(html.cat-scroll::-webkit-scrollbar) { display: none; }
+
   .scrollcat {
     --fur: #3a4252; --fur-hi: #57627a;
     position: fixed; top: 0; right: 0; bottom: 0; width: 64px; z-index: 30; pointer-events: none;
-    transition: opacity var(--dur-slow) var(--ease-out), translate var(--dur-slow) var(--ease-out);
   }
   :global(:root[data-theme='dark']) .scrollcat { --fur: #5d667a; --fur-hi: #7d88a0; }
   @media (prefers-color-scheme: dark) { :global(:root:not([data-theme='light'])) .scrollcat { --fur: #5d667a; --fur-hi: #7d88a0; } }
-  .scrollcat.away { opacity: 0; translate: 24px 0; }
-  /* the wick only shows while the cat is on the move, so it never reads as a second scrollbar */
-  .wick { opacity: 0; transition: opacity var(--dur-slow) var(--ease-out); }
-  .moving .wick { opacity: 1; }
-  .scrollcat.away .cat { pointer-events: none; }
-  /* the wick: a faint clay line the whole height of the window */
-  .wick { position: absolute; top: 72px; bottom: 12px; right: 31px; width: 2px; border-radius: 1px; background: color-mix(in oklab, var(--ink) 9%, transparent); }
-  .rider { position: absolute; top: 0; right: 0; width: 64px; will-change: translate; }
-  .cat { display: block; width: 64px; height: 84px; padding: 0; border: 0; background: none; cursor: pointer; pointer-events: auto; border-radius: var(--r-md); }
+
+  /* rail = the scrollbar's hit area; wick = track; thumb = the candle body */
+  .rail { position: absolute; top: 0; bottom: 0; right: 22px; width: 20px; pointer-events: auto; cursor: pointer; }
+  .wick { position: absolute; top: 72px; bottom: 10px; left: 9px; width: 2px; border-radius: 1px; background: color-mix(in oklab, var(--ink) 14%, transparent); }
+  .thumb {
+    position: absolute; top: 0; left: 3px; width: 14px; border-radius: 7px; cursor: grab;
+    background: var(--clay-blue);
+    box-shadow: inset -3px -4px 5px rgb(0 0 0 / 0.18), inset 3px 3px 5px rgb(255 255 255 / 0.35), 2px 4px 8px var(--lo);
+    transition: scale var(--dur-fast) var(--ease-out), filter var(--dur-fast) var(--ease-out);
+  }
+  .rail:hover .thumb { scale: 1.2 1; filter: brightness(1.06); }
+  .dragging .thumb { cursor: grabbing; filter: brightness(1.1); }
+  :global(html:has(.scrollcat.dragging)) { user-select: none; }
+
+  .rider { position: absolute; top: 0; right: 0; width: 64px; will-change: translate; transition: opacity var(--dur-slow) var(--ease-out); }
+  /* the page's own K 喵 is on screen, or the page is short: the climber leaves, the candle stays */
+  .away .rider, .short .rider { opacity: 0; }
+  .away .cat, .short .cat { pointer-events: none; }
+  .cat { display: block; width: 64px; height: 84px; padding: 0; border: 0; background: none; cursor: grab; pointer-events: auto; border-radius: var(--r-md); touch-action: none; }
   .cat svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(2px 4px 5px var(--lo)); }
   @media (max-width: 1279px) {
-    /* the window gutter is narrow here: a smaller cat that hugs the edge */
+    /* the window gutter is narrow here: a smaller cat; the candle sits right at the edge */
     .scrollcat { width: 44px; }
     .rider, .cat { width: 44px; } .cat { height: 58px; }
-    /* half tucked behind the window edge, so it peeks in instead of sitting on the text column */
     .cat svg { translate: 12px 0; }
-    .wick { right: 9px; }
-    /* the gutter is too narrow to park in: the cat shows while you scroll, then steps out of the way */
-    .rider { transition: opacity var(--dur-slow) var(--ease-out); }
-    .scrollcat:not(.moving):not(.talking) .rider { opacity: 0; }
-    .scrollcat:not(.moving):not(.talking) .cat { pointer-events: none; }
+    .rail { right: 0; }
+    .wick { left: 12px; } .thumb { left: 7px; width: 12px; }
+    /* no room to park on the text column: the cat shows while you scroll, then tucks away; the candle stays */
+    .scrollcat:not(.moving):not(.talking):not(.dragging) .rider { opacity: 0; }
+    .scrollcat:not(.moving):not(.talking):not(.dragging) .cat { pointer-events: none; }
   }
 
   /* --- poses --- */
