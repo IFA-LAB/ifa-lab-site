@@ -61,7 +61,7 @@ const jsonld = [{
       <p class="eyebrow"><i class="stud" aria-hidden="true"></i>{kindLabel} · {d.year}{d.status === 'forthcoming' && (zh ? ' · 即將刊登' : ' · forthcoming')}</p>
       <h1 lang="en">{d.title}</h1>
       <p class="authors" lang="en">{d.authors.map((a, i) => (
-        <>{i > 0 && ', '}{byName.has(a) ? <a href={href(lang, `members/${byName.get(a)}`)}><strong>{a}</strong></a> : a === 'Hsin-Yu Chiu' ? <a href={href(lang, 'advisor')}><strong>{a}</strong></a> : a}{d.corresponding.includes(i) && '*'}</>
+        <>{i > 0 && ', '}<span class="nw">{byName.has(a) ? <a href={href(lang, `members/${byName.get(a)}`)}><strong>{a}</strong></a> : a === 'Hsin-Yu Chiu' ? <a href={href(lang, 'advisor')}><strong>{a}</strong></a> : a}{d.corresponding.includes(i) && '*'}</span></>
       ))}</p>
       {d.venue && <p class="muted venue" lang="en"><em>{d.venue}</em>{d.volume && `, ${d.volume}`}{d.pages && `, ${d.pages}`}</p>}
     </header>
@@ -157,6 +157,8 @@ const jsonld = [{
   .brick.here span { -webkit-line-clamp: unset; display: block; }
   .brick span { font-size: 14px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   .brick.here { background: var(--c); grid-template-columns: auto minmax(0, 1fr) auto; }
+  /* phones: the 這篇 tag sits under the year, so the title keeps the full width */
+  @media (max-width: 767px) { .brick.here { grid-template-columns: auto minmax(0, 1fr); } .brick.here em { grid-column: 1; justify-self: start; } }
   .brick.here em { font: 600 12px/1 var(--f-body); font-style: normal; padding: 4px 8px; border-radius: var(--r-full); background: rgb(255 255 255 / 0.7); }
   @media (hover: hover) and (pointer: fine) { a.brick:hover { transform: translateX(4px); } }
   a.brick:active { transform: scale(0.98, 0.95); }

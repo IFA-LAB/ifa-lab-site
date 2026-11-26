@@ -376,7 +376,7 @@ const jsonld = journals.map((p) => ({
   .jump b { font: 600 13px/1 var(--f-mono); padding: 4px 7px; border-radius: var(--r-full); background: var(--surface-2); color: var(--ink); }
   /* short links (DOI, 簡報) get a 24px+ hit area without changing the line */
   .meta a { display: inline-block; padding-block: 3px; margin-block: -3px; min-width: 24px; text-align: center; }
-  .pub :global(p:last-child) { overflow-wrap: anywhere; }
+  .pub :global(p:last-child) { overflow-wrap: anywhere; max-width: 42em; } /* about 40 characters a line, so the eye finds the next line */
   .grants { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
   .grants li { padding: var(--space-5); display: grid; gap: var(--space-2); align-content: start; }
   @media (max-width: 767px) { .grants { grid-template-columns: 1fr; } }

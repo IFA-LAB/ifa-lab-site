@@ -46,8 +46,10 @@ function Label({ text, x, dark, on, fill }: { text: string; x: number; dark: boo
     const cjk = /[㐀-鿿]/.test(text);
     const sp = text.lastIndexOf(' ', Math.ceil(text.length / 2) + 1);
     // short Latin names ("Apps & Viz") shrink onto one line instead of breaking
-    const lines = w <= 480 || (!cjk && text.length <= 12) || (cjk && text.length <= 8) ? [text]
-      : cjk ? [text.slice(0, Math.ceil(text.length / 2)).trim(), text.slice(Math.ceil(text.length / 2)).trim()]
+    // CJK that does not fit goes to two lines at near-full size (after 與 when there is one), never a shrunken single line
+    const cut = text.indexOf('與') > 0 ? text.indexOf('與') + 1 : Math.ceil(text.length / 2);
+    const lines = w <= 480 || (!cjk && text.length <= 12) ? [text]
+      : cjk ? [text.slice(0, cut).trim(), text.slice(cut).trim()]
       : sp > 0 ? [text.slice(0, sp).trim(), text.slice(sp).trim()]
       : [text];
     if (lines.length === 1) {
