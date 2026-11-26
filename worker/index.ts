@@ -64,7 +64,9 @@ function search(ix: Index, q: string, lang: string, k = 5): Passage[] {
     const p = ix.ps[i];
     if (p.lang !== lang || seen.has(p.url + p.section)) continue;
     seen.add(p.url + p.section);
-    out.push(p);
+    // a long section is stored in pieces; hand over the whole section, not only the piece that matched
+    const whole = ix.ps.filter((o) => o.url === p.url && o.section === p.section).map((o) => o.text).join('\n');
+    out.push({ ...p, text: whole.slice(0, 1400) });
     if (out.length >= k) break;
   }
   return out;

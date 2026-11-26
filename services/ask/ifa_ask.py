@@ -97,7 +97,7 @@ class H(BaseHTTPRequestHandler):
             data = json.loads(self.rfile.read(n) or b"{}")
             q = str(data.get("q", "")).strip()[:MAX_Q]
             lang = "en" if data.get("lang") == "en" else "zh-tw"
-            hits = [{k: str(p.get(k, ""))[:900] for k in ("title", "section", "text")}
+            hits = [{k: str(p.get(k, ""))[:1400] for k in ("title", "section", "text")}
                     for p in (data.get("passages") or [])[:6] if isinstance(p, dict)]
         except Exception:
             return self.send(400, {"error": "bad request"})
