@@ -33,8 +33,7 @@ export const ui = {
   menu: { zh: '選單', en: 'Menu' },
   cohort: (n: number): Bi => {
     const zh = ['一', '二', '三', '四', '五', '六'][n - 1] ?? String(n);
-    const en = ['1st', '2nd', '3rd', '4th', '5th', '6th'][n - 1] ?? `${n}th`;
-    return { zh: `第${zh}屆研究生`, en: `${en} grad cohort` };
+    return { zh: `第${zh}屆研究生`, en: `Cohort ${n}` };
   },
   graduated: { zh: '已畢業', en: 'Alumni' },
   founder: { zh: '創始成員', en: 'Co-founder' },

@@ -3,7 +3,7 @@ import LabCat from '@/components/LabCat.astro';
 import Base from '@/layouts/Base.astro';
 import Bi from '@/components/Bi.astro';
 import { getCollection } from 'astro:content';
-import { areas, studentProjects } from '@/data/lab';
+import { advisor, areas, studentProjects } from '@/data/lab';
 import { Picture } from 'astro:assets';
 import chadAi from '@/assets/projects/chad-ai.jpg';
 const projectPhotos: Record<string, ImageMetadata> = { 'chad-ai': chadAi };
@@ -67,7 +67,7 @@ const jsonld = journals.map((p) => ({
     <div class="section-head">
       <p class="eyebrow">{t(ui.nav.research, lang)}</p>
       <h1>{zh ? '研究成果' : 'Research'}</h1>
-      <p class="muted">{zh ? '依六個研究領域上色。粗體作者是實驗室成員，* 為通訊作者。' : 'Coloured by research area. Lab members are in bold; * marks the corresponding author.'}</p>
+      <p class="muted">{zh ? '依六個研究領域上色。粗體作者是實驗室成員，* 為通訊作者。' : 'Colored by research area. Lab members are in bold; * marks the corresponding author.'}</p>
     </div>
 
     <figure class="wall clay" aria-label={zh ? `成果牆：${wall.map((c) => `${c.year} 年 ${c.bricks.length} 件`).join('、')}` : `Output wall: ${wall.map((c) => `${c.year}: ${c.bricks.length}`).join(', ')}`}>
@@ -75,7 +75,7 @@ const jsonld = journals.map((p) => ({
         {wall.map((c) => (
           <div class:list={['col', { empty: !c.bricks.length, run: !!c.to }]}>
             {c.bricks.length === wallMax && wall.findIndex((x) => x.bricks.length === wallMax) === wall.indexOf(c) && (
-              <span class="perch"><LabCat lang={lang} size={58} bubble="left" lines={[{ zh: '這一年疊了最多塊，我坐在最上面看風景。', en: 'This year has the most blocks. Nice view up here.' }, { zh: '空心的是還在寫的工作論文，我不敢踩。', en: 'Hollow ones are working papers, still drying. I do not step on them.' }, { zh: '點下面的顏色，可以只看一個領域。', en: 'Tap a colour below to see just one area.' }]} /></span>
+              <span class="perch"><LabCat lang={lang} size={58} bubble="left" lines={[{ zh: '這一年疊了最多塊，我坐在最上面看風景。', en: 'This year has the most blocks. Nice view up here.' }, { zh: '空心的是還在寫的工作論文，我不敢踩。', en: 'Hollow ones are working papers, still drying. I do not step on them.' }, { zh: '點下面的顏色，可以只看一個領域。', en: 'Tap a color below to see just one area.' }]} /></span>
             )}
             <span class="num" aria-hidden="true">{c.bricks.length || ''}</span>
             {/* each brick jumps to its entry in the list below (pointer only; the list itself is the accessible version) */}
@@ -84,7 +84,7 @@ const jsonld = journals.map((p) => ({
           </div>
         ))}
       </div>
-      <figcaption class="muted">{zh ? '每一塊積木是一篇論文或碩士論文，依完成年份往上疊；顏色是研究領域，空心的是工作論文。' : 'One brick per paper or thesis, stacked by year; colour is the research area, hollow bricks are working papers.'}</figcaption>
+      <figcaption class="muted">{zh ? '每一塊積木是一篇論文或碩士論文，依完成年份往上疊；顏色是研究領域，空心的是工作論文。' : 'One brick per paper or thesis, stacked by year; color is the research area, hollow bricks are working papers.'}</figcaption>
     </figure>
 
     <div class="filter" role="group" aria-label={zh ? '依研究領域篩選' : 'Filter by research area'}>
@@ -175,7 +175,7 @@ const jsonld = journals.map((p) => ({
           <li class="clay">
             <p class="mono muted">{g.data.period}{ongoing(g.data.period) && <span class="live">{zh ? '進行中' : 'Ongoing'}</span>}</p>
             <Bi text={g.data.title} lang={lang} />
-            <p class="muted meta">{t(g.data.kind, lang)}&nbsp;· {t(ui.pubs.pi, lang)} {(() => { const m = members.find((x) => x.data.name.en === g.data.pi); return m ? <a href={href(lang, `members/${m.id}`)}>{t(m.data.name, lang)}</a> : g.data.pi; })()}</p>
+            <p class="muted meta">{t(g.data.kind, lang)}&nbsp;· {t(ui.pubs.pi, lang)} {(() => { const m = members.find((x) => x.data.name.en === g.data.pi); if (g.data.pi === advisor.name.en) return <a href={href(lang, 'advisor')}>{t(advisor.name, lang)}</a>; return m ? <a href={href(lang, `members/${m.id}`)}>{t(m.data.name, lang)}</a> : g.data.pi; })()}</p>
           </li>
         ))}
       </ul>
@@ -314,7 +314,7 @@ const jsonld = journals.map((p) => ({
   .pile a:nth-child(even) { margin-inline: 6px -6px; }
   .pile a { transition: opacity var(--dur-base) var(--ease-out), filter var(--dur-base) var(--ease-out), translate var(--dur-fast) var(--ease-out); }
   .pile a.off { opacity: 0.16; filter: saturate(0.2); }
-  /* hollow = a solid outline in the area colour around the page colour: reads in both themes (a dashed edge vanished on dark) */
+  /* hollow = a solid outline in the area color around the page color: reads in both themes (a dashed edge vanished on dark) */
   .pile a.working { background: color-mix(in oklab, var(--c) 14%, var(--bg)); box-shadow: inset 0 0 0 2.5px var(--c), 0 3px 5px var(--lo); }
   .num { font: 600 28px/1 var(--f-display); }
   .yr { font: 600 14px/1 var(--f-mono); color: var(--ink-2); padding-top: var(--space-2); border-top: 2px solid var(--line); width: 100%; text-align: center; }

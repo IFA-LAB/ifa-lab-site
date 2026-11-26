@@ -22,7 +22,7 @@ export async function labEvents(lang: Locale): Promise<Event[]> {
   // 1. Hand-written milestones: things no data file records.
   const milestones: Event[] = [
     { date: '2023-02', kind: 'milestone', text: { zh: '邱信瑜老師到中央大學資訊管理學系任教。', en: 'Prof. Hsin-Yu Chiu joins NCU Information Management.' } },
-    { date: '2023-08', kind: 'milestone', text: { zh: 'IFA Lab 在志希館 712 室成立。', en: 'IFA Lab is founded in Room 712, Zhixi Building.' }, who: founders.map((m) => m.id) },
+    { date: '2023-08', kind: 'milestone', text: { zh: 'IFA Lab 在志希館 712 室成立。', en: 'IFA Lab was founded in Room 712, Zhixi Building.' }, who: founders.map((m) => m.id) },
     { date: '2024-10', kind: 'award', text: { zh: 'Ched.AI（財報分析與徵信風險評估）獲國科會 GenAI Stars 創意創客組優選。', en: 'Ched.AI (financial-statement analysis and credit-risk assessment) wins a Merit Award at NSTC GenAI Stars.' }, who: ['yun-cheng-chiang', 'dao-en-liu', 'chia-en-tsai', 'ju-shen-huang'], link: href(lang, 'research#s-h'), photo: 'ched' },
   ];
 
@@ -33,7 +33,7 @@ export async function labEvents(lang: Locale): Promise<Event[]> {
     .map(({ g, date }) => ({
       date,
       kind: 'grant' as const,
-      text: { zh: `${t(g.data.kind, 'zh-tw')}開始：${t(g.data.title, 'zh-tw')}`, en: `${t(g.data.kind, 'en')} begins: ${t(g.data.title, 'en')}` },
+      text: { zh: `${t(g.data.kind, 'zh-tw')}開始：${t(g.data.title, 'zh-tw')}`, en: `${t(g.data.kind, 'en')} started: ${t(g.data.title, 'en')}` },
       who: members.filter((m) => m.data.name.en === g.data.pi).map((m) => m.id),
     }));
 
@@ -47,7 +47,7 @@ export async function labEvents(lang: Locale): Promise<Event[]> {
         clay: clayOf(p.data.area),
         text: future
           ? { zh: `獲 ${p.data.venue} 接受，預計 ${p.data.year} 年刊登：〈${p.data.title}〉`, en: `Accepted by ${p.data.venue}, to appear in ${p.data.year}: “${p.data.title}”` }
-          : { zh: `〈${p.data.title}〉刊登於 ${p.data.venue}。`, en: `“${p.data.title}” published in ${p.data.venue}.` },
+          : { zh: `〈${p.data.title}〉刊登於 ${p.data.venue}。`, en: `Published in ${p.data.venue}: “${p.data.title}”` },
         link: href(lang, `papers/${p.id}`),
         who: members.filter((m) => m.data.name.en && p.data.authors.includes(m.data.name.en)).map((m) => m.id),
       };
@@ -57,7 +57,7 @@ export async function labEvents(lang: Locale): Promise<Event[]> {
     date: `${x.data.academicYear + 1912}-07`,
     kind: 'thesis' as const,
     clay: clayOf(x.data.area),
-    text: { zh: `完成碩士論文〈${x.data.title.zh}〉。`, en: `Completes the master’s thesis “${x.data.title.en ?? x.data.title.zh}”.` },
+    text: { zh: `完成碩士論文〈${x.data.title.zh}〉。`, en: `Completed a master’s thesis: “${x.data.title.en ?? x.data.title.zh}”` },
     who: [x.data.member],
   }));
 

@@ -57,7 +57,7 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
       <p class="muted">{zh ? '創始成員：' : 'Founding members: '}{founders.map((m, i) => <>{i > 0 && (zh ? '、' : ', ')}<a class="nw" href={href(lang, `members/${m.id}`)}>{t(m.data.name, lang)}</a></>)}{zh ? <>，指導教授<span class="nw">邱信瑜</span>。</> : <>, with advisor <span class="nw">Hsin-Yu Chiu</span>.</>}</p>
     </div>
 
-    <p class="eyebrow scope">{zh ? '2023 年起累計（論文只算成立後刊出的）' : 'Since 2023 (papers: published after founding)'}</p>
+    <p class="eyebrow scope">{zh ? '2023 年起累計（論文只算成立後刊出的）' : 'Since 2023 · papers counted from the founding'}</p>
     <ul class="totals" aria-label={zh ? '成立以來累計' : 'Since founding'}>
       {shown.map((k) => <li data-k={k.key}><b>{total(k.key)}</b><span>{unit(k, total(k.key))}</span></li>)}
     </ul>
@@ -69,7 +69,7 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
       ))}
     </div>
     <p class="status" aria-live="polite" data-status></p>
-    <p class="muted key">{zh ? '形狀代表類型；論文與碩士論文的顏色是研究領域。' : 'Shape shows the kind; papers and theses are coloured by research area.'}</p>
+    <p class="muted key">{zh ? '形狀代表類型；論文與碩士論文的顏色是研究領域。' : 'Shape shows the kind; papers and theses are colored by research area.'}</p>
 
     <ol class="tower">
       {byYear.map(({ year, items }) => (
@@ -172,7 +172,7 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
     .totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .totals li { flex-direction: column; align-items: flex-start; gap: var(--space-1); padding: var(--space-3) var(--space-4); }
   }
-  /* Colour on this site means research area: papers and theses wear their area's clay (set inline).
+  /* Color on this site means research area: papers and theses wear their area's clay (set inline).
      Other kinds differ by shape: grant = flat slab, award = gold medal (round), milestone = slate diamond. */
   .wrap { --c: color-mix(in oklab, var(--ink) 58%, var(--surface)); }
   i[data-k='award'] { --c: var(--clay-sun); }

@@ -116,7 +116,7 @@ const description = zh
   <section class="wrap section" aria-labelledby="areas-h">
     <div class="section-head">
       <p class="eyebrow">{zh ? '研究領域' : 'Research areas'}</p>
-      <h2 id="areas-h">{zh ? 'IFA Lab 在研究什麼？' : 'What does IFA Lab research?'}</h2>
+      <h2 id="areas-h">{zh ? 'IFA Lab 在研究什麼？' : 'What does IFA Lab research?'}</h2>
       <p class="muted">{zh
         ? '六個領域，每一塊積木都是一篇論文或碩士論文。'
         : 'Six areas. Every block is a paper or a master’s thesis.'}</p>
@@ -287,7 +287,9 @@ const description = zh
   /* under the plank, out of flow: every plank stays level with its neighbour */
   .row .also { position: absolute; top: calc(100% + var(--space-2)); left: 0; margin: 0; font-size: 14px; }
   /* top-aligned: a name that wraps to two lines hangs below instead of lifting its figure */
-  .row ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); align-items: start; }
+  /* a two-figure row sits centred like a three-figure one; each figure keeps a third of the plank */
+  .row ul { list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; gap: var(--space-3); align-items: start; }
+  .row li { flex: 0 1 calc((100% - 2 * var(--space-3)) / 3); min-width: 0; display: grid; justify-items: center; text-align: center; text-wrap: balance; }
 
   .row-head { display: flex; justify-content: space-between; align-items: end; gap: var(--space-5); max-width: none; }
   .more { font-weight: 600; text-decoration: none; white-space: nowrap; }

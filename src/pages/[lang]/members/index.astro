@@ -40,7 +40,7 @@ const jsonld = people.map((m) => ({
         <p class="muted">{zh ? '2023 年 8 月成立至今，一屆一層，第一屆在最下面。指一下櫃子裡的公仔看是誰，再點一下進個人頁；下面是每個人的卡片。' : 'Since August 2023, one shelf per cohort, the first at the bottom. Point at or tap a figure in the cabinet to see who it is, then click to open their page; cards for everyone follow below.'}</p>
       </div>
       <div class="cabinet has-cat" data-shelf>
-        <span class="cat-perch" style="right: 28px; top: -52px;"><LabCat lang={lang} bubble="left" lines={[{ zh: '每個公仔都是成員自己挑顏色和配件的。', en: 'Each member picks their own figure colour and prop.' }, { zh: '耳機、吉他、眼鏡……配件會透露他們的興趣。', en: 'Headphones, a guitar, glasses: the props give away their hobbies.' }, { zh: '我住在櫃子頂上，最高的那一層歸我。', en: 'I live on top of the cabinet. The top shelf is mine.' }]} /></span>
+        <span class="cat-perch" style="right: 28px; top: -52px;"><LabCat lang={lang} bubble="left" lines={[{ zh: '每個公仔都是成員自己挑顏色和配件的。', en: 'Each member picks their own figure color and prop.' }, { zh: '耳機、吉他、眼鏡……配件會透露他們的興趣。', en: 'Headphones, a guitar, glasses: the props give away their hobbies.' }, { zh: '我住在櫃子頂上，最高的那一層歸我。', en: 'I live on top of the cabinet. The top shelf is mine.' }]} /></span>
         {/* CSS cabinet: what shows before the 3D one draws, and on devices without WebGL */}
         <div class="stage" aria-hidden="true">
           {rows.map((r) => (
@@ -71,7 +71,7 @@ const jsonld = people.map((m) => ({
                 <span class="txt">
                   <strong>{t(m.data.name, lang)}</strong>
                   {m.data.name.en && zh && <span class="en">{m.data.name.en}</span>}
-                  <span class="muted">{m.data.placeholder ? t(ui.placeholderNote, lang) : t(m.data.headline, lang)}</span>
+                  <span class="muted">{m.data.placeholder ? t(ui.placeholderNote, lang) : (t(m.data.headline, lang) ?? '').split('・').map((part, i, all) => <><span class:list={[{ nw: all.length > 1 }]}>{part}{i < all.length - 1 && '・'}</span><wbr /></>)}</span>
                   <span class="badges">
                     {m.data.founder && <span class="chip">{t(ui.founder, lang)}</span>}
                     {m.data.status === 'graduated' && <span class="chip">{t(ui.graduated, lang)}</span>}
@@ -95,7 +95,7 @@ const jsonld = people.map((m) => ({
   /* heading sits at the same height as on every other page; the cabinet extends below it */
   .intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); gap: var(--space-7); align-items: center; } /* the heading sits level with the middle of the cabinet, not stranded above empty space */
   @media (max-width: 899px) { .intro { grid-template-columns: 1fr; gap: var(--space-6); } .cabinet { justify-self: center; width: min(100%, 460px); aspect-ratio: 1 / 1.12; } }
-  .cabinet { position: relative; aspect-ratio: 1 / 1.02; margin-block: var(--space-7) var(--space-6); }
+  .cabinet { position: relative; aspect-ratio: 1 / 1.02; margin-block: var(--space-7) calc(var(--space-6) + 24px); }
   .stage { position: absolute; inset: 4% 8% 8%; display: flex; flex-direction: column-reverse; padding: var(--space-3); border-radius: var(--r-lg); background: var(--surface-2); box-shadow: inset 0 0 0 12px var(--surface), 8px 12px 24px var(--lo); }
   .cabinet[data-live] .stage { opacity: 0; transition: opacity var(--dur-base) var(--ease-out); }
   .plank-row { flex: 1; display: grid; grid-template-rows: 1fr auto; padding-inline: var(--space-3); }
@@ -104,7 +104,7 @@ const jsonld = people.map((m) => ({
   .cabinet :global(.shelf-canvas) { position: absolute; inset: 0; }
   .cabinet :global(.shelf-canvas canvas) { touch-action: pan-y; }
   .cabinet :global(.shelf-hint) {
-    position: absolute; left: 50%; bottom: -30px; transform: translateX(-50%); white-space: nowrap; max-width: calc(100vw - 32px); overflow: hidden; text-overflow: ellipsis;
+    position: absolute; left: 50%; top: calc(100% + var(--space-2)); transform: translateX(-50%); white-space: nowrap; max-width: calc(100vw - 32px); overflow: hidden; text-overflow: ellipsis;
     font: 500 14px/1.4 var(--f-body); color: var(--ink-2);
     background: var(--surface); padding: 8px 16px; border-radius: var(--r-full); box-shadow: 4px 6px 14px var(--lo);
   }

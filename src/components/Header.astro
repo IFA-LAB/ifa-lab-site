@@ -141,6 +141,8 @@ const other = otherLocale(lang);
     .word { font-size: 17px; }
     .tools { gap: 4px; }
     .tool, .menu summary { padding: 0 8px; }
+    /* 320px: the blocks alone carry the brand (the link keeps its "IFA Lab" label), so nothing touches the edge */
+    .word { display: none; }
   }
   @media (max-width: 1023px) {
     .desk { display: none; }

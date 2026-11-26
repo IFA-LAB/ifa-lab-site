@@ -24,7 +24,7 @@ const GLOW = new Color('#4f7fc4');
 function PlankLabel({ text, y }: { text: string; y: number }) {
   // phones: a shorter, larger plate ("第四屆"), hung a little lower so it stays under the figures' feet
   const narrow = useThree((s) => s.size.width) < 520;
-  const { t, aspect } = useTextTexture(narrow ? text.replace('研究生', '').replace(' grad cohort', ' cohort') : text, 88, false);
+  const { t, aspect } = useTextTexture(narrow ? text.replace('研究生', '') : text, 88, false);
   const h = narrow ? 0.8 : 0.54, w = h * aspect;
   return (
     <group position={[-W / 2 + 0.3 + (w + 0.34) / 2, y - (narrow ? 0.42 : 0.23), DEPTH / 2 + 0.03]}>
@@ -54,21 +54,21 @@ function Plank({ y, lit }: { y: number; lit: boolean }) {
   );
 }
 
-function Figure({ m, x, y, hot, reduce, onHover, onPick, phase }: {
-  m: ShelfMember; x: number; y: number; hot: boolean; reduce: boolean; phase: number;
+function Figure({ m, x, y, hot, dim, reduce, onHover, onPick, phase }: {
+  m: ShelfMember; x: number; y: number; hot: boolean; dim: boolean; reduce: boolean; phase: number;
   onHover: (m: ShelfMember | null) => void; onPick: (m: ShelfMember) => void;
 }) {
   const g = useRef<Group>(null);
   const body = CLAY[m.clay] ?? CLAY.grey;
   useFrame(({ clock, pointer }) => {
     const o = g.current; if (!o) return;
-    if (reduce) { o.position.y = y; o.scale.setScalar(SCALE * (hot ? 1.08 : 1)); return; }
+    if (reduce) { o.position.y = y; o.scale.setScalar(SCALE * (hot ? 1.08 : dim ? 0.9 : 1)); return; }
     const t = clock.getElapsedTime() + phase;
     // picked: grows a little and bobs (kept low so the name tag above never covers the head); otherwise breathes and turns a little toward the pointer
     const lift = hot ? Math.abs(Math.sin(t * 6)) * 0.06 : 0;
     o.position.y += (y + lift - o.position.y) * (hot ? 0.5 : 0.15);
     const sy = 1 + Math.sin(t * 2) * 0.015;
-    const k = (o.userData.k ?? 1) + ((hot ? 1.08 : 1) - (o.userData.k ?? 1)) * 0.2; o.userData.k = k;
+    const k = (o.userData.k ?? 1) + ((hot ? 1.08 : dim ? 0.9 : 1) - (o.userData.k ?? 1)) * 0.2; o.userData.k = k;
     o.scale.set((SCALE * k) / Math.sqrt(sy), SCALE * k * sy, (SCALE * k) / Math.sqrt(sy));
     const ty = hot ? Math.sin(t * 3) * 0.25 : pointer.x * 0.5 - x * 0.06;
     o.rotation.y += (ty - o.rotation.y) * 0.08;
@@ -176,7 +176,7 @@ export default function ShelfScene({ rows, visible, reduce, active, onHover, onP
               const x = (j - (r.members.length - 1) / 2) * SPACING, hot = active?.id === m.id;
               return (
                 <group key={m.id}>
-                  <Figure m={m} x={x} y={y} phase={i * 1.3 + j * 0.7} hot={hot} reduce={reduce} onHover={onHover} onPick={onPick} />
+                  <Figure m={m} x={x} y={y} phase={i * 1.3 + j * 0.7} hot={hot} dim={!!active && !hot} reduce={reduce} onHover={onHover} onPick={onPick} />
                   {/* picked: a soft pool of accent light on the plank, and the name over the head */}
                   {hot && <mesh position={[x, y + 0.012, 0.15]} rotation={[-Math.PI / 2, 0, 0]}><circleGeometry args={[0.95, 40]} /><meshBasicMaterial color={GLOW} transparent opacity={0.28} depthWrite={false} /></mesh>}
                   {hot && <TagSprite text={m.name} position={[x, y + 1.88, 0.9]} height={0.56} />}
