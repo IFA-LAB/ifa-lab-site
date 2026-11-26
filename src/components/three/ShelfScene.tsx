@@ -9,7 +9,7 @@ import { Accessory, BODY_Y, Face, MatchaLatte, R, type Accessory as AccessoryKin
 export type ShelfMember = { id: string; name: string; sub: string; clay: string; accessory: AccessoryKind; model?: Model; href: string };
 export type ShelfRow = { label: string; members: ShelfMember[] };
 
-const GAP = 2.5; // shelf height
+const GAP = 2.8; // shelf height: room for the picked name tag under the next plank's name plate
 const W = 7.6; // inner width
 const DEPTH = 1.9;
 const SPACING = 2.2;
@@ -60,13 +60,13 @@ function Figure({ m, x, y, hot, reduce, onHover, onPick, phase }: {
   const body = CLAY[m.clay] ?? CLAY.grey;
   useFrame(({ clock, pointer }) => {
     const o = g.current; if (!o) return;
-    if (reduce) { o.position.y = y; o.scale.setScalar(SCALE * (hot ? 1.14 : 1)); return; }
+    if (reduce) { o.position.y = y; o.scale.setScalar(SCALE * (hot ? 1.08 : 1)); return; }
     const t = clock.getElapsedTime() + phase;
-    // picked: hops in place; otherwise breathes and turns a little toward the pointer
-    const lift = hot ? Math.abs(Math.sin(t * 6)) * 0.32 : 0;
+    // picked: grows a little and bobs (kept low so the name tag above never covers the head); otherwise breathes and turns a little toward the pointer
+    const lift = hot ? Math.abs(Math.sin(t * 6)) * 0.06 : 0;
     o.position.y += (y + lift - o.position.y) * (hot ? 0.5 : 0.15);
     const sy = 1 + Math.sin(t * 2) * 0.015;
-    const k = (o.userData.k ?? 1) + ((hot ? 1.14 : 1) - (o.userData.k ?? 1)) * 0.2; o.userData.k = k;
+    const k = (o.userData.k ?? 1) + ((hot ? 1.08 : 1) - (o.userData.k ?? 1)) * 0.2; o.userData.k = k;
     o.scale.set((SCALE * k) / Math.sqrt(sy), SCALE * k * sy, (SCALE * k) / Math.sqrt(sy));
     const ty = hot ? Math.sin(t * 3) * 0.25 : pointer.x * 0.5 - x * 0.06;
     o.rotation.y += (ty - o.rotation.y) * 0.08;
@@ -161,7 +161,7 @@ export default function ShelfScene({ rows, visible, reduce, active, onHover, onP
                   <Figure m={m} x={x} y={y} phase={i * 1.3 + j * 0.7} hot={hot} reduce={reduce} onHover={onHover} onPick={onPick} />
                   {/* picked: a soft pool of accent light on the plank, and the name over the head */}
                   {hot && <mesh position={[x, y + 0.012, 0.15]} rotation={[-Math.PI / 2, 0, 0]}><circleGeometry args={[0.95, 40]} /><meshBasicMaterial color={GLOW} transparent opacity={0.28} depthWrite={false} /></mesh>}
-                  {hot && <TagSprite text={m.name} position={[x, y + 1.95, 0.9]} />}
+                  {hot && <TagSprite text={m.name} position={[x, y + 1.88, 0.9]} height={0.56} />}
                 </group>
               );
             })}
