@@ -11,7 +11,8 @@ const items = [
   { key: 'collaboration', path: 'collaboration' },
   { key: 'history', path: 'history' },
 ] as const;
-const isCurrent = (p: string) => path.startsWith(href(lang, p));
+// a paper page lives under Research in the menu
+const isCurrent = (p: string) => path.startsWith(href(lang, p)) || (p === 'research' && path.startsWith(href(lang, 'papers')));
 const other = otherLocale(lang);
 ---
 <header class="site-header">

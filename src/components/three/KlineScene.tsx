@@ -175,7 +175,7 @@ function Cat({ reduce, targetX, dark, onPet }: { reduce: boolean; targetX: numbe
     const b = body.current;
     if (b) {
       const gx = targetX === null ? home.x : Math.min(4.0, Math.max(-3.6, targetX + 0.66));
-      const gz = targetX === null ? home.z : -1.35; // sits behind-right of the hovered candle, never over its nameplate
+      const gz = targetX === null ? home.z : 1.85; // sits at the front edge, beside the hovered candle's nameplate, where no candle can hide it
       const dx = gx - b.position.x, dz = gz - b.position.z;
       const d = Math.hypot(dx, dz);
       const k = d > 0 ? Math.min(d, dt * 3.4) / d : 0;

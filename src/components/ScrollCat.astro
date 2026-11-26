@@ -149,7 +149,9 @@ const text = zh
     /* the window gutter is narrow here: a smaller cat that hugs the edge */
     .scrollcat { width: 44px; }
     .rider, .cat { width: 44px; } .cat { height: 58px; }
-    .wick { right: 21px; }
+    /* half tucked behind the window edge, so it peeks in instead of sitting on the text column */
+    .cat svg { translate: 12px 0; }
+    .wick { right: 9px; }
     /* the gutter is too narrow to park in: the cat shows while you scroll, then steps out of the way */
     .rider { transition: opacity var(--dur-slow) var(--ease-out); }
     .scrollcat:not(.moving):not(.talking) .rider { opacity: 0; }

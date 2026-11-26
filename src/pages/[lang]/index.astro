@@ -1,5 +1,6 @@
 ---
 import LabCat from '@/components/LabCat.astro';
+import ClayFigure from '@/components/ClayFigure.astro';
 import Mate from '@/components/Mate.astro';
 import Base from '@/layouts/Base.astro';
 import ClayCandles from '@/components/ClayCandles.astro';
@@ -171,6 +172,10 @@ const description = zh
                 <Mate member={m} lang={lang} size={92} caption />
               </li>
             ))}
+            {/* members still setting up a profile: a sleeping figure keeps their seat, so the shelf adds up to the member count */}
+            {(() => { const n = ms.filter((m) => m.data.placeholder).length; return n > 0 && (
+              <li class="seat"><span class="ghost"><ClayFigure clay="grey" placeholder size={92} /></span><span class="muted">{zh ? `+${n} 準備中` : `+${n} coming`}</span></li>
+            ); })()}
           </ul>
         </div>
       ))}
@@ -280,6 +285,8 @@ const description = zh
   .row { position: relative; display: grid; gap: var(--space-3); padding-bottom: var(--space-4); }
   /* a clay plank: lit top edge, darker front, soft cast shadow */
   .row::after { content: ''; position: absolute; inset: auto -8px 0; height: 18px; border-radius: 9px; background: var(--surface); box-shadow: 0 10px 18px var(--lo), inset 0 3px 0 var(--hi), inset 0 -7px 0 var(--surface-2); }
+  .seat { display: inline-grid; justify-items: center; gap: var(--space-1); padding: var(--space-2); font-size: 15px; }
+  .seat .ghost { opacity: 0.7; }
   .row ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); align-items: end; }
 
   .row-head { display: flex; justify-content: space-between; align-items: end; gap: var(--space-5); max-width: none; }
@@ -301,7 +308,7 @@ const description = zh
   .join .crowd { display: grid; grid-template-columns: repeat(4, auto); gap: var(--space-2) var(--space-3); }
   /* 320px phones: figures shrink a little so three per shelf and four in the crowd still fit */
   @media (max-width: 400px) {
-    .row :global(.mate) { zoom: 0.78; }
+    .row :global(.mate), .row .seat { zoom: 0.78; }
     .join .crowd { gap: var(--space-1); }
     .join .crowd :global(.mate) { zoom: 0.85; }
   }
