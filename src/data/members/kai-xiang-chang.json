@@ -12,6 +12,10 @@
     "zh": "資管所碩士・114 學年度畢業",
     "en": "M.S. in Information Management, 2026"
   },
+  "now": {
+    "zh": "世界先進（研發替代役）",
+    "en": "Vanguard International Semiconductor (R&D alternative service)"
+  },
   "bio": {
     "zh": "中央資管碩士，研究資產定價與機器學習在投資決策、投資組合建構上的應用；碩士論文提出結合多因子架構與高維度序列分析的兩階段混合模型。曾在國網中心實習開發 Kubernetes 教學雲容器，也當過 CloudMile 校園大使、中央大學校務研究辦公室工讀生。",
     "en": "Master's graduate of NCU Information Management, researching asset pricing and machine learning for investment decisions and portfolio construction. His thesis proposes a two-stage hybrid model combining a multi-factor architecture with high-dimensional sequence analysis. He interned at the National Center for High-performance Computing building Kubernetes teaching containers, was a CloudMile campus ambassador, and worked at NCU's Office of Institutional Research."

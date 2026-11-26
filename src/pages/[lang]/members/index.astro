@@ -72,6 +72,7 @@ const jsonld = people.map((m) => ({
                   <strong data-vt="name">{t(m.data.name, lang)}</strong>
                   {m.data.name.en && zh && <span class="en">{m.data.name.en}</span>}
                   <span class="muted">{m.data.placeholder ? t(ui.placeholderNote, lang) : (t(m.data.headline, lang) ?? '').split('・').map((part, i, all) => <><span class:list={[{ nw: all.length > 1 }]}>{part}{i < all.length - 1 && '・'}</span><wbr /></>)}</span>
+                  {m.data.now && <span class="now">{zh ? '現在：' : 'Now: '}{t(m.data.now, lang)}</span>}
                   <span class="badges">
                     {m.data.founder && <span class="chip">{t(ui.founder, lang)}</span>}
                     {m.data.status === 'graduated' && <span class="chip">{t(ui.graduated, lang)}</span>}
@@ -91,6 +92,7 @@ const jsonld = people.map((m) => ({
 </Base>
 
 <style>
+  .now { font-size: 14px; color: var(--ink); }
   /* heading on the left, the cabinet on the right; stacked on phones */
   /* heading sits at the same height as on every other page; the cabinet extends below it */
   .intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); gap: var(--space-7); align-items: center; } /* the heading sits level with the middle of the cabinet, not stranded above empty space */

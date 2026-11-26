@@ -91,6 +91,7 @@ const links = [
         <h1 data-vt-dest="name">{name}</h1>
         {zh && enName && <p class="en" lang="en">{enName}</p>}
         {d.headline && !d.placeholder && <p class="muted">{t(d.headline, lang)}</p>}
+        {d.now && <p class="now">{zh ? '畢業後：' : 'After the lab: '}{t(d.now, lang)}</p>}
         {(links.length > 0 || d.links.schoolEmail) && (
           <ul class="links">
             {links.map((l) => <li><a class="chip" href={l.url} rel="me noopener" target="_blank">{l.label}</a></li>)}

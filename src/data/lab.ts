@@ -51,6 +51,18 @@ export const advisor = {
   office: { zh: '管理學院 學習確保與國際認證辦公室執行長', en: 'Executive Director, Office of Assurance of Learning and International Accreditation (AACSB), College of Management' } satisfies Bi,
   officeUrl: 'https://www.mgt.ncu.edu.tw/zh-TW/article/2025-08-01%2016:00:26',
   researchGateUrl: 'https://www.researchgate.net/profile/Hsin-Yu-Chiu-qiuxinyu',
+  scholarUrl: 'https://scholar.google.com/citations?user=nU87o9kAAAAJ',
+  /** Courses taught in 114-2 and 115-1 (NCU course catalogue). Code prefix: MT college, IM dept, FM finance, MB IMBA; 1–4 = undergraduate year, 5–6 = graduate, A = in-service master's. */
+  courses: [
+    { level: 'ug', code: 'MT1051', name: { zh: '程式設計：Python', en: 'An Introduction to Computing: Python' }, note: { zh: '管理學院大一必修', en: 'College of Management, year 1, required' } },
+    { level: 'ug', code: 'MT2042', name: { zh: '統計學', en: 'Statistics' }, note: { zh: '管理學院大二必修，全學年', en: 'College of Management, year 2, required, full year' } },
+    { level: 'ug', code: 'IM2030', name: { zh: '財務管理', en: 'Financial Management' }, note: { zh: '資管系大二選修', en: 'Information Management, year 2, elective' } },
+    { level: 'ug', code: 'IM2038', name: { zh: 'Python', en: 'Python' }, note: { zh: '資管系大二選修，英語授課', en: 'Information Management, year 2, elective, taught in English' } },
+    { level: 'ug', code: 'FM3035', name: { zh: '財務資訊管理', en: 'Financial Information Management' }, note: { zh: '財金系大三必修', en: 'Finance, year 3, required' } },
+    { level: 'grad', code: 'IM6069', name: { zh: '財務管理', en: 'Financial Management' }, note: { zh: '資管所碩博班選修', en: 'Information Management graduate program, elective' } },
+    { level: 'grad', code: 'MB5015', name: { zh: '商業研究方法', en: 'Business Research Methods' }, note: { zh: '國際經營管理碩士學位學程必修，英語授課，與鄭明松老師合開', en: 'IMBA program, required, taught in English, co-taught' } },
+    { level: 'grad', code: 'IMA010', name: { zh: '電子商務財務管理', en: 'Financial Management in E-Commerce' }, note: { zh: '資管在職專班必修', en: 'Executive master’s program, required' } },
+  ] satisfies { level: 'ug' | 'grad'; code: string; name: Bi; note: Bi }[],
   // NCU Scholars (scholars.ncu.edu.tw) stopped resolving in 2026-11; the department's faculty page is the official profile
   facultyUrl: 'https://im.mgt.ncu.edu.tw/teacher',
   awards: [{ zh: '113 學年度管理學院教學優良獎', en: 'Teaching Excellence Award, School of Management, NCU (2024⁠–⁠25)' }] satisfies Bi[],

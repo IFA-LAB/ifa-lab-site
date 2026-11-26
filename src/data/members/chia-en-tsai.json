@@ -13,6 +13,10 @@
     "zh": "資管所碩士・113 學年度畢業",
     "en": "M.S. in Information Management, 2025"
   },
+  "now": {
+    "zh": "台積電",
+    "en": "TSMC"
+  },
   "bio": {
     "zh": "中央資管碩士，專長 AI 與軟體開發。研究自然語言處理在財務分析的應用，以及用矩陣分解改善推薦系統；碩士論文以基金持股行為序列建立個人投資推薦系統。曾用 C# .NET 與 Angular 開發應用，做過結合 YOLOv4 與 LINE Bot 的燙傷辨識系統，持有 Java SE 8 與 Microsoft AI Fundamentals 證照。",
     "en": "Master's graduate of NCU Information Management, specializing in AI and software development. He studied NLP for financial analysis and matrix factorization for recommender systems; his thesis builds a personal investment recommender from fund holding sequences. He has built apps with C# .NET and Angular, including a burn-assessment system combining YOLOv4 with a LINE Bot, and holds Java SE 8 and Microsoft AI Fundamentals certifications."

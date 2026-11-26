@@ -13,6 +13,10 @@
     "zh": "資管所碩士・113 學年度畢業",
     "en": "M.S. in Information Management, 2025"
   },
+  "now": {
+    "zh": "台積電",
+    "en": "TSMC"
+  },
   "bio": {
     "zh": "中央資管碩士，研究可解釋 AI（XAI）在股票報酬預測上的應用，碩士論文以 SHAP-IQ 分析股票特徵之間的交互效果。熟悉 Python、C、Java、SQL 與 JavaScript，曾維護中山大學學務處網站後端，並擔任中央資管財務課程助教。",
     "en": "Master's graduate of NCU Information Management. His research applies explainable AI (XAI) to stock return prediction; his thesis uses SHAP-IQ to measure interaction effects between stock characteristics. Skilled in Python, C, Java, SQL and JavaScript, he previously maintained the backend of NSYSU's Office of Student Affairs website and was a teaching assistant for finance courses at NCU."

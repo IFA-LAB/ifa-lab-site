@@ -18,6 +18,8 @@ const members = defineCollection({
     status: z.enum(['enrolled', 'graduated']),
     /** Shown as-is under the name; keep it short. */
     headline: L.optional(),
+    /** Graduates: where they went after the lab (employer or school), shown on the card and the profile. */
+    now: L.optional(),
     founder: z.boolean().default(false),
     /** 'lab' = maintained by site maintainers (graduates / placeholders); 'self' = member edits it. */
     maintainedBy: z.enum(['self', 'lab']),

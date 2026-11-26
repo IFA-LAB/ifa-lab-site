@@ -15,23 +15,23 @@ const zh = lang === 'zh-tw';
 const faq: { q: Bi; a: Bi }[] = [
   {
     q: { zh: 'IFA Lab 適合什麼樣的學生？', en: 'Who is IFA Lab for?' },
-    a: { zh: '想做研究、想把 AI、機器學習或資料科學用在真實問題上的大學部與碩士班學生。對金融有興趣很好，沒有也沒關係。', en: 'Undergraduate and master’s students who want to do research and apply AI, machine learning or data science to real problems. An interest in finance helps but is not required.' },
+    a: { zh: '想做研究、想把 AI、機器學習或資料科學用在真實問題上的學生。對金融有興趣很好，沒有也沒關係。', en: 'Students who want to do research and apply AI, machine learning or data science to real problems. An interest in finance helps but is not required.' },
   },
   {
     q: { zh: '一定要做金融題目嗎？', en: 'Do I have to work on finance?' },
     a: { zh: '不用。老師是金融背景，但 AI、生成式 AI 或其他資訊領域的題目，老師都可以接受。', en: 'No. Prof. Chiu’s background is finance, but topics in AI, generative AI or other areas of information technology are all welcome.' },
   },
   {
-    q: { zh: '實驗室壓力大嗎？可以去實習嗎？', en: 'Is the lab stressful? Can I do an internship?' },
-    a: { zh: '壓力不大，可以去實習。畢業也沒有硬性規定的標準，進度跟老師討論著走。', en: 'The pace is relaxed and internships are fine. There is no fixed graduation quota either: you set the pace with Prof. Chiu.' },
+    q: { zh: '碩士班收幾位？什麼時候寄信？', en: 'How many master’s students? When should I write?' },
+    a: { zh: '今年收了 3 位碩士生。什麼時候寄信都可以，越早聊，越有時間想題目。有程式基礎（Python、R 或類似語言）會比較快上手。', en: 'Three master’s students joined this year. Write any time; the earlier we talk, the more time there is to shape a topic. Some programming (Python, R or similar) helps you start faster.' },
   },
   {
-    q: { zh: '大學部學生可以做什麼？', en: 'What can undergraduates work on?' },
-    a: { zh: '可以參與金融應用設計、複雜金融資料的網頁視覺化、用機器學習或 AI 預測資產價格，以及破產分析與投資組合管理等專題。', en: 'Projects such as designing financial applications, web visualizations of complex financial data, predicting asset prices with machine learning or AI, and bankruptcy analysis and portfolio management.' },
+    q: { zh: '實驗室平常怎麼運作？', en: 'What is lab life like?' },
+    a: { zh: '每週 meeting 一次，報告進度、一起討論。壓力不大，可以去實習，畢業也沒有硬性規定的標準，進度跟老師討論著走。每年中秋節會去老師家烤肉。', en: 'One meeting a week to share progress and talk it through. The pace is relaxed, internships are fine and there is no fixed graduation quota: you set the pace with Prof. Chiu. Every Mid-Autumn Festival we have a barbecue at his place.' },
   },
   {
-    q: { zh: '碩士班要先準備什麼？', en: 'What should master’s applicants prepare?' },
-    a: { zh: '扎實的程式基礎（Python、R 或類似語言）、對金融產業的基本理解，以及對系統開發、資料科學或實證財務的興趣。', en: 'A solid programming foundation (Python, R or similar), a good understanding of the financial industry, and interest in system development, data science or empirical finance.' },
+    q: { zh: '大學部可以加入嗎？', en: 'Can undergraduates join?' },
+    a: { zh: '老師沒有帶大學部的畢業專題。大學部同學可以當老師研究計畫的研究助理，或一起申請國科會大專生研究計畫。', en: 'Prof. Chiu does not supervise undergraduate capstone projects. Undergraduates can join as research assistants on his projects or apply together for an NSTC undergraduate research grant.' },
   },
   {
     q: { zh: '要怎麼聯絡實驗室？', en: 'How do I get in touch?' },
@@ -41,6 +41,7 @@ const faq: { q: Bi; a: Bi }[] = [
 const theses = (await getCollection('theses')).sort((a, b) => b.data.academicYear - a.data.academicYear);
 const thesisRows = await Promise.all(theses.map(async (x) => ({ x, m: await getEntry('members', x.data.member) })));
 const crew = (await getCollection('members')).filter((m) => !m.data.placeholder).sort((a, b) => a.data.cohort - b.data.cohort || a.data.order - b.data.order);
+const gone = (await getCollection('members')).filter((m) => m.data.status === 'graduated' && m.data.now).sort((a, b) => a.data.cohort - b.data.cohort || a.data.order - b.data.order);
 const steps: { t: Bi; d: Bi }[] = [
   { t: { zh: '寄一封信', en: 'Send an email' }, d: { zh: '三五句話介紹自己、修過的課，和你好奇的題目。想考碩士班的話，在甄試或考試報名之前就來信，比較有時間先聊題目。', en: 'A few lines about you, the courses you took and what you are curious about. Applying for the master’s program? Write before the application window so there is time to talk topics.' } },
   { t: { zh: '來 712 聊聊', en: 'Drop by Room 712' }, d: { zh: '到志希館 712 跟學長姐聊實驗室的日常，再跟老師約時間。', en: 'Chat with current students in Zhixi 712, then book a time with the advisor.' } },
@@ -52,12 +53,12 @@ const faqLd = {
   mainEntity: faq.map((f) => ({ '@type': 'Question', name: t(f.q, lang), acceptedAnswer: { '@type': 'Answer', text: t(f.a, lang) } })),
 };
 ---
-<Base lang={lang} title={t(ui.nav.join, lang)} description={zh ? 'IFA Lab 招收大學部與碩士班學生：AI、生成式 AI、金融或其他資訊題目都可以，壓力不大、可以實習。可以做什麼、要準備什麼、怎麼聯絡。' : 'IFA Lab welcomes undergraduate and master’s students: AI, generative AI, finance or other IT topics, a relaxed pace, internships welcome. What you can work on, what to prepare and how to reach us.'} jsonld={[faqLd]}>
+<Base lang={lang} title={t(ui.nav.join, lang)} description={zh ? 'IFA Lab 招收碩士班學生：AI、生成式 AI、金融或其他資訊題目都可以，每週 meeting 一次、壓力不大、可以實習。學長姐畢業後去了台積電、中華電信研究院、世界先進。' : 'IFA Lab takes master’s students: AI, generative AI, finance or other IT topics, one meeting a week, a relaxed pace, internships welcome. Graduates went on to TSMC, Chunghwa Telecom Laboratories and Vanguard International Semiconductor.'} jsonld={[faqLd]}>
   <div class="wrap section">
     <div class="section-head">
       <p class="eyebrow">{t(ui.nav.join, lang)}</p>
       <h1 class="lines">{(zh ? ['想做 AI、生成式 AI', '或金融題目？', '來疊積木吧'] : ['AI, generative AI or finance?', 'Come build with us']).map((l) => <span>{l}</span>)}</h1>
-      <p class="muted">{zh ? '我們招收大學部專題生與碩士班學生：題目不限金融，壓力不大，可以實習，畢業沒有硬性門檻。下面是最常被問到的問題。' : 'We recruit undergraduate project students and master’s students. Topics are not limited to finance, the pace is relaxed, internships are fine and there is no fixed graduation quota. Here are the questions we get most.'}</p>
+      <p class="muted">{zh ? '今年收了 3 位碩士生。題目不限金融，每週 meeting 一次，壓力不大，可以實習，畢業沒有硬性門檻。' : 'Three master’s students joined this year. Topics are not limited to finance, there is one meeting a week, the pace is relaxed, internships are fine and there is no fixed graduation quota.'}</p>
       <div class="crowd" aria-label={zh ? '現在的成員' : 'Current members'}>
         {crew.map((m) => <Mate member={m} lang={lang} size={56} />)}
       </div>
@@ -80,6 +81,14 @@ const faqLd = {
         ))}
       </ol>
     </section>
+    <section class="where" aria-labelledby="where-h">
+      <h2 id="where-h">{zh ? '學長姐畢業後去哪裡' : 'Where graduates went'}</h2>
+      <ul>
+        {gone.map((m) => (
+          <li class="clay"><a href={href(lang, `members/${m.id}`)}>{t(m.data.name, lang)}</a><span class="muted">{t(m.data.headline, lang)}</span><strong>{t(m.data.now, lang)}</strong></li>
+        ))}
+      </ul>
+    </section>
     <section class="past" aria-labelledby="past-h">
       <h2 id="past-h">{zh ? '學長姐做過的題目' : 'Topics past members wrote theses on'}</h2>
       <ul>
@@ -100,7 +109,12 @@ const faqLd = {
   .qa { padding: var(--space-6); display: grid; gap: var(--space-3); align-content: start; }
   .qa h2 { font-size: 21px; }
   .cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-7); }
-  .steps-wrap, .past { margin-top: var(--space-8); display: grid; gap: var(--space-5); }
+  .steps-wrap, .past, .where { margin-top: var(--space-8); display: grid; gap: var(--space-5); }
+  .where ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--space-4); }
+  .where li { padding: var(--space-5); display: grid; gap: var(--space-1); align-content: start; }
+  .where li a { font: 500 20px/1.3 var(--f-display); text-decoration: none; color: var(--ink); }
+  .where li .muted { font-size: 14px; }
+  .where li strong { font: 600 17px/1.5 var(--f-body); margin-top: var(--space-2); }
   .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
   .steps li { padding: var(--space-6) var(--space-5) var(--space-5); display: grid; gap: var(--space-2); align-content: start; position: relative; }
   .num { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font: 600 22px/1 var(--f-display); color: #1d2633; background: var(--clay-sun); box-shadow: 3px 5px 10px var(--lo), inset -3px -4px 6px rgb(0 0 0 / 0.15), inset 3px 3px 6px rgb(255 255 255 / 0.35); margin-bottom: var(--space-2); }

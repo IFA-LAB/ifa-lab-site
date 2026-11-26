@@ -27,7 +27,7 @@ const person = {
   url: new URL(href(lang, 'advisor'), site).href,
   worksFor: { '@id': new URL('/#org', site).href },
   knowsAbout: advisor.research,
-  sameAs: [advisor.facultyUrl, advisor.researchGateUrl],
+  sameAs: [advisor.facultyUrl, advisor.scholarUrl, advisor.researchGateUrl],
   award: advisor.awards.map((a) => a.zh),
   alumniOf: advisor.education.map((e) => ({ '@type': 'CollegeOrUniversity', name: e.school.en })),
 };
@@ -52,6 +52,7 @@ const person = {
         <ul class="links">
           <li><a class="chip" href={`mailto:${lab.contact.email}`}>{lab.contact.email}</a></li>
           <li><a class="chip" href={advisor.facultyUrl} target="_blank" rel="noopener">{zh ? '資管系師資頁' : 'NCU IM faculty page'}</a></li>
+          <li><a class="chip" href={advisor.scholarUrl} target="_blank" rel="noopener">Google Scholar</a></li>
           <li><a class="chip" href={advisor.researchGateUrl} target="_blank" rel="noopener">ResearchGate</a></li>
         </ul>
       </div>
@@ -62,6 +63,15 @@ const person = {
       <section class="block"><h2>{zh ? '近期期刊論文' : 'Recent journal papers'}</h2>
         <ol class="recent">{recent.map((p) => <li><a href={href(lang, `papers/${p.id}`)} lang="en">{p.data.title}</a> <span class="mono muted nowrap">{p.data.year > new Date().getFullYear() ? (zh ? `${p.data.year} 即將刊登` : `${p.data.year}, forthcoming`) : p.data.year}</span></li>)}</ol>
         <p><a href={href(lang, 'research')}>{zh ? '全部論文與研究計畫 →' : 'All papers and grants →'}</a></p></section>
+      <section class="block"><h2>{zh ? '老師開的課' : 'Courses'}</h2>
+        <p class="muted small">{zh ? '114-2 與 115-1 學期。修過老師的課，是認識實驗室最快的路。' : '2026 spring and fall terms. Taking one of these is the quickest way to get to know the lab.'}</p>
+        {(['ug', 'grad'] as const).map((lv) => (
+          <div class="courses">
+            <h3>{lv === 'ug' ? (zh ? '大學部' : 'Undergraduate') : (zh ? '研究所' : 'Graduate')}</h3>
+            <ul class="plain">{advisor.courses.filter((c) => c.level === lv).map((c) => <li><strong>{t(c.name, lang)}</strong> <span class="mono muted">{c.code}</span><br /><span class="muted">{t(c.note, lang)}</span></li>)}</ul>
+          </div>
+        ))}
+      </section>
       <section class="block"><h2>{t(ui.sections.experience, lang)}</h2>
         <ul class="timeline">{advisor.experience.map((e) => <li><span class="mono">{e.period.replace(/[–-]$/, zh ? '–至今' : '–present')}</span><span>{t(e.title, lang)}{zh ? '・' : ' · '}{t(e.org, lang)}</span></li>)}</ul></section>
       <section class="block"><h2>{zh ? '獎項' : 'Awards'}</h2><ul class="plain">{advisor.awards.map((x) => <li>{t(x, lang)}</li>)}</ul></section>
@@ -93,6 +103,10 @@ const person = {
 </script>
 
 <style>
+  .courses { display: grid; gap: var(--space-2); margin-top: var(--space-4); }
+  .courses h3 { font-size: 18px; }
+  .courses li { line-height: 1.6; }
+  .small { font-size: 15px; }
   .nowrap { white-space: nowrap; }
   .portrait { position: relative; width: 240px; display: grid; justify-items: center; gap: var(--space-3); flex: none; }
   .portrait > :global(picture), .buddy { grid-area: 1 / 1; }
