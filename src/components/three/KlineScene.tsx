@@ -1,7 +1,7 @@
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { CanvasTexture, Color, SRGBColorSpace, type Group, type Mesh, type PerspectiveCamera } from 'three';
-import { RoundedBox, useMedia, CLAY } from './util';
+import { RoundedBox, TagSprite, useMedia, CLAY } from './util';
 import type { Bar } from './ClayKline';
 
 /** Clay palette (light values; the scene keeps one look in both themes, like a physical toy). */
@@ -46,7 +46,7 @@ function Label({ text, x, dark, on, fill }: { text: string; x: number; dark: boo
     const cjk = /[㐀-鿿]/.test(text);
     const sp = text.lastIndexOf(' ', Math.ceil(text.length / 2) + 1);
     // short Latin names ("Apps & Viz") shrink onto one line instead of breaking
-    const lines = w <= 480 || (!cjk && text.length <= 12) ? [text]
+    const lines = w <= 480 || (!cjk && text.length <= 12) || (cjk && text.length <= 8) ? [text]
       : cjk ? [text.slice(0, Math.ceil(text.length / 2)).trim(), text.slice(Math.ceil(text.length / 2)).trim()]
       : sp > 0 ? [text.slice(0, sp).trim(), text.slice(sp).trim()]
       : [text];
@@ -77,6 +77,7 @@ function Label({ text, x, dark, on, fill }: { text: string; x: number; dark: boo
 /** One candle = one research area. Body height grows with the number of works in that area. */
 function Candle({ bar, x, base, up, reduce, onHover, delay, on }: { bar: Bar; x: number; base: number; up: boolean; reduce: boolean; onHover: (b: Bar | null) => void; delay: number; on: boolean }) {
   const g = useRef<Group>(null);
+  const lift = useRef<Group>(null);
   const squish = useRef({ v: 0, x: 0 }); // spring state for the press-and-bounce
   const grow = useRef({ t: reduce ? 1 : 0, age: 0 }); // 0→1 rise on load, staggered
   const bodyH = 0.45 + bar.count * 0.16;
@@ -104,6 +105,8 @@ function Candle({ bar, x, base, up, reduce, onHover, delay, on }: { bar: Bar; x:
     const k1 = 1.4, u = r.t - 1, e = 1 + (k1 + 1) * u * u * u + k1 * u * u;
     const h = hs.current;
     h.x += (h.to - h.x) * (reduce ? 1 : Math.min(1, dt * 9));
+    // picked: the candle rises a little off the board
+    if (lift.current) lift.current.position.y += ((on ? 0.28 : 0) - lift.current.position.y) * (reduce ? 1 : Math.min(1, dt * 10));
     if (g.current) {
       const sy = Math.max(0.001, e * h.x) * (1 + s.x);
       g.current.scale.set(1 - s.x * 0.5, sy, 1 - s.x * 0.5);
@@ -118,6 +121,8 @@ function Candle({ bar, x, base, up, reduce, onHover, delay, on }: { bar: Bar; x:
 
   return (
     <group position={[x, base, 0]}>
+      {on && <TagSprite text={`${bar.name} · ${bar.count}`} position={[0, bodyH + 1.2, 0.9]} height={0.46} />}
+      <group ref={lift}>
       <group
         ref={g}
         onPointerOver={(e) => { e.stopPropagation(); onHover(bar); document.body.style.cursor = 'pointer'; poke(e); }}
@@ -131,6 +136,7 @@ function Candle({ bar, x, base, up, reduce, onHover, delay, on }: { bar: Bar; x:
         <RoundedBox args={[0.7, bodyH, 0.7]} radius={0.2} smoothness={5} position={[0, bodyH / 2 + 0.35, 0]} castShadow receiveShadow>
           <meshStandardMaterial color={color} roughness={0.85} emissive={color} emissiveIntensity={on ? 0.35 : 0} />
         </RoundedBox>
+      </group>
       </group>
     </group>
   );
@@ -169,7 +175,7 @@ function Cat({ reduce, targetX, dark, onPet }: { reduce: boolean; targetX: numbe
   const head = useRef<Mesh>(null);
   const body = useRef<Group>(null);
   // rests in the back-right corner, beside the last candle; trots to the front edge when a candle is hovered
-  const home = { x: 4.0, z: 0.1 };
+  const home = { x: 4.0, z: -1.25 }; // behind the last candle's shoulder, clear of its nameplate
   useFrame(({ clock }, dt) => {
     if (reduce) return;
     const t = clock.getElapsedTime();
@@ -254,9 +260,9 @@ function World({ bars, reduce, onHover, active, dark, onToy, lookAt }: { bars: B
       </RoundedBox>
       {layout.map((l, i) => <Candle key={l.bar.key} {...l} delay={0.15 + i * 0.09} reduce={reduce} onHover={onHover} on={active?.key === l.bar.key} />)}
       {!compact && layout.map((l) => <Label key={l.bar.key} text={l.bar.label} x={l.x} dark={dark} on={active?.key === l.bar.key} fill={(CLAY as Record<string, string>)[l.bar.clay] ?? CLAY.grey} />)}
-      <Coin position={[-2.4, compact ? 2.4 : 3.6, -1.2]} phase={0} reduce={reduce} onFlip={() => onToy('coin')} />
-      <Coin position={[0.4, compact ? 3.2 : 3.95, -1.0]} phase={1.7} reduce={reduce} onFlip={() => onToy('coin')} />
-      <Coin position={[2.6, compact ? 2.7 : 3.4, -0.8]} phase={3.4} reduce={reduce} onFlip={() => onToy('coin')} />
+      <Coin position={[compact ? -2.4 : -0.9, compact ? 2.4 : 3.7, -1.2]} phase={0} reduce={reduce} onFlip={() => onToy('coin')} />
+      <Coin position={[compact ? 0.4 : 1.1, compact ? 3.2 : 4.05, -1.0]} phase={1.7} reduce={reduce} onFlip={() => onToy('coin')} />
+      <Coin position={[compact ? 2.6 : 3.0, compact ? 2.7 : 3.45, -0.8]} phase={3.4} reduce={reduce} onFlip={() => onToy('coin')} />
       <Cat onPet={() => onToy('cat')} dark={dark} reduce={reduce} targetX={(() => { const k = active?.key ?? lookAt; return k ? layout.find((l) => l.bar.key === k)?.x ?? null : null; })()} />
     </group>
   );

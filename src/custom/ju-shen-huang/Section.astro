@@ -53,6 +53,8 @@ const trophies = [
 </div>
 
 <style>
+  /* headings break at punctuation and spaces, never inside a word like 國科會 */
+  h2 { word-break: keep-all; }
   .research { display: grid; gap: var(--space-4); margin-bottom: var(--space-7); }
   .research ol { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
   .research li { display: grid; grid-template-columns: 52px 5.5em minmax(0, 1fr); gap: var(--space-3); align-items: start; }

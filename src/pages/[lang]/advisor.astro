@@ -135,6 +135,8 @@ const person = {
   .block h2::before { content: ''; width: 12px; height: 12px; border-radius: 4px; background: var(--clay-sun); }
   .plain { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2); }
   .timeline { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2); }
+  /* school and degree names break at their spaces, not mid-word */
+  .timeline li > span:last-child { word-break: keep-all; }
   .timeline li { display: grid; grid-template-columns: 9.5em 1fr; gap: var(--space-3); }
   .timeline .mono { color: var(--ink-2); }
   /* six short names: two columns, so the main column ends near the sidebar */
