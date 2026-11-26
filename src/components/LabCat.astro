@@ -53,22 +53,34 @@ const label = zh ? '實驗室的貓 K 喵，點一下聽牠說話' : 'K-meow, th
 </span>
 
 <script>
+  import { meow } from '@/lib/sfx';
   // One listener set for every cat on the page (there is normally one).
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   for (const btn of document.querySelectorAll<HTMLButtonElement>('.labcat .cat')) {
     const root = btn.parentElement!;
     const bubble = root.querySelector<HTMLElement>('.bubble')!;
+    const prefer = root.dataset.bubble === 'right' ? 'right' : 'left';
     const lines: string[] = JSON.parse(btn.dataset.lines ?? '[]');
     let i = 0;
     let timer = 0;
     btn.addEventListener('click', () => {
+      meow();
       if (!lines.length) return;
       bubble.textContent = lines[i % lines.length];
       i++;
+      // open on the preferred side; if that runs off screen, flip, then nudge whatever still sticks out
+      root.dataset.bubble = prefer;
+      bubble.style.removeProperty('--nudge');
+      let r = bubble.getBoundingClientRect();
+      const edge = document.documentElement.clientWidth - 8;
+      if (r.right > edge || r.left < 8) { root.dataset.bubble = prefer === 'left' ? 'right' : 'left'; r = bubble.getBoundingClientRect(); }
+      const nudge = r.right > edge ? edge - r.right : r.left < 8 ? 8 - r.left : 0;
+      if (nudge) bubble.style.setProperty('--nudge', `${Math.round(nudge)}px`);
       root.classList.add('talking');
       if (!reduce.matches) { root.classList.remove('hop'); void root.offsetWidth; root.classList.add('hop'); }
       clearTimeout(timer);
-      timer = window.setTimeout(() => root.classList.remove('talking'), 4200);
+      // empty the bubble once it has faded, so a hidden bubble never widens the page (no sideways scroll)
+      timer = window.setTimeout(() => { root.classList.remove('talking'); timer = window.setTimeout(() => (bubble.textContent = ''), 300); }, 4200);
     });
     root.addEventListener('animationend', () => root.classList.remove('hop'));
   }
@@ -133,7 +145,7 @@ const label = zh ? '實驗室的貓 K 喵，點一下聽牠說話' : 'K-meow, th
     position: absolute; bottom: calc(100% - 4px); z-index: 3; width: max-content; max-width: min(260px, 70vw);
     padding: 10px 14px; border-radius: var(--r-md); background: var(--surface); color: var(--ink);
     font: 500 15px/1.5 var(--f-body); box-shadow: 4px 6px 14px var(--lo), inset 0 2px 0 var(--hi);
-    opacity: 0; transform: translateY(6px) scale(0.97); pointer-events: none;
+    opacity: 0; transform: translateY(6px) scale(0.97); translate: var(--nudge, 0) 0; pointer-events: none;
     transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-base) var(--ease-out);
   }
   .labcat[data-bubble='left'] .bubble { right: 30%; transform-origin: 90% 100%; }

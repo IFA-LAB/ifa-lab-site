@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { coin, meow } from '@/lib/sfx';
 import { canRun3D, usePrefersReducedMotion, useMedia } from './env';
 
 /** label = short text painted on the board; name = full area name for the hint. */
@@ -93,6 +94,7 @@ export default function ClayKline({ bars, steps = [], hint, hintTouch, unit, wak
   const added = steps.length && step > 0 ? total - bars.reduce((n, b) => n + (steps[step - 1].counts[b.key] ?? 0), 0) : 0;
 
   const onToy = (what: 'coin' | 'cat') => {
+    (what === 'coin' ? coin : meow)();
     const lines = text?.[what] ?? [];
     if (!lines.length) return;
     setSay(lines[toyN.current[what]++ % lines.length]);
