@@ -27,7 +27,7 @@ export const lab = {
     /** Where the students work. */
     lab: { zh: '中央大學 志希館 712 室', en: 'Room 712, Zhixi Building, National Central University' } satisfies Bi,
     /** The advisor's office (department faculty page). */
-    room: { zh: '邱信瑜老師辦公室：管理二館 I1-932', en: 'Prof. Chiu’s office: Room I1-932, Management Building II' } satisfies Bi,
+    room: { zh: '邱信瑜老師辦公室：管理二館 I1‑932', en: 'Prof. Chiu’s office: Room I1‑932, Management Building II' } satisfies Bi,
     address: { zh: '32001 桃園市中壢區中大路 300 號', en: 'No. 300, Zhongda Rd., Zhongli District, Taoyuan City 32001, Taiwan' } satisfies Bi,
   },
 };

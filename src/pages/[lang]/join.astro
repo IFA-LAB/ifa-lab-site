@@ -27,7 +27,7 @@ const faq: { q: Bi; a: Bi }[] = [
   },
   {
     q: { zh: '要怎麼聯絡實驗室？', en: 'How do I get in touch?' },
-    a: { zh: `寄信給邱信瑜老師（${lab.contact.email}），簡單介紹自己和有興趣的題目；也可以到志希館 712 實驗室找我們，或到管理二館 I1-932 找老師。`, en: `Email Prof. Hsin-Yu Chiu (${lab.contact.email}) with a short introduction and the topics you are interested in, or visit the lab in Room 712, Zhixi Building, or Prof. Chiu’s office, I1-932, Management Building II.` },
+    a: { zh: `寄信給邱信瑜老師（${lab.contact.email}），簡單介紹自己和有興趣的題目；也可以到志希館 712 實驗室找我們，或到管理二館 I1‑932 找老師。`, en: `Email Prof. Hsin-Yu Chiu (${lab.contact.email}) with a short introduction and the topics you are interested in, or visit the lab in Room 712, Zhixi Building, or Prof. Chiu’s office, I1‑932, Management Building II.` },
   },
 ];
 const theses = (await getCollection('theses')).sort((a, b) => b.data.academicYear - a.data.academicYear);
@@ -95,7 +95,7 @@ const faqLd = {
   .steps-wrap, .past { margin-top: var(--space-8); display: grid; gap: var(--space-5); }
   .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
   .steps li { padding: var(--space-6) var(--space-5) var(--space-5); display: grid; gap: var(--space-2); align-content: start; position: relative; }
-  .num { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font: 600 22px/1 var(--f-display); color: var(--ink); background: var(--clay-sun); box-shadow: 3px 5px 10px var(--lo), inset -3px -4px 6px rgb(0 0 0 / 0.15), inset 3px 3px 6px rgb(255 255 255 / 0.35); margin-bottom: var(--space-2); }
+  .num { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font: 600 22px/1 var(--f-display); color: #1d2633; background: var(--clay-sun); box-shadow: 3px 5px 10px var(--lo), inset -3px -4px 6px rgb(0 0 0 / 0.15), inset 3px 3px 6px rgb(255 255 255 / 0.35); margin-bottom: var(--space-2); }
   .steps h3 { font-size: 20px; }
   .past ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); max-width: 52em; }
   .past li { display: grid; gap: var(--space-1); padding-left: var(--space-4); box-shadow: inset 3px 0 0 var(--c); }

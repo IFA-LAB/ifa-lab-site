@@ -17,12 +17,12 @@ const research = [
   { year: '2024–25', clay: 'down', zh: '113 年度國科會大專生計畫：探討生成式 AI 於社交工程之發展應用（PhishForge 的研究版）', en: 'NSTC undergraduate project (2024–25): generative AI in social engineering (the research side of PhishForge)', who: { zh: '指導：胡雅涵教授', en: 'With Prof. Ya-Han Hu' } },
 ];
 
-const trophies = [
-  { year: '2025', zh: '台積電校園黑客松', en: 'TSMC IT CareerHack', clay: 'up' },
-  { year: '2025', zh: '臺東創新創業大賽', en: 'Taitung Startup Award', clay: 'sun' },
-  { year: '2024', zh: '大專資訊服務創新賽', en: 'InnoServe Awards', clay: 'blue' },
-  { year: '2024', zh: '臺灣數創大賞 金獎', en: 'Taiwan Digital Creativity, Gold', clay: 'sun' },
-  { year: '2024', zh: 'Startup 創業競技場', en: 'Startup Arena', clay: 'down' },
+const trophies: { year: string; zh: string; en: string; prize?: { zh: string; en: string }; clay: string }[] = [
+  { year: '2025', zh: '台積電|校園黑客松', en: 'TSMC IT CareerHack', clay: 'up' },
+  { year: '2025', zh: '臺東|創新創業大賽', en: 'Taitung Startup Award', clay: 'sun' },
+  { year: '2024', zh: '大專資訊服務|創新賽', en: 'InnoServe Awards', clay: 'blue' },
+  { year: '2024', zh: '臺灣數創大賞', en: 'Taiwan Digital Creativity', prize: { zh: '金獎', en: 'Gold' }, clay: 'sun' },
+  { year: '2024', zh: 'Startup|創業競技場', en: 'Startup Arena', clay: 'down' },
 ];
 ---
 <div class="research">
@@ -45,7 +45,7 @@ const trophies = [
       <li style={`--c: var(--clay-${x.clay})`}>
         <span class="cup" aria-hidden="true"></span>
         <span class="year">{x.year}</span>
-        <span>{zh ? x.zh : x.en}</span>
+        <span>{(zh ? x.zh : x.en).split('|').map((w) => <span class="seg">{w}</span>)}{x.prize && <span class="prize">{zh ? x.prize.zh : x.prize.en}</span>}</span>
       </li>
     ))}
   </ul>
@@ -68,7 +68,10 @@ const trophies = [
   .shelf { display: grid; gap: var(--space-4); }
   h2 { font-size: 20px; }
   /* centred rows, so an odd last trophy sits in the middle instead of alone on the left */
-  .shelf ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-5) var(--space-3); }
+  .shelf ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: flex-start; gap: var(--space-5) var(--space-3); }
+  .prize { display: block; font-weight: 600; }
+  /* each part of a prize name stays whole: 台積電 / 校園黑客松, never 台積電校 / 園黑客松 */
+  .seg { display: inline-block; }
   .shelf li { flex: 0 1 104px; display: grid; align-content: start; justify-items: center; text-align: center; gap: var(--space-1); font-size: 15px; text-wrap: balance; }
   /* each cup stands on its own little plinth, right under it */
   .cup {

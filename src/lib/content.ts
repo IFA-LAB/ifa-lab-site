@@ -29,7 +29,7 @@ export async function memberByEnglishName() {
 export function apa(p: Publication['data'], lang: Locale) {
   const authors = p.authors.map((a, i) => (p.corresponding.includes(i) ? `${a}*` : a)).join(', ');
   const tail = [p.venue, p.volume, p.pages].filter(Boolean).join(', ');
-  const year = p.status === 'forthcoming' ? `${p.year}, ${lang === 'en' ? 'forthcoming' : '即將刊登'}` : String(p.year);
+  const year = p.status === 'forthcoming' ? (lang === 'en' ? `${p.year}, forthcoming` : `${p.year}，即將刊登`) : String(p.year);
   return { authors, year, tail };
 }
 

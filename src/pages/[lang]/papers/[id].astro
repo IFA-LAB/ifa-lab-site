@@ -108,7 +108,7 @@ const jsonld = [{
             <li>
               {p.id === paper.id
                 ? <span class="brick here" aria-current="page"><b>{p.data.year}</b><span lang="en">{p.data.title}</span><em>{zh ? '這篇' : 'This one'}</em></span>
-                : <a class="brick" href={href(lang, `papers/${p.id}`)}><b data-vt="brick">{p.data.year}</b><span lang="en" data-vt="title">{p.data.title}</span></a>}
+                : <a class="brick" href={href(lang, `papers/${p.id}`)} title={p.data.title}><b data-vt="brick">{p.data.year}</b><span lang="en" data-vt="title">{p.data.title}</span></a>}
             </li>
           ))}
         </ol>
@@ -147,15 +147,15 @@ const jsonld = [{
   .bricks { list-style: none; margin: var(--space-2) 0 0; padding: 0; display: grid; gap: 6px; }
   .brick {
     display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--space-3); min-height: 48px;
-    padding: 6px var(--space-3); border-radius: 12px; text-decoration: none; color: #1d2633;
+    padding: 10px 14px; border-radius: 12px; text-decoration: none; color: #1d2633;
     background: color-mix(in oklab, var(--c) 50%, #ffffff);
     box-shadow: inset 0 -5px 0 rgb(0 0 0 / 0.12), inset 2px 3px 4px rgb(255 255 255 / 0.35), 0 4px 8px var(--lo);
     transition: transform var(--dur-fast) var(--ease-out);
   }
-  .brick b { font: 600 14px/1 var(--f-mono); }
+  .brick b { font: 600 14px/1.4 var(--f-mono); align-self: start; }
   /* one left edge for every brick so titles scan; three lines, and this paper's title in full */
   .brick.here span { -webkit-line-clamp: unset; display: block; }
-  .brick span { font-size: 14px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .brick span { font-size: 14px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .brick.here { background: var(--c); grid-template-columns: auto minmax(0, 1fr) auto; }
   /* phones: the 這篇 tag sits under the year, so the title keeps the full width */
   @media (max-width: 767px) { .brick.here { grid-template-columns: auto minmax(0, 1fr); } .brick.here em { grid-column: 1; justify-self: start; } }
@@ -180,6 +180,7 @@ const jsonld = [{
   .cite-box { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-3); align-items: start; padding: var(--space-4); border-radius: var(--r-md); background: var(--surface); }
   .cite-box p { font-size: 15px; overflow-wrap: anywhere; }
   .cite-box pre { margin: 0; font: 13px/1.6 var(--f-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .copy:focus-visible { outline-offset: 3px; }
   .copy { min-height: 44px; cursor: pointer; font: inherit; font-size: 14px; white-space: nowrap; border: 0; }
   details summary { cursor: pointer; min-height: 44px; display: inline-flex; align-items: center; gap: var(--space-2); font: 500 14px/1 var(--f-body); padding: 0 var(--space-4); border-radius: var(--r-full); background: var(--surface-2); list-style: none; }
   details summary::-webkit-details-marker { display: none; }
