@@ -47,7 +47,7 @@ const person = {
         <p class="eyebrow">{t(ui.nav.advisor, lang)}</p>
         <h1>{t(advisor.name, lang)}</h1>
         {zh && <p class="en" lang="en">{advisor.name.en}</p>}
-        <p class="muted">{t(advisor.title, lang)} · {t(lab.dept, lang)}</p>
+        <p class="muted role">{t(advisor.title, lang)} · {t(lab.dept, lang)}</p>
         <ul class="links">
           <li><a class="chip" href={`mailto:${lab.contact.email}`}>{lab.contact.email}</a></li>
           <li><a class="chip" href={advisor.scholarsUrl} target="_blank" rel="noopener">NCU Scholars</a></li>
@@ -62,14 +62,14 @@ const person = {
         <ol class="recent">{recent.map((p) => <li><a href={href(lang, `papers/${p.id}`)} lang="en">{p.data.title}</a> <span class="mono muted nowrap">{p.data.year > new Date().getFullYear() ? (zh ? `${p.data.year} 即將刊登` : `${p.data.year}, forthcoming`) : p.data.year}</span></li>)}</ol>
         <p><a href={href(lang, 'research')}>{zh ? '全部論文與研究計畫 →' : 'All papers and grants →'}</a></p></section>
       <section class="block"><h2>{t(ui.sections.experience, lang)}</h2>
-        <ul class="timeline">{advisor.experience.map((e) => <li><span class="mono">{e.period.replace(/[–-]$/, zh ? '–至今' : '–present')}</span><span>{t(e.title, lang)}・{t(e.org, lang)}</span></li>)}</ul></section>
+        <ul class="timeline">{advisor.experience.map((e) => <li><span class="mono">{e.period.replace(/[–-]$/, zh ? '–至今' : '–present')}</span><span>{t(e.title, lang)}{zh ? '・' : ' · '}{t(e.org, lang)}</span></li>)}</ul></section>
       <section class="block"><h2>{zh ? '獎項' : 'Awards'}</h2><ul class="plain">{advisor.awards.map((x) => <li>{t(x, lang)}</li>)}</ul></section>
       <section class="block"><h2>{zh ? '證照' : 'Licenses'}</h2><ul class="plain lic">{advisor.licenses.map((l) => <li>{t(l, lang)}</li>)}</ul></section>
       </div>
       <aside class="side">
       <section class="block"><h2>{t(ui.sections.research, lang)}</h2><ul class="tags">{advisor.research.map((r) => <li lang="en">{r}</li>)}</ul></section>
       <section class="block"><h2>{t(ui.sections.education, lang)}</h2>
-        <ul class="timeline">{advisor.education.map((e) => <li><span class="mono">{e.period.replace(/[–-]$/, zh ? '–至今' : '–present')}</span><span>{t(e.school, lang)}・{t(e.degree, lang)}</span></li>)}</ul></section>
+        <ul class="timeline">{advisor.education.map((e) => <li><span class="mono">{e.period.replace(/[–-]$/, zh ? '–至今' : '–present')}</span><span>{t(e.school, lang)}{zh ? '・' : ' · '}{t(e.degree, lang)}</span></li>)}</ul></section>
       <section class="block"><h2>{t(ui.sections.interests, lang)}</h2><ul class="tags">{advisor.hobbies.map((h) => <li>{t(h, lang)}</li>)}</ul>
         <p class="muted artists">{zh ? '常聽：' : 'On repeat: '}{advisor.artists.map((a, i) => <>{i > 0 && (zh ? '、' : ', ')}<span class="nm">{a}</span></>)}</p>
         <span class="cat-row"><LabCat lang={lang} size={64} bubble="right" lines={[{ zh: '老師愛貓，所以我住在這一頁。', en: 'The professor loves cats, so I live on this page.' }, { zh: '他也彈電吉他。我比較喜歡安靜的 Fusion。', en: 'He plays electric guitar too. I prefer the quieter fusion.' }]} /></span></section>
@@ -143,6 +143,8 @@ const person = {
   /* six short names: two columns, so the main column ends near the sidebar */
   @media (min-width: 768px) { .lic { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-5); } }
   @media (max-width: 767px) { .blocks { grid-template-columns: 1fr; } .timeline li { grid-template-columns: 1fr; gap: 0; } }
+  /* the title and 國立中央大學 管理學院 資訊管理學系 break only at their spaces */
+  .role { word-break: keep-all; }
   .artists { margin: var(--space-3) 0 0; font-size: 15px; }
   .nm { white-space: nowrap; }
 </style>

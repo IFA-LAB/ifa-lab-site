@@ -87,9 +87,9 @@ const jsonld = journals.map((p) => ({
       <p class="muted status" aria-live="polite" data-status></p>
     </div>
     <nav class="jump" aria-label={zh ? '跳到' : 'Jump to'} data-label={zh ? '跳到' : 'Jump to'}>
-      <a href="#j-h">{t(ui.pubs.journal, lang)} <b>{journals.length}</b></a>
-      <a href="#w-h">{t(ui.pubs.working, lang)} <b>{working.length}</b></a>
-      <a href="#t-h">{t(ui.pubs.theses, lang)} <b>{theses.length}</b></a>
+      <a href="#j-h" data-for="j-h">{t(ui.pubs.journal, lang)} <b>{journals.length}</b></a>
+      <a href="#w-h" data-for="w-h">{t(ui.pubs.working, lang)} <b>{working.length}</b></a>
+      <a href="#t-h" data-for="t-h">{t(ui.pubs.theses, lang)} <b>{theses.length}</b></a>
       <a href="#g-h">{t(ui.pubs.grants, lang)} <b>{grants.length}</b></a>
       <a href="#s-h">{t(ui.pubs.projects, lang)} <b>{studentProjects.length}</b></a>
     </nav>
@@ -107,7 +107,16 @@ const jsonld = journals.map((p) => ({
                 <p class="authors">{p.data.authors.map((a, i) => (
                   <>{i > 0 && ', '}<span class="nm">{byName.has(a) || a === 'Hsin-Yu Chiu' ? <strong>{a}</strong> : a}{p.data.corresponding.includes(i) && '*'}</span></>
                 ))}</p>
-                <p class="muted meta"><em>{c.tail}</em>&nbsp;· {c.year}&nbsp;· <span class="area-tag">{areaName(p.data.area)}</span>{p.data.doi && <>&nbsp;· <a href={`https://doi.org/${p.data.doi}`} target="_blank" rel="noopener">DOI</a></>}{!p.data.doi && p.data.url && <>&nbsp;· <a href={p.data.url} target="_blank" rel="noopener">{zh ? '全文' : 'Full text'}</a></>}{p.data.slides && <>&nbsp;· <a href={p.data.slides} target="_blank" rel="noopener">{zh ? '簡報' : 'Slides'}</a></>}{' · '}<button type="button" class="copy" data-copy={citation(p.data)} data-done={zh ? '已複製引用' : 'Citation copied'}>{zh ? '複製引用' : 'Copy citation'}</button>
+                {/* each item carries its trailing ·, and lines break only between items: a · never starts a line */}
+                <p class="muted meta">{[
+                  <em>{c.tail}</em>,
+                  String(c.year),
+                  <span class="area-tag">{areaName(p.data.area)}</span>,
+                  p.data.doi && <a href={`https://doi.org/${p.data.doi}`} target="_blank" rel="noopener">DOI</a>,
+                  !p.data.doi && p.data.url && <a href={p.data.url} target="_blank" rel="noopener">{zh ? '全文' : 'Full text'}</a>,
+                  p.data.slides && <a href={p.data.slides} target="_blank" rel="noopener">{zh ? '簡報' : 'Slides'}</a>,
+                  <button type="button" class="copy" data-copy={citation(p.data)} data-done={zh ? '已複製引用' : 'Citation copied'}>{zh ? '複製引用' : 'Copy citation'}</button>,
+                ].filter(Boolean).map((x, i, all) => <><span class:list={[{ nw: i > 0 }]}>{x}{i < all.length - 1 && ' ·'}</span>{i < all.length - 1 && ' '}</>)}
                 </p>
                 {p.data.plain && <Bi text={p.data.plain} lang={lang} />}
               </div>
@@ -136,11 +145,11 @@ const jsonld = journals.map((p) => ({
       </ol>
     </section>
 
-    <section aria-labelledby="t-h" class="group">
+    <section aria-labelledby="t-h" class="group" data-pubs>
       <h2 id="t-h">{t(ui.pubs.theses, lang)} <span class="n">{theses.length}</span></h2>
       <ol class="pubs two">
         {theses.map((x) => (
-          <li id={`t-${x.id}`} class="pub" style={`--c: var(--clay-${areaClay(x.data.area)})`}>
+          <li id={`t-${x.id}`} class="pub" data-area={x.data.area} style={`--c: var(--clay-${areaClay(x.data.area)})`}>
             <span class="block" aria-hidden="true">{thesisYear(x.data.academicYear)}</span>
             <div>
               <Bi text={x.data.title} lang={lang} />
@@ -201,6 +210,10 @@ const jsonld = journals.map((p) => ({
       const shown = g.querySelectorAll('.pub:not([hidden])').length;
       g.querySelector('.n')!.textContent = String(shown);
       g.hidden = shown === 0;
+      // the jump chips carry the same filtered counts; an emptied one fades
+      const id = g.getAttribute('aria-labelledby');
+      const chip = document.querySelector<HTMLElement>(`.jump [data-for="${id}"]`);
+      if (chip) { chip.querySelector('b')!.textContent = String(shown); chip.classList.toggle('none', shown === 0); }
     }
     // the wall above follows the filter: other areas fade, each year's number counts only this area
     for (const col of document.querySelectorAll<HTMLElement>('.wall .col')) {
@@ -210,7 +223,7 @@ const jsonld = journals.map((p) => ({
       if (num) num.textContent = k ? String(k) : '';
     }
     const label = buttons.find((b) => b.dataset.area === area)?.textContent?.trim();
-    status.textContent = area ? (zh ? `只顯示「${label}」：${n} 篇` : `Showing ${label}: ${n}`) : '';
+    status.textContent = area ? (zh ? `只顯示「${label}」：${n} 件（論文與碩士論文）` : `Showing ${label}: ${n} ${n === 1 ? 'work' : 'works'} (papers and theses)`) : '';
     if (scroll) document.querySelector('.filter')?.scrollIntoView({ block: 'start' });
   }
   for (const b of buttons) b.addEventListener('click', () => {
@@ -260,6 +273,8 @@ const jsonld = journals.map((p) => ({
   .filter .areas { margin-bottom: 0; }
   .areas button { min-height: 44px; cursor: pointer; font: inherit; font-size: 15px; display: inline-flex; align-items: center; gap: var(--space-2); border: 0; color: var(--ink); }
   .areas button[aria-pressed='true'] { background: var(--ink); color: var(--bg); }
+  /* tablets: a touch tighter so all seven chips share one row instead of leaving one alone */
+  @media (min-width: 768px) and (max-width: 1023px) { .areas { gap: 6px; } .areas button { padding-inline: 10px; gap: 6px; font-size: 14px; } }
   .status { font-size: 14px; min-height: 1.5em; }
   .title a { color: var(--ink); text-decoration-color: color-mix(in oklab, var(--ink) 30%, transparent); text-underline-offset: 4px; }
   .title a:hover { text-decoration-color: currentColor; }
@@ -342,6 +357,8 @@ const jsonld = journals.map((p) => ({
   .jump::before { content: attr(data-label); align-self: center; font: 600 13px/1 var(--f-mono); color: var(--ink-2); margin-right: var(--space-2); }
   .live { margin-left: var(--space-2); padding: 2px 8px; border-radius: var(--r-full); background: var(--clay-down); color: #0b1f15; font: 600 12px/1.4 var(--f-body); }
   .jump a:hover { color: var(--accent); }
+  .area-tag { white-space: nowrap; }
+  .jump a.none { opacity: 0.45; }
   @media (max-width: 767px) { .jump { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; } .jump a { flex: none; }
     /* a fade at the right edge says the row scrolls sideways */
     .jump::after { position: sticky; right: calc(-1 * var(--space-3)); flex: none; width: 56px; margin-left: -56px; display: grid; place-items: center end; padding-right: 6px; content: '›'; font: 600 22px/1 var(--f-body); color: var(--ink-2); background: linear-gradient(to right, transparent, var(--bg) 55%); pointer-events: none; } }

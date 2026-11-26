@@ -68,6 +68,7 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
         <button type="button" class="chip" data-kind={k.key} aria-pressed="false"><i data-k={k.key} aria-hidden="true"></i>{t(k.name, lang)}</button>
       ))}
     </div>
+    <p class="muted key">{zh ? '形狀代表類型；論文與碩士論文的顏色是研究領域。' : 'Shape shows the kind; papers and theses are coloured by research area.'}</p>
 
     <ol class="tower">
       {byYear.map(({ year, items }) => (
@@ -119,7 +120,8 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
   .totals b { font: 600 30px/1 var(--f-display); font-variant-numeric: tabular-nums; }
   .totals span { color: var(--ink-2); font-size: 15px; }
 
-  .filter { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-7); }
+  .filter { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-3); }
+  .key { font-size: 14px; margin-bottom: var(--space-7); }
   .filter button { min-height: 44px; cursor: pointer; font: inherit; font-size: 15px; display: inline-flex; align-items: center; gap: var(--space-2); border: 0; color: var(--ink); }
   .filter button[aria-pressed='true'] { background: var(--ink); color: var(--bg); }
   .filter i, .sum i, .stud { display: inline-block; background: var(--c); box-shadow: inset -2px -2px 3px rgb(0 0 0 / 0.18), inset 2px 2px 3px rgb(255 255 255 / 0.35); }

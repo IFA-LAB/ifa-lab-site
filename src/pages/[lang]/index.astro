@@ -126,7 +126,7 @@ const description = zh
         <li>
           <a class="area clay" href={href(lang, `research#${a.key}`)} style={`--c: var(--clay-${a.clay})`}>
             <span class="txt">
-              <h3>{t(a.name, lang)}</h3>
+              <h3>{/* a break point after 與, so narrow cards split 應用與 / 視覺化, never 視覺 / 化 */}{t(a.name, lang).replace('與', '與​')}</h3>
               <p class="muted">{t(a.blurb, lang)}</p>
             </span>
             <span class="tower" aria-hidden="true">{Array.from({ length: perArea(a.key) }, () => <i></i>)}</span>
@@ -286,7 +286,8 @@ const description = zh
   .row::after { content: ''; position: absolute; inset: auto -8px 0; height: 18px; border-radius: 9px; background: var(--surface); box-shadow: 0 10px 18px var(--lo), inset 0 3px 0 var(--hi), inset 0 -7px 0 var(--surface-2); }
   /* under the plank, out of flow: every plank stays level with its neighbour */
   .row .also { position: absolute; top: calc(100% + var(--space-2)); left: 0; margin: 0; font-size: 14px; }
-  .row ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); align-items: end; }
+  /* top-aligned: a name that wraps to two lines hangs below instead of lifting its figure */
+  .row ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); align-items: start; }
 
   .row-head { display: flex; justify-content: space-between; align-items: end; gap: var(--space-5); max-width: none; }
   .more { font-weight: 600; text-decoration: none; white-space: nowrap; }
@@ -306,6 +307,7 @@ const description = zh
   .join .crowd { display: grid; grid-template-columns: repeat(4, auto); gap: var(--space-2) var(--space-3); }
   /* 320px phones: figures shrink a little so three per shelf and four in the crowd still fit */
   @media (max-width: 400px) {
+    .mission .quote { font-size: 23px; } /* 再把它做成用得上的模型。 fits one 288px line */
     .row::after { inset: auto 0 0; }
     .row :global(.mate) { zoom: 0.78; }
     .join .crowd { gap: var(--space-1); }
@@ -341,7 +343,7 @@ const description = zh
     .hero { padding-top: var(--space-4); }
     .visual { margin-inline: -16px; aspect-ratio: 1 / 0.8; margin-bottom: var(--space-6); }
     .visual :global(.kline-hint) { bottom: calc(-1 * var(--space-6)); }
-    .area h3 { font-size: 18px; word-break: keep-all; }
+    .area h3 { font-size: 18px; word-break: keep-all; overflow-wrap: anywhere; }
     .area { grid-template-columns: 1fr; grid-template-rows: auto; padding: var(--space-4); }
     .tower { grid-row: auto; grid-column: 1; width: 68px; order: -1; height: calc(var(--rows) * 18px); align-content: flex-start; }
     .tower i { width: 30px; height: 14px; }
