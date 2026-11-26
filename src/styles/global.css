@@ -109,7 +109,8 @@ pre code { font-size: inherit; }
 [hidden] { display: none !important; }
 
 .wrap {
-  max-width: var(--page);
+  /* content stays 1168px wide on desktop; only the side gutters grow on tablets */
+  max-width: calc(var(--page) - 32px + 2 * clamp(16px, 4vw, 48px));
   margin-inline: auto;
   padding-left: max(clamp(16px, 4vw, 48px), env(safe-area-inset-left, 0px));
   padding-right: max(clamp(16px, 4vw, 48px), env(safe-area-inset-right, 0px));
