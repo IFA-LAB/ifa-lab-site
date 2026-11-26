@@ -71,15 +71,27 @@ const T = {
     /** The answer as text, with [n] turned into links to source n. */
     function answerNode(text: string, src: Src[]) {
       const p = el('div', 'a');
-      for (const para of text.split(/\n{2,}/)) {
-        const pp = el('p', '');
-        for (const part of para.split(/(\[\d+\])/)) {
+      const fill = (node: HTMLElement, line: string) => {
+        for (const part of line.split(/(\[\d+\])/)) {
           const m = part.match(/^\[(\d+)\]$/);
           const s = m ? src[+m[1] - 1] : undefined;
-          if (s) { const a = el('a', 'cite', m![1]) as HTMLAnchorElement; a.href = s.url; a.title = s.title; pp.append(a); }
-          else if (!m) pp.append(part.replace(/\*\*/g, ''));
+          if (s) { const a = el('a', 'cite', m![1]) as HTMLAnchorElement; a.href = s.url; a.title = s.title; node.append(a); }
+          else if (!m) node.append(part.replace(/\*\*/g, ''));
         }
-        p.append(pp);
+      };
+      // paragraphs, plus "- item" / "1. item" lines as a list (the model often lists courses or people)
+      const bullet = /^\s*(?:[-*•]|\d+[.)])\s+/;
+      for (const para of text.split(/\n{2,}/)) {
+        let list: HTMLElement | null = null;
+        for (const line of para.split('\n').filter((l) => l.trim())) {
+          if (bullet.test(line)) {
+            if (!list) { list = el('ul', ''); p.append(list); }
+            const li = el('li', ''); fill(li, line.replace(bullet, '')); list.append(li);
+          } else {
+            list = null;
+            const pp = el('p', ''); fill(pp, line); p.append(pp);
+          }
+        }
       }
       return p;
     }
@@ -159,6 +171,7 @@ const T = {
   .ask :global(.cite) { display: inline-grid; place-items: center; min-width: 22px; height: 22px; margin: 0 2px; padding: 0 5px; border-radius: var(--r-full); background: var(--surface-2); font: 600 12px/1 var(--f-mono); text-decoration: none; vertical-align: 2px; }
   .ask :global(.src) { padding: var(--space-3) var(--space-4); border-radius: var(--r-md); background: var(--surface-2); font-size: 14px; }
   .ask :global(.src-h) { font: 600 13px/1.4 var(--f-mono); color: var(--ink-2); margin-bottom: var(--space-1); }
+  .ask :global(.a ul) { margin: 0; padding-left: 1.3em; display: grid; gap: var(--space-1); }
   .ask :global(.src ol) { margin: 0; padding-left: 1.4em; display: grid; gap: var(--space-2); }
   .ask :global(.snip) { display: block; color: var(--ink-2); line-height: 1.6; }
   .ask-form { display: flex; gap: var(--space-2); padding: var(--space-3) var(--space-5); border-top: 1px solid var(--line); }
