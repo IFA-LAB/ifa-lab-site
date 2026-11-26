@@ -109,9 +109,9 @@ const jsonld = journals.map((p) => ({
           const c = apa(p.data, lang);
           return (
             <li id={p.id} class="pub" data-area={p.data.area} style={`--c: var(--clay-${areaClay(p.data.area)})`}>
-              <span class="block" aria-hidden="true">{p.data.status === 'forthcoming' ? (zh ? '即將' : 'Soon') : p.data.year}</span>
+              <span class="block" aria-hidden="true" data-vt="brick">{p.data.status === 'forthcoming' ? (zh ? '即將' : 'Soon') : p.data.year}</span>
               <div>
-                <p class="title" lang="en"><a href={href(lang, `papers/${p.id}`)}>{p.data.title}</a></p>
+                <p class="title" lang="en"><a href={href(lang, `papers/${p.id}`)} data-vt="title">{p.data.title}</a></p>
                 <p class="authors">{p.data.authors.map((a, i) => (
                   <>{i > 0 && ', '}<span class="nm">{byName.has(a) || a === 'Hsin-Yu Chiu' ? <strong>{a}</strong> : a}{p.data.corresponding.includes(i) && '*'}</span></>
                 ))}</p>
@@ -139,9 +139,9 @@ const jsonld = journals.map((p) => ({
       <ol class="pubs two">
         {working.map((p) => (
           <li id={p.id} class="pub" data-area={p.data.area} style={`--c: var(--clay-${areaClay(p.data.area)})`}>
-            <span class="block" aria-hidden="true">{p.data.year}</span>
+            <span class="block" aria-hidden="true" data-vt="brick">{p.data.year}</span>
             <div>
-              <p class="title" lang="en"><a href={href(lang, `papers/${p.id}`)}>{p.data.title}</a></p>
+              <p class="title" lang="en"><a href={href(lang, `papers/${p.id}`)} data-vt="title">{p.data.title}</a></p>
               <p class="authors">{p.data.authors.map((a, i) => (
                 <>{i > 0 && ', '}<span class="nm">{byName.has(a) || a === 'Hsin-Yu Chiu' ? <strong>{a}</strong> : a}{p.data.corresponding.includes(i) && '*'}</span></>
               ))}</p>
@@ -158,7 +158,7 @@ const jsonld = journals.map((p) => ({
       <ol class="pubs two">
         {theses.map((x) => (
           <li id={`t-${x.id}`} class="pub" data-area={x.data.area} style={`--c: var(--clay-${areaClay(x.data.area)})`}>
-            <span class="block" aria-hidden="true">{thesisYear(x.data.academicYear)}</span>
+            <span class="block" aria-hidden="true" data-vt="brick">{thesisYear(x.data.academicYear)}</span>
             <div>
               <Bi text={x.data.title} lang={lang} />
               <p class="muted meta"><a href={href(lang, `members/${x.data.member}`)}>{t(nameOf(x.data.member), lang)}</a>&nbsp;· {zh ? `${x.data.academicYear} 學年度` : `AY ${x.data.academicYear + 1911}–${String(x.data.academicYear + 1912).slice(2)}`}&nbsp;· <span class="area-tag">{areaName(x.data.area)}</span></p>

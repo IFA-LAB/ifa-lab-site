@@ -68,6 +68,32 @@ const graph = [org, ...jsonld];
       try { const s = localStorage.getItem('theme'); if (s === 'light' || s === 'dark') document.documentElement.dataset.theme = s; } catch {}
       // desktop with a mouse: the scrollbar becomes K 喵's candle (ScrollCat.astro); decided before paint so nothing shifts
       if (matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches) document.documentElement.classList.add('cat-scroll');
+      // Shared elements between pages: the paper title you clicked grows into the paper page's heading (its brick into the
+      // heading's stud); a member's face and name fly to the profile's portrait and name. Pairs are named only for the one
+      // navigation that needs them, so every page keeps unique view-transition names. No support / reduced motion: plain navigation.
+      if ('onpagereveal' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        let link = null;
+        addEventListener('click', (e) => { link = e.target.closest?.('a[href]') ?? null; }, true);
+        const clear = (els) => els.forEach((el) => { el.style.viewTransitionName = ''; });
+        addEventListener('pageswap', (e) => {
+          const to = e.activation?.entry?.url;
+          if (!e.viewTransition || !link || !to || new URL(link.href).pathname !== new URL(to).pathname) return;
+          const box = link.closest('li') ?? link, paper = /\/papers\/[^/]+\/?$/.test(to), member = /\/members\/[^/]+\/?$/.test(to);
+          const pick = paper ? { title: box.querySelector('[data-vt=title]') ?? link, brick: box.querySelector('[data-vt=brick]') }
+            : member ? { face: box.querySelector('[data-vt=face]') ?? link.querySelector('.fig'), name: box.querySelector('[data-vt=name]') } : {};
+          const keys = Object.keys(pick).filter((k) => pick[k]);
+          keys.forEach((k) => { pick[k].style.viewTransitionName = 'vt-' + k; });
+          try { sessionStorage.setItem('vt', keys.join(' ')); } catch {}
+          e.viewTransition.finished.finally(() => clear(keys.map((k) => pick[k])));
+        });
+        addEventListener('pagereveal', (e) => {
+          let keys = '';
+          try { keys = sessionStorage.getItem('vt') ?? ''; sessionStorage.removeItem('vt'); } catch {}
+          if (!e.viewTransition || !keys) return;
+          const els = keys.split(' ').map((k) => { const el = document.querySelector(`[data-vt-dest="${k}"]`); if (el) el.style.viewTransitionName = 'vt-' + k; return el; }).filter(Boolean);
+          e.viewTransition.finished.finally(() => clear(els));
+        });
+      }
     </script>
     <script type="application/ld+json" set:html={JSON.stringify(graph.length === 1 ? graph[0] : { '@context': 'https://schema.org', '@graph': graph.map(({ '@context': _c, ...g }: any) => g) })} />
     {/* the next page renders in the background while the pointer rests on its link, so arriving is instant */}

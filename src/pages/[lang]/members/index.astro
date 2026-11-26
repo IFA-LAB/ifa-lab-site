@@ -66,10 +66,10 @@ const jsonld = people.map((m) => ({
             <li>
               <a class="card clay" href={href(lang, `members/${m.id}`)} data-member={m.id}>
                 {m.data.photo
-                  ? <span class="face"><Image class="avatar" src={m.data.photo} alt="" width={88} height={88} densities={[1, 2]} format="webp" /><span class="twin"><ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} model={m.data.figure.model} size={40} /></span></span>
+                  ? <span class="face" data-vt="face"><Image class="avatar" src={m.data.photo} alt="" width={88} height={88} densities={[1, 2]} format="webp" /><span class="twin"><ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} model={m.data.figure.model} size={40} /></span></span>
                   : <ClayFigure clay={m.data.figure.clay} accessory={m.data.figure.accessory} model={m.data.figure.model} placeholder={m.data.placeholder} size={88} />}
                 <span class="txt">
-                  <strong>{t(m.data.name, lang)}</strong>
+                  <strong data-vt="name">{t(m.data.name, lang)}</strong>
                   {m.data.name.en && zh && <span class="en">{m.data.name.en}</span>}
                   <span class="muted">{m.data.placeholder ? t(ui.placeholderNote, lang) : (t(m.data.headline, lang) ?? '').split('・').map((part, i, all) => <><span class:list={[{ nw: all.length > 1 }]}>{part}{i < all.length - 1 && '・'}</span><wbr /></>)}</span>
                   <span class="badges">

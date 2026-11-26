@@ -60,10 +60,10 @@ const links = [
     <header class="head">
       <div class="portrait" data-face={d.photo ? 'photo' : 'buddy'}>
       {d.photo && (
-        <Picture class="photo" src={d.photo} alt={zh ? `${name}的照片` : `Photo of ${name}`} widths={[240, 480]} sizes="240px" formats={['avif', 'webp']} loading="eager" />
+        <Picture class="photo" data-vt-dest="face" src={d.photo} alt={zh ? `${name}的照片` : `Photo of ${name}`} widths={[240, 480]} sizes="240px" formats={['avif', 'webp']} loading="eager" />
       )}
       <div class="buddy" data-buddy>
-        <div class="stage"><ClayFigure clay={d.figure.clay} accessory={d.figure.accessory} model={d.figure.model} placeholder={d.placeholder} size={160} /></div>
+        <div class="stage" data-vt-dest={d.photo ? undefined : 'face'}><ClayFigure clay={d.figure.clay} accessory={d.figure.accessory} model={d.figure.model} placeholder={d.placeholder} size={160} /></div>
         <ClayBuddy
           client:visible
           clay={d.figure.clay}
@@ -80,7 +80,7 @@ const links = [
       </div>
       <div class="who">
         <p class="eyebrow">{t(ui.cohort(d.cohort), lang)}{d.founder ? ` · ${t(ui.founder, lang)}` : ''}</p>
-        <h1>{name}</h1>
+        <h1 data-vt-dest="name">{name}</h1>
         {zh && enName && <p class="en" lang="en">{enName}</p>}
         {d.headline && !d.placeholder && <p class="muted">{t(d.headline, lang)}</p>}
         {(links.length > 0 || d.links.schoolEmail) && (

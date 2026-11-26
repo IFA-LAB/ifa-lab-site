@@ -58,8 +58,8 @@ const jsonld = [{
     <div class="cols">
     <div class="main">
     <header class="head">
-      <p class="eyebrow"><i class="stud" aria-hidden="true"></i>{kindLabel} · {d.year}{d.status === 'forthcoming' && (zh ? ' · 即將刊登' : ' · forthcoming')}</p>
-      <h1 lang="en">{d.title}</h1>
+      <p class="eyebrow"><i class="stud" aria-hidden="true" data-vt-dest="brick"></i>{kindLabel} · {d.year}{d.status === 'forthcoming' && (zh ? ' · 即將刊登' : ' · forthcoming')}</p>
+      <h1 lang="en" data-vt-dest="title">{d.title}</h1>
       <p class="authors" lang="en">{d.authors.map((a, i) => (
         <>{i > 0 && ', '}<span class="nw">{byName.has(a) ? <a href={href(lang, `members/${byName.get(a)}`)}><strong>{a}</strong></a> : a === 'Hsin-Yu Chiu' ? <a href={href(lang, 'advisor')}><strong>{a}</strong></a> : a}{d.corresponding.includes(i) && '*'}</span></>
       ))}</p>
@@ -108,7 +108,7 @@ const jsonld = [{
             <li>
               {p.id === paper.id
                 ? <span class="brick here" aria-current="page"><b>{p.data.year}</b><span lang="en">{p.data.title}</span><em>{zh ? '這篇' : 'This one'}</em></span>
-                : <a class="brick" href={href(lang, `papers/${p.id}`)}><b>{p.data.year}</b><span lang="en">{p.data.title}</span></a>}
+                : <a class="brick" href={href(lang, `papers/${p.id}`)}><b data-vt="brick">{p.data.year}</b><span lang="en" data-vt="title">{p.data.title}</span></a>}
             </li>
           ))}
         </ol>
