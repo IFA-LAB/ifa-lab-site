@@ -31,14 +31,25 @@ const brick = (w: (typeof works)[number]) => ({ title: w.title, clay: areaOf(w.a
 // founders were there when the lab opened (2023); everyone else from the September their cohort started (cohort 1 = 2023)
 const joinYear = (m: (typeof members)[number]) => (m.data.founder ? 2023 : 2022 + m.data.cohort);
 const done = works.filter((w) => w.year > 0);
+// the chart starts the year the lab opened; everything before it is one candle: 邱老師's own work up to then
+const OPEN = 2023;
 const first = Math.min(...done.map((w) => w.year)), last = Math.max(...done.map((w) => w.year), ...members.map(joinYear));
-const yearList = Array.from({ length: last - first + 1 }, (_, i) => first + i);
+const yearList = Array.from({ length: last - OPEN + 1 }, (_, i) => OPEN + i);
+const before = done.filter((w) => w.year < OPEN).sort((a, b) => a.year - b.year || byArea(a, b));
 
 const pick = (y: number) => {
   const evs = events.filter((e) => e.date.startsWith(String(y)));
   return evs.find((e) => e.kind === 'milestone' && e.date.slice(5) === '08') ?? evs.find((e) => e.kind === 'milestone') ?? evs.find((e) => e.kind === 'award' && e.photo);
 };
+const beforeAreas = [...new Set(before.map((w) => areaName(w.area)))];
 const steps = [
+  ...(before.length ? [{
+    label: zh ? '成立前' : 'Before',
+    caption: zh ? `實驗室成立前，${advisor.name.zh}老師 ${first}–${OPEN - 1} 年已經累積 ${before.length} 件研究，這是 K 線的第一根。`
+      : `Before the lab opened, Prof. ${advisor.name.en} had published ${before.length} works (${first}–${OPEN - 1}): the first candle.`,
+    sub: zh ? `領域：${beforeAreas.join('、')}` : `Areas: ${beforeAreas.join(', ')}`,
+    soon: false, bricks: before.map(brick), joins: [] as string[],
+  }] : []),
   ...yearList.map((y) => {
     const ws = done.filter((w) => w.year === y).sort(byArea);
     const ms = members.filter((m) => joinYear(m) === y);
@@ -107,21 +118,21 @@ const text = {
 </Base>
 
 <style>
-  /* about 45% of a screen of scroll per year; the scene stays pinned */
-  .walk { position: relative; height: calc(var(--n) * 45dvh + 100dvh); }
+  /* about 3/4 of a screen of scroll per year, then the pull-back; the scene stays pinned */
+  .walk { position: relative; height: calc(var(--n) * 75dvh + 100dvh); }
   .stage { position: sticky; top: 0; height: 100dvh; overflow: hidden; }
   .stage :global(.walk-canvas) { position: absolute; inset: 0; }
   .stage :global(.walk-3d) { position: absolute; inset: 0; }
   /* overlay: the year being built, what happened, running totals */
   .stage :global(.walk-card) {
-    position: absolute; left: max(clamp(16px, 4vw, 48px), calc((100% - var(--page)) / 2 + 16px)); top: 50%; translate: 0 -50%;
-    width: min(380px, calc(100% - 32px)); display: grid; gap: var(--space-2); padding: var(--space-5) var(--space-6);
+    position: absolute; left: max(clamp(16px, 4vw, 48px), calc((100% - var(--page)) / 2 + 16px)); top: calc(var(--header-h, 64px) + var(--space-6));
+    width: min(340px, calc(100% - 32px)); display: grid; gap: var(--space-2); padding: var(--space-5);
     border-radius: var(--r-lg); background: color-mix(in oklab, var(--surface) 88%, transparent); backdrop-filter: blur(8px); box-shadow: 0 12px 32px var(--lo);
   }
   .stage :global(.walk-card p) { margin: 0; }
-  .stage :global(.walk-year) { font: 700 clamp(56px, 7vw, 88px)/1 var(--f-display); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; animation: year-in var(--dur-base) var(--ease-out); }
+  .stage :global(.walk-year) { font: 700 clamp(48px, 5vw, 64px)/1 var(--f-display); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; animation: year-in var(--dur-base) var(--ease-out); }
   .stage :global(.walk-h) { font: 600 clamp(26px, 3vw, 32px)/1.3 var(--f-display); }
-  .stage :global(.walk-cap) { font-size: 17px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+  .stage :global(.walk-cap) { font-size: 16px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
   .stage :global(.walk-sub) { font-size: 14px; color: var(--ink-2); }
   .stage :global(.walk-tot) { margin-top: var(--space-2) !important; padding-top: var(--space-2); border-top: 1px solid var(--line); font: 600 14px/1.5 var(--f-body); font-variant-numeric: tabular-nums; color: var(--ink-2); }
   .stage :global(.walk-cta) { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-top: var(--space-2) !important; }
@@ -129,11 +140,17 @@ const text = {
     position: absolute; left: 50%; bottom: var(--space-5); translate: -50% 0; max-width: calc(100% - 32px);
     padding: 8px 16px; border-radius: var(--r-full); background: var(--surface); box-shadow: 0 4px 12px var(--lo); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
+  /* hover label: page type beside the pointer, wraps long paper titles */
+  .stage :global(.walk-tip) {
+    position: absolute; translate: -50% calc(-100% - 16px); width: max-content; max-width: 320px; pointer-events: none;
+    padding: 8px 14px; border-radius: var(--r-md); background: var(--surface); box-shadow: 0 6px 16px var(--lo);
+    font: 500 14px/1.5 var(--f-body); color: var(--ink); text-wrap: pretty;
+  }
   @keyframes year-in { from { opacity: 0; translate: 0 8px; } }
   /* phones and portrait tablets: the chart fills the top, the card sits at the bottom */
   @media (max-aspect-ratio: 23/20) {
     .stage :global(.walk-card) { top: auto; bottom: var(--space-4); translate: none; left: 16px; right: 16px; width: auto; padding: var(--space-4) var(--space-5); }
-    .stage :global(.walk-year) { font-size: 48px; }
+    .stage :global(.walk-year) { font-size: 40px; }
     .stage :global(.walk-cap) { font-size: 15px; -webkit-line-clamp: 3; }
     .stage :global(.walk-hint) { bottom: auto; top: calc(var(--header-h, 64px) + var(--space-3)); font-size: 13px; }
   }

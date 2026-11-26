@@ -18,6 +18,7 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
   const [idx, setIdx] = useState(0);
   const [end, setEnd] = useState(false);
   const T = useRef(0);
+  const reveal = useRef(0);
   const host = useRef<HTMLDivElement>(null);
   const N = steps.length;
 
@@ -40,10 +41,12 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
     const tick = () => {
       const r = walk.getBoundingClientRect();
       const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - innerHeight)));
-      T.current = Math.min(N - 1, p * (N - 1) * 1.03);
+      // the climb takes the first 86% of the section, the pull-back to the whole chart the rest
+      T.current = Math.min(N - 1, (p / 0.86) * (N - 1));
+      reveal.current = Math.min(1, Math.max(0, (p - 0.88) / 0.1));
       const i = Math.min(N - 1, Math.max(0, Math.ceil(T.current - 0.05)));
       if (i !== lastIdx) { lastIdx = i; setIdx(i); }
-      const e = p > 0.97;
+      const e = p > 0.9;
       if (e !== lastEnd) { lastEnd = e; setEnd(e); }
       raf = requestAnimationFrame(tick);
     };
@@ -57,7 +60,7 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
     <div ref={host} className="walk-canvas">
       <div className="walk-3d" aria-hidden="true">
         <Suspense fallback={null}>
-          <WalkScene T={T} steps={steps} crew={crew} joinOf={joinOf} reduce={reduce} visible={visible} small={small} onPick={setPick} />
+          <WalkScene T={T} reveal={reveal} steps={steps} crew={crew} joinOf={joinOf} reduce={reduce} visible={visible} small={small} onPick={setPick} />
         </Suspense>
       </div>
       {/* decorative for screen readers: the page's text list carries the same content */}
@@ -74,7 +77,16 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
         </>}
         <p className="walk-tot">{text.totals.replace('{w}', String(cumWorks[idx])).replace('{m}', String(cumPeople[idx]))}</p>
       </div>
-      <span className="walk-hint" aria-hidden="true">{pick ? pick.text : text.hint}</span>
+      <span className="walk-hint" aria-hidden="true">{text.hint}</span>
+      {pick && <Tip pick={pick} host={host.current} />}
     </div>
   );
+}
+
+/** The name of what the pointer is over, in page type next to the pointer (kept inside the stage). */
+function Tip({ pick, host }: { pick: NonNullable<Pick>; host: HTMLDivElement | null }) {
+  const r = host?.getBoundingClientRect();
+  if (!r) return null;
+  const x = Math.min(r.width - 170, Math.max(170, pick.x - r.left)), y = pick.y - r.top;
+  return <span className="walk-tip" aria-hidden="true" style={{ left: x, top: y }}>{pick.text}</span>;
 }

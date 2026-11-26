@@ -1,13 +1,14 @@
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { BoxGeometry, EdgesGeometry, Vector3, type DirectionalLight, type Group, type LineSegments, type Mesh, type PerspectiveCamera } from 'three';
-import { CLAY, TagSprite } from './util';
+import { CLAY } from './util';
 import { Accessory, BODY_Y, Face, MatchaLatte, R, type Accessory as AccessoryKind, type Model } from './figure';
 
 export type WalkBrick = { title: string; clay: string; kind: string; href: string };
 export type WalkStep = { label: string; caption: string; sub: string; soon: boolean; bricks: WalkBrick[]; joins: string[] };
 export type WalkMember = { id: string; name: string; clay: string; accessory: AccessoryKind; model?: Model; href: string };
-export type Pick = { text: string; href: string; at: [number, number, number] } | null;
+/** What the pointer is over, with the pointer's position in the viewport (the page draws the label). */
+export type Pick = { text: string; href: string; x: number; y: number } | null;
 
 // The chart: one candle a year. Open = works so far, close = works after the year; the body is that year's bricks.
 const GX = 2.1; // candle spacing
@@ -73,7 +74,7 @@ function Candle({ i, s, L, c }: { i: number; s: WalkStep; L: Layout; c: Ctx }) {
         )}
       </group>
       {s.bricks.map((b, j) => {
-        const over = (e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); c.pick({ text: b.title.length > 48 ? b.title.slice(0, 46) + '…' : b.title, href: b.href, at: [x, open + j * (BH + GAPY) + 1.2, 0.9] }); };
+        const over = (e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); c.pick({ text: b.title, href: b.href, x: e.nativeEvent.clientX, y: e.nativeEvent.clientY }); };
         return (
           <group key={j} ref={(g) => { refs.current[j] = g; }} position={[0, open + j * (BH + GAPY) + BH / 2 + 6, 0]} visible={false}>
             <mesh castShadow receiveShadow onPointerOver={over} onPointerMove={over} onPointerOut={() => c.pick(null)} onClick={(e) => { e.stopPropagation(); c.open(b.href); }}>
@@ -167,6 +168,9 @@ function Climber({ L, c, at }: { L: Layout; c: Ctx; at: RefObject<Vector3> }) {
 /** A member joins in the year their cohort arrived and stands on a candle top behind the cat, three to a candle;
     when the cat moves on, everyone hops forward to their new spot. */
 function Follower({ m, join, rank, L, c, crewJoin }: { m: WalkMember; join: number; rank: number; L: Layout; c: Ctx; crewJoin: number[] }) {
+  // a fixed place in the queue: whoever joined earlier stands nearer the cat, newcomers fall in at the back,
+  // so nobody already on the chart changes places when a new cohort arrives
+  const place = useMemo(() => crewJoin.filter((j, k) => j < join || (j === join && k < rank)).length, [crewJoin, join, rank]);
   const g = useRef<Group>(null), inner = useRef<Group>(null);
   const cur = useRef<Vector3 | null>(null);
   const tgt = useMemo(() => new Vector3(), []);
@@ -177,9 +181,6 @@ function Follower({ m, join, rank, L, c, crewJoin }: { m: WalkMember; join: numb
     const shown = clamp((T - join + 0.2) / 0.3);
     o.visible = shown > 0.001;
     if (!o.visible) { cur.current = null; return; }
-    // place in line: the newest members stand nearest the cat
-    let place = 0;
-    crewJoin.forEach((j, k) => { if (k !== rank && T >= j - 0.2 && (j > join || (j === join && k > rank))) place++; });
     const cat = Math.min(L.length - 1, Math.floor(Math.max(0, T) + 0.4));
     // the first three share the cat's own candle, in the back row; the rest fill the candles behind it
     const ci = Math.max(0, cat - Math.floor(place / 3)), slot = place % 3;
@@ -195,7 +196,7 @@ function Follower({ m, join, rank, L, c, crewJoin }: { m: WalkMember; join: numb
       inner.current.position.y = c.reduce ? 0 : Math.abs(Math.sin(clock.getElapsedTime() * 3 + rank)) * 0.04;
     }
   });
-  const over = (e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); const p = g.current!.position; c.pick({ text: m.name, href: m.href, at: [p.x, p.y + 1.1, 0.8] }); };
+  const over = (e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); c.pick({ text: m.name, href: m.href, x: e.nativeEvent.clientX, y: e.nativeEvent.clientY }); };
   return (
     <group ref={g} visible={false} rotation={[0, -0.3, 0]}>
       <group ref={inner} scale={0.001}>
@@ -213,46 +214,67 @@ function Follower({ m, join, rank, L, c, crewJoin }: { m: WalkMember; join: numb
   );
 }
 
-/** Camera: follows the cat up the chart. Wide screens keep it right of the text; tall screens keep it in the upper half. */
-function Rig({ at }: { at: RefObject<Vector3> }) {
+// A different camera angle for every year, blended as the page scrolls: yaw around the cat, height, distance.
+const YAW = [-0.55, 0.45, -0.2, 0.6, -0.4, 0.25];
+const LIFT = [0.16, 0.36, 0.1, 0.26, 0.3, 0.18];
+const ZOOM = [1.05, 0.85, 1.1, 0.9, 0.95, 1];
+const keyAt = (k: number[], T: number) => { const i = Math.floor(Math.max(0, T)), f = ease(clamp(T - i)); const a = k[i % k.length], b = k[(i + 1) % k.length]; return a + (b - a) * f; };
+
+/** Camera: orbits K 喵 as it climbs, a new angle each year; at the end it pulls back to show the whole chart.
+    The projection is shifted so the subject sits right of the text card on wide screens and above it on tall ones. */
+function Rig({ at, L, c, reveal, focus }: { at: RefObject<Vector3>; L: Layout; c: Ctx; reveal: RefObject<number>; focus: RefObject<Vector3> }) {
   const { camera, size } = useThree();
-  const cur = useRef<Vector3 | null>(null);
-  const look = useMemo(() => new Vector3(), []);
+  const pos = useRef<Vector3 | null>(null), look = useRef<Vector3 | null>(null);
+  const want = useMemo(() => new Vector3(), []), wantLook = useMemo(() => new Vector3(), []), tmp = useMemo(() => new Vector3(), []);
+  const wide = size.width / size.height > 1.15;
+  useEffect(() => {
+    const cam = camera as PerspectiveCamera;
+    cam.setViewOffset(size.width, size.height, wide ? -size.width * 0.15 : 0, wide ? 0 : size.height * 0.16, size.width, size.height);
+    cam.updateProjectionMatrix();
+    return () => { cam.clearViewOffset(); cam.updateProjectionMatrix(); };
+  }, [camera, size.width, size.height, wide]);
   useFrame((_, dt) => {
-    const a = at.current!;
-    if (!cur.current) cur.current = a.clone();
-    cur.current.lerp(a, 1 - Math.exp(-Math.min(dt, 0.1) * 4));
-    const c = camera as PerspectiveCamera;
-    const aspect = size.width / size.height, wide = aspect > 1.15;
-    const tan = Math.tan((c.fov * Math.PI) / 360);
-    // enough of the chart to read the climb: about 5 candles across on desktop, 3 on phones
-    const d = wide ? (GX * 5.2) / (2 * tan * aspect) : (GX * 3) / (2 * tan * aspect);
-    const visW = 2 * d * tan * aspect, visH = 2 * d * tan;
-    const x = cur.current.x - (wide ? visW * 0.1 : GX * 0.35);
-    const y = cur.current.y + 0.4 - (wide ? 0 : visH * 0.1);
-    c.position.set(x - 1.4, y + d * 0.18, d);
-    look.set(x, y, 0);
-    c.lookAt(look);
+    const cam = camera as PerspectiveCamera;
+    const T = now(c, L), a = at.current!;
+    const aspect = size.width / size.height, tan = Math.tan((cam.fov * Math.PI) / 360);
+    // about 4 candles across on desktop, 2.6 on phones, then each year's own zoom
+    const d = (wide ? GX * 4.2 : GX * 2.6) / (2 * tan * aspect) * keyAt(ZOOM, T);
+    const yaw = keyAt(YAW, T), lift = keyAt(LIFT, T);
+    want.set(a.x + Math.sin(yaw) * d, a.y + 0.6 + lift * d, Math.cos(yaw) * d);
+    wantLook.set(a.x + 0.2, a.y + 0.6, 0);
+    // the ending: the whole chart from a high three-quarter view, the dashed next candle included
+    const r = ease(clamp(reveal.current ?? 0));
+    if (r > 0) {
+      const last = L[L.length - 1], cx = (last.x + GX) / 2, cy = (last.close + BH * 3) / 2 - 0.3;
+      const D = 1.1 * Math.max((last.x + GX * 3) / (2 * tan * aspect * (wide ? 0.7 : 1)), (last.close + 3) / (2 * tan * (wide ? 0.85 : 0.65)));
+      want.lerp(tmp.set(cx + Math.sin(-0.5) * D, cy + D * 0.16, Math.cos(-0.5) * D), r);
+      wantLook.lerp(tmp.set(cx, cy, 0), r);
+    }
+    if (!pos.current || !look.current) { pos.current = want.clone(); look.current = wantLook.clone(); }
+    const k = 1 - Math.exp(-Math.min(dt, 0.1) * 4.5);
+    pos.current.lerp(want, k); look.current.lerp(wantLook, k);
+    cam.position.copy(pos.current); cam.lookAt(look.current);
+    focus.current!.copy(look.current);
   });
   return null;
 }
 
-/** The key light follows the camera, so its shadow box only covers what is in view. */
-function Sun({ small }: { small: boolean }) {
+/** The key light follows what the camera looks at, so its shadow box only covers what is in view. */
+function Sun({ small, focus }: { small: boolean; focus: RefObject<Vector3> }) {
   const l = useRef<DirectionalLight>(null);
-  const { camera, scene } = useThree();
+  const { scene } = useThree();
   useEffect(() => { const o = l.current; if (o) { scene.add(o.target); return () => { scene.remove(o.target); }; } }, [scene]);
   useFrame(() => {
-    const o = l.current; if (!o) return;
-    o.position.set(camera.position.x + 5, camera.position.y + 10, 8);
-    o.target.position.set(camera.position.x + 1, camera.position.y - 3, 0);
+    const o = l.current, f = focus.current; if (!o || !f) return;
+    o.position.set(f.x + 5, f.y + 10, 8);
+    o.target.position.set(f.x + 1, f.y - 2, 0);
   });
   return <directionalLight ref={l} intensity={2.2} castShadow={!small} shadow-mapSize={[1024, 1024]} shadow-bias={-0.0005}
-    shadow-camera-left={-14} shadow-camera-right={14} shadow-camera-top={12} shadow-camera-bottom={-12} shadow-camera-far={50} />;
+    shadow-camera-left={-16} shadow-camera-right={16} shadow-camera-top={14} shadow-camera-bottom={-14} shadow-camera-far={60} />;
 }
 
-export default function WalkScene({ T, steps, crew, joinOf, reduce, visible, small, onPick }: {
-  T: RefObject<number>; steps: WalkStep[]; crew: WalkMember[]; joinOf: Record<string, number>;
+export default function WalkScene({ T, reveal, steps, crew, joinOf, reduce, visible, small, onPick }: {
+  T: RefObject<number>; reveal: RefObject<number>; steps: WalkStep[]; crew: WalkMember[]; joinOf: Record<string, number>;
   reduce: boolean; visible: boolean; small: boolean; onPick: (x: Pick) => void;
 }) {
   const [picked, setPicked] = useState<Pick>(null);
@@ -260,7 +282,8 @@ export default function WalkScene({ T, steps, crew, joinOf, reduce, visible, sma
   const c: Ctx = { T, reduce, pick, open: (href) => window.location.assign(href) };
   const L = useMemo(() => layoutOf(steps), [steps]);
   const at = useRef(new Vector3());
-  const crewJoin = crew.map((m) => joinOf[m.id] ?? 0);
+  const focus = useRef(new Vector3());
+  const crewJoin = useMemo(() => crew.map((m) => joinOf[m.id] ?? 0), [crew, joinOf]);
   const end = L[L.length - 1];
   return (
     <Canvas
@@ -273,9 +296,9 @@ export default function WalkScene({ T, steps, crew, joinOf, reduce, visible, sma
       onPointerMissed={() => pick(null)}
       style={{ cursor: picked ? 'pointer' : 'auto' }}
     >
-      <Rig at={at} />
+      <Rig at={at} L={L} c={c} reveal={reveal} focus={focus} />
       <hemisphereLight args={['#ffffff', '#c9d4e3', 2]} />
-      <Sun small={small} />
+      <Sun small={small} focus={focus} />
       <mesh position={[end.x / 2, -0.4, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[end.x + 60, 30]} />
         <shadowMaterial opacity={0.1} />
@@ -285,7 +308,6 @@ export default function WalkScene({ T, steps, crew, joinOf, reduce, visible, sma
       <Ghost x={end.x + GX} y={end.close + 0.15} c={c} L={L} />
       <Climber L={L} c={c} at={at} />
       {crew.map((m, k) => <Follower key={m.id} m={m} rank={k} join={joinOf[m.id] ?? 0} L={L} c={c} crewJoin={crewJoin} />)}
-      {picked && <TagSprite text={picked.text} position={picked.at} height={0.45} />}
     </Canvas>
   );
 }
