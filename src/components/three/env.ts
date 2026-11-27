@@ -38,3 +38,7 @@ export function useMedia(query: string) {
   return on;
 }
 export const usePrefersReducedMotion = () => useMedia('(prefers-reduced-motion: reduce)');
+
+/** The page is behind the loading screen (Base.astro `gate`): build the 3D now instead of waiting for the first gesture,
+    so the visitor walks in on the finished scene and never sees the static picture swap to 3D. */
+export const gated = () => typeof document !== 'undefined' && document.documentElement.hasAttribute('data-gate');

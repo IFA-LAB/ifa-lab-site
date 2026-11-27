@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { coin, meow } from '@/lib/sfx';
-import { canRun3D, usePrefersReducedMotion, useMedia } from './env';
+import { canRun3D, gated, usePrefersReducedMotion, useMedia } from './env';
 
 /** label = short text painted on the board; name = full area name for the hint. */
 export type Bar = { key: string; label: string; name: string; count: number; href: string; clay: string };
@@ -43,6 +43,7 @@ export default function ClayKline({ bars, steps = [], hint, hintTouch, unit, wak
   useEffect(() => {
     let done = false;
     const start = () => { if (!done) { done = true; setOk(canRun3D()); } };
+    if (gated()) { start(); return; }
     if (matchMedia('(hover: none)').matches) {
       const evs = ['pointerdown', 'touchstart', 'keydown', 'wheel'] as const;
       const go = () => { evs.forEach((e) => removeEventListener(e, go)); start(); };
@@ -121,7 +122,7 @@ export default function ClayKline({ bars, steps = [], hint, hintTouch, unit, wak
           </button>
           <span className="kline-year">
             <b>{steps[step]?.label}</b>
-            <small>{total} {text.total}{atNow && !playing && text.replay ? <>{' · '}<span className="nw">{text.replay.replace('{y}', steps[0].label)}</span></> : null}</small>
+            <small>{total} {text.total}{atNow && !playing && text.replay ? <span className="nw" style={{ display: 'block' }}>{text.replay.replace('{y}', steps[0].label)}</span> : null}</small>
           </span>
           <input
             type="range" min={0} max={last} step={1} value={step}

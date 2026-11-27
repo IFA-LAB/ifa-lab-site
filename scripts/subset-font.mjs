@@ -28,7 +28,7 @@ const html = [];
 // Elements that use var(--f-display): headings, buttons, stat numbers, strong names, step numbers.
 const pick = [
   /<(h[1-4]|dd|strong|summary)\b[^>]*>([\s\S]*?)<\/\1>/g,
-  /<(a|button|span|p)\b[^>]*class="[^"]*\b(?:btn|name|num|go)\b[^"]*"[^>]*>([\s\S]*?)<\/\1>/g,
+  /<(a|button|span|p)\b[^>]*class="[^"]*\b(?:btn|name|num|go|walk-h)\b[^"]*"[^>]*>([\s\S]*?)<\/\1>/g,
 ];
 const chars = new Set();
 const add = (s) => {
@@ -36,8 +36,9 @@ const add = (s) => {
   for (const ch of text) if (ch.codePointAt(0) > 0x7f) chars.add(ch);
 };
 for (const h of html) for (const re of pick) for (const m of h.matchAll(re)) add(m[m.length - 1]);
-// The 3D board paints area names onto a canvas; they come in as island props (JSON in the HTML).
-for (const h of html) for (const m of h.matchAll(/&quot;label&quot;:\[0,&quot;([^&]*)&quot;\]/g)) add(m[1]);
+// Island props (JSON in the HTML): the 3D board paints area names onto a canvas, and the history walk shows its
+// closing heading (endH, class walk-h) only once the visitor scrolls to the end, so neither is in the static markup.
+for (const h of html) for (const m of h.matchAll(/&quot;(?:label|endH)&quot;:\[0,&quot;([^&]*)&quot;\]/g)) add(m[1]);
 // Common punctuation, so a new heading with these never mixes faces.
 add('，。、：；？！「」『』（）・—…～０１２３４５６７８９');
 
@@ -52,6 +53,8 @@ for (const f of readdirSync(join(DIST, '_astro')).filter((f) => f.endsWith('.css
   const p = join(DIST, '_astro', f), css = readFileSync(p, 'utf8');
   if (css.includes('/fonts/huninn-sub.woff2')) writeFileSync(p, css.replaceAll(/\/fonts\/huninn-sub\.woff2(\?v=\w+)?/g, `/fonts/huninn-sub.woff2?v=${v}`));
 }
+// the list of covered characters, for the coverage check (scripts/check-font.mjs)
+writeFileSync(join(DIST, 'fonts/huninn-chars.txt'), text);
 if (process.argv.includes('--public')) {
   mkdirSync(join(ROOT, 'public/fonts'), { recursive: true });
   writeFileSync(join(ROOT, 'public/fonts/huninn-sub.woff2'), out);

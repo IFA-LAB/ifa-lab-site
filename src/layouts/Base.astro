@@ -4,6 +4,7 @@ import AskCat from '@/components/AskCat.astro';
 import '@/styles/global.css';
 import ScrollCat from '@/components/ScrollCat.astro';
 import Header from '@/components/Header.astro';
+import Gate from '@/components/Gate.astro';
 import Footer from '@/components/Footer.astro';
 import { htmlLang, ogLocale, locales, swapLocale, ui, t, type Locale } from '@/i18n/ui';
 import { lab } from '@/data/lab';
@@ -17,8 +18,10 @@ interface Props {
   ogType?: 'website' | 'profile' | 'article';
   /** Absolute or root-relative URL of the share image. */
   image?: string;
+  /** The page opens on a 3D scene: hold it behind the loading screen until the scene has drawn (Gate.astro). */
+  gate?: boolean;
 }
-const { lang, title, description, jsonld = [], ogType = 'website', image } = Astro.props;
+const { lang, title, description, jsonld = [], ogType = 'website', image, gate = false } = Astro.props;
 const site = Astro.site!;
 const path = Astro.url.pathname;
 const canonical = new URL(path, site).href;
@@ -45,7 +48,7 @@ const org = {
 const graph = [org, ...jsonld];
 ---
 <!doctype html>
-<html lang={htmlLang[lang]}>
+<html lang={htmlLang[lang]} data-gate-page={gate ? '' : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -69,6 +72,12 @@ const graph = [org, ...jsonld];
     <script is:inline>
       try { const s = localStorage.getItem('theme'); if (s === 'light' || s === 'dark') document.documentElement.dataset.theme = s; } catch {}
       // desktop with a mouse: the scrollbar becomes K 喵's candle (ScrollCat.astro); decided before paint so nothing shifts
+      // pages that open on 3D wait behind the loading screen, but only when the 3D will run (same test as canRun3D)
+      if (document.documentElement.hasAttribute('data-gate-page') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const n = navigator;
+        let gl = false; try { const c = document.createElement('canvas').getContext('webgl2'); gl = !!c; c?.getExtension('WEBGL_lose_context')?.loseContext(); } catch {}
+        if (gl && !n.connection?.saveData && !(n.deviceMemory < 4)) document.documentElement.setAttribute('data-gate', '');
+      }
       if (matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches) document.documentElement.classList.add('cat-scroll');
       // Shared elements between pages: the paper title you clicked grows into the paper page's heading (its brick into the
       // heading's stud); a member's face and name fly to the profile's portrait and name. Pairs are named only for the one
@@ -103,6 +112,7 @@ const graph = [org, ...jsonld];
     <slot name="head" />
   </head>
   <body>
+    {gate && <Gate lang={lang} />}
     <a class="skip" href="#main">{t(ui.skip, lang)}</a>
     <Header lang={lang} />
     <main id="main" tabindex="-1">

@@ -31,7 +31,7 @@ const jsonld = people.map((m) => ({
   affiliation: { '@id': new URL('/#org', site).href },
 }));
 ---
-<Base lang={lang} title={t(ui.nav.members, lang)} description={zh ? 'IFA Lab 各屆成員：碩士論文、研究方向與專案。' : 'IFA Lab members by cohort: theses, research interests and projects.'} jsonld={jsonld}>
+<Base gate lang={lang} title={t(ui.nav.members, lang)} description={zh ? 'IFA Lab 各屆成員：碩士論文、研究方向與專案。' : 'IFA Lab members by cohort: theses, research interests and projects.'} jsonld={jsonld}>
   <div class="wrap section">
     <div class="intro">
       <div class="section-head">

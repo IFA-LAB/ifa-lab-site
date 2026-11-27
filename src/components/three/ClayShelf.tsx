@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { canRun3D, usePrefersReducedMotion, useMedia } from './env';
+import { canRun3D, gated, usePrefersReducedMotion, useMedia } from './env';
 import type { ShelfMember, ShelfRow } from './ShelfScene';
 
 type Props = {
@@ -30,6 +30,7 @@ export default function ClayShelf({ rows, hint, hintTouch, open, openTouch }: Pr
   useEffect(() => {
     let done = false;
     const start = () => { if (!done) { done = true; setOk(canRun3D()); } };
+    if (gated()) { start(); return; }
     const evs = (matchMedia('(hover: none)').matches
       ? ['pointerdown', 'touchstart', 'keydown']
       : ['pointermove', 'pointerdown', 'keydown', 'wheel', 'scroll']) as string[];
