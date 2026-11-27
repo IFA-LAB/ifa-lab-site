@@ -80,6 +80,8 @@ const publications = defineCollection({
     tags: z.array(z.string()).default([]),
     area: z.enum(['empirical', 'behavioral', 'pricing', 'ai', 'forecast', 'apps']),
     plain: L.optional(),
+    /** the published abstract, verbatim (publisher, RePEc, OpenAlex or Airiti); zh only for Chinese-language journals */
+    abstract: z.object({ en: z.string().optional(), zh: z.string().optional() }).optional(),
   }),
 });
 
