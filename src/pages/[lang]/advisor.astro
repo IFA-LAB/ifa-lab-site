@@ -23,6 +23,7 @@ const share = await getImage({ src: photo, width: 336, format: 'jpg' });
 const person = {
   '@context': 'https://schema.org',
   '@type': 'Person',
+  '@id': new URL('/#advisor', site).href,
   name: advisor.name.en,
   alternateName: advisor.name.zh,
   jobTitle: [advisor.title.en, advisor.office.en],

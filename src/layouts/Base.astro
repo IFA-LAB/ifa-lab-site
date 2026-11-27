@@ -48,6 +48,7 @@ const org = {
   },
   address: { '@type': 'PostalAddress', streetAddress: lab.contact.address.en, addressCountry: 'TW' },
   logo: new URL('/logo.png', site).href,
+  sameAs: ['https://github.com/IFA-LAB'],
 };
 const shareImage = new URL(image ?? `/og-${lang === 'en' ? 'en' : 'zh'}-2.jpg`, site).href;
 // every page says which site it belongs to and who publishes it, so an answer engine can attribute what it quotes

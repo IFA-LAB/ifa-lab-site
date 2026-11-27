@@ -31,7 +31,7 @@ const jsonld = [{
   '@type': 'ScholarlyArticle',
   headline: d.title,
   name: d.title,
-  author: d.authors.map((a) => ({ '@type': 'Person', name: a, ...(byName.has(a) ? { url: new URL(href(lang, `members/${byName.get(a)}`), site).href } : {}) })),
+  author: d.authors.map((a) => ({ '@type': 'Person', name: a, ...(byName.has(a) ? { '@id': new URL(`/#person-${byName.get(a)}`, site).href, url: new URL(href(lang, `members/${byName.get(a)}`), site).href } : a === 'Hsin-Yu Chiu' ? { '@id': new URL('/#advisor', site).href, url: new URL(href(lang, 'advisor'), site).href } : {}) })),
   datePublished: String(d.year),
   abstract: d.abstract?.en ?? d.plain?.en,
   about: area.name.en,

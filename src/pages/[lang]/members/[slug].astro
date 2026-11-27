@@ -54,6 +54,7 @@ const share = d.photo ? await getImage({ src: d.photo, width: 640, format: 'jpg'
 const person = {
   '@context': 'https://schema.org',
   '@type': 'Person',
+  '@id': new URL(`/#person-${m.id}`, site).href,
   name: enName ?? d.name.zh,
   alternateName: d.name.zh,
   url: new URL(href(lang, `members/${m.id}`), site).href,

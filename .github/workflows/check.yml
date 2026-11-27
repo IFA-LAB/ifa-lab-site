@@ -43,3 +43,11 @@ jobs:
             echo "$code $p"; [ "$code" = 200 ] || exit 1
           done
           code=$(curl -s -o /dev/null -w '%{http_code}' "$base/no-such-page/"); echo "$code /no-such-page/ (want 404)"; [ "$code" = 404 ]
+      # Tell Bing (and the AI answer engines built on its index) which pages changed: IndexNow, key file in public/.
+      - name: IndexNow
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          urls=$(curl -s https://ifalab-ncu.com/sitemap-0.xml | grep -o '<loc>[^<]*' | sed 's/<loc>//' | jq -R . | jq -s -c .)
+          body=$(jq -n -c --argjson u "$urls" '{host:"ifalab-ncu.com",key:"ac905f92f3464766c6cf50f88ddf13e9",keyLocation:"https://ifalab-ncu.com/ac905f92f3464766c6cf50f88ddf13e9.txt",urlList:$u}')
+          code=$(curl -s -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json; charset=utf-8' -d "$body" https://api.indexnow.org/indexnow)
+          echo "IndexNow: $code"

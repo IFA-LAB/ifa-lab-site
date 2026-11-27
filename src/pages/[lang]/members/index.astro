@@ -25,6 +25,7 @@ const people = cohorts.flatMap(([, ms]) => ms).filter((m) => !m.data.placeholder
 const jsonld = people.map((m) => ({
   '@context': 'https://schema.org',
   '@type': 'Person',
+  '@id': new URL(`/#person-${m.id}`, site).href,
   name: m.data.name.en ?? m.data.name.zh,
   alternateName: m.data.name.zh,
   url: new URL(href(lang, `members/${m.id}`), site).href,
