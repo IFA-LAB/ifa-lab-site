@@ -166,7 +166,8 @@ function Climber({ L, c, at }: { L: Layout; c: Ctx; at: RefObject<Vector3> }) {
     const T = now(c, L);
     pathAt(L, T, v);
     const walking = !c.reduce && T % 1 < 0.6 && T < L.length - 1;
-    g.current.position.set(v.x, v.y + (walking ? Math.abs(Math.sin(clock.getElapsedTime() * 12)) * 0.05 : 0), 0.42);
+    // a little right of centre and to the front edge, so it does not sit in front of the year's new members
+    g.current.position.set(v.x + 0.36, v.y + (walking ? Math.abs(Math.sin(clock.getElapsedTime() * 12)) * 0.05 : 0), 0.5);
     at.current!.copy(v);
   });
   return <group ref={g} rotation={[0, -0.45, 0]}><CatBody reduce={c.reduce} /></group>;
@@ -237,15 +238,20 @@ function Rig({ at, L, c, reveal, focus }: { at: RefObject<Vector3>; L: Layout; c
     const cam = camera as PerspectiveCamera;
     const T = now(c, L), a = at.current!;
     const aspect = size.width / size.height, tan = Math.tan((cam.fov * Math.PI) / 360);
-    // about 4 candles across on desktop, 2.6 on phones, then each year's own zoom
-    const d = (wide ? GX * 4.2 : GX * 2.6) / (2 * tan * aspect) * keyAt(ZOOM, T);
+    // about 5 candles across on desktop, 2.6 on phones; on wide screens also far enough back that this year's whole candle
+    // fits in height (a tall year was cut off at the top, leaving most of the frame empty), then each year's own zoom
+    const yr = L[clamp(Math.round(T), 0, L.length - 1)], h = yr.close - yr.open;
+    const dH = (wide ? GX * 5 : GX * 2.6) / (2 * tan * aspect), dV = wide ? (h + 3.2) / (2 * tan) : 0;
+    const d = Math.max(dH, dV) * keyAt(ZOOM, T);
     const yaw = keyAt(YAW, T), lift = keyAt(LIFT, T);
-    want.set(a.x + Math.sin(yaw) * d, a.y + 0.6 + lift * d, Math.cos(yaw) * d);
-    wantLook.set(a.x + 0.2, a.y + 0.6, 0);
+    // wide screens aim between the cat and the candle's foot, so the year's bricks and the cat share the frame
+    const lookY = a.y + 0.6 - (wide ? h * 0.42 : 0);
+    want.set(a.x + Math.sin(yaw) * d, lookY + lift * d, Math.cos(yaw) * d);
+    wantLook.set(a.x + 0.2, lookY, 0);
     // the ending: the whole chart from a high three-quarter view, the dashed next candle included
     const r = ease(clamp(reveal.current ?? 0));
     if (r > 0) {
-      const last = L[L.length - 1], cx = (last.x + GX) / 2, cy = (last.close + BH * 3) / 2 - 0.3;
+      const last = L[L.length - 1], cx = (last.x + GX) / 2, cy = (last.close + BH * 3) / 2 + 0.5; // a little high, so the dashed next candle clears the header
       const D = 1.1 * Math.max((last.x + GX * 3) / (2 * tan * aspect * (wide ? 0.7 : 1)), (last.close + 3) / (2 * tan * (wide ? 0.85 : 0.65)));
       want.lerp(tmp.set(cx + Math.sin(-0.5) * D, cy + D * 0.16, Math.cos(-0.5) * D), r);
       wantLook.lerp(tmp.set(cx, cy, 0), r);
