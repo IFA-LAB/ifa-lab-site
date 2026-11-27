@@ -27,15 +27,15 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
     <div class="section-head">
       <p class="eyebrow">{t(ui.nav.collaboration, lang)}</p>
       <h1>{zh ? '一起做金融 × 科技的研究' : 'Research at the intersection of finance and technology'}</h1>
-      <p class="muted">{zh ? `正在和兆豐做產學合作，也和 ${people.length} 位其他學者合寫過論文，刊在 ${venues.length} 本期刊。` : `An ongoing project with Mega Bank, and papers co-written with ${people.length} other researchers, in ${venues.length} journals.`}</p>
+      <p class="muted">{zh ? `和兆豐完成過一個產學合作，也和 ${people.length} 位其他學者合寫過論文，刊在 ${venues.length} 本期刊。` : `A completed industry project with Mega Bank, and papers co-written with ${people.length} other researchers, in ${venues.length} journals.`}</p>
     </div>
     <section class="case" aria-labelledby="case-h">
       <span class="cat-perch"><LabCat lang={lang} size={68} bubble="left" lines={[{ zh: '這是學長姐跟企業一起做的案子。', en: 'Our seniors built this one together with a company.' }, { zh: '有資料、有問題？寄信來，我們聊聊。', en: 'Got data and a question? Email us and let us talk.' }]} /></span>
-      <p class="eyebrow">{zh ? '進行中的產學合作' : 'Ongoing industry project'}</p>
+      <p class="eyebrow">{zh ? '已完成的產學合作' : 'Completed industry project'}</p>
       <h2 id="case-h">{zh ? '兆豐 × IFA Lab：隨機優勢能不能預測？' : 'Mega × IFA Lab: can stochastic dominance be predicted?'}</h2>
       <p class="lede">{zh
         ? '和兆豐金控、兆豐銀行合作，研究「隨機優勢」關係的可預測性與持續性：處理跨時區資料對齊、超參數調整與財務特徵，讓模型的結果能放進實際的投資決策。'
-        : 'With Mega Financial Holding and Mega Bank, we study whether stochastic-dominance relations are predictable and persistent, working through cross-timezone data alignment, tuning and financial features so the results can feed real investment decisions.'}</p>
+        : 'With Mega Financial Holding and Mega Bank, we studied whether stochastic-dominance relations are predictable and persistent, working through cross-timezone data alignment, tuning and financial features so the results could feed real investment decisions.'}</p>
       <p class="team">{zh ? '參與成員：' : 'Team: '}<a href={href(lang, 'members/wei-hua-hou')}>{zh ? '侯威華' : 'Wei-Hua Hou'}</a>{zh ? '、' : ', '}<a href={href(lang, 'members/yu-bin-chen')}>{zh ? '陳昱斌' : 'Yu-Bin Chen'}</a>{zh ? '，指導：邱信瑜' : '; advisor Hsin-Yu Chiu'}</p>
     </section>
     <h2 class="ways-h">{zh ? '可以怎麼合作' : 'Ways to work with us'}</h2>

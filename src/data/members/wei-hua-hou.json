@@ -13,8 +13,8 @@
     "en": "M.S. student, Information Management"
   },
   "bio": {
-    "zh": "中央資管碩士生，專長 AI 模型架構與應用開發。曾與工研院合作處理資料稀少與類別不平衡問題，目前參與兆豐金控產學合作，研究隨機優勢的可預測性與持續性。",
-    "en": "M.S. student at NCU Information Management, focused on AI model architecture and application development. He worked with ITRI on data scarcity and class imbalance, and now works on an industry-academia project with Mega Financial Holding on the predictability and persistence of stochastic dominance."
+    "zh": "中央資管碩士生，專長 AI 模型架構與應用開發。曾與工研院合作處理資料稀少與類別不平衡問題，也參與過兆豐金控產學合作，研究隨機優勢的可預測性與持續性。",
+    "en": "M.S. student at NCU Information Management, focused on AI model architecture and application development. He worked with ITRI on data scarcity and class imbalance, and worked on an industry-academia project with Mega Financial Holding on the predictability and persistence of stochastic dominance."
   },
   "education": [
     {
@@ -43,7 +43,7 @@
   "projects": [
     {
       "name": "Stochastic Dominance",
-      "year": "2025–",
+      "year": "2025–2026",
       "desc": {
         "zh": "兆豐金控產學合作：隨機優勢的可預測性與持續性",
         "en": "Mega Financial Holding: predictability and persistence of stochastic dominance"

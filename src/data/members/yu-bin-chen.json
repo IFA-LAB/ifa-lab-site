@@ -13,8 +13,8 @@
     "en": "M.S. student, Information Management"
   },
   "bio": {
-    "zh": "中央資管碩士生，研究市場微結構與資訊不對稱。做過 Fama–French 因子、隔夜報酬與券商分點交易資料的策略研究，目前參與兆豐銀行產學合作，研究隨機優勢的可預測性與持續性。大學期間做過兩個資安與 AI 專題，受邀到友達光電發表，並有兩年以上程式教學經驗。",
-    "en": "M.S. student at NCU Information Management researching market microstructure and information asymmetry. He has studied strategies based on Fama–French factors, overnight returns and broker-branch trading data, and now works on an industry-academia project with Mega International Commercial Bank on the predictability and persistence of stochastic dominance. As an undergraduate he led two security and AI projects, gave an invited talk at AUO, and has taught programming for over two years."
+    "zh": "中央資管碩士生，研究市場微結構與資訊不對稱。做過 Fama–French 因子、隔夜報酬與券商分點交易資料的策略研究，參與過兆豐銀行產學合作，研究隨機優勢的可預測性與持續性。大學期間做過兩個資安與 AI 專題，受邀到友達光電發表，並有兩年以上程式教學經驗。",
+    "en": "M.S. student at NCU Information Management researching market microstructure and information asymmetry. He has studied strategies based on Fama–French factors, overnight returns and broker-branch trading data, and worked on an industry-academia project with Mega International Commercial Bank on the predictability and persistence of stochastic dominance. As an undergraduate he led two security and AI projects, gave an invited talk at AUO, and has taught programming for over two years."
   },
   "education": [
     {
@@ -72,7 +72,7 @@
     },
     {
       "name": "Mega Bank Project",
-      "year": "2025–",
+      "year": "2025–2026",
       "desc": {
         "zh": "兆豐銀行產學合作：跨時區資料對齊、超參數調整與財務特徵",
         "en": "Mega Bank: cross-timezone data alignment, tuning and financial features"
