@@ -10,7 +10,7 @@ export const getStaticPaths = langPaths;
 const lang = Astro.params.lang as Locale;
 const zh = lang === 'zh-tw';
 const ways: { title: Bi; body: Bi; clay: string }[] = [
-  { clay: 'blue', title: { zh: '產業合作', en: 'Industry partners' }, body: { zh: '歡迎企業、金融機構與科技公司來談聯合研究、顧問，或能實際落地的解決方案。目前與兆豐有一項產學合作，研究隨機優勢的可預測性。', en: 'We welcome businesses, financial institutions and tech companies for joint research, consulting or applied solutions. We currently run an industry-academia project with Mega on the predictability of stochastic dominance.' } },
+  { clay: 'blue', title: { zh: '產業合作', en: 'Industry partners' }, body: { zh: '歡迎企業、金融機構與科技公司來談聯合研究、顧問，或能實際落地的解決方案。', en: 'We welcome businesses, financial institutions and tech companies for joint research, consulting or applied solutions.' } },
   { clay: 'sun', title: { zh: '學術合作', en: 'Academic collaboration' }, body: { zh: '共同研究、交換計畫與合著論文。我們和其他學校的學者合寫過期刊論文，也歡迎一起申請國科會計畫。', en: 'Joint research, exchange programs and co-authored papers. We have co-authored journal papers with researchers at other universities, and welcome joint NSTC proposals.' } },
   { clay: 'pink', title: { zh: '跨領域研究', en: 'Interdisciplinary research' }, body: { zh: '結合資訊科技、經濟學、心理學與資料科學，也歡迎非金融領域的研究者。', en: 'Combining IT, economics, psychology and data science; researchers outside finance are welcome.' } },
 ];
@@ -27,26 +27,27 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
     <div class="section-head">
       <p class="eyebrow">{t(ui.nav.collaboration, lang)}</p>
       <h1>{zh ? '一起做金融 × 科技的研究' : 'Research at the intersection of finance and technology'}</h1>
-      <p class="muted">{zh ? '我們專注在預測、分析與 AI 驅動的應用。' : 'We focus on forecasting, analytics and AI-driven applications.'}</p>
+      <p class="muted">{zh ? `正在和兆豐做產學合作，也和 ${people.length} 位其他學者合寫過論文，刊在 ${venues.length} 本期刊。` : `An ongoing project with Mega Bank, and papers co-written with ${people.length} other researchers, in ${venues.length} journals.`}</p>
     </div>
+    <section class="case" aria-labelledby="case-h">
+      <span class="cat-perch"><LabCat lang={lang} size={68} bubble="left" lines={[{ zh: '這是學長姐跟企業一起做的案子。', en: 'Our seniors built this one together with a company.' }, { zh: '有資料、有問題？寄信來，我們聊聊。', en: 'Got data and a question? Email us and let us talk.' }]} /></span>
+      <p class="eyebrow">{zh ? '進行中的產學合作' : 'Ongoing industry project'}</p>
+      <h2 id="case-h">{zh ? '兆豐 × IFA Lab：隨機優勢能不能預測？' : 'Mega × IFA Lab: can stochastic dominance be predicted?'}</h2>
+      <p class="lede">{zh
+        ? '和兆豐金控、兆豐銀行合作，研究「隨機優勢」關係的可預測性與持續性：處理跨時區資料對齊、超參數調整與財務特徵，讓模型的結果能放進實際的投資決策。'
+        : 'With Mega Financial Holding and Mega Bank, we study whether stochastic-dominance relations are predictable and persistent, working through cross-timezone data alignment, tuning and financial features so the results can feed real investment decisions.'}</p>
+      <p class="team">{zh ? '參與成員：' : 'Team: '}<a href={href(lang, 'members/wei-hua-hou')}>{zh ? '侯威華' : 'Wei-Hua Hou'}</a>{zh ? '、' : ', '}<a href={href(lang, 'members/yu-bin-chen')}>{zh ? '陳昱斌' : 'Yu-Bin Chen'}</a>{zh ? '，指導：邱信瑜' : '; advisor Hsin-Yu Chiu'}</p>
+    </section>
+    <h2 class="ways-h">{zh ? '可以怎麼合作' : 'Ways to work with us'}</h2>
     <ul class="ways">
       {ways.map((w) => (
-        <li class="clay" style={`--c: var(--clay-${w.clay})`}>
+        <li style={`--c: var(--clay-${w.clay})`}>
           <span class="b" aria-hidden="true"></span>
-          <h2>{t(w.title, lang)}</h2>
+          <h3>{t(w.title, lang)}</h3>
           <p>{t(w.body, lang)}</p>
         </li>
       ))}
     </ul>
-    <section class="case clay has-cat" aria-labelledby="case-h">
-      <span class="cat-perch" style="right: 40px; top: -56px;"><LabCat lang={lang} size={68} bubble="left" lines={[{ zh: '這是學長姐跟企業一起做的案子。', en: 'Our seniors built this one together with a company.' }, { zh: '有資料、有問題？寄信來，我們聊聊。', en: 'Got data and a question? Email us and let us talk.' }]} /></span>
-      <p class="eyebrow">{zh ? '進行中的產學合作' : 'Ongoing industry project'}</p>
-      <h2 id="case-h">{zh ? '兆豐 × IFA Lab：隨機優勢能不能預測？' : 'Mega × IFA Lab: can stochastic dominance be predicted?'}</h2>
-      <p>{zh
-        ? '和兆豐金控、兆豐銀行合作，研究「隨機優勢」關係的可預測性與持續性：處理跨時區資料對齊、超參數調整與財務特徵，讓模型的結果能放進實際的投資決策。'
-        : 'With Mega Financial Holding and Mega Bank, we study whether stochastic-dominance relations are predictable and persistent, working through cross-timezone data alignment, tuning and financial features so the results can feed real investment decisions.'}</p>
-      <p class="muted">{zh ? '參與成員：' : 'Team: '}<a href={href(lang, 'members/wei-hua-hou')}>{zh ? '侯威華' : 'Wei-Hua Hou'}</a>{zh ? '、' : ', '}<a href={href(lang, 'members/yu-bin-chen')}>{zh ? '陳昱斌' : 'Yu-Bin Chen'}</a>{zh ? '，指導：邱信瑜' : '; advisor Hsin-Yu Chiu'}</p>
-    </section>
     <p class="cta"><a class="btn" href={`mailto:${lab.contact.email}?subject=${encodeURIComponent(zh ? '和 IFA Lab 合作' : 'Collaboration with IFA Lab')}`}>{zh ? '寫信談合作' : 'Email us about a project'}</a> <a class="btn secondary" href={href(lang, 'research')}>{zh ? '先看研究成果' : 'See our research first'}</a></p>
 
     <div class="record">
@@ -65,21 +66,30 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
 </Base>
 
 <style>
-  .ways { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
-  .ways li { padding: var(--space-6); display: grid; gap: var(--space-3); align-content: start; }
-  .ways h2 { font-size: 22px; min-height: 2lh; }
-  /* a clay brick with a stud on top, in the card's own colour (the site's 'stack your work' motif) */
+  /* the one project is the page's lead: a coloured clay slab, not one more white card */
+  .case {
+    position: relative; margin-top: var(--space-7); padding: var(--space-7) var(--space-7) var(--space-8); display: grid; gap: var(--space-3);
+    border-radius: var(--r-lg); background: color-mix(in oklab, var(--clay-blue) 18%, var(--surface));
+    box-shadow: 10px 14px 28px var(--lo), inset 0 2px 0 var(--hi), inset -6px -8px 14px rgb(0 0 0 / 0.06);
+  }
+  .case h2 { font-size: clamp(26px, 3vw, 40px); max-width: 20em; text-wrap: balance; }
+  .lede { margin: 0; max-width: 40em; font-size: clamp(17px, 1.4vw, 19px); line-height: 1.8; }
+  .team { margin: var(--space-2) 0 0; color: var(--ink-2); }
+  .cat-perch { position: absolute; right: var(--space-7); top: -56px; }
+  .ways-h { margin-top: var(--space-9); font-size: clamp(22px, 2.2vw, 28px); }
+  .ways { list-style: none; margin: var(--space-5) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-7); }
+  .ways li { display: grid; gap: var(--space-3); align-content: start; padding-top: var(--space-5); border-top: 3px solid var(--c); }
+  .ways h3 { font-size: 20px; }
+  .ways p { margin: 0; }
+  /* a clay brick with a stud on top, in the column's own colour (the site's 'stack your work' motif) */
   .b { position: relative; margin-top: 10px; width: 44px; height: 30px; border-radius: 8px; background: var(--c); box-shadow: inset -3px -4px 6px rgb(0 0 0 / 0.18), inset 3px 3px 6px rgb(255 255 255 / 0.35); }
   .b::before { content: ''; position: absolute; left: 50%; top: -9px; translate: -50% 0; width: 18px; height: 10px; border-radius: 5px 5px 2px 2px; background: var(--c); box-shadow: inset 2px 2px 3px rgb(255 255 255 / 0.4), inset -2px -2px 3px rgb(0 0 0 / 0.12); }
-  .case { margin-top: var(--space-7); padding: var(--space-6); display: grid; gap: var(--space-3); }
-  .case p { max-width: 62em; }
-  .case h2 { font-size: clamp(24px, 2.6vw, 32px); }
-  .record { margin-top: var(--space-8); display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-7); }
+  .record { margin-top: var(--space-9); padding-top: var(--space-7); border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent); display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-7); }
   .record section { display: grid; gap: var(--space-4); align-content: start; }
   .record h2 { font-size: 22px; }
   .tags b { font: 600 12px/1 var(--f-mono); color: var(--ink-2); }
   .venues li { font-style: italic; }
   .cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-7); }
-  @media (max-width: 899px) { .record { grid-template-columns: 1fr; } }
-  @media (max-width: 899px) { .ways { grid-template-columns: 1fr; } }
+  @media (max-width: 899px) { .record, .ways { grid-template-columns: 1fr; } .ways { gap: var(--space-6); } }
+  @media (max-width: 767px) { .case { padding: var(--space-6) var(--space-5) var(--space-7); } .cat-perch { right: var(--space-4); } }
 </style>
