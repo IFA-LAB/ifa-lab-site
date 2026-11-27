@@ -15,5 +15,8 @@
   // the assistant's model runs on the lab's DGX Spark; services/ask/proxy forwards to it through a tunnel
   "services": [{ "binding": "ASK", "service": "ifa-ask-proxy" }],
   // 8 questions a minute per visitor
-  "ratelimits": [{ "name": "ASK_LIMIT", "namespace_id": "1801", "simple": { "limit": 8, "period": 60 } }]
+  "ratelimits": [{ "name": "ASK_LIMIT", "namespace_id": "1801", "simple": { "limit": 8, "period": 60 } }],
+  // when the Spark has no model running, Workers AI answers instead, at most 300 a day (inside the free allocation)
+  "ai": { "binding": "AI" },
+  "kv_namespaces": [{ "binding": "ASK_DAY", "id": "c73a5601fdf849389ed6a478a2bb91b6" }]
 }

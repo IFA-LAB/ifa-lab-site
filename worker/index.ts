@@ -4,11 +4,17 @@
 // which writes the answer with a local model. If the Spark is busy, asleep or unreachable, the reply still carries
 // the matching passages and links, so a visitor always gets something useful.
 
+import { SYS } from './prompt';
+
 interface Passage { id: number; lang: 'zh-tw' | 'en'; url: string; title: string; section: string; text: string }
 interface Env {
   ASSETS: { fetch: typeof fetch };
   ASK?: { fetch: typeof fetch };
   ASK_LIMIT?: { limit: (o: { key: string }) => Promise<{ success: boolean }> };
+  /** Workers AI: answers when the Spark has no model running */
+  AI?: { run: (model: string, input: unknown) => Promise<unknown> };
+  /** per-day count of Workers AI answers (key n:YYYY-MM-DD), so the fallback stays inside the free daily allocation */
+  ASK_DAY?: { get: (k: string) => Promise<string | null>; put: (k: string, v: string, o?: { expirationTtl?: number }) => Promise<void> };
 }
 
 type Index = { ps: Passage[]; docs: Map<string, number>[]; lens: number[]; df: Map<string, number>; avg: number };
@@ -72,6 +78,35 @@ function search(ix: Index, q: string, lang: string, k = 5): Passage[] {
   return out;
 }
 
+// Same model family as the Spark's qwen3-30b, so the prompt and the regression questions carry over.
+// About 23 neurons a question (3k tokens in, 300 out); 300 a day stays well under the free 10,000 neurons a day.
+const CF_MODEL = '@cf/qwen/qwen3-30b-a3b-fp8';
+const CF_PER_DAY = 300;
+
+async function cloudAnswer(env: Env, q: string, lang: 'zh-tw' | 'en', hits: Passage[]): Promise<string> {
+  if (!env.AI || !env.ASK_DAY) return '';
+  const key = `n:${new Date().toISOString().slice(0, 10)}`;
+  const n = Number((await env.ASK_DAY.get(key)) ?? 0);
+  if (n >= CF_PER_DAY) return '';
+  await env.ASK_DAY.put(key, String(n + 1), { expirationTtl: 172800 });
+  const ctx = hits.map((p, i) => `[${i + 1}] ${p.title} › ${p.section}\n${p.text}`).join('\n\n') || '（沒有找到相關資料）';
+  try {
+    const out = (await env.AI.run(CF_MODEL, {
+      messages: [
+        { role: 'system', content: SYS[lang] + (lang === 'zh-tw' ? '\n\n網站資料：\n' : '\n\nSite passages:\n') + ctx },
+        { role: 'user', content: `${q} /no_think` },
+      ],
+      max_tokens: 700,
+      temperature: 0.3,
+    })) as { response?: string; choices?: { message?: { content?: string } }[] };
+    const text = out.response ?? out.choices?.[0]?.message?.content ?? '';
+    return text.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+  } catch (e) {
+    console.log('workers ai error', String(e));
+    return '';
+  }
+}
+
 const json = (o: unknown, status = 200) => Response.json(o, { status, headers: { 'Cache-Control': 'no-store' } });
 
 async function ask(req: Request, env: Env): Promise<Response> {
@@ -91,18 +126,25 @@ async function ask(req: Request, env: Env): Promise<Response> {
   cached ??= loadIndex(env, origin).catch((e) => { cached = null; throw e; });
   const hits = search(await cached, q, lang);
   const sources = hits.map((p) => ({ title: p.section || p.title, url: p.url, text: p.text.slice(0, 220) }));
-  if (!env.ASK) return json({ answer: '', mode: 'search', sources });
-  try {
-    const r = await env.ASK.fetch('https://ask/ask', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ q, lang, passages: hits.map(({ title, section, text }) => ({ title, section, text })) }),
-    });
-    const a = (await r.json()) as { answer?: string; mode?: string; model?: string };
-    return json({ answer: a.answer ?? '', mode: a.answer ? 'llm' : a.mode === 'warming' ? 'warming' : 'search', sources });
-  } catch {
-    return json({ answer: '', mode: 'search', sources });
+  // 1) the lab's Spark, when a model is running there
+  let sparkMode = '';
+  if (env.ASK) {
+    try {
+      const r = await env.ASK.fetch('https://ask/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ q, lang, passages: hits.map(({ title, section, text }) => ({ title, section, text })) }),
+      });
+      const a = (await r.json()) as { answer?: string; mode?: string; model?: string };
+      if (a.answer) return json({ answer: a.answer, mode: 'llm', via: 'spark', sources });
+      sparkMode = a.mode ?? '';
+    } catch { /* tunnel down: fall through */ }
   }
+  // 2) Workers AI, up to the daily cap
+  const answer = await cloudAnswer(env, q, lang as 'zh-tw' | 'en', hits);
+  if (answer) return json({ answer, mode: 'llm', via: 'cloud', sources });
+  // 3) the matching passages only
+  return json({ answer: '', mode: sparkMode === 'warming' ? 'warming' : 'search', sources });
 }
 
 export default {
