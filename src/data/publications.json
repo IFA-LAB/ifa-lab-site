@@ -463,6 +463,7 @@
       "LLM",
       "financial reports"
     ],
+    "doi": "10.5281/zenodo.14191822",
     "url": "https://colab.research.google.com/drive/1Zwbk08sdLAL7I8uXkxnmmMEFVy3OSlpD?usp=sharing",
     "plain": {
       "zh": "讓長上下文的大型語言模型一次讀多份財報，測它能不能跨公司、跨年度比較與分析。",
