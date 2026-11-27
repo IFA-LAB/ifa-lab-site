@@ -43,6 +43,7 @@ const T = {
 </dialog>
 
 <script>
+  import { wordPieces } from '@/lib/glue';
   const dlg = document.getElementById('ask-cat') as HTMLDialogElement | null;
   if (dlg) {
     const T = JSON.parse(dlg.dataset.t ?? '{}');
@@ -68,6 +69,17 @@ const T = {
 
     const el = (tag: string, cls: string, text?: string) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text) n.textContent = text; return n; };
     type Src = { title: string; url: string; text: string; n?: number };
+    /** Text with *journal names* in italics and <wbr> between Chinese words (lines break between words, not inside one). */
+    const put = (node: HTMLElement, text: string) => {
+      node.classList.add('wb');
+      for (const bit of text.split(/(\*[^*\n]+\*)/)) {
+        const into = /^\*[^*]+\*$/.test(bit) ? node.appendChild(el('em', '')) : node;
+        wordPieces(bit.replace(/^\*|\*$/g, '')).forEach((w, i) => { if (i) into.append(document.createElement('wbr')); into.append(w); });
+      }
+    };
+    // the opening line was rendered on the server, outside <main>, so the page-wide <wbr> pass never reached it
+    const intro = dlg.querySelector<HTMLElement>('.intro');
+    if (intro && lang !== 'en') { const t = intro.textContent ?? ''; intro.textContent = ''; put(intro, t); }
     /** The answer as text, with [n] turned into links to source n. */
     function answerNode(text: string, src: Src[]) {
       const p = el('div', 'a');
@@ -76,7 +88,7 @@ const T = {
           const m = part.match(/^\[(\d+)\]$/);
           const s = m ? src[+m[1] - 1] : undefined;
           if (s) { const a = el('a', 'cite', m![1]) as HTMLAnchorElement; a.href = s.url; a.title = s.title; node.append(a); }
-          else if (!m) node.append(part.replace(/\*\*/g, ''));
+          else if (!m) put(node, part.replace(/\*\*/g, ''));
         }
       };
       // paragraphs, plus "- item" / "1. item" lines as a list (the model often lists courses or people)

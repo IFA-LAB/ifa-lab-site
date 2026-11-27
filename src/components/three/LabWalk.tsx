@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { canRun3D, gated, usePrefersReducedMotion, useMedia } from './env';
 import type { Pick, WalkMember, WalkStep } from './WalkScene';
-import { glueTail } from '@/lib/glue';
+import { glueTail, wordPieces } from '@/lib/glue';
 
 // behind the loading screen, fetch the scene as soon as this island's script runs, not after the first render
 const loadScene = () => import('./WalkScene');
@@ -103,11 +103,13 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
   );
 }
 
-/** Chinese text whose last four characters stay on one line (see src/lib/glue.ts). */
+/** Chinese text whose last four characters stay on one line and whose lines break only between words
+    (see src/lib/glue.ts). */
 function Glued({ text }: { text: string }) {
   const t = text.replace(/K 喵/g, 'K\u00a0喵');
   const [head, tail] = glueTail(t);
-  return head ? <>{head}<span className="nw">{tail}</span></> : <>{t}</>;
+  const words = (s: string) => wordPieces(s).map((w, i) => <span key={i}>{i > 0 && <wbr />}{w}</span>);
+  return <span className="wb">{head ? <>{words(head)}<span className="nw">{tail}</span></> : words(t)}</span>;
 }
 
 /** The name of what the pointer is over, in page type next to the pointer (kept inside the stage). */

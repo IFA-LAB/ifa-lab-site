@@ -22,3 +22,22 @@ export function glueTail(s: string, n = 4): [string, string] {
   for (const k of KEEP) for (let j = s.indexOf(k); j >= 0; j = s.indexOf(k, j + 1)) if (j < i && i < j + k.length) i = j;
   return count && i >= 6 ? [s.slice(0, i), s.slice(i)] : ['', s];
 }
+
+/** Split Chinese text at word boundaries (投資人 stays whole; KEEP names too). Join the pieces with <wbr> and set
+ *  word-break: keep-all (class `wb`) so lines break only there. Same rule as the <wbr> pass in Base.astro, for text
+ *  that pass cannot reach: React islands and text written by scripts. */
+export function wordPieces(s: string): string[] {
+  if (typeof Intl === 'undefined' || !('Segmenter' in Intl)) return [s];
+  const cjk = /[\u3400-\u9fff\uf900-\ufaff]/, end = /[\u3400-\u9fff\uf900-\ufaff]$/;
+  const inside = new Set<number>();
+  for (const k of KEEP) for (let i = s.indexOf(k); i >= 0; i = s.indexOf(k, i + 1)) for (let j = 1; j < k.length; j++) inside.add(i + j);
+  const out: string[] = [];
+  let prev = '';
+  for (const x of new Intl.Segmenter('zh-Hant', { granularity: 'word' }).segment(s)) {
+    if (prev && end.test(prev) && cjk.test(x.segment[0]) && !inside.has(x.index)) out.push(x.segment);
+    else if (out.length) out[out.length - 1] += x.segment;
+    else out.push(x.segment);
+    prev = x.segment;
+  }
+  return out;
+}

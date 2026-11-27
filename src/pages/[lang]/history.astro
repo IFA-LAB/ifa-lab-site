@@ -51,11 +51,10 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
   <div class="wrap section">
     <div class="section-head has-cat" id="record">
       <span class="cat-perch" style="right: 0; top: 0;"><LabCat lang={lang} bubble="left" lines={[{ zh: '一年疊一層，2023 年是地基。', en: 'One floor a year. 2023 is the foundation.' }, { zh: '圓的是獎項，菱形是里程碑。', en: 'Round ones are awards, diamonds are milestones.' }]} /></span>
-      <p class="eyebrow">{t(ui.nav.history, lang)}</p>
-      <h1>{zh ? '一年疊一層' : 'One floor a year'}</h1>
+      <h1>{t(ui.nav.history, lang)}</h1>
       <p>{zh
-        ? 'IFA Lab 在 2023 年 8 月成立，最初由中央資管的大學部與碩士班學生組成，是結合金融、科技與資料分析的專案基地。'
-        : 'IFA Lab was founded in August 2023 by undergraduate and master’s students of NCU Information Management, as a hub for projects combining finance, technology and data analytics.'}</p>
+        ? 'IFA Lab 在 2023 年 8 月成立，最初由中央資管的大學部與碩士班學生組成，一起做金融資料的專案。'
+        : 'IFA Lab was founded in August 2023 by undergraduate and master’s students of NCU Information Management, working together on finance data projects.'}</p>
       <p class="muted">{zh ? '創始成員：' : 'Founding members: '}{founders.map((m, i) => <>{i > 0 && (zh ? '、' : ', ')}<a class="nw" href={href(lang, `members/${m.id}`)}>{t(m.data.name, lang)}</a></>)}{zh ? <>，指導教授<span class="nw">邱信瑜</span>。</> : <>, with advisor <span class="nw">Hsin-Yu Chiu</span>.</>}</p>
     </div>
 

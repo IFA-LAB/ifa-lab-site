@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState, type KeyboardEvent } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { canRun3D, usePrefersReducedMotion } from '@/components/three/util';
 import { KINDS, YEARS, type Kind } from './data';
 import './kline.css';
@@ -100,7 +100,23 @@ export default function MyKline({ lang }: Props) {
 /** Chinese lines keep their last three characters together, so a line never ends with one character alone. */
 function Glued({ text }: { text: string }) {
   const m = text.match(/[㐀-鿿][㐀-鿿）」。]{2,3}$/);
-  return m && m.index && m.index > 4 ? <>{text.slice(0, m.index)}<span className="jsk-nw">{m[0]}</span></> : <>{text}</>;
+  return m && m.index && m.index > 4 ? <span className="jsk-wb">{words(text.slice(0, m.index))}<span className="jsk-nw">{m[0]}</span></span> : <span className="jsk-wb">{words(text)}</span>;
+}
+
+/** Break lines only between Chinese words (黑客松, not 黑客／松): <wbr> at word boundaries plus keep-all (.jsk-wb). */
+const KEEP = ['黑客松', '財伴', '鉅燊'];
+function words(s: string) {
+  if (typeof Intl === 'undefined' || !('Segmenter' in Intl)) return s;
+  const cjk = /[㐀-鿿]/, inside = new Set<number>();
+  for (const k of KEEP) for (let i = s.indexOf(k); i >= 0; i = s.indexOf(k, i + 1)) for (let j = 1; j < k.length; j++) inside.add(i + j);
+  const out: ReactNode[] = [];
+  let prev = '';
+  for (const x of new Intl.Segmenter('zh-Hant', { granularity: 'word' }).segment(s)) {
+    if (prev && cjk.test(prev.slice(-1)) && cjk.test(x.segment[0]) && !inside.has(x.index)) out.push(<wbr key={x.index} />);
+    out.push(x.segment);
+    prev = x.segment;
+  }
+  return out;
 }
 
 /** The same chart in CSS: shown before three.js arrives, and instead of it without WebGL or with reduced motion. */

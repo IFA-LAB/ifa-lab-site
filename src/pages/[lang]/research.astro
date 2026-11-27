@@ -175,7 +175,7 @@ const jsonld = journals.map((p) => ({
       </ol>
     </section>
 
-    <section aria-labelledby="g-h" class="group">
+    <section aria-labelledby="g-h" class="group" data-unsorted>
       <h2 id="g-h">{t(ui.pubs.grants, lang)} <span class="n">{grants.length}</span></h2>
       <ul class="grants">
         {grants.map((g) => (
@@ -188,7 +188,7 @@ const jsonld = journals.map((p) => ({
       </ul>
     </section>
 
-    <section aria-labelledby="s-h" class="group">
+    <section aria-labelledby="s-h" class="group" data-unsorted>
       <h2 id="s-h">{t(ui.pubs.projects, lang)} <span class="n">{studentProjects.length}</span></h2>
       <ul class="projects">
         {studentProjects.map((p) => (
@@ -238,8 +238,12 @@ const jsonld = journals.map((p) => ({
       if (num) num.textContent = k ? String(k) : '';
     }
     for (const p of document.querySelectorAll<HTMLElement>('[data-people]')) p.hidden = p.dataset.people !== area;
+    // grants and student projects carry no research area: while an area is picked they step aside instead of
+    // showing in full under a label that says they were filtered
+    for (const g of document.querySelectorAll<HTMLElement>('[data-unsorted]')) g.hidden = !!area;
+    for (const a of document.querySelectorAll<HTMLElement>('.jump a[href="#g-h"], .jump a[href="#s-h"]')) a.classList.toggle('none', !!area);
     const label = buttons.find((b) => b.dataset.area === area)?.textContent?.trim();
-    status.textContent = area ? (zh ? `${label}：${n} 件` : `${label}: ${n} ${n === 1 ? 'work' : 'works'}`) : '';
+    status.textContent = area ? (zh ? `${label}：${n} 篇論文` : `${label}: ${n} ${n === 1 ? 'paper' : 'papers'}`) : '';
     if (scroll) document.querySelector('.filter')?.scrollIntoView({ block: 'start' });
   }
   for (const b of buttons) b.addEventListener('click', () => {

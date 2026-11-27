@@ -69,8 +69,8 @@ function search(ix: Index, q: string, lang: string, k = 5): Passage[] {
     const sec = ix.ps[i].section.toLowerCase();
     if (s > 0 && sec.length >= 2 && (qn.includes(sec) || sec.split(/[\s'’]+/).some((w) => w.length >= 5 && qn.includes(w)))) s *= 1.6;
     // the question names a person: their own page comes before other members' sections on the same topic
-    const who = ix.ps[i].title.split('｜')[0].toLowerCase();
-    if (s > 0 && who.length >= 2 && who !== 'ifa lab' && qn.includes(who)) s *= 1.5;
+    const who = ix.ps[i].title.split(/\s*[｜|]\s*/)[0].toLowerCase();
+    if (s > 0 && who.length >= 2 && !who.startsWith('ifa lab') && qn.includes(who)) s *= 1.5;
     if (s > 0) scored.push([ix.ps[i].lang === lang ? s : s * 0.5, i]);
   });
   scored.sort((a, b) => b[0] - a[0]);
@@ -139,7 +139,7 @@ async function ask(req: Request, env: Env): Promise<Response> {
 
   cached ??= loadIndex(env, origin).catch((e) => { cached = null; throw e; });
   const hits = search(await cached, q, lang);
-  const page = (t: string) => t.replace(/\s*[｜|]\s*IFA Lab$/, '');
+  const page = (t: string) => t.replace(/\s*[｜|]\s*IFA Lab.*$/, '');
   const sources = hits.map((p) => ({
     title: p.section && p.section !== page(p.title) ? `${page(p.title)} · ${p.section}` : page(p.title),
     url: p.url,
