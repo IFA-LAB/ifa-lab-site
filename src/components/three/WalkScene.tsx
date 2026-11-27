@@ -194,7 +194,7 @@ function Follower({ m, join, slot, L, c }: { m: WalkMember; join: number; slot: 
   const row = Math.floor(slot / 5), col = slot % 5;
   // the advisor stands at the front-left corner of the first candle, clear of the cat
   const lead = m.id === 'advisor';
-  const x = lead ? top.x - 0.5 : top.x + (col - 2) * 0.27 + row * 0.14, z = lead ? 0.12 : 0.24 - row * 0.3;
+  const x = lead ? top.x - 0.5 : top.x + (col - 2) * 0.29 + row * 0.145, z = lead ? 0.12 : 0.24 - row * 0.3;
   useFrame(({ clock }) => {
     const o = g.current; if (!o) return;
     const T = now(c, L);

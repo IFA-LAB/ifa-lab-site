@@ -195,4 +195,4 @@ html.theme-vt * { view-transition-name: none !important; }
 }
 
 /* keep a short phrase on one line */
-.nw { white-space: nowrap; }
+.nw, .glue { white-space: nowrap; }

@@ -24,12 +24,12 @@ const memberCount = cohorts.reduce((n, [, ms]) => n + ms.length, 0);
 
 const perArea = (k: string) => pubs.filter((p) => p.data.area === k).length + theses.filter((x) => x.data.area === k).length;
 const stats = [
-  // short English labels, so the five figures fit one row beside the board
+  // short English labels, two words each: the five figures fit one row and their labels wrap alike
   { n: pubs.filter((p) => p.data.kind === 'journal').length, label: zh ? t(ui.pubs.journal, lang) : 'Journal papers' },
   { n: pubs.filter((p) => p.data.kind === 'working').length, label: zh ? t(ui.pubs.working, lang) : 'Working papers' },
   { n: grants.length, label: zh ? t(ui.pubs.grants, lang) : 'NSTC grants' },
-  { n: theses.length, label: zh ? t(ui.pubs.theses, lang) : 'Theses' },
-  { n: memberCount, label: zh ? '位成員' : 'Members' },
+  { n: theses.length, label: zh ? t(ui.pubs.theses, lang) : 'Master’s theses' },
+  { n: memberCount, label: zh ? '位成員' : 'Lab members' },
 ];
 // latest news: the newest event of each kind, three cards
 const latest = (await labEvents(lang)).sort(newestFirst).filter((e, i, all) => all.findIndex((x) => x.kind === e.kind) === i).slice(0, 3);

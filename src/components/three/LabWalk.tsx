@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { canRun3D, gated, usePrefersReducedMotion, useMedia } from './env';
 import type { Pick, WalkMember, WalkStep } from './WalkScene';
+import { glueTail } from '@/lib/glue';
 
 // behind the loading screen, fetch the scene as soon as this island's script runs, not after the first render
 const loadScene = () => import('./WalkScene');
@@ -58,8 +59,8 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
       const [a, b] = segs[k];
       T.current = k === 0 ? 0 : Math.min(N - 1, k - 1 + (u - a) / Math.max(1e-6, b - a));
       reveal.current = Math.min(1, Math.max(0, (p - 0.88) / 0.1));
-      // the card turns to a year once most of its bricks are down
-      const i = Math.min(N - 1, Math.max(0, Math.ceil(T.current - 0.35)));
+      // the card turns to a year once the camera has arrived there and most of its bricks are down
+      const i = Math.min(N - 1, Math.max(0, Math.ceil(T.current - 0.6)));
       if (i !== lastIdx) { lastIdx = i; setIdx(i); }
       const e = p > 0.9;
       if (e !== lastEnd) { lastEnd = e; setEnd(e); }
@@ -84,12 +85,12 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
         <p className="eyebrow">{text.eyebrow}</p>
         {end ? <>
           <p className="walk-h">{text.endH}</p>
-          <p className="walk-cap">{text.endP}</p>
+          <p className="walk-cap"><Glued text={text.endP} /></p>
           <p className="walk-cta"><a className="btn" href={text.mailHref} tabIndex={-1}>{text.mail}</a> <a href={text.joinHref} tabIndex={-1}>{text.join} →</a></p>
         </> : <>
           <p className="walk-year" key={s.label}>{s.label}</p>
-          <p className="walk-cap">{s.caption}</p>
-          {s.sub && <p className="walk-sub">{s.sub}</p>}
+          <p className="walk-cap"><Glued text={s.caption} /></p>
+          {s.sub && <p className="walk-sub"><Glued text={s.sub} /></p>}
           {s.anchor && <a className="walk-more" href={s.anchor} tabIndex={-1}>{text.more}</a>}
         </>}
         <p className="walk-tot">{(cumPeople[idx] ? text.totals : text.solo).replace('{w}', String(cumWorks[idx])).replace('{m}', String(cumPeople[idx]))}</p>
@@ -100,6 +101,12 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
       {pick && <Tip pick={pick} host={host.current} />}
     </div>
   );
+}
+
+/** Chinese text whose last four characters stay on one line (see src/lib/glue.ts). */
+function Glued({ text }: { text: string }) {
+  const [head, tail] = glueTail(text);
+  return head ? <>{head}<span className="nw">{tail}</span></> : <>{text}</>;
 }
 
 /** The name of what the pointer is over, in page type next to the pointer (kept inside the stage). */

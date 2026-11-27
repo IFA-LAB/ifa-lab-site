@@ -142,6 +142,33 @@ const graph = [org, webPage, ...jsonld];
     <ScrollCat lang={lang} />
     <MailPick lang={lang} />
     <AskCat lang={lang} />
+    {/* Chinese paragraphs never end on a line of one or two characters: the last four characters stay together.
+         text-wrap: pretty does not do this for CJK in Chromium. Runs before first paint; skips React islands (their
+         DOM must match what they hydrate). Same rule as glueTail() in src/lib/glue.ts. */}
+    {lang === 'zh-tw' && <script is:inline>
+      (() => {
+        const cjk = /[\u3400-\u9fff\uf900-\ufaff]/;
+        const seg = Intl.Segmenter ? new Intl.Segmenter('zh-Hant', { granularity: 'word' }) : null;
+        for (const el of document.querySelectorAll('main p, main li, main dd, main figcaption, main summary, footer p')) {
+          if (el.closest('astro-island, pre, code, .nw')) continue;
+          const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+          let t, last = null;
+          while ((t = w.nextNode())) if (t.data.trim()) last = t;
+          if (!last || last.parentElement.closest('.glue, .nw')) continue;
+          const s = last.data.replace(/\s+$/, '');
+          let i = s.length, n = 0;
+          while (i > 0 && n < 4) { const c = s[i - 1]; if (/\s/.test(c)) break; if (cjk.test(c)) n++; i--; }
+          // back to the start of the word the cut falls in (台積電 stays whole)
+          if (seg) { let st = 0; for (const x of seg.segment(s)) { if (x.index > i) break; st = x.index; } i = st; }
+          if (!n || i < 6) continue;
+          const tail = last.splitText(i);
+          const span = document.createElement('span');
+          span.className = 'glue';
+          tail.before(span);
+          span.append(tail);
+        }
+      })();
+    </script>}
   </body>
 </html>
 

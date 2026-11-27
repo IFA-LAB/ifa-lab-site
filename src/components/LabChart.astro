@@ -102,12 +102,11 @@ const text = {
   .walk { position: relative; height: calc(var(--n) * 75dvh + 100dvh); }
   /* below the 64px header, not under it: the first screen's bottom 64px was cut off and the frame's top hidden */
   .stage { position: sticky; top: 64px; height: calc(100dvh - 64px); overflow: hidden; }
-  /* the header is see-through: cut the 3D off under it so blocks do not show through the bar */
-  .stage :global(.walk-canvas) { position: absolute; inset: 0; clip-path: inset(var(--header-h, 64px) 0 0 0); }
+  .stage :global(.walk-canvas) { position: absolute; inset: 0; }
   .stage :global(.walk-3d) { position: absolute; inset: 0; }
   /* overlay: the year being built, what happened, running totals */
   .stage :global(.walk-card) {
-    position: absolute; left: max(clamp(16px, 4vw, 48px), calc((100% - var(--page)) / 2 + 16px)); top: calc(var(--header-h, 64px) + var(--space-6));
+    position: absolute; left: max(clamp(16px, 4vw, 48px), calc((100% - var(--page)) / 2 + 16px)); top: var(--space-6);
     width: min(340px, calc(100% - 32px)); display: grid; gap: var(--space-2); padding: var(--space-5);
     border-radius: var(--r-lg); background: color-mix(in oklab, var(--surface) 88%, transparent); backdrop-filter: blur(8px); box-shadow: 0 12px 32px var(--lo);
   }
@@ -131,10 +130,12 @@ const text = {
   @keyframes year-in { from { opacity: 0; translate: 0 8px; } }
   /* phones and portrait tablets: the chart fills the top, the card sits at the bottom */
   @media (max-aspect-ratio: 23/20) {
-    .stage :global(.walk-card) { top: auto; bottom: var(--space-4); translate: none; left: 16px; right: 16px; width: auto; padding: var(--space-4) var(--space-5); }
-    .stage :global(.walk-year) { font-size: 40px; }
+    .stage :global(.walk-card) { top: auto; bottom: var(--space-4); translate: none; left: 16px; right: 16px; width: auto; padding: var(--space-4) var(--space-5); gap: var(--space-1); background: var(--surface); backdrop-filter: none; }
+    .stage :global(.walk-card .eyebrow), .stage :global(.walk-sub) { display: none; }
+    .stage :global(.walk-year) { font-size: 32px; }
     .stage :global(.walk-cap) { font-size: 15px; -webkit-line-clamp: 3; }
-    .stage :global(.walk-hint) { bottom: auto; top: calc(var(--header-h, 64px) + var(--space-6) + 56px); font-size: 13px; }
+    .stage :global(.walk-tot) { margin-top: var(--space-1) !important; }
+    .stage :global(.walk-hint) { bottom: auto; top: var(--space-6); font-size: 13px; }
   }
   /* without WebGL or with reduced motion the chart is not shown; the record below tells the same story */
   .walk[data-flat] { display: none; }

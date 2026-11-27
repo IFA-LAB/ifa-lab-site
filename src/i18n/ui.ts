@@ -74,6 +74,8 @@ export function href(lang: Locale, path = '') {
   return `/${lang}/${clean ? clean + '/' : ''}${hash ? '#' + hash : ''}`;
 }
 export function swapLocale(pathname: string, to: Locale) {
+  // a 404 page has no counterpart: the switch goes to the other language's home page
+  if (/\/404(\.html|\/)?$/.test(pathname)) return `/${to}/`;
   const parts = pathname.split('/');
   if ((locales as readonly string[]).includes(parts[1] ?? '')) parts[1] = to;
   return parts.join('/') || `/${to}/`;

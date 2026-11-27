@@ -130,7 +130,12 @@ async function ask(req: Request, env: Env): Promise<Response> {
 
   cached ??= loadIndex(env, origin).catch((e) => { cached = null; throw e; });
   const hits = search(await cached, q, lang);
-  const sources = hits.map((p) => ({ title: p.section || p.title, url: p.url, text: p.text.slice(0, 220) }));
+  const page = (t: string) => t.replace(/\s*[｜|]\s*IFA Lab$/, '');
+  const sources = hits.map((p) => ({
+    title: p.section && p.section !== page(p.title) ? `${page(p.title)} · ${p.section}` : page(p.title),
+    url: p.url,
+    text: p.text.slice(0, 220),
+  }));
   // 1) the lab's Spark, when a model is running there
   let sparkMode = '';
   if (env.ASK) {

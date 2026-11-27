@@ -1,0 +1,31 @@
+---
+// The 404 page in one language. dist/404.html (Chinese) is served for missing URLs anywhere; dist/en/404.html
+// (English, copied into place after the build by scripts/en-404.mjs) for missing URLs under /en/.
+import LabCat from '@/components/LabCat.astro';
+import Base from '@/layouts/Base.astro';
+import { href, type Locale } from '@/i18n/ui';
+interface Props { lang: Locale }
+const { lang } = Astro.props;
+const zh = lang === 'zh-tw';
+const links = zh
+  ? [['回首頁', href(lang)], ['研究成果', href(lang, 'research')], ['成員', href(lang, 'members')], ['加入我們', href(lang, 'join')]]
+  : [['Home', href(lang)], ['Research', href(lang, 'research')], ['Members', href(lang, 'members')], ['Join us', href(lang, 'join')]];
+---
+<Base lang={lang} title={zh ? '找不到頁面' : 'Page not found'} description={zh ? '這個頁面不存在。' : 'This page does not exist.'}>
+  <meta slot="head" name="robots" content="noindex" />
+  <div class="wrap section lost">
+    <LabCat lang={lang} size={120} bubble="right" lines={zh
+      ? [{ zh: '我也找不到這塊積木……', en: '' }, { zh: '回首頁看看？', en: '' }]
+      : [{ zh: '', en: 'I can’t find this brick either…' }, { zh: '', en: 'Back to the home page?' }]} />
+    <h1>{zh ? '這塊積木不見了' : 'This brick is missing'}</h1>
+    <p>{zh ? '這個網址沒有頁面，可能已經搬家了。從這幾個地方找找看：' : 'Nothing lives at this address; it may have moved. Try one of these:'}</p>
+    <p class="cta">
+      {links.map(([label, url], i) => <a class:list={['btn', i > 0 && 'secondary']} href={url}>{label}</a>)}
+    </p>
+  </div>
+</Base>
+
+<style>
+  .lost { display: grid; justify-items: center; text-align: center; gap: var(--space-4); padding-block: var(--space-9); }
+  .cta { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-3); margin-top: var(--space-3); }
+</style>

@@ -39,6 +39,8 @@ for (const f of files) {
   const main = html.match(/<main\b[\s\S]*?<\/main>/i)?.[0] ?? '';
   // one passage per h2 section (h1 + intro is the first); long sections are cut at ~700 characters on a line break
   const parts = main.split(/(?=<h[12]\b)/i);
+  const first = out.length;
+  const h1 = text(main.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1] ?? '');
   for (const part of parts) {
     const head = text(part.match(/<h[12]\b[^>]*>([\s\S]*?)<\/h[12]>/i)?.[1] ?? '');
     const id = part.match(/<h[12]\b[^>]*\bid="([^"]+)"/i)?.[1] ?? part.match(/<section\b[^>]*\bid="([^"]+)"/i)?.[1];
@@ -48,6 +50,11 @@ for (const f of files) {
     const flush = () => { if (buf.trim().length >= 20) out.push({ id: out.length, lang, url: id ? `${url}#${id}` : url, title, section: head, text: buf.trim() }); buf = ''; };
     for (const line of body.split('\n')) { if (buf.length + line.length > 700) flush(); buf += line + '\n'; }
     flush();
+  }
+  if (/\/members\/[^/]+\/$/.test(url) && h1) {
+    const who = out.slice(first).find((p) => p.section === h1);
+    const line = who?.text.split('\n').join(' · ');
+    if (line) for (const p of out.slice(first)) if (p !== who && p.section) p.text = `（${line}）\n${p.text}`;
   }
 }
 writeFileSync(join(DIST, 'ask-corpus.json'), JSON.stringify(out));
