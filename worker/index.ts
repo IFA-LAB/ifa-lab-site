@@ -51,7 +51,9 @@ async function loadIndex(env: Env, origin: string): Promise<Index> {
 
 /** BM25 over the passages, preferring the visitor's language; one passage per page section. */
 function search(ix: Index, q: string, lang: string, k = 5): Passage[] {
-  const qs = count(grams(q));
+  // short forms people type for the headings the site uses
+  const qn = q.replace(/碩論/g, '碩士論文').toLowerCase();
+  const qs = count(grams(qn));
   const scored: [number, number][] = [];
   ix.docs.forEach((d, i) => {
     let s = 0;
@@ -62,6 +64,13 @@ function search(ix: Index, q: string, lang: string, k = 5): Passage[] {
       const idf = Math.log(1 + (ix.ps.length - n + 0.5) / (n + 0.5));
       s += (idf * f * 2.2) / (f + 1.2 * (0.25 + (0.75 * ix.lens[i]) / ix.avg));
     }
+    // the question names this section's heading (碩士論文, 經歷, thesis…): that section answers it, however long it is
+    // (length normalisation had put a 505-character 碩士論文 below a short 論文 list that marks the same work 工作論文)
+    const sec = ix.ps[i].section.toLowerCase();
+    if (s > 0 && sec.length >= 2 && (qn.includes(sec) || sec.split(/[\s'’]+/).some((w) => w.length >= 5 && qn.includes(w)))) s *= 1.6;
+    // the question names a person: their own page comes before other members' sections on the same topic
+    const who = ix.ps[i].title.split('｜')[0].toLowerCase();
+    if (s > 0 && who.length >= 2 && who !== 'ifa lab' && qn.includes(who)) s *= 1.5;
     if (s > 0) scored.push([ix.ps[i].lang === lang ? s : s * 0.5, i]);
   });
   scored.sort((a, b) => b[0] - a[0]);

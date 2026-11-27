@@ -20,9 +20,24 @@ const decode = (s) => s
   .replace(/&nbsp;|&#160;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
   .replace(/&quot;/g, '"').replace(/&#39;|&#x27;/g, "'").replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n))
   .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)));
-const text = (html) => decode(html
-  .replace(/<(script|style|noscript|svg|template)\b[\s\S]*?<\/\1>/gi, ' ')
-  .replace(/<[^>]*\baria-hidden="true"[^>]*>[\s\S]*?<\/(span|div|i|b)>/gi, ' ')
+/** Drop every element hidden from assistive tech, nested children included (a regex stopped at the first closing
+    tag and let the rest through: the clay loader's 正在捏黏土… ended up in the corpus). */
+function dropHidden(html) {
+  const open = /<([a-z][\w-]*)\b[^>]*\baria-hidden="true"[^>]*>/gi;
+  let m;
+  while ((m = open.exec(html))) {
+    const tag = m[1].toLowerCase(), re = new RegExp(`<(/?)${tag}\\b[^>]*>`, 'gi');
+    re.lastIndex = m.index + m[0].length;
+    let depth = 1, t, end = html.length;
+    while (depth && (t = re.exec(html))) { if (t[1]) depth--; else if (!t[0].endsWith('/>')) depth++; if (!depth) end = t.index + t[0].length; }
+    html = html.slice(0, m.index) + ' ' + html.slice(end);
+    open.lastIndex = m.index;
+  }
+  return html;
+}
+// buttons are controls (換成黏土公仔, 複製引用), not content
+const text = (html) => decode(dropHidden(html
+  .replace(/<(script|style|noscript|svg|template|button)\b[\s\S]*?<\/\1>/gi, ' '))
   .replace(/<br\s*\/?>|<\/(p|li|h[1-6]|dd|dt|tr|section|div)>/gi, '\n')
   .replace(/<[^>]+>/g, ' '))
   .replace(/[ \t ]+/g, ' ').replace(/ *\n[ \n]*/g, '\n').trim();

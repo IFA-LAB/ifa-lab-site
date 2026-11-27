@@ -4,9 +4,11 @@
 // Exit code 1 when any answered case fails. "warming" answers (no model running) are skipped, not failed.
 const origin = process.argv[2] ?? 'https://ifalab-ncu.com';
 const cases = [
+  { lang: 'zh-tw', q: '謝子尉的碩士論文題目是什麼？', want: ['條件式格蘭傑'], deny: [] },
+  { lang: 'zh-tw', q: '實驗室有博士班嗎？', want: ['沒寫', '沒有提', '未提', 'hychiu'], deny: ['沒有博士班。'] },
   { lang: 'zh-tw', q: '碩士班一年收幾位？', want: ['3'], deny: ['每年收', '每年都收'] },
   { lang: 'zh-tw', q: '老師開哪些課？哪些是英語授課？', want: ['Python'], deny: [] },
-  { lang: 'zh-tw', q: '江昱潔畢業後去哪裡工作？', want: ['hychiu', '不知道', '沒有', '未'], deny: ['台積電'] },
+  { lang: 'zh-tw', q: '江昱潔畢業後去哪裡工作？', want: ['hychiu', '不知道', '沒有', '未', '沒寫'], deny: ['台積電'] },
   { lang: 'zh-tw', q: '實驗室碩士生每個月助學金多少？', want: ['hychiu', '沒有', '未', '不同'], deny: ['元'] },
   { lang: 'zh-tw', q: '碩士生有助學金嗎？', want: ['助教'], deny: ['元'] },
   { lang: 'zh-tw', q: '可以去實習嗎？', want: ['實習'], deny: ['她'] },
