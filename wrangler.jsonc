@@ -3,6 +3,11 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ifa-lab",
+  // IFA Lab's own Cloudflare account (the advisor's), serving ifalab-ncu.com; www goes to the bare domain (services/www)
+  "account_id": "106bc6745c5bdd6ac96a0b6949299581",
+  "routes": [{ "pattern": "ifalab-ncu.com", "custom_domain": true }],
+  "workers_dev": false,
+  "preview_urls": false,
   "main": "worker/index.ts",
   "compatibility_date": "2026-11-23",
   "assets": {
@@ -18,5 +23,5 @@
   "ratelimits": [{ "name": "ASK_LIMIT", "namespace_id": "1801", "simple": { "limit": 8, "period": 60 } }],
   // when the Spark has no model running, Workers AI answers instead, stopping at 9,000 neurons a day (free allocation is 10,000)
   "ai": { "binding": "AI" },
-  "kv_namespaces": [{ "binding": "ASK_DAY", "id": "c73a5601fdf849389ed6a478a2bb91b6" }]
+  "kv_namespaces": [{ "binding": "ASK_DAY", "id": "4990ea539adc45118febacac86114ccd" }]
 }

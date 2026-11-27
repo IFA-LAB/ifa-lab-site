@@ -37,7 +37,7 @@ jobs:
       - name: Smoke test the live site
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          base=https://ifa-lab.jushenhuang-jason.workers.dev
+          base=https://ifalab-ncu.com
           for p in /zh-tw/ /en/ /zh-tw/research/ /zh-tw/papers/disposition-options/ /llms.txt /robots.txt; do
             code=$(curl -s -o /dev/null -w '%{http_code}' --retry 5 --retry-delay 10 --retry-all-errors "$base$p")
             echo "$code $p"; [ "$code" = 200 ] || exit 1

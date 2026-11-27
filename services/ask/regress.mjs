@@ -2,7 +2,7 @@
 //   node services/ask/regress.mjs [origin]
 // Each case lists words the answer must contain (any one of `want`) and must not contain (`deny`).
 // Exit code 1 when any answered case fails. "warming" answers (no model running) are skipped, not failed.
-const origin = process.argv[2] ?? 'https://ifa-lab.jushenhuang-jason.workers.dev';
+const origin = process.argv[2] ?? 'https://ifalab-ncu.com';
 const cases = [
   { lang: 'zh-tw', q: '碩士班一年收幾位？', want: ['3'], deny: ['每年收', '每年都收'] },
   { lang: 'zh-tw', q: '老師開哪些課？哪些是英語授課？', want: ['Python'], deny: [] },

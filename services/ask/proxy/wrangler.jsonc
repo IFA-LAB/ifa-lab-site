@@ -3,9 +3,10 @@
 {
   "$schema": "../../../node_modules/wrangler/config-schema.json",
   "name": "ifa-ask-proxy",
+  "account_id": "106bc6745c5bdd6ac96a0b6949299581",
   "main": "index.ts",
   "compatibility_date": "2026-11-26",
   "workers_dev": false,
   "preview_urls": false,
-  "vpc_services": [{ "binding": "SPARK", "service_id": "01a218b3-6829-7d12-84f7-0f920ed3afc6", "remote": true }]
+  "vpc_services": [{ "binding": "SPARK", "service_id": "01a21d08-0d6f-76b3-a21c-d3686487c9ce", "remote": true }]
 }

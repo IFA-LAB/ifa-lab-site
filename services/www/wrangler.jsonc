@@ -1,0 +1,11 @@
+// Redirects www.ifalab-ncu.com to the bare domain. Deploy from here: `npx wrangler deploy -c services/www/wrangler.jsonc`.
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "ifa-lab-www",
+  "main": "index.ts",
+  "compatibility_date": "2026-11-27",
+  "account_id": "106bc6745c5bdd6ac96a0b6949299581",
+  "routes": [{ "pattern": "www.ifalab-ncu.com", "custom_domain": true }],
+  "workers_dev": false,
+  "preview_urls": false
+}

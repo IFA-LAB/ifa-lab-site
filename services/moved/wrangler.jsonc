@@ -1,0 +1,11 @@
+// Old address → new domain. Lives on the account the site used to run on; replaces the old site there.
+// Deploy from here: `npx wrangler deploy -c services/moved/wrangler.jsonc`.
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "ifa-lab",
+  "main": "index.ts",
+  "compatibility_date": "2026-11-27",
+  "account_id": "5a34fffe633cef03e96fd62ca9501b5b",
+  "workers_dev": true,
+  "preview_urls": false
+}
