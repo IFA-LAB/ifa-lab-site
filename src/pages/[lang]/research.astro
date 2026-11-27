@@ -168,7 +168,7 @@ const jsonld = journals.map((p) => ({
           <li id={`t-${x.id}`} class="pub" data-area={x.data.area} style={`--c: var(--clay-${areaClay(x.data.area)})`}>
             <span class="block" aria-hidden="true" data-vt="brick">{thesisYear(x.data.academicYear)}</span>
             <div>
-              <Bi text={x.data.title} lang={lang} />
+              <p class="title"><a href={`${href(lang, `members/${x.data.member}`)}#thesis`}><Bi as="span" text={x.data.title} lang={lang} /></a></p>
               <p class="muted meta"><a href={href(lang, `members/${x.data.member}`)}>{t(nameOf(x.data.member), lang)}</a>&nbsp;· {zh ? `${x.data.academicYear} 學年度` : `AY ${x.data.academicYear + 1911}–${String(x.data.academicYear + 1912).slice(2)}`}&nbsp;· <span class="area-tag">{areaName(x.data.area)}</span></p>
             </div>
           </li>

@@ -90,6 +90,11 @@ const theses = defineCollection({
     academicYear: z.number().int(),
     title: L,
     fullTextFrom: z.string().optional(),
+    /** plain-language summary written from the catalogue abstract */
+    plain: L.optional(),
+    keywords: z.object({ zh: z.array(z.string()), en: z.array(z.string()) }).optional(),
+    /** the NCU repository record */
+    url: z.url().optional(),
     area: z.enum(['empirical', 'behavioral', 'pricing', 'ai', 'forecast', 'apps']),
   }),
 });

@@ -131,10 +131,20 @@ const links = [
           </section>
         )}
         {thesis && (
-          <section class="block feature">
-            <h2>{t(ui.sections.thesis, lang)}</h2>
+          <section class="block feature" id="thesis" aria-labelledby="thesis-h">
+            <h2 id="thesis-h">{t(ui.sections.thesis, lang)}</h2>
             <p class="thesis">{t(thesis.data.title, lang)}</p>
+            {/* the other language's title, so visitors can search for it */}
+            {thesis.data.title.en && <p class="other" lang={zh ? 'en' : 'zh-Hant-TW'}>{zh ? thesis.data.title.en : thesis.data.title.zh}</p>}
             <p class="muted small">{zh ? `國立中央大學資訊管理學系，${thesis.data.academicYear} 學年度` : `National Central University, academic year ${thesis.data.academicYear + 1911}–${thesis.data.academicYear + 1912}`}{thesis.data.fullTextFrom && ` · ${t(ui.pubs.fullTextFrom, lang)} ${thesis.data.fullTextFrom}`}</p>
+            {thesis.data.plain && (
+              <div class="gist">
+                <h3>{zh ? '這篇在做什麼' : 'What it does'}</h3>
+                <Bi text={thesis.data.plain} lang={lang} />
+              </div>
+            )}
+            {thesis.data.keywords && <ul class="kw" aria-label={zh ? '關鍵字' : 'Keywords'}>{thesis.data.keywords[zh ? 'zh' : 'en'].map((k) => <li>{k}</li>)}</ul>}
+            {thesis.data.url && <p><a class="more" href={thesis.data.url} target="_blank" rel="noopener">{zh ? '看論文紀錄與完整摘要（中央大學典藏）↗' : 'Full abstract in the NCU repository ↗'}</a></p>}
           </section>
         )}
         {myPubs.length > 0 && (
@@ -264,6 +274,13 @@ const links = [
     box-shadow: 10px 14px 28px var(--lo), inset 0 2px 0 var(--hi), inset -6px -8px 14px rgb(0 0 0 / 0.05);
   }
   .thesis { font: 600 clamp(19px, 1.8vw, 23px)/1.6 var(--f-body); text-wrap: pretty; }
+  .other { font-size: 15px; line-height: 1.5; color: var(--ink-2); text-wrap: pretty; }
+  .gist { display: grid; gap: var(--space-2); margin-top: var(--space-3); padding-top: var(--space-4); border-top: 1px solid color-mix(in oklab, var(--ink) 12%, transparent); }
+  .gist h3 { font-size: 16px; color: var(--ink-2); }
+  .gist p { font-size: 17px; line-height: 1.8; }
+  .kw { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .kw li { font-size: 14px; padding: 4px 12px; border-radius: var(--r-full); background: color-mix(in oklab, var(--surface) 70%, transparent); }
+  .feature .more { font-weight: 600; }
   .small { font-size: 14px; }
   .plain { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-3); }
   .timeline { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2); }
