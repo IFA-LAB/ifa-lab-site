@@ -17,7 +17,7 @@ interface Props {
   jsonld?: object[];
   ogType?: 'website' | 'profile' | 'article';
   /** Absolute or root-relative URL of a square share image (a member photo). Without it, the page shares the
-   *  1200×630 shot of the home page (public/og-<lang>.jpg, re-shoot it when the home page changes a lot). */
+   *  1200×630 shot of the home page (public/og-<lang>-N.jpg; when it changes, bump N: LINE caches share images by URL). */
   image?: string;
   /** Trail between home and this page, for BreadcrumbList. Root-relative paths; the last item is this page. */
   crumbs?: { name: string; path: string }[];
@@ -49,7 +49,7 @@ const org = {
   address: { '@type': 'PostalAddress', streetAddress: lab.contact.address.en, addressCountry: 'TW' },
   logo: new URL('/logo.png', site).href,
 };
-const shareImage = new URL(image ?? `/og-${lang === 'en' ? 'en' : 'zh'}.jpg`, site).href;
+const shareImage = new URL(image ?? `/og-${lang === 'en' ? 'en' : 'zh'}-2.jpg`, site).href;
 // every page says which site it belongs to and who publishes it, so an answer engine can attribute what it quotes
 const webPage = {
   '@type': ogType === 'profile' ? 'ProfilePage' : 'WebPage',
