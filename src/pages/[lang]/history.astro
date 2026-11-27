@@ -26,12 +26,12 @@ const byYear = years.map((y) => ({
     .sort((a, b) => (a.date.length === 4 ? 1 : 0) - (b.date.length === 4 ? 1 : 0) || b.date.localeCompare(a.date)),
 }));
 
-const KINDS: { key: Kind; clay: string; name: Bi; unit: Bi }[] = [
-  { key: 'paper', clay: 'blue', name: { zh: '論文', en: 'Papers' }, unit: { zh: '篇論文', en: 'papers' } },
-  { key: 'award', clay: 'up', name: { zh: '獎項', en: 'Awards' }, unit: { zh: '座獎', en: 'awards' } },
-  { key: 'grant', clay: 'sun', name: { zh: '計畫', en: 'Grants' }, unit: { zh: '件計畫', en: 'grants' } },
-  { key: 'thesis', clay: 'down', name: { zh: '碩士論文', en: 'Theses' }, unit: { zh: '篇碩論', en: 'theses' } },
-  { key: 'milestone', clay: 'pink', name: { zh: '里程碑', en: 'Milestones' }, unit: { zh: '件大事', en: 'milestones' } },
+const KINDS: { key: Kind; clay: string; name: Bi; one: string; unit: Bi }[] = [
+  { key: 'paper', clay: 'blue', name: { zh: '論文', en: 'Papers' }, one: 'Paper', unit: { zh: '篇論文', en: 'papers' } },
+  { key: 'award', clay: 'up', name: { zh: '獎項', en: 'Awards' }, one: 'Award', unit: { zh: '座獎', en: 'awards' } },
+  { key: 'grant', clay: 'sun', name: { zh: '計畫', en: 'Grants' }, one: 'Grant', unit: { zh: '件計畫', en: 'grants' } },
+  { key: 'thesis', clay: 'down', name: { zh: '碩士論文', en: 'Theses' }, one: 'Thesis', unit: { zh: '篇碩論', en: 'theses' } },
+  { key: 'milestone', clay: 'pink', name: { zh: '里程碑', en: 'Milestones' }, one: 'Milestone', unit: { zh: '件大事', en: 'milestones' } },
 ];
 /** English units in singular when the count is 1. */
 const unit = (k: (typeof KINDS)[number], n: number) => (zh || n !== 1 ? t(k.unit, lang) : t(k.unit, lang).replace(/s$/, ''));
@@ -88,7 +88,7 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
               <li class="ev" data-kind={e.kind}>
                 <i class="stud" data-k={e.kind} style={e.clay && `--c: var(--clay-${e.clay})`} aria-hidden="true"></i>
                 <div>
-                  <p class="meta mono">{e.date.length > 4 ? e.date.replace('-', '/') : e.date} · {t(kindOf(e.kind).name, lang)}</p>
+                  <p class="meta mono">{e.date.length > 4 ? e.date.replace('-', '/') : e.date} · {zh ? kindOf(e.kind).name.zh : kindOf(e.kind).one}</p>
                   <p class="txt">{(() => { const x = e.link ? splitTitle(t(e.text, lang)) : null; return x ? <>{x.before}<a href={e.link}>{x.title}</a>{x.after}</> : e.link ? <a href={e.link}>{t(e.text, lang)}</a> : t(e.text, lang); })()}</p>
                   {e.who && e.who.length > 0 && (
                     <p class="who">{e.who.map((id, i) => <>{i > 0 && (zh ? '、' : ', ')}<a class="nw" href={href(lang, `members/${id}`)}>{t(nameOf(id), lang)}</a></>)}</p>

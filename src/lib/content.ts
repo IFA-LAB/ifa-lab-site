@@ -51,25 +51,32 @@ export function citation(p: Publication['data']) {
   const who = names.length === 1 ? names[0] : `${names.slice(0, -1).join(', ')}, & ${names[names.length - 1]}`;
   const tail = [p.venue, p.volume, p.pages].filter(Boolean).join(', ');
   const link = p.doi ? ` https://doi.org/${p.doi}` : p.url ? ` ${p.url}` : '';
-  return `${who} (${year}). ${p.title}.${tail ? ` ${tail}.` : p.kind === 'working' ? ' [Working paper].' : ''}${link}`;
+  const repo = p.doi?.startsWith('10.5281/') ? ' Zenodo.' : '';
+  return p.kind === 'working' && !tail
+    ? `${who} (${year}). ${p.title} [Working paper].${repo}${link}`
+    : `${who} (${year}). ${p.title}.${tail ? ` ${tail}.` : ''}${link}`;
 }
 
 /** BibTeX entry; key = first author's surname + year + first title word. */
 export function bibtex(id: string, p: Publication['data']) {
   const surname = (p.authors[0].split(' ').pop() ?? 'anon').toLowerCase();
   const word = (p.title.match(/[A-Za-z]+/)?.[0] ?? '').toLowerCase();
+  // braces keep acronyms (EUA, PDE, LLMs, ESG) from being lower-cased by bibliography styles
+  const title = p.title.replace(/\b([A-Z]*[A-Z][A-Za-z]*[A-Z][A-Za-z]*|[A-Z]{2,}s?)\b/g, '{$1}');
+  const repo = p.doi?.startsWith('10.5281/') ? 'Zenodo' : undefined;
   const f: [string, string | undefined][] = [
-    ['title', p.title],
+    ['title', title],
     ['author', p.authors.join(' and ')],
     ['year', String(p.year)],
     [p.kind === 'journal' ? 'journal' : 'note', p.kind === 'journal' ? p.venue : 'Working paper'],
     ['volume', p.volume],
     ['pages', p.pages?.replace('–', '--')],
+    ['publisher', p.kind === 'journal' ? undefined : repo],
     ['doi', p.doi],
     ['url', p.doi ? undefined : p.url],
   ];
   const body = f.filter(([, v]) => v).map(([k, v]) => `  ${k} = {${v}}`).join(',\n');
-  return `@${p.kind === 'journal' ? 'article' : 'unpublished'}{${surname}${p.year}${word},\n${body}\n}`;
+  return `@${p.kind === 'journal' ? 'article' : 'misc'}{${surname}${p.year}${word},\n${body}\n}`;
 }
 
 export const paperPaths = async () => {

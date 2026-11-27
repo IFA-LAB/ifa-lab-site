@@ -68,7 +68,7 @@ function Candle({ i, s, L, c }: { i: number; s: WalkStep; L: Layout; c: Ctx }) {
         {/* a year without new work is a doji: a flat line where open meets close */}
         {s.bricks.length === 0 && (
           <mesh position={[0, open - bottom, 0]} castShadow>
-            <boxGeometry args={[BW, 0.08, BD * 0.6]} />
+            <boxGeometry args={[BW, 0.08, BD]} />
             <meshStandardMaterial color="#8a95a6" roughness={0.8} />
           </mesh>
         )}
@@ -185,15 +185,16 @@ function Climber({ L, c, at }: { L: Layout; c: Ctx; at: RefObject<Vector3> }) {
 }
 
 /** A member drops onto the candle of the year they joined and stays there, so the finished chart shows who arrived when.
-    Up to four stand in a front row; more fill a second row behind it. The cat walks along the back. */
+    Up to five stand in a front row; more fill a second row behind it. The cat walks along the back. */
 function Follower({ m, join, slot, L, c }: { m: WalkMember; join: number; slot: number; L: Layout; c: Ctx }) {
   const g = useRef<Group>(null), inner = useRef<Group>(null);
   const body = CLAY[m.clay] ?? CLAY.grey;
   const top = L[Math.min(L.length - 1, join)];
-  const row = Math.floor(slot / 4), col = slot % 4;
+  // five to a row, huddled: 2023's five founders all stand in front of the cat instead of one hiding behind
+  const row = Math.floor(slot / 5), col = slot % 5;
   // the advisor stands at the front-left corner of the first candle, clear of the cat
   const lead = m.id === 'advisor';
-  const x = lead ? top.x - 0.5 : top.x + (col - 1.5) * 0.32 + row * 0.16, z = lead ? 0.12 : 0.24 - row * 0.26;
+  const x = lead ? top.x - 0.5 : top.x + (col - 2) * 0.27 + row * 0.14, z = lead ? 0.12 : 0.24 - row * 0.3;
   useFrame(({ clock }) => {
     const o = g.current; if (!o) return;
     const T = now(c, L);

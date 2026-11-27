@@ -81,7 +81,7 @@ const description = zh
           client:visible
           bars={areas.map((a) => ({ key: a.key, label: zh ? a.name.zh : boardEn[a.key], name: t(a.name, lang), count: perArea(a.key), href: href(lang, `research#${a.key}`), clay: a.clay }))}
           hint={zh ? '每根 K 棒是一個研究領域，滑過看看、點進去' : 'Each candle is a research area. Hover, then click'}
-          hintTouch={zh ? '每根 K 棒是一個研究領域，點一下看論文' : 'Each candle is a research area. Tap one'}
+          hintTouch={zh ? '每根 K 棒是一個研究領域，點一下看論文' : 'Each candle is a research area. Tap one to see its papers.'}
           unit={zh ? '篇' : 'works'}
           wake={zh ? '點一下，讓 K 棒動起來' : 'Tap to bring the candles to life'}
           steps={steps}
@@ -284,6 +284,7 @@ const description = zh
 
   /* 2×2 bookcase: each cohort is one shelf with a plank */
   .shelf { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8) var(--space-6); }
+  @media (max-width: 899px) { .shelf { grid-template-columns: 1fr; } }
   .row { position: relative; display: grid; gap: var(--space-3); padding-bottom: var(--space-4); }
   /* a clay plank: lit top edge, darker front, soft cast shadow */
   .row::after { content: ''; position: absolute; inset: auto 0 0; height: 18px; border-radius: 9px; background: var(--surface); box-shadow: 0 10px 18px var(--lo), inset 0 3px 0 var(--hi), inset 0 -7px 0 var(--surface-2); }

@@ -54,6 +54,8 @@ const other = otherLocale(lang);
 
 <script>
   const root = document.documentElement;
+  const isDark = () => (root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches);
+  document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((b) => b.setAttribute('aria-pressed', String(isDark())));
   document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((b) =>
     b.addEventListener('click', async () => {
       const dark = root.dataset.theme
@@ -62,7 +64,10 @@ const other = otherLocale(lang);
       const next = dark ? 'light' : 'dark';
       const apply = () => {
         root.dataset.theme = next;
-        try { localStorage.setItem('theme', next); } catch {}
+        // back on the system's theme: forget the choice, so a later OS switch is followed again
+        const sys = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        try { if (next === sys) localStorage.removeItem('theme'); else localStorage.setItem('theme', next); } catch {}
+        b.setAttribute('aria-pressed', String(next === 'dark'));
       };
       // the new theme spreads out from the button as a growing circle (View Transitions);
       // without the API, or with reduced motion, it simply switches
