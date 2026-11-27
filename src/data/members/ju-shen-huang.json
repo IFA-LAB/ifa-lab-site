@@ -118,7 +118,7 @@
         "zh": "診所的 AI 櫃檯：LINE、FB、IG 和官網私訊進同一個收件匣，AI 照診所規則回答，把人約進醫師、診間、儀器都空著的時段。AI 那一半由我一個人做，已上線。",
         "en": "An AI front desk for clinics: messages from LINE, FB, IG and the website land in one inbox, the AI answers by the clinic's rules and books only slots where doctor, room and device are all free. I built the AI half alone; live."
       },
-      "url": "https://ogmatcha.com/work/medalink/"
+      "url": "https://www.ogmatcha.com/work/medalink/"
     },
     {
       "name": "財伴 oSave",
@@ -127,7 +127,7 @@
         "zh": "會告訴你財務健不健康的記帳 App：三個問題翻成 13 項金流方向和 6 項健康指標。我負責系統架構與後端；iOS、Android 上架，也是我國科會計畫的實證對象。",
         "en": "A bookkeeping app that tells you whether your finances are healthy: three questions become 13 cash-flow directions and 6 health indicators. I built the architecture and backend; on iOS and Android, and the subject of my NSTC study."
       },
-      "url": "https://ogmatcha.com/work/osave/"
+      "url": "https://www.ogmatcha.com/work/osave/"
     },
     {
       "name": "斐闊 Finctory",
@@ -136,7 +136,7 @@
         "zh": "學生時期一起創的金融科技公司，旗下有財伴、找好康、淘換算等產品線；我是技術長，負責架構、AI 選型與工程團隊。",
         "en": "A fintech company we started as students, with oSave, SurPrice and Taobao Exchange among its products. As CTO I own architecture, AI choices and the engineering team."
       },
-      "url": "https://ogmatcha.com/work/finctory/"
+      "url": "https://www.ogmatcha.com/work/finctory/"
     },
     {
       "name": "PhishForge",
@@ -145,7 +145,7 @@
         "zh": "依部門和近期情境讓 AI 寫出客製釣魚信與仿冒登入頁的資安演練平台，只記錄行為、不存密碼。大專資訊服務創新賽資安應用組第一名，也是 113 國科會計畫題目。",
         "en": "A phishing-drill platform where AI writes emails and fake login pages tailored to each department; it records behaviour, never passwords. 1st place in the InnoServe security track and the topic of an NSTC project."
       },
-      "url": "https://ogmatcha.com/work/phishforge/"
+      "url": "https://www.ogmatcha.com/work/phishforge/"
     },
     {
       "name": "Catalyst",
@@ -154,7 +154,7 @@
         "zh": "Multi-Agent 軟體開發自動化平台，從需求分析、產生程式碼一路串到測試部署。台積電校園黑客松 AI 維運懶人包組第一名，我負責介面設計。",
         "en": "A multi-agent platform that automates software work from requirements through code to tests and deployment. 1st place, AI Ops track, TSMC IT CareerHack; I designed the interface."
       },
-      "url": "https://ogmatcha.com/work/catalyst/"
+      "url": "https://www.ogmatcha.com/work/catalyst/"
     },
     {
       "name": "Ched.AI",
@@ -172,7 +172,7 @@
         "zh": "把超市、量販、藥妝、超商的 DM 優惠收在同一頁，算好單位價格、標出剩幾天；手機瀏覽器打開就能用。我是主要開發。",
         "en": "Deals from supermarket, pharmacy and convenience-store flyers on one page, with unit prices and days left; works in a phone browser. I am the main developer."
       },
-      "url": "https://ogmatcha.com/work/surprice/"
+      "url": "https://www.ogmatcha.com/work/surprice/"
     },
     {
       "name": "淘換算 Taobao Exchange",
@@ -181,7 +181,7 @@
         "zh": "在淘寶、天貓的價格旁直接標出新台幣的 Chrome 擴充功能，匯率每天更新；獨立開發，278 位使用者、4.8 星。",
         "en": "A Chrome extension that shows NT$ beside every Taobao and Tmall price, with daily rates; built solo, 278 users, rated 4.8."
       },
-      "url": "https://ogmatcha.com/work/taobao/"
+      "url": "https://www.ogmatcha.com/work/taobao/"
     },
     {
       "name": "tessera",
@@ -251,7 +251,7 @@
   "links": {
     "github": "https://github.com/OG-Matcha",
     "linkedin": "https://www.linkedin.com/in/ogmatcha/",
-    "website": "https://ogmatcha.com"
+    "website": "https://www.ogmatcha.com"
   },
   "photo": "../../assets/members/ju-shen-huang.jpg",
   "figure": {

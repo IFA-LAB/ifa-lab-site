@@ -16,7 +16,7 @@ export const KINDS: Record<Kind, { clay: string; name: Bi }> = {
   win: { clay: 'up', name: { zh: '全國首獎', en: 'National first prize' } },
 };
 
-const W = 'https://ogmatcha.com/work/';
+const W = 'https://www.ogmatcha.com/work/';
 
 /** Oldest first; each year's candle stands on the top of the year before, so the chart climbs like a rising K line. */
 export const YEARS: Year[] = [
