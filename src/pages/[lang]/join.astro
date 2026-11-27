@@ -69,27 +69,30 @@ const faqLd = {
       <p class="muted when">{zh ? '他們每個人都是從一封信開始的。' : 'Every one of them started with an email.'}</p>
       <p class="cta top"><a class="btn" href={`mailto:${lab.contact.email}`}>{zh ? `寄信給${advisor.name.zh}老師` : `Email Prof. ${advisor.name.en}`}</a><LabCat lang={lang} size={64} bubble="right" lines={[{ zh: '信裡寫你好奇的題目，比寫自傳有用。', en: 'Write about a question you are curious about. It beats a CV.' }, { zh: '不會寫程式也沒關係，學長姐會帶。', en: 'Cannot code yet? Seniors will help you start.' }]} /></p>
     </div>
-    <div class="faq">
-      {faq.map((f) => (
-        <section class="qa clay">
-          <h2>{t(f.q, lang)}</h2>
-          <p>{t(f.a, lang)}</p>
-        </section>
-      ))}
-    </div>
     <section class="steps-wrap" aria-labelledby="steps-h">
       <h2 id="steps-h">{zh ? '三步加入' : 'Three steps in'}</h2>
       <ol class="steps">
         {steps.map((s, i) => (
-          <li class="clay"><span class="num" aria-hidden="true">{i + 1}</span><h3>{t(s.t, lang)}</h3><p class="muted">{t(s.d, lang)}</p></li>
+          <li><span class="num" aria-hidden="true">{i + 1}</span><h3>{t(s.t, lang)}</h3><p>{t(s.d, lang)}</p></li>
         ))}
       </ol>
+    </section>
+    <section class="faq-wrap" aria-labelledby="faq-h">
+      <h2 id="faq-h">{zh ? '大家常問的' : 'What people ask'}</h2>
+      <div class="faq">
+        {faq.map((f) => (
+          <section class="qa">
+            <h3>{t(f.q, lang)}</h3>
+            <p>{t(f.a, lang)}</p>
+          </section>
+        ))}
+      </div>
     </section>
     <section class="where" aria-labelledby="where-h">
       <h2 id="where-h">{zh ? '學長姐畢業後去哪裡' : 'Where graduates went'}</h2>
       <ul>
         {gone.map((m) => (
-          <li class="clay"><a href={href(lang, `members/${m.id}`)}>{t(m.data.name, lang)}</a><span class="muted">{t(m.data.headline, lang)}</span><strong>{t(m.data.now, lang)}</strong></li>
+          <li><strong>{t(m.data.now, lang)}</strong><a href={href(lang, `members/${m.id}`)}>{t(m.data.name, lang)}</a><span class="muted">{t(m.data.headline, lang)}</span></li>
         ))}
       </ul>
     </section>
@@ -109,32 +112,47 @@ const faqLd = {
 </Base>
 
 <style>
-  .faq { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
-  .qa { padding: var(--space-6); display: grid; gap: var(--space-3); align-content: start; }
-  .qa h2 { font-size: 21px; }
   .cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-7); }
-  .steps-wrap, .past, .where { margin-top: var(--space-8); display: grid; gap: var(--space-5); }
-  .where ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--space-4); }
-  .where li { padding: var(--space-5); display: grid; gap: var(--space-1); align-content: start; }
-  .where li a { font: 500 20px/1.3 var(--f-display); text-decoration: none; color: var(--ink); }
-  .where li .muted { font-size: 14px; }
-  .where li strong { font: 600 17px/1.5 var(--f-body); margin-top: var(--space-2); }
-  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
-  .steps li { padding: var(--space-6) var(--space-5) var(--space-5); display: grid; gap: var(--space-2); align-content: start; position: relative; }
+  .steps-wrap, .faq-wrap, .past, .where { margin-top: var(--space-9); display: grid; gap: var(--space-5); }
+  .steps-wrap h2, .faq-wrap h2, .past h2, .where h2 { font-size: clamp(24px, 2.4vw, 32px); }
+  /* the one slab on the page: what to do next, right under the hero */
+  .steps-wrap {
+    margin-top: 0; padding: var(--space-7); border-radius: var(--r-lg); background: var(--tint-warm);
+    box-shadow: 10px 14px 28px var(--lo), inset 0 2px 0 var(--hi), inset -6px -8px 14px rgb(0 0 0 / 0.05);
+  }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-6); counter-reset: s; }
+  .steps li { display: grid; gap: var(--space-2); align-content: start; position: relative; }
+  /* a dashed path joins the numbered bricks */
+  .steps li:not(:last-child)::after { content: ''; position: absolute; top: 22px; left: 60px; right: calc(-1 * var(--space-6) + 8px); border-top: 2px dashed color-mix(in oklab, var(--ink) 25%, transparent); }
   .num { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font: 600 22px/1 var(--f-display); color: #1d2633; background: var(--clay-sun); box-shadow: 3px 5px 10px var(--lo), inset -3px -4px 6px rgb(0 0 0 / 0.15), inset 3px 3px 6px rgb(255 255 255 / 0.35); margin-bottom: var(--space-2); }
   .steps h3 { font-size: 20px; }
+  .steps p { margin: 0; }
+  .faq { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6) var(--space-8); }
+  .qa { display: grid; gap: var(--space-2); align-content: start; padding-top: var(--space-4); border-top: 1px solid color-mix(in oklab, var(--ink) 12%, transparent); }
+  .qa h3 { font-size: 19px; }
+  .qa p { margin: 0; }
+  .where ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-6); }
+  .where li { display: grid; gap: var(--space-1); align-content: start; padding-left: var(--space-4); border-left: 4px solid var(--clay-up); }
+  .where li strong { font: 600 22px/1.3 var(--f-display); word-break: keep-all; }
+  .where li a { font-weight: 600; }
+  .where li .muted { font-size: 14px; }
   .past ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); max-width: 52em; }
   .past li { display: grid; gap: var(--space-1); padding-left: var(--space-4); box-shadow: inset 3px 0 0 var(--c); }
   /* same six-colour area code as the research page */
   .past .area { white-space: nowrap; }
   .past .area i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 3px; background: var(--c); vertical-align: 0; }
   .small { font-size: 14px; }
-  @media (max-width: 767px) { .steps { grid-template-columns: 1fr; } }
   .cta.top { margin: var(--space-4) 0 var(--space-7); display: flex; align-items: end; gap: var(--space-4); }
   .crowd { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-4); margin-top: var(--space-5); }
   /* equal cells, so a figure with a guitar or headphones does not crowd its neighbour */
   .crowd { column-gap: var(--space-3); }
   .crowd :global(.mate) { width: 76px; }
   .when { margin-top: var(--space-4); }
-  @media (max-width: 767px) { .faq { grid-template-columns: 1fr; } }
+  @media (max-width: 767px) {
+    .steps, .faq { grid-template-columns: 1fr; }
+    .steps li:not(:last-child)::after { display: none; }
+    .steps-wrap { padding: var(--space-6) var(--space-5); }
+    .steps-wrap, .faq-wrap, .past, .where { margin-top: var(--space-8); }
+    .steps-wrap { margin-top: 0; }
+  }
 </style>

@@ -21,6 +21,8 @@
   --bg: #eef2f6;
   --surface: #ffffff;
   --surface-2: #e3e9f0;
+  /* warm slab behind one feature per page; sun turns olive on the dark surface, so dark uses violet */
+  --tint-warm: color-mix(in oklab, var(--clay-sun) 22%, var(--surface));
   --ink: #1d2633;
   --ink-2: #4a5668;
   --line: rgb(29 38 51 / 0.12);
@@ -61,6 +63,7 @@
   --accent: #7fa6e6; --accent-ink: #0f1520; --focus: #7fa6e6;
   --clay-blue: #6e9ad8; --clay-up: #e86a60; --clay-down: #3fb383; --clay-sun: #e9b455; --clay-pink: #e5a2b3; --clay-grey: #7f8a9b; --clay-violet: #a996e0;
   --hi: rgb(255 255 255 / 0.09); --lo: rgb(0 0 0 / 0.55);
+  --tint-warm: color-mix(in oklab, var(--clay-violet) 16%, var(--surface));
   color-scheme: dark;
 }
 @media (prefers-color-scheme: dark) {
@@ -70,6 +73,7 @@
     --accent: #7fa6e6; --accent-ink: #0f1520; --focus: #7fa6e6;
     --clay-blue: #6e9ad8; --clay-up: #e86a60; --clay-down: #3fb383; --clay-sun: #e9b455; --clay-pink: #e5a2b3; --clay-grey: #7f8a9b; --clay-violet: #a996e0;
     --hi: rgb(255 255 255 / 0.09); --lo: rgb(0 0 0 / 0.55);
+    --tint-warm: color-mix(in oklab, var(--clay-violet) 16%, var(--surface));
     color-scheme: dark;
   }
 }
