@@ -7,7 +7,7 @@ export const GET: APIRoute = ({ site }) =>
       'User-agent: *',
       'Allow: /',
       '',
-      ...['GPTBot', 'OAI-SearchBot', 'ClaudeBot', 'Claude-SearchBot', 'PerplexityBot', 'Google-Extended'].flatMap((b) => [`User-agent: ${b}`, 'Allow: /', '']),
+      ...['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot-Extended', 'CCBot', 'Amazonbot', 'Meta-ExternalAgent', 'Bytespider', 'cohere-ai'].flatMap((b) => [`User-agent: ${b}`, 'Allow: /', '']),
       `Sitemap: ${new URL('/sitemap-index.xml', site).href}`,
       '',
     ].join('\n'),

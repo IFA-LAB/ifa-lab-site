@@ -38,7 +38,9 @@ const name = t(d.name, lang);
 const mates = d.placeholder ? (await getCollection('members')).filter((o) => o.data.cohort === d.cohort && o.id !== m.id).sort((a, b) => a.data.order - b.data.order) : [];
 
 const description = d.placeholder
-  ? `${name}，IFA Lab ${t(ui.cohort(d.cohort), lang)}。`
+  ? zh
+    ? `${name}，國立中央大學資訊管理學系 IFA Lab（智能金融分析實驗室）${t(ui.cohort(d.cohort), lang)}。個人介紹整理中。`
+    : `${name}, ${t(ui.cohort(d.cohort), lang)} of IFA Lab (Intelligent Finance Analytics Lab), Department of Information Management, National Central University. Profile coming soon.`
   : (pick(d.bio, lang).text || t(d.headline, lang)).slice(0, 150);
 
 if (d.photo && (d.photo.width < 400 || Math.abs(d.photo.width / d.photo.height - 1) > 0.05)) {
@@ -64,7 +66,7 @@ const links = [
   d.links.linkedin && { label: 'LinkedIn', url: d.links.linkedin },
 ].filter(Boolean) as { label: string; url: string }[];
 ---
-<Base lang={lang} title={name} description={description} jsonld={[person]} ogType="profile" image={share?.src}>
+<Base lang={lang} title={name} description={description} jsonld={[person]} ogType="profile" image={share?.src} crumbs={[{ name: t(ui.nav.members, lang), path: href(lang, 'members') }, { name, path: href(lang, `members/${m.id}`) }]}>
   <article class="wrap section">
     <p class="crumbs"><a href={href(lang, 'members')}>{t(ui.nav.members, lang)}</a> / {t(ui.cohort(d.cohort), lang)}</p>
 

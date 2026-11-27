@@ -22,7 +22,7 @@ for (const p of pubs) for (const a of p.data.authors) if (a !== 'Hsin-Yu Chiu' &
 const people = [...coauthors].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p) => p.data.venue).filter(Boolean))] as string[];
 ---
-<Base lang={lang} title={t(ui.nav.collaboration, lang)} description={zh ? '和 IFA Lab 合作：產業、學術與跨領域研究。' : 'Work with IFA Lab: industry, academic and interdisciplinary collaboration.'}>
+<Base lang={lang} title={t(ui.nav.collaboration, lang)} description={zh ? '和中央大學資管系 IFA Lab 合作：產學合作（已和兆豐銀行完成一個專案）、學術共同研究與跨領域研究。' : 'Work with IFA Lab: industry, academic and interdisciplinary collaboration.'}>
   <div class="wrap section">
     <div class="section-head">
       <p class="eyebrow">{t(ui.nav.collaboration, lang)}</p>

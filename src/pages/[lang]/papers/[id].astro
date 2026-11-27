@@ -22,7 +22,10 @@ const kindLabel = lang === 'en' ? (d.kind === 'journal' ? 'Journal article' : 'W
 const [first, last] = (d.pages ?? '').split(/[–-]/);
 const url = new URL(href(lang, `papers/${paper.id}`), site).href;
 
-const description = d.plain ? t(d.plain, lang) : d.title;
+// search snippets cut near 160 characters: end on a whole sentence or word; a very short summary gets the title added
+const clip = (s: string, n = 170) => (s.length <= n ? s : (s.slice(0, n).match(/^[\s\S]*[。.;；](?=\s|$)/)?.[0] ?? s.slice(0, n).replace(/\s+\S*$/, '') + '…'));
+const plain = d.plain ? t(d.plain, lang) : '';
+const description = clip(plain.length >= 40 ? plain : (plain ? `${plain}${lang === 'en' ? ' — ' : '論文原題：'}` : '') + d.title);
 const jsonld = [{
   '@context': 'https://schema.org',
   '@type': 'ScholarlyArticle',
@@ -39,7 +42,7 @@ const jsonld = [{
   sourceOrganization: { '@id': new URL('/#org', site).href },
 }];
 ---
-<Base lang={lang} title={d.title} description={description} jsonld={jsonld} ogType="article">
+<Base lang={lang} title={d.title} description={description} jsonld={jsonld} ogType="article" crumbs={[{ name: t(ui.nav.research, lang), path: href(lang, 'research') }, { name: d.title, path: href(lang, `papers/${paper.id}`) }]}>
   <Fragment slot="head">
     {/* Highwire tags: what Google Scholar reads to index a paper */}
     <meta name="citation_title" content={d.title} />

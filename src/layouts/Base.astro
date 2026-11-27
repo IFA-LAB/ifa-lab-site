@@ -16,12 +16,15 @@ interface Props {
   /** Extra JSON-LD objects for this page. The Organization node is always added. */
   jsonld?: object[];
   ogType?: 'website' | 'profile' | 'article';
-  /** Absolute or root-relative URL of the share image. */
+  /** Absolute or root-relative URL of a square share image (a member photo). Without it, the page shares the
+   *  1200×630 shot of the home page (public/og-<lang>.jpg, re-shoot it when the home page changes a lot). */
   image?: string;
+  /** Trail between home and this page, for BreadcrumbList. Root-relative paths; the last item is this page. */
+  crumbs?: { name: string; path: string }[];
   /** The page opens on a 3D scene: hold it behind the loading screen until the scene has drawn (Gate.astro). */
   gate?: boolean;
 }
-const { lang, title, description, jsonld = [], ogType = 'website', image, gate = false } = Astro.props;
+const { lang, title, description, jsonld = [], ogType = 'website', image, crumbs, gate = false } = Astro.props;
 const site = Astro.site!;
 const path = Astro.url.pathname;
 const canonical = new URL(path, site).href;
@@ -44,8 +47,23 @@ const org = {
     department: { '@type': 'Organization', name: lab.dept.en },
   },
   address: { '@type': 'PostalAddress', streetAddress: lab.contact.address.en, addressCountry: 'TW' },
+  logo: new URL('/logo.png', site).href,
 };
-const graph = [org, ...jsonld];
+const shareImage = new URL(image ?? `/og-${lang === 'en' ? 'en' : 'zh'}.jpg`, site).href;
+// every page says which site it belongs to and who publishes it, so an answer engine can attribute what it quotes
+const webPage = {
+  '@type': ogType === 'profile' ? 'ProfilePage' : 'WebPage',
+  '@id': canonical,
+  url: canonical,
+  name: fullTitle,
+  inLanguage: htmlLang[lang],
+  isPartOf: { '@type': 'WebSite', '@id': new URL('/#site', site).href, name: lab.short, url: new URL(`/${lang}/`, site).href },
+  publisher: { '@id': org['@id'] },
+  ...(crumbs?.length
+    ? { breadcrumb: { '@type': 'BreadcrumbList', itemListElement: [{ name: lab.short, path: `/${lang}/` }, ...crumbs].map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: new URL(c.path, site).href })) } }
+    : {}),
+};
+const graph = [org, webPage, ...jsonld];
 ---
 <!doctype html>
 <html lang={htmlLang[lang]} data-gate-page={gate ? '' : undefined}>
@@ -63,8 +81,10 @@ const graph = [org, ...jsonld];
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content={lab.short} />
     <meta property="og:locale" content={ogLocale[lang]} />
-    {image && <meta property="og:image" content={new URL(image, site).href} />}
-    {image && <meta name="twitter:card" content="summary" />}
+    <meta property="og:image" content={shareImage} />
+    {!image && <meta property="og:image:width" content="1200" />}
+    {!image && <meta property="og:image:height" content="630" />}
+    <meta name="twitter:card" content={image ? 'summary' : 'summary_large_image'} />
     <meta name="theme-color" content="#eef2f6" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#141a23" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
