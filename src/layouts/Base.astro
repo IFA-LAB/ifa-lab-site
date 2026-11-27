@@ -157,7 +157,7 @@ const graph = [org, webPage, ...jsonld];
           if (!last || last.parentElement.closest('.glue, .nw')) continue;
           const s = last.data.replace(/\s+$/, '');
           let i = s.length, n = 0;
-          while (i > 0 && n < 4) { const c = s[i - 1]; if (/\s/.test(c)) break; if (cjk.test(c)) n++; i--; }
+          while (i > 0 && n < 4) { const c = s[i - 1]; if (/[\sA-Za-z0-9]/.test(c)) break; if (cjk.test(c)) n++; i--; }
           // back to the start of the word the cut falls in (台積電 stays whole)
           if (seg) { let st = 0; for (const x of seg.segment(s)) { if (x.index > i) break; st = x.index; } i = st; }
           if (!n || i < 6) continue;

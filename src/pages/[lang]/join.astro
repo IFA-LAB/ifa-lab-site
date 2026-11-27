@@ -135,7 +135,7 @@ const faqLd = {
         {thesisRows.map(({ x, m }) => { const a = areas.find((y) => y.key === x.data.area); return (
           <li style={`--c: var(--clay-${a?.clay ?? 'grey'})`}>
             <BiText text={x.data.title} lang={lang} />
-            <p class="muted small">{m ? <a href={href(lang, `members/${x.data.member}`)}>{t(m.data.name, lang)}</a> : x.data.member} · {zh ? `${x.data.academicYear} 學年度` : `AY ${x.data.academicYear + 1911}`}{a && <> · <span class="area"><i aria-hidden="true"></i>{t(a.name, lang)}</span></>}</p>
+            <p class="muted small">{m ? <a href={href(lang, `members/${x.data.member}`)}>{t(m.data.name, lang)}</a> : x.data.member} ·&nbsp;{zh ? `${x.data.academicYear} 學年度` : `AY ${x.data.academicYear + 1911}–${String(x.data.academicYear + 1912).slice(2)}`}{a && <> ·&nbsp;<span class="area"><i aria-hidden="true"></i>{t(a.name, lang)}</span></>}</p>
           </li>
         ); })}
       </ul>

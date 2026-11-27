@@ -138,7 +138,7 @@ const links = [
             <p class="thesis">{t(thesis.data.title, lang)}</p>
             {/* the other language's title, so visitors can search for it */}
             {thesis.data.title.en && <p class="other" lang={zh ? 'en' : 'zh-Hant-TW'}>{zh ? thesis.data.title.en : thesis.data.title.zh}</p>}
-            <p class="muted small">{zh ? `國立中央大學資訊管理學系，${thesis.data.academicYear} 學年度` : `National Central University, academic year ${thesis.data.academicYear + 1911}–${thesis.data.academicYear + 1912}`}{thesis.data.fullTextFrom && ` · ${t(ui.pubs.fullTextFrom, lang)} ${thesis.data.fullTextFrom}`}</p>
+            <p class="muted small">{zh ? `國立中央大學資訊管理學系，${thesis.data.academicYear} 學年度` : `National Central University, AY ${thesis.data.academicYear + 1911}–${String(thesis.data.academicYear + 1912).slice(2)}`}{thesis.data.fullTextFrom && ` · ${t(ui.pubs.fullTextFrom, lang)} ${thesis.data.fullTextFrom}`}</p>
             {thesis.data.plain && (
               <div class="gist">
                 <h3>{zh ? '這篇在做什麼' : 'What it does'}</h3>
@@ -153,7 +153,7 @@ const links = [
           <section class="block">
             <h2>{zh ? '論文' : 'Papers'}</h2>
             <ul class="plain">
-              {myPubs.map((p) => <li><a href={href(lang, `papers/${p.id}`)} lang="en">{p.data.title}</a> <span class="muted small">({p.data.year}{p.data.kind === 'working' ? `, ${t(ui.pubs.working, lang)}` : ''})</span></li>)}
+              {myPubs.map((p) => <li><a href={href(lang, `papers/${p.id}`)} lang="en">{p.data.title}</a> <span class="muted small">({p.data.year}{p.data.kind === 'working' ? (zh ? ', 工作論文' : ', working paper') : ''})</span></li>)}
             </ul>
           </section>
         )}

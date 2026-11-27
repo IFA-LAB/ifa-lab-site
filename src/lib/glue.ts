@@ -6,7 +6,7 @@ export function glueTail(s: string, n = 4): [string, string] {
   let i = s.length, count = 0;
   while (i > 0 && count < n) {
     const c = s[i - 1];
-    if (/\s/.test(c)) break;
+    if (/[\sA-Za-z0-9]/.test(c)) break;
     if (cjk.test(c)) count++;
     i--;
   }

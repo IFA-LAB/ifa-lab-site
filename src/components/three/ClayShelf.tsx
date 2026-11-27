@@ -70,7 +70,7 @@ export default function ClayShelf({ rows, hint, hintTouch, open, openTouch }: Pr
         </Suspense>
       </div>
       <span className="shelf-hint">
-        {active ? <><b>{active.name}</b> · {active.sub} · {touch ? openTouch : open}</> : touch ? hintTouch : hint}
+        {active ? <><b>{active.name}</b> · <span className="nw">{active.sub}</span><br />{touch ? openTouch : open}</> : touch ? hintTouch : hint}
       </span>
     </div>
   );

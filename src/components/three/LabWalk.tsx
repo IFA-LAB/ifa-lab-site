@@ -84,7 +84,7 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
       <div className="walk-card" aria-hidden="true">
         <p className="eyebrow">{text.eyebrow}</p>
         {end ? <>
-          <p className="walk-h">{text.endH}</p>
+          <p className="walk-h"><Glued text={text.endH} /></p>
           <p className="walk-cap"><Glued text={text.endP} /></p>
           <p className="walk-cta"><a className="btn" href={text.mailHref} tabIndex={-1}>{text.mail}</a> <a href={text.joinHref} tabIndex={-1}>{text.join} →</a></p>
         </> : <>
@@ -105,8 +105,9 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
 
 /** Chinese text whose last four characters stay on one line (see src/lib/glue.ts). */
 function Glued({ text }: { text: string }) {
-  const [head, tail] = glueTail(text);
-  return head ? <>{head}<span className="nw">{tail}</span></> : <>{text}</>;
+  const t = text.replace(/K 喵/g, 'K\u00a0喵');
+  const [head, tail] = glueTail(t);
+  return head ? <>{head}<span className="nw">{tail}</span></> : <>{t}</>;
 }
 
 /** The name of what the pointer is over, in page type next to the pointer (kept inside the stage). */
