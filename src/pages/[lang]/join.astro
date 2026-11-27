@@ -22,7 +22,7 @@ const faq: { q: Bi; a: Bi }[] = [
     a: { zh: '不用。老師是金融背景，但題目不限金融，資訊管理領域裡你有興趣的方向，都可以找老師討論。', en: 'No. Prof. Chiu’s background is finance, but topics are not limited to it: any direction in information management you care about is open to discuss with him.' },
   },
   {
-    q: { zh: '碩士班收幾位？什麼時候寄信？', en: 'How many master’s students? When should I write?' },
+    q: { zh: '中央資管碩士班，IFA Lab 收幾位？什麼時候寄信給老師？', en: 'How many master’s students? When should I write?' },
     a: { zh: '2026 年秋天收了 3 位碩士生。什麼時候寄信都可以，越早聊，越有時間想題目。有程式基礎（Python、R 或類似語言）會比較快上手。', en: 'Three master’s students joined in fall 2026. Write any time; the earlier we talk, the more time there is to shape a topic. Some programming (Python, R or similar) helps you start faster.' },
   },
   {
@@ -76,7 +76,7 @@ const faqLd = {
   mainEntity: faq.map((f) => ({ '@type': 'Question', name: t(f.q, lang), acceptedAnswer: { '@type': 'Answer', text: t(f.a, lang) } })),
 };
 ---
-<Base lang={lang} title={t(ui.nav.join, lang)} description={zh ? 'IFA Lab 招收碩士班學生：題目不限金融，資訊管理領域的方向都可以討論，每週 meeting 一次、壓力不大、可以實習。學長姐畢業後去了台積電、中華電信研究院、世界先進。' : 'IFA Lab takes master’s students: any information-management topic, one meeting a week, a relaxed pace, internships welcome. Graduates went on to TSMC, Chunghwa Telecom Labs and VIS.'} jsonld={[faqLd]}>
+<Base lang={lang} title={zh ? '加入我們：中央資管碩士班' : 'Join us: master’s students at NCU IM'} description={zh ? 'IFA Lab 招收碩士班學生：題目不限金融，資訊管理領域的方向都可以討論，每週 meeting 一次、壓力不大、可以實習。學長姐畢業後去了台積電、中華電信研究院、世界先進。' : 'IFA Lab takes master’s students: any information-management topic, one meeting a week, a relaxed pace, internships welcome. Graduates went on to TSMC, Chunghwa Telecom Labs and VIS.'} jsonld={[faqLd]}>
   <div class="wrap section">
     <div class="section-head">
       <p class="eyebrow">{t(ui.nav.join, lang)}</p>

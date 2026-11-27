@@ -32,7 +32,7 @@ const path = Astro.url.pathname;
 const canonical = new URL(path, site).href;
 // titles carry what people actually search for (中央大學, 資管), not only the lab's short name
 const fullTitle = title === lab.short
-  ? (lang === 'zh-tw' ? `${lab.short} ${lab.name.zh}｜中央大學資管系` : `${lab.short} | ${lab.name.en}, National Central University`)
+  ? (lang === 'zh-tw' ? `${lab.short} ${lab.name.zh}｜中央大學資管系 金融科技` : `${lab.short} | ${lab.name.en}, National Central University`)
   : (lang === 'zh-tw' ? `${title}｜IFA Lab 中央大學資管` : `${title} | IFA Lab, NCU`);
 
 const org = {

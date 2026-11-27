@@ -37,7 +37,7 @@ const person = {
   alumniOf: advisor.education.map((e) => ({ '@type': 'CollegeOrUniversity', name: e.school.en })),
 };
 ---
-<Base lang={lang} title={t(advisor.name, lang)} description={t(advisor.bio, lang).slice(0, 150)} jsonld={[person]} ogType="profile" image={share.src}>
+<Base lang={lang} title={zh ? `${advisor.name.zh} 副教授` : `Prof. ${advisor.name.en}`} description={(zh ? `${advisor.name.zh}，國立中央大學資訊管理學系${advisor.title.zh}，IFA Lab 主持人。` : `${advisor.name.en}, ${advisor.title.en}, Department of Information Management, National Central University; head of IFA Lab. `) + t(advisor.bio, lang).slice(0, 100)} jsonld={[person]} ogType="profile" image={share.src}>
   <article class="wrap section">
     <header class="head">
       <div class="portrait" data-face="photo">
