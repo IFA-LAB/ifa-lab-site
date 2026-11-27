@@ -104,8 +104,7 @@
     "plain": {
       "zh": "放空者也會「抱著賠錢的部位不放」，而且只掌握部分資訊的放空者更明顯。",
       "en": "Short sellers also hold on to losing positions, and partially informed ones do so more."
-    },
-    "slides": "https://docs.google.com/presentation/d/1Izy_4tKl0GuKMukeHsyU649g7HrHvkNs/view"
+    }
   },
   {
     "id": "asd-momentum-taiwan",
@@ -158,7 +157,6 @@
       "P2P lending",
       "machine learning"
     ],
-    "slides": "https://docs.google.com/presentation/d/1XhXFXOnrWaM1xR_9Ub2cqllNk90y7F2Q/view",
     "plain": {
       "zh": "用機器學習預測中國 P2P 借貸平台會不會倒，並找出在各種變數篩選方法下都穩定重要的指標；模型 AUC 約 0.96。",
       "en": "Machine learning predicts which Chinese P2P lending platforms will fail and finds indicators that stay important across variable-selection methods; AUC is about 0.96."
@@ -187,7 +185,6 @@
       "futures"
     ],
     "doi": "10.1016/j.pacfin.2021.101616",
-    "slides": "https://docs.google.com/presentation/d/10XnOKSViF0OiVhJl6uLtkJA-VWPmIU_M/view",
     "plain": {
       "zh": "找出歷史上走勢「長得像」現在的時期，用它們之後的表現來預測期貨，檢驗這種相似性交易策略能不能賺錢。",
       "en": "Finds past periods whose price paths look like today’s and uses what followed to forecast futures, testing whether such similarity-based strategies pay off."
@@ -216,7 +213,6 @@
       "options"
     ],
     "doi": "10.1111/fima.12309",
-    "slides": "https://docs.google.com/presentation/d/1-AFfIJP56DNKdZhkMj-Vgy0Oa9chY4Xx/view",
     "plain": {
       "zh": "選擇權投資人也會急著把賺錢的部位了結、抱著賠錢的不放；用這個偏誤做多空策略，能預測 delta 避險後的選擇權報酬。",
       "en": "Option holders also cash in winners and hold on to losers; a long–short strategy built on that bias predicts delta-hedged option returns."

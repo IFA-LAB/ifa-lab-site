@@ -158,7 +158,7 @@ const links = [
         {d.experience.length > 0 && (
           <section class="block">
             <h2>{t(ui.sections.experience, lang)}</h2>
-            <ul class="timeline">{d.experience.map((e) => <li><span class="mono">{expPeriod(e)}</span><span>{t(e.title, lang)}{zh ? '・' : ' · '}{t(e.org, lang)}</span></li>)}</ul>
+            <ul class="timeline">{[...d.experience].sort((a, b) => b.period.localeCompare(a.period)).map((e) => <li><span class="mono">{expPeriod(e)}</span><span>{t(e.title, lang)}{zh ? '・' : ' · '}{t(e.org, lang)}</span></li>)}</ul>
           </section>
         )}
         {d.projects.length > 0 && (

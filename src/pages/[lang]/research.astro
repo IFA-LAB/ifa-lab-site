@@ -355,6 +355,9 @@ const jsonld = journals.map((p) => ({
     /* a column may be narrower than its label: the track can shrink, the label never pushes the wall wider */
     .col { grid-template-columns: minmax(0, 1fr); }
     .yr { overflow: hidden; white-space: nowrap; }
+    /* the forthcoming column: its two-character label stands upright instead of being cut to one */
+    .yr.soon { overflow: visible; writing-mode: vertical-rl; text-orientation: upright; display: flex; justify-content: center; align-items: center; letter-spacing: 1px; border-top: 0; box-shadow: 0 -2px 0 var(--line); }
+    :global(html:lang(en)) .yr.soon { text-orientation: mixed; letter-spacing: 0; }
     .cols { gap: 6px; }
     .jump::before { display: none; }
   }
