@@ -87,14 +87,14 @@ export default function ClayKline({ bars, steps = [], hint, hintTouch, unit, wak
   );
   const total = shown.reduce((n, b) => n + b.count, 0);
   const atNow = step >= last;
-  // what this step added: the area that grew most since the previous step (the cat goes to look at it)
-  const grew = useMemo(() => {
-    if (!steps.length || step === 0) return null;
+  // what this step added, biggest first: the cat goes to look at the first; the caption names up to two
+  const grown = useMemo(() => {
+    if (!steps.length || step === 0) return [];
     const prev = steps[step - 1].counts, cur = steps[step].counts;
-    let best: { bar: Bar; n: number } | null = null;
-    for (const b of bars) { const n = (cur[b.key] ?? 0) - (prev[b.key] ?? 0); if (n > 0 && (!best || n > best.n)) best = { bar: b, n }; }
-    return best;
+    return bars.map((bar) => ({ bar, n: (cur[bar.key] ?? 0) - (prev[bar.key] ?? 0) })).filter((g) => g.n > 0).sort((a, b) => b.n - a.n);
   }, [bars, steps, step]);
+  const grew = grown[0] ?? null;
+  const named = grown.slice(0, 2);
   const added = steps.length && step > 0 ? total - bars.reduce((n, b) => n + (steps[step - 1].counts[b.key] ?? 0), 0) : 0;
 
   const onToy = (what: 'coin' | 'cat') => {
@@ -137,7 +137,7 @@ export default function ClayKline({ bars, steps = [], hint, hintTouch, unit, wak
       <span className="kline-hint" aria-live="polite">
         {say ? say
           : activeNow ? (text?.open ? <><b>{activeNow.name}</b> · {text.open}</> : <><b>{activeNow.name}</b> · {activeNow.count} {unit}</>)
-          : !atNow && grew ? <><b>{steps[step].label}</b> · {grew.bar.name} +{grew.n}{added > grew.n ? ` · ${text?.more ?? '+'}${added - grew.n}` : ''}</>
+          : !atNow && grew ? <><b>{steps[step].label}</b>{named.map((g) => ` · ${g.bar.name} +${g.n}`).join('')}{added > named.reduce((n, g) => n + g.n, 0) ? ` · ${text?.more ?? '+'}${added - named.reduce((n, g) => n + g.n, 0)}` : ''}</>
           : touch ? hintTouch : hint}
       </span>
     </div>

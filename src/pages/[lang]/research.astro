@@ -357,7 +357,8 @@ const jsonld = journals.map((p) => ({
     .yr { overflow: hidden; white-space: nowrap; }
     /* the forthcoming column: its two-character label stands upright instead of being cut to one */
     .yr.soon { overflow: visible; writing-mode: vertical-rl; text-orientation: upright; display: flex; justify-content: center; align-items: center; letter-spacing: 1px; border-top: 0; box-shadow: 0 -2px 0 var(--line); }
-    :global(html:lang(en)) .yr.soon { text-orientation: mixed; letter-spacing: 0; }
+    /* English: 'Soon' turned on its side was hard to read; four letters fit across the column (it may spill a little past it) */
+    :global(html:lang(en)) .yr.soon { writing-mode: horizontal-tb; letter-spacing: 0; font-size: 11px; }
     .cols { gap: 6px; }
     .jump::before { display: none; }
   }
