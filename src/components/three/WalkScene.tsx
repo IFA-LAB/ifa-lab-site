@@ -95,12 +95,14 @@ function YearTag({ i, s, L, c, reveal }: { i: number; s: WalkStep; L: Layout; c:
   // the ending pulls far back and a 0.3-unit tag shrank to about 8 px; it grows as the camera leaves, and drops a little
   // so the bigger tag stays under its candle
   const grow = size.width / size.height > 1.15 ? 1.6 : 2.2;
+  // after a flat year two tags sit at the same height and, grown, run into each other: this one steps down a tag's height
+  const stagger = i > 0 && L[i].open - L[i - 1].open < 0.5 ? 0.3 * (1 + grow) : 0;
   useFrame(() => {
     const o = g.current; if (!o) return;
     const k = ease(clamp((now(c, L) - (i - 0.35)) / 0.3)), r = ease(clamp(reveal.current ?? 0));
     o.visible = k > 0.001 || i === 0;
     o.scale.setScalar((i === 0 ? 1 : Math.max(0.001, k)) * (1 + grow * r));
-    o.position.y = L[i].open - 0.55 - r * grow * 0.18;
+    o.position.y = L[i].open - 0.55 - r * (grow * 0.18 + stagger);
   });
   return <group ref={g} position={[L[i].x, L[i].open - 0.55, 0.55]}><TagSprite text={s.label} position={[0, 0, 0]} height={0.3} /></group>;
 }
@@ -263,8 +265,8 @@ function Rig({ at, L, c, reveal, focus }: { at: RefObject<Vector3>; L: Layout; c
     // the ending: the whole chart from a high three-quarter view, the dashed next candle included
     const r = ease(clamp(reveal.current ?? 0));
     if (r > 0) {
-      const last = L[L.length - 1], cx = (last.x + GX) / 2, cy = (last.close + BH * 3) / 2 + (wide ? 0.5 : 1.4); // a little high, so the dashed next candle clears the header
-      const D = 1.1 * Math.max((last.x + GX * 3) / (2 * tan * aspect * (wide ? 0.7 : 1)), (last.close + 3) / (2 * tan * (wide ? 0.85 : 0.65)));
+      const last = L[L.length - 1], cx = (last.x + GX) / 2, cy = (last.close + BH * 3) / 2 + (wide ? 0.5 : aspect < 0.6 ? 2.6 : 1.8); // a little high, so the dashed next candle clears the header
+      const D = 1.1 * Math.max((last.x + GX * (wide ? 3 : 2.2)) / (2 * tan * aspect * (wide ? 0.7 : 1)), (last.close + 3) / (2 * tan * (wide ? 0.85 : 0.74)));
       want.lerp(tmp.set(cx + Math.sin(-0.5) * D, cy + D * 0.16, Math.cos(-0.5) * D), r);
       wantLook.lerp(tmp.set(cx, cy, 0), r);
     }
