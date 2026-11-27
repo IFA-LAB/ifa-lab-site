@@ -1,7 +1,7 @@
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { BoxGeometry, EdgesGeometry, Vector3, type DirectionalLight, type Group, type LineSegments, type Mesh, type PerspectiveCamera } from 'three';
-import { CLAY, TagSprite } from './util';
+import { CLAY, FUR_DARK, TagSprite, useDark } from './util';
 import { Accessory, BODY_Y, Face, MatchaLatte, Professor, R, type Accessory as AccessoryKind, type Model } from './figure';
 
 export type WalkBrick = { title: string; clay: string; kind: string; href: string };
@@ -89,9 +89,19 @@ function Candle({ i, s, L, c }: { i: number; s: WalkStep; L: Layout; c: Ctx }) {
 }
 
 /** The year under each candle, shown once the climb reaches it. */
-function YearTag({ i, s, L, c }: { i: number; s: WalkStep; L: Layout; c: Ctx }) {
+function YearTag({ i, s, L, c, reveal }: { i: number; s: WalkStep; L: Layout; c: Ctx; reveal: RefObject<number> }) {
   const g = useRef<Group>(null);
-  useFrame(() => { const o = g.current; if (o) { const k = ease(clamp((now(c, L) - (i - 0.35)) / 0.3)); o.visible = k > 0.001 || i === 0; o.scale.setScalar(i === 0 ? 1 : Math.max(0.001, k)); } });
+  const { size } = useThree();
+  // the ending pulls far back and a 0.3-unit tag shrank to about 8 px; it grows as the camera leaves, and drops a little
+  // so the bigger tag stays under its candle
+  const grow = size.width / size.height > 1.15 ? 1.6 : 2.2;
+  useFrame(() => {
+    const o = g.current; if (!o) return;
+    const k = ease(clamp((now(c, L) - (i - 0.35)) / 0.3)), r = ease(clamp(reveal.current ?? 0));
+    o.visible = k > 0.001 || i === 0;
+    o.scale.setScalar((i === 0 ? 1 : Math.max(0.001, k)) * (1 + grow * r));
+    o.position.y = L[i].open - 0.55 - r * grow * 0.18;
+  });
   return <group ref={g} position={[L[i].x, L[i].open - 0.55, 0.55]}><TagSprite text={s.label} position={[0, 0, 0]} height={0.3} /></group>;
 }
 
@@ -142,7 +152,8 @@ function Beads({ L, c }: { L: Layout; c: Ctx }) {
 function CatBody({ reduce }: { reduce: boolean }) {
   const tail = useRef<Mesh>(null);
   useFrame(({ clock }) => { if (tail.current && !reduce) tail.current.rotation.z = 0.6 + Math.sin(clock.getElapsedTime() * 2.2) * 0.25; });
-  const fur = <meshStandardMaterial color={FUR} roughness={0.9} />;
+  const dark = useDark();
+  const fur = <meshStandardMaterial color={dark ? FUR_DARK : FUR} roughness={0.9} />;
   return (
     <group scale={0.55}>
       <mesh position={[0, 0.5, 0]} scale={[1.15, 0.85, 0.9]} castShadow><sphereGeometry args={[0.62, 32, 24]} />{fur}</mesh>
@@ -251,7 +262,7 @@ function Rig({ at, L, c, reveal, focus }: { at: RefObject<Vector3>; L: Layout; c
     // the ending: the whole chart from a high three-quarter view, the dashed next candle included
     const r = ease(clamp(reveal.current ?? 0));
     if (r > 0) {
-      const last = L[L.length - 1], cx = (last.x + GX) / 2, cy = (last.close + BH * 3) / 2 + 0.5; // a little high, so the dashed next candle clears the header
+      const last = L[L.length - 1], cx = (last.x + GX) / 2, cy = (last.close + BH * 3) / 2 + (wide ? 0.5 : 1.4); // a little high, so the dashed next candle clears the header
       const D = 1.1 * Math.max((last.x + GX * 3) / (2 * tan * aspect * (wide ? 0.7 : 1)), (last.close + 3) / (2 * tan * (wide ? 0.85 : 0.65)));
       want.lerp(tmp.set(cx + Math.sin(-0.5) * D, cy + D * 0.16, Math.cos(-0.5) * D), r);
       wantLook.lerp(tmp.set(cx, cy, 0), r);
@@ -310,7 +321,7 @@ export default function WalkScene({ T, reveal, steps, crew, joinOf, reduce, visi
         <shadowMaterial opacity={0.1} />
       </mesh>
       {steps.map((s, i) => <Candle key={i} i={i} s={s} L={L} c={c} />)}
-      {steps.map((s, i) => <YearTag key={'y' + i} i={i} s={s} L={L} c={c} />)}
+      {steps.map((s, i) => <YearTag key={'y' + i} i={i} s={s} L={L} c={c} reveal={reveal} />)}
       <Beads L={L} c={c} />
       <Ghost x={end.x + GX} y={end.close + 0.15} c={c} L={L} />
       <Climber L={L} c={c} at={at} />

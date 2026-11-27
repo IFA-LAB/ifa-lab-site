@@ -1,5 +1,6 @@
-import { useEffect, useMemo, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { CanvasTexture, SRGBColorSpace } from 'three';
+import { useMedia } from './env';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 export * from './env';
 
@@ -44,3 +45,20 @@ export function TagSprite({ text, position, height = 0.62 }: { text: string; pos
     </sprite>
   );
 }
+
+/** Follows the site's theme toggle (data-theme on <html>) and the OS setting. */
+export function useDark() {
+  const os = useMedia('(prefers-color-scheme: dark)');
+  const [attr, setAttr] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    const el = document.documentElement;
+    const read = () => setAttr(el.dataset.theme);
+    read();
+    const mo = new MutationObserver(read);
+    mo.observe(el, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => mo.disconnect();
+  }, []);
+  return attr ? attr === 'dark' : os;
+}
+/** K 喵's fur on a dark page: the light-theme near-black vanished into the navy background. */
+export const FUR_DARK = '#5d667a';

@@ -1,7 +1,7 @@
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { CanvasTexture, Color, SRGBColorSpace, type Group, type Mesh, type PerspectiveCamera } from 'three';
-import { RoundedBox, TagSprite, useMedia, CLAY } from './util';
+import { RoundedBox, TagSprite, useDark, CLAY } from './util';
 import type { Bar } from './ClayKline';
 
 /** Clay palette (light values; the scene keeps one look in both themes, like a physical toy). */
@@ -12,20 +12,6 @@ const PLATE_DARK = '#5a6780';
 const SUN = '#f2b544';
 const FUR = '#3a4252';
 
-/** Follows the site's theme toggle (data-theme on <html>) and the OS setting. */
-function useDark() {
-  const os = useMedia('(prefers-color-scheme: dark)');
-  const [attr, setAttr] = useState<string | undefined>(undefined);
-  useEffect(() => {
-    const el = document.documentElement;
-    const read = () => setAttr(el.dataset.theme);
-    read();
-    const mo = new MutationObserver(read);
-    mo.observe(el, { attributes: true, attributeFilter: ['data-theme'] });
-    return () => mo.disconnect();
-  }, []);
-  return attr ? attr === 'dark' : os;
-}
 
 /** A clay desk nameplate in front of each candle, tilted toward the viewer so the name reads at a glance. */
 function Label({ text, x, dark, on, fill }: { text: string; x: number; dark: boolean; on: boolean; fill: string }) {
