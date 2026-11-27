@@ -196,3 +196,5 @@ html.theme-vt * { view-transition-name: none !important; }
 
 /* keep a short phrase on one line */
 .nw, .glue { white-space: nowrap; }
+/* Chinese text whose word boundaries were marked with <wbr> (Base.astro): break only there; a word wider than the line still breaks */
+.wb.wb { word-break: keep-all; overflow-wrap: anywhere; }

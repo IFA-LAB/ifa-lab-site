@@ -148,6 +148,8 @@ const graph = [org, webPage, ...jsonld];
     {lang === 'zh-tw' && <script is:inline>
       (() => {
         const cjk = /[\u3400-\u9fff\uf900-\ufaff]/;
+        // names the dictionary does not know, so they are never cut (台／積電)
+        const KEEP = ['台積電', '工研院', '中研院', '國科會', '資策會', '中華電信', '玉山銀行', '國泰金控', '富邦金控', '聯發科', '鴻海', '邱信瑜'];
         const seg = Intl.Segmenter ? new Intl.Segmenter('zh-Hant', { granularity: 'word' }) : null;
         for (const el of document.querySelectorAll('main p, main li, main dd, main figcaption, main summary, footer p')) {
           if (el.closest('astro-island, pre, code, .nw')) continue;
@@ -160,12 +162,40 @@ const graph = [org, webPage, ...jsonld];
           while (i > 0 && n < 4) { const c = s[i - 1]; if (/[\sA-Za-z0-9]/.test(c)) break; if (cjk.test(c)) n++; i--; }
           // back to the start of the word the cut falls in (台積電 stays whole)
           if (seg) { let st = 0; for (const x of seg.segment(s)) { if (x.index > i) break; st = x.index; } i = st; }
+          for (const k of KEEP) for (let j = s.indexOf(k); j >= 0; j = s.indexOf(k, j + 1)) if (j < i && i < j + k.length) i = j;
           if (!n || i < 6) continue;
           const tail = last.splitText(i);
           const span = document.createElement('span');
           span.className = 'glue';
           tail.before(span);
           span.append(tail);
+        }
+        // Lines break between words, never inside one (投資人, not 投／資人): Chrome's word-break: auto-phrase only knows
+        // Japanese, so mark the word boundaries with <wbr> and let .wb (keep-all) forbid every other break between characters.
+        if (!seg) return;
+        const pair = /[㐀-鿿豈-﫿]$/;
+        for (const el of document.querySelectorAll('main :is(p, li, dd, dt, h1, h2, h3, h4, td, figcaption, summary), footer p')) {
+          if (el.closest('astro-island, pre, code, .lines')) continue;
+          // already done as part of its parent; it still needs the class, or the global auto-phrase rule on p/li wins
+          if (el.parentElement?.closest('.wb')) { el.classList.add('wb'); continue; }
+          const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+          const nodes = [];
+          let t;
+          while ((t = w.nextNode())) if (cjk.test(t.data) && !t.parentElement.closest('.glue, .nw, code, astro-island')) nodes.push(t);
+          for (const node of nodes) {
+            const f = document.createDocumentFragment();
+            const inside = new Set();
+            for (const k of KEEP) for (let i = node.data.indexOf(k); i >= 0; i = node.data.indexOf(k, i + 1)) for (let j = 1; j < k.length; j++) inside.add(i + j);
+            let prev = '';
+            for (const x of seg.segment(node.data)) {
+              // a break point only where a Chinese word meets another Chinese word
+              if (prev && pair.test(prev) && cjk.test(x.segment[0]) && !inside.has(x.index)) f.append(document.createElement('wbr'));
+              f.append(x.segment);
+              prev = x.segment;
+            }
+            node.replaceWith(f);
+          }
+          el.classList.add('wb');
         }
       })();
     </script>}
