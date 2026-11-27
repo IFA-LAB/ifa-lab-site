@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "check": "node scripts/check-custom.mjs && astro check",
-    "font": "astro build && node scripts/en-404.mjs && node scripts/subset-font.mjs --public"
+    "font": "astro build && node scripts/en-404.mjs && node scripts/subset-font.mjs --public",
+    "og": "node scripts/og.mjs"
   },
   "dependencies": {
     "@astrojs/react": "7.1.8",
