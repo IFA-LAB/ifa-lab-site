@@ -1,88 +1,142 @@
 ---
 /**
- * Example custom section (黃鉅燊). Copy this folder to src/custom/<your-id>/ and make it yours.
- * Rules: CONTRIBUTING.md. Short version: only your folder, only design tokens for colour and type,
- * no external scripts/fonts/iframes, stay inside the budgets. `npm run check` tells you if you broke one.
+ * 黃鉅燊's own section: a K line of my own (one candle a year, each standing on the year before), the research,
+ * and the products that are still in use. Data: ./data.ts. Rules: CONTRIBUTING.md.
+ * Want to start your own? Copy this folder to src/custom/<your-id>/, keep Section.astro, and replace the rest.
  */
 import type { Locale } from '@/i18n/ui';
+import MyKline from './MyKline';
+import { FEATURED, MORE, RESEARCH, YEARS, type Bi } from './data';
 interface Props { lang: Locale }
 const { lang } = Astro.props;
 const zh = lang === 'zh-tw';
+const t = (b: Bi) => (zh ? b.zh : b.en);
 
-// research, oldest at the bottom like the lab's brick wall; colour = the lab's research-area colour
-const research = [
-  { year: '2025', clay: 'violet', zh: 'LAK 2025 國際學習分析與知識會議 Practitioner Track 發表：運用知識圖譜與大型語言模型分析學習軌跡', en: 'LAK 2025 Practitioner Track paper: analysing learning trajectories with knowledge graphs and LLMs', who: { zh: '指導：張家凱教授', en: 'With Prof. Chia-Kai Chang' } },
-  { year: '2025–26', clay: 'pink', zh: '114 年度國科會大專生計畫：財伴 oSave 的實證研究。4 週準實驗 82 人，每週記帳天數提升 176%、預算達成率翻倍到 76.8%，財務焦慮顯著下降（p<0.01）', en: 'NSTC undergraduate project (2025–26): an empirical study of oSave. A 4-week quasi-experiment with 82 people: logging days per week up 176%, budget attainment doubled to 76.8%, financial anxiety significantly down (p<0.01)', who: { zh: '指導：邱信瑜教授', en: 'With Prof. Hsin-Yu Chiu' } },
-  { year: '2024–25', clay: 'up', zh: '113 年度國科會大專生計畫：結合股市異常現象指標及生成式 AI 之股票追蹤系統', en: 'NSTC undergraduate project (2024–25): a stock tracker combining market-anomaly indicators with generative AI', who: { zh: '指導：邱信瑜教授', en: 'With Prof. Hsin-Yu Chiu' } },
-  { year: '2024–25', clay: 'down', zh: '113 年度國科會大專生計畫：探討生成式 AI 於社交工程之發展應用（PhishForge 的研究版）', en: 'NSTC undergraduate project (2024–25): generative AI in social engineering (the research side of PhishForge)', who: { zh: '指導：胡雅涵教授', en: 'With Prof. Ya-Han Hu' } },
-];
-
-const trophies: { year: string; zh: string; en: string; prize?: { zh: string; en: string }; clay: string }[] = [
-  { year: '2025', zh: '台積電|校園黑客松', en: 'TSMC IT CareerHack', clay: 'up' },
-  { year: '2025', zh: '臺東|創新創業大賽', en: 'Taitung Startup Award', clay: 'sun' },
-  { year: '2024', zh: '大專資訊服務|創新賽', en: 'InnoServe Awards', clay: 'blue' },
-  { year: '2024', zh: '臺灣數創大賞', en: 'Taiwan Digital Creativity', prize: { zh: '金獎', en: 'Gold' }, clay: 'sun' },
-  { year: '2024', zh: 'Startup|創業競技場', en: 'Startup Arena', clay: 'down' },
-];
+const all = YEARS.flatMap((y) => y.items);
+const count = (k: string) => all.filter((i) => i.kind === k).length;
+const wins = count('win');
+const lead = zh
+  ? `${all.length} 塊積木：${count('role')} 個角色、${count('research')} 項研究、${count('work')} 個作品、${count('award') + wins} 個獎，其中 ${wins} 座全國首獎。`
+  : `${all.length} bricks: ${count('role')} roles, ${count('research')} research items, ${count('work')} products and ${count('award') + wins} awards, ${wins} of them national first prizes.`;
 ---
-<div class="research">
-  <h2>{zh ? '研究與發表：三個國科會計畫、一篇國際會議' : 'Research: three NSTC projects and one conference paper'}</h2>
-  <ol>
-    {research.map((r) => (
+<section class="part" aria-labelledby="me-kline">
+  <header class="head">
+    <h2 id="me-kline">{zh ? '我的 K 線：每一年疊上去的東西' : 'My K line: what each year added'}</h2>
+    <p>{lead}</p>
+  </header>
+  <MyKline client:visible lang={lang} />
+</section>
+
+<section class="part" aria-labelledby="me-research">
+  <header class="head">
+    <h2 id="me-research">{zh ? '研究：三個國科會計畫、一篇國際會議' : 'Research: three NSTC projects and a conference paper'}</h2>
+  </header>
+  <ol class="research">
+    {RESEARCH.map((r) => (
       <li style={`--c: var(--clay-${r.clay})`}>
-        <span class="brick" aria-hidden="true"></span>
-        <span class="year">{r.year}</span>
-        <p>{zh ? r.zh : r.en}<span class="who">{zh ? r.who.zh : r.who.en}</span></p>
+        <span class="tab" aria-hidden="true"></span>
+        <span class="yr">{r.year}</span>
+        <div>
+          <p class="title">{t(r.title)}</p>
+          {r.result && <p class="result">{t(r.result)}</p>}
+        </div>
+        <span class="who">{zh ? '指導：' : 'With '}{t(r.who)}</span>
       </li>
     ))}
   </ol>
-</div>
+</section>
 
-<div class="shelf">
-  <h2>{zh ? '獎盃架：五座大獎' : 'Trophy shelf: five top prizes'}</h2>
-  <ul>
-    {trophies.map((x) => (
-      <li style={`--c: var(--clay-${x.clay})`}>
-        <span class="cup" aria-hidden="true"></span>
-        <span class="year">{x.year}</span>
-        <span>{(zh ? x.zh : x.en).split('|').map((w) => <span class="seg">{w}</span>)}{x.prize && <span class="prize">{zh ? x.prize.zh : x.prize.en}</span>}</span>
+<section class="part" aria-labelledby="me-works">
+  <header class="head">
+    <h2 id="me-works">{zh ? '做出來，而且還有人在用' : 'Built, and still in use'}</h2>
+    <p>{zh ? '我把 AI 從展示品，做到三個月後還有人在用。這三個現在都打得開：' : 'I take AI from demo to something people still use three months later. These three are live today:'}</p>
+  </header>
+  <ul class="featured">
+    {FEATURED.map((w) => (
+      <li class="card" style={`--c: var(--clay-${w.clay})`}>
+        <span class="slab" aria-hidden="true"></span>
+        <p class="status"><i aria-hidden="true"></i>{t(w.status)}</p>
+        <h3>{w.name}</h3>
+        <p class="line">{t(w.line)}</p>
+        <dl class="facts">
+          {w.facts.map((f) => <div><dt>{t(f.label)}</dt><dd>{f.n}</dd></div>)}
+        </dl>
+        <p class="role">{t(w.role)}</p>
+        <a class="go" href={w.href} target="_blank" rel="noopener">{zh ? '看作品' : 'See the work'}<span class="vh">{zh ? `：${w.name}` : `: ${w.name}`}</span> ↗</a>
       </li>
     ))}
   </ul>
-  <p class="more"><a href="https://ogmatcha.com/resume/" target="_blank" rel="noopener">{zh ? '完整年表在我的個人網站' : 'Full record on my site'}</a></p>
-</div>
+  <ul class="more">
+    {MORE.map((w) => (
+      <li class="mini" style={`--c: var(--clay-${w.clay})`}>
+        <span class="dot" aria-hidden="true"></span>
+        <p class="name"><a href={w.href} target="_blank" rel="noopener">{w.name}</a><span class:list={['chip', { off: !w.live }]}>{t(w.status)}</span></p>
+        <p class="line">{t(w.line)}</p>
+        <p class="role">{t(w.role)}</p>
+      </li>
+    ))}
+  </ul>
+  <p class="all"><a href="https://ogmatcha.com/resume/" target="_blank" rel="noopener">{zh ? '完整年表和 16 項競賽獎，在我的個人網站' : 'The full record and all 16 awards are on my site'} ↗</a></p>
+</section>
 
 <style>
-  /* headings break at punctuation and spaces, never inside a word like 國科會 */
-  h2 { word-break: keep-all; }
-  .research { display: grid; gap: var(--space-4); margin-bottom: var(--space-7); }
-  .research ol { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
-  .research li { display: grid; grid-template-columns: 52px 5.5em minmax(0, 1fr); gap: var(--space-3); align-items: start; }
-  /* one clay brick per piece of work, in the lab's area colour */
-  .brick { height: 22px; margin-top: 3px; border-radius: 7px; background: var(--c); box-shadow: inset 0 -4px 0 rgb(0 0 0 / 0.16), inset 2px 3px 3px rgb(255 255 255 / 0.4); }
-  .research .year { padding-top: 4px; }
-  .research p { margin: 0; font-size: 15px; line-height: 1.7; }
-  .who { display: block; font-size: 14px; color: var(--ink-2); }
-  /* phones: brick and year share the first line, the text gets the full width under them */
-  @media (max-width: 559px) { .research li { grid-template-columns: 36px minmax(0, 1fr); row-gap: var(--space-1); } .research .year { padding-top: 0; align-self: center; } .research p { grid-column: 1 / -1; } }
-  .shelf { display: grid; gap: var(--space-4); }
-  h2 { font-size: 20px; }
-  /* centred rows, so an odd last trophy sits in the middle instead of alone on the left */
-  .shelf ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: flex-start; gap: var(--space-5) var(--space-3); }
-  .prize { display: block; font-weight: 600; }
-  /* each part of a prize name stays whole: 台積電 / 校園黑客松, never 台積電校 / 園黑客松 */
-  .seg { display: inline-block; }
-  .shelf li { flex: 0 1 104px; display: grid; align-content: start; justify-items: center; text-align: center; gap: var(--space-1); font-size: 15px; text-wrap: balance; }
-  /* each cup stands on its own little plinth, right under it */
-  .cup {
-    position: relative; margin-bottom: var(--space-3);
-    width: 46px; height: 52px; border-radius: 10px 10px 22px 22px; background: var(--c);
-    box-shadow: inset -4px -6px 8px rgb(0 0 0 / 0.18), inset 4px 4px 8px rgb(255 255 255 / 0.35);
-    transition: transform var(--dur-fast) var(--ease-out);
+  .part { display: grid; gap: var(--space-5); }
+  .part + .part { margin-top: var(--space-8); padding-top: var(--space-7); border-top: 1px solid var(--surface-2); }
+  .head { display: grid; gap: var(--space-2); max-width: 46rem; }
+  h2 { font: 600 22px/1.35 var(--f-display); }
+  .head p { margin: 0; font-size: 15px; color: var(--ink-2); }
+
+  /* research: tab | year | what and what came of it | advisor; one aligned table on wide screens */
+  .research { list-style: none; margin: 0; padding: 0; display: grid; }
+  .research li { display: grid; grid-template-columns: 10px 5.5rem minmax(0, 1fr) 10rem; gap: var(--space-4); align-items: baseline; padding: var(--space-4) 0; border-top: 1px solid var(--surface-2); }
+  .research li:first-child { border-top: 0; padding-top: 0; }
+  .tab { align-self: stretch; width: 10px; border-radius: var(--r-full); background: var(--c); box-shadow: inset -2px -3px 3px rgb(0 0 0 / 0.16); }
+  .yr { font: 500 14px/1.6 var(--f-mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .research .title { margin: 0; font-size: 16px; line-height: 1.6; max-width: 40em; }
+  .research .result { margin: var(--space-1) 0 0; font-size: 14px; line-height: 1.6; color: var(--ink-2); max-width: 44em; }
+  .who { font-size: 14px; color: var(--ink-2); }
+  @media (max-width: 767px) {
+    .research li { grid-template-columns: 10px minmax(0, 1fr); row-gap: var(--space-1); }
+    .tab { grid-row: 1 / span 3; }
+    .yr, .research li > div, .who { grid-column: 2; }
   }
-  .cup::after { content: ''; position: absolute; left: 50%; bottom: -12px; width: 68px; height: 10px; translate: -50% 0; border-radius: var(--r-full); background: var(--surface-2); box-shadow: inset 0 2px 0 rgb(255 255 255 / 0.3); }
-  @media (hover: hover) and (pointer: fine) { li:hover .cup::after { translate: -50% 4px; } }
-  .year { font: 500 13px/1.4 var(--f-mono); color: var(--ink-2); }
-  @media (hover: hover) and (pointer: fine) { li:hover .cup { transform: translateY(-4px); } }
-  .more { font-size: 15px; }
+
+  /* three products as equal cards: status, name, one line, two figures, my role, link at the bottom */
+  .featured, .more { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); }
+  /* the cards share their rows (subgrid), so status, name, line, figures and link sit at the same height in all three */
+  .featured { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(6, auto); row-gap: 0; }
+  /* tablets and phones: the three cards in a row you swipe, the next one peeking in, instead of three screens of scroll */
+  @media (max-width: 899px) {
+    .featured { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: min(86%, 22rem); overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; padding-bottom: var(--space-2); scrollbar-width: thin; }
+    .card { scroll-snap-align: start; }
+  }
+  .card { position: relative; grid-row: span 6; display: grid; grid-template-rows: subgrid; row-gap: var(--space-3); align-content: start; padding: var(--space-5); padding-top: calc(var(--space-5) + 10px); border-radius: var(--r-lg); background: var(--surface-2); overflow: hidden; }
+  .slab { position: absolute; inset: 0 0 auto; height: 10px; background: var(--c); box-shadow: inset 0 -3px 0 rgb(0 0 0 / 0.14); }
+  .status { display: inline-flex; align-items: center; gap: 6px; margin: 0; font: 600 13px/1.4 var(--f-body); color: var(--ink-2); }
+  .status i { width: 8px; height: 8px; border-radius: var(--r-full); background: var(--clay-down); box-shadow: 0 0 0 3px rgb(0 0 0 / 0.06); }
+  h3 { margin: 0; font: 700 20px/1.3 var(--f-display); }
+  .line { margin: 0; font-size: 15px; line-height: 1.6; }
+  .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); margin: var(--space-2) 0 0; padding: var(--space-3) 0; border-block: 1px solid var(--surface); }
+  /* figure on top, label under it; every figure on the same line however long its label */
+  .facts div { display: grid; grid-template-rows: auto 1fr; align-content: start; gap: 2px; }
+  .facts dd { order: -1; }
+  .facts dd { margin: 0; font: 700 26px/1.1 var(--f-display); font-variant-numeric: tabular-nums; }
+  .facts dt { font-size: 13px; line-height: 1.4; color: var(--ink-2); }
+  .role { margin: 0; font-size: 14px; line-height: 1.6; color: var(--ink-2); }
+  .go { align-self: end; justify-self: start; min-height: 44px; display: inline-flex; align-items: center; font-weight: 600; }
+
+  /* the rest: compact, three to a row on wide screens, all the same height */
+  .more { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--space-5); margin-top: var(--space-2); }
+  @media (max-width: 899px) { .more { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 559px) { .more { grid-template-columns: minmax(0, 1fr); } }
+  .mini { display: grid; grid-template-columns: 10px minmax(0, 1fr); grid-template-rows: auto 1fr auto; column-gap: var(--space-3); row-gap: var(--space-1); padding: var(--space-4) 0; border-top: 1px solid var(--surface-2); }
+  .dot { grid-row: 1 / span 3; width: 10px; border-radius: var(--r-full); background: var(--c); box-shadow: inset -2px -3px 3px rgb(0 0 0 / 0.16); }
+  .name { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2); margin: 0; font-weight: 600; }
+  .name a { min-height: 24px; }
+  .chip { padding: 1px 8px; border-radius: var(--r-full); background: var(--surface-2); font: 500 12px/1.6 var(--f-body); color: var(--ink-2); }
+  .chip:not(.off)::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 5px; border-radius: var(--r-full); background: var(--clay-down); vertical-align: 1px; }
+  .mini .line { font-size: 14px; }
+  .mini .role { font-size: 13px; }
+  .all { margin: 0; font-size: 15px; }
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 </style>

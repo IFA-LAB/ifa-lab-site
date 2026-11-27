@@ -24,6 +24,9 @@ const members = defineCollection({
     /** 'lab' = maintained by site maintainers (graduates / placeholders); 'self' = member edits it. */
     maintainedBy: z.enum(['self', 'lab']),
     placeholder: z.boolean().default(false),
+    /** Blocks the member's own section (src/custom/<id>/) already shows in its own way: the profile then leaves them out
+     *  below it, so the page does not say the same thing twice. The data stays here for search and the assistant. */
+    customCovers: z.array(z.enum(['projects', 'awards'])).default([]),
     bio: L.optional(),
     education: z
       .array(z.object({ school: L, degree: L, period: z.string() }))

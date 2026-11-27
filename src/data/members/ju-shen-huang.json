@@ -9,6 +9,7 @@
   "status": "enrolled",
   "founder": true,
   "maintainedBy": "self",
+  "customCovers": ["projects", "awards"],
   "headline": {
     "zh": "資管所碩士班・Finctory 技術長",
     "en": "M.S. student · CTO, Finctory"

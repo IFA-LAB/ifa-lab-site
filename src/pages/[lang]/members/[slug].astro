@@ -47,6 +47,8 @@ if (d.photo && (d.photo.width < 400 || Math.abs(d.photo.width / d.photo.height -
   throw new Error(`members/${m.id}: photo must be square (1:1) and at least 400px wide, got ${d.photo.width}x${d.photo.height}`);
 }
 const Custom = customs[`/src/custom/${m.id}/Section.astro`]?.default;
+// a block the member's own section already shows is not repeated below it (members.customCovers)
+const covered = (k: 'projects' | 'awards') => !!Custom && !d.placeholder && d.customCovers.includes(k);
 const share = d.photo ? await getImage({ src: d.photo, width: 640, format: 'jpg' }) : undefined;
 const person = {
   '@context': 'https://schema.org',
@@ -163,7 +165,7 @@ const links = [
             <ul class="timeline">{[...d.experience].sort((a, b) => b.period.localeCompare(a.period)).map((e) => <li><span class="mono">{expPeriod(e)}</span><span>{t(e.title, lang)}{zh ? '・' : ' · '}{t(e.org, lang)}</span></li>)}</ul>
           </section>
         )}
-        {d.projects.length > 0 && (
+        {d.projects.length > 0 && !covered('projects') && (
           <section class="block">
             <h2>{t(ui.sections.projects, lang)}</h2>
             <ul class="plain proj">{d.projects.map((p) => (
@@ -176,7 +178,7 @@ const links = [
             ))}</ul>
           </section>
         )}
-        {d.awards.length > 0 && (
+        {d.awards.length > 0 && !covered('awards') && (
           <section class="block">
             <h2>{t(ui.sections.awards, lang)}</h2>
             <ul class="plain">{[...d.awards].sort((a, b) => (b.zh.match(/20\d\d/)?.[0] ?? '').localeCompare(a.zh.match(/20\d\d/)?.[0] ?? '')).map((a) => <li>{t(a, lang)}</li>)}</ul>

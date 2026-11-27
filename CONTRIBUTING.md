@@ -72,6 +72,8 @@ npm run build
 | R8 | 只能 import 你自己的資料夾、`react`、`three`、`@react-three/fiber`、`@/i18n/ui`、`@/components/three/util`、`astro:assets` | 需要別的套件請先開 issue |
 | R9 | 一個 PR 只改一位成員自己的檔案 | 審查容易、出事好回復 |
 
+你的區塊如果已經用自己的方式放了專案或獲獎，在 `src/data/members/<你的 id>.json` 加上 `"customCovers": ["projects", "awards"]`（只寫有涵蓋的那幾項），個人頁下方就不會再重複列一次；資料照樣留在 JSON 裡給搜尋和 K 喵用。
+
 另外還有兩條不是自動檢查，但審查時會看：
 
 - **中英文都要有。** 用 `lang` 判斷顯示哪種語言（範例裡有寫法）；英文頁不能出現只有中文的內容。
