@@ -78,10 +78,11 @@ function search(ix: Index, q: string, lang: string, k = 5): Passage[] {
   return out;
 }
 
-// Same model family as the Spark's qwen3-30b, so the prompt and the regression questions carry over.
-// About 23 neurons a question (3k tokens in, 300 out); 300 a day stays well under the free 10,000 neurons a day.
-const CF_MODEL = '@cf/qwen/qwen3-30b-a3b-fp8';
-const CF_PER_DAY = 300;
+// Gemma 4 26B (MoE, 4B active): the cheapest capable chat model in the catalog (qwen3-30b-a3b was retired 2026-11-20).
+// About 35 neurons a typical question (3k tokens in, 300 out), about 60 at most (4.5k in, 700 out);
+// 160 a day stays under the free 10,000 neurons a day even if every question is the longest kind.
+const CF_MODEL = '@cf/google/gemma-4-26b-a4b-it';
+const CF_PER_DAY = 160;
 
 async function cloudAnswer(env: Env, q: string, lang: 'zh-tw' | 'en', hits: Passage[]): Promise<string> {
   if (!env.AI || !env.ASK_DAY) return '';
@@ -94,7 +95,7 @@ async function cloudAnswer(env: Env, q: string, lang: 'zh-tw' | 'en', hits: Pass
     const out = (await env.AI.run(CF_MODEL, {
       messages: [
         { role: 'system', content: SYS[lang] + (lang === 'zh-tw' ? '\n\n網站資料：\n' : '\n\nSite passages:\n') + ctx },
-        { role: 'user', content: `${q} /no_think` },
+        { role: 'user', content: q },
       ],
       max_tokens: 700,
       temperature: 0.3,
