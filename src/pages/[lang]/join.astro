@@ -19,7 +19,7 @@ const faq: { q: Bi; a: Bi }[] = [
   },
   {
     q: { zh: '一定要做金融題目嗎？', en: 'Do I have to work on finance?' },
-    a: { zh: '不用。老師是金融背景，但 AI、生成式 AI 或其他資訊領域的題目也都可以。', en: 'No. Prof. Chiu’s background is finance, but topics in AI, generative AI or other areas of information technology are all welcome.' },
+    a: { zh: '不用。老師是金融背景，但題目不限金融，資訊管理領域裡你有興趣的方向，都可以找老師討論。', en: 'No. Prof. Chiu’s background is finance, but topics are not limited to it: any direction in information management you care about is open to discuss with him.' },
   },
   {
     q: { zh: '碩士班收幾位？什麼時候寄信？', en: 'How many master’s students? When should I write?' },
@@ -49,7 +49,7 @@ const gone = (await getCollection('members')).filter((m) => m.data.status === 'g
 const steps: { t: Bi; d: Bi }[] = [
   { t: { zh: '寄一封信', en: 'Send an email' }, d: { zh: '三五句話介紹自己、修過的課，和你好奇的題目。想考碩士班的話，在甄試或考試報名之前就來信，比較有時間先聊題目。', en: 'A few lines about you, the courses you took and what you are curious about. Applying for the master’s program? Write before the application window so there is time to talk topics.' } },
   { t: { zh: '來 712 聊聊', en: 'Drop by Room 712' }, d: { zh: '到志希館 712 跟學長姐聊實驗室的日常，再跟老師約時間。', en: 'Chat with current students in Zhixi 712, then book a time with the advisor.' } },
-  { t: { zh: '挑一塊積木', en: 'Pick a block' }, d: { zh: '從六個研究領域挑，或帶你自己想做的 AI／資訊題目來，先從一個小資料集開始疊。', en: 'Pick one of the six research areas or bring your own AI or IT idea, and start stacking with a small dataset.' } },
+  { t: { zh: '挑一塊積木', en: 'Pick a block' }, d: { zh: '從六個研究領域挑，或帶你自己想做的題目來，先從一個小資料集開始疊。', en: 'Pick one of the six research areas or bring your own idea, and start stacking with a small dataset.' } },
 ];
 const faqLd = {
   '@context': 'https://schema.org',
@@ -57,11 +57,11 @@ const faqLd = {
   mainEntity: faq.map((f) => ({ '@type': 'Question', name: t(f.q, lang), acceptedAnswer: { '@type': 'Answer', text: t(f.a, lang) } })),
 };
 ---
-<Base lang={lang} title={t(ui.nav.join, lang)} description={zh ? 'IFA Lab 招收碩士班學生：AI、生成式 AI、金融或其他資訊題目都可以，每週 meeting 一次、壓力不大、可以實習。學長姐畢業後去了台積電、中華電信研究院、世界先進。' : 'IFA Lab takes master’s students: AI, generative AI, finance or other IT topics, one meeting a week, a relaxed pace, internships welcome. Graduates went on to TSMC, Chunghwa Telecom Laboratories and Vanguard International Semiconductor.'} jsonld={[faqLd]}>
+<Base lang={lang} title={t(ui.nav.join, lang)} description={zh ? 'IFA Lab 招收碩士班學生：題目不限金融，資訊管理領域的方向都可以討論，每週 meeting 一次、壓力不大、可以實習。學長姐畢業後去了台積電、中華電信研究院、世界先進。' : 'IFA Lab takes master’s students: topics are not limited to finance, any direction in information management is open, one meeting a week, a relaxed pace, internships welcome. Graduates went on to TSMC, Chunghwa Telecom Laboratories and Vanguard International Semiconductor.'} jsonld={[faqLd]}>
   <div class="wrap section">
     <div class="section-head">
       <p class="eyebrow">{t(ui.nav.join, lang)}</p>
-      <h1 class="lines">{(zh ? ['想做 AI、生成式 AI', '或金融題目？', '來疊積木吧'] : ['AI, generative AI or finance?', 'Come build with us']).map((l) => <span>{l}</span>)}</h1>
+      <h1 class="lines">{(zh ? ['想用資料回答', '一個真實的問題？', '來疊積木吧'] : ['A real question and some data?', 'Come build with us']).map((l) => <span>{l}</span>)}</h1>
       <p class="muted">{zh ? '2026 年秋天收了 3 位碩士生。題目不限金融，每週 meeting 一次，壓力不大，可以實習，畢業沒有硬性門檻。' : 'Three master’s students joined in fall 2026. Topics are not limited to finance, there is one meeting a week, the pace is relaxed, internships are fine and there is no fixed bar for graduating.'}</p>
       <div class="crowd" aria-label={zh ? '現在的成員' : 'Current members'}>
         {crew.map((m) => <Mate member={m} lang={lang} size={56} />)}

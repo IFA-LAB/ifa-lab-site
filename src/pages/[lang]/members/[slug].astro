@@ -4,6 +4,7 @@ import ClayFigure from '@/components/ClayFigure.astro';
 import ClayBuddy from '@/components/three/ClayBuddy';
 import { Picture, getImage } from 'astro:assets';
 import CustomFrame from '@/components/CustomFrame.astro';
+import Mate from '@/components/Mate.astro';
 
 /** Member-built sections: src/custom/<member-id>/Section.astro (rules: CONTRIBUTING.md). */
 const customs = import.meta.glob<{ default: any }>('/src/custom/*/Section.astro', { eager: true });
@@ -33,6 +34,8 @@ const expPeriod = (e: (typeof d.experience)[number]) =>
 const enName = d.name.en;
 const myPubs = enName ? (await publications()).filter((p) => p.data.authors.includes(enName)) : [];
 const name = t(d.name, lang);
+// an empty profile still shows who joined with them, so the page leads somewhere
+const mates = d.placeholder ? (await getCollection('members')).filter((o) => o.data.cohort === d.cohort && o.id !== m.id).sort((a, b) => a.data.order - b.data.order) : [];
 
 const description = d.placeholder
   ? `${name}，IFA Lab ${t(ui.cohort(d.cohort), lang)}。`
@@ -106,9 +109,18 @@ const links = [
     )}
 
     {d.placeholder ? (
-      <p class="empty clay">{zh
-        ? '個人資料還在準備中。公仔還在睡，資料補上後就會醒來。'
-        : 'This profile is still being prepared. The figure is asleep until it is filled in.'}</p>
+      <section class="empty">
+        <p>{zh
+          ? '個人資料還在準備中。公仔還在睡，資料補上後就會醒來。'
+          : 'This profile is still being prepared. The figure is asleep until it is filled in.'}</p>
+        {mates.length > 0 && (
+          <div class="mates">
+            <h2>{zh ? '同一屆的夥伴' : 'Same cohort'}</h2>
+            <div class="row">{mates.map((o) => <Mate member={o} lang={lang} size={64} caption />)}</div>
+          </div>
+        )}
+        <p><a href={href(lang, 'members')}>{zh ? '看所有成員 →' : 'All members →'}</a></p>
+      </section>
     ) : (
       <div class="blocks">
         <div class="main">
@@ -119,7 +131,7 @@ const links = [
           </section>
         )}
         {thesis && (
-          <section class="block">
+          <section class="block feature">
             <h2>{t(ui.sections.thesis, lang)}</h2>
             <p class="thesis">{t(thesis.data.title, lang)}</p>
             <p class="muted small">{zh ? `國立中央大學資訊管理學系，${thesis.data.academicYear} 學年度` : `National Central University, academic year ${thesis.data.academicYear + 1911}–${thesis.data.academicYear + 1912}`}{thesis.data.fullTextFrom && ` · ${t(ui.pubs.fullTextFrom, lang)} ${thesis.data.fullTextFrom}`}</p>
@@ -228,20 +240,30 @@ const links = [
   .en { font: 500 20px/1.3 var(--f-display); color: var(--ink-2); }
   .links { list-style: none; padding: 0; margin: var(--space-3) 0 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .links a { text-decoration: none; min-height: 40px; overflow-wrap: anywhere; }
-  .empty { padding: var(--space-6); color: var(--ink-2); max-width: 40em; }
+  .empty { display: grid; gap: var(--space-5); max-width: 44em; color: var(--ink-2); }
+  .empty p { margin: 0; }
+  .mates h2 { font-size: 20px; color: var(--ink); margin-bottom: var(--space-3); }
+  .mates .row { display: flex; flex-wrap: wrap; gap: var(--space-4); }
   /* long story on the left, short facts in a side column: the two can end at different heights without leaving holes */
-  .blocks { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: var(--space-5); align-items: start; }
-  .main, .side { display: grid; gap: var(--space-5); align-content: start; min-width: 0; }
+  .blocks { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: var(--space-8); align-items: start; }
+  .main, .side { display: grid; gap: var(--space-7); align-content: start; min-width: 0; }
+  .side { gap: var(--space-6); }
   /* the side column is narrow: dates sit above their line */
   .side .timeline li { grid-template-columns: 1fr; gap: 0; }
   .proj { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4) var(--space-6); }
   @media (max-width: 767px) { .proj { grid-template-columns: 1fr; } }
   /* short facts stay in view while the story scrolls */
   @media (min-width: 900px) and (min-height: 820px) { .side { position: sticky; top: 88px; } }
-  .block { padding: var(--space-5) var(--space-6); border-radius: var(--r-lg); background: var(--surface); box-shadow: 8px 10px 22px var(--lo), inset -4px -6px 12px rgb(0 0 0 / 0.04), inset 4px 6px 12px var(--hi); display: grid; gap: var(--space-3); align-content: start; min-width: 0; }
-  .block h2 { font-size: 18px; display: flex; align-items: center; gap: var(--space-2); }
-  .block h2::before { content: ''; width: 12px; height: 12px; border-radius: 4px; background: var(--accent); }
-  .thesis { font: 600 19px/1.6 var(--f-body); }
+  /* open sections divided by a hairline; only the thesis gets a slab */
+  .block { padding-top: var(--space-4); border-top: 1px solid color-mix(in oklab, var(--ink) 12%, transparent); display: grid; gap: var(--space-3); align-content: start; min-width: 0; }
+  .main > .block:first-child:not(.feature) { border-top: 0; padding-top: 0; }
+  .block h2 { font-size: 22px; }
+  .side .block h2 { font-size: 18px; }
+  .block.feature {
+    border-top: 0; padding: var(--space-6) var(--space-6) var(--space-7); border-radius: var(--r-lg); background: var(--tint-warm);
+    box-shadow: 10px 14px 28px var(--lo), inset 0 2px 0 var(--hi), inset -6px -8px 14px rgb(0 0 0 / 0.05);
+  }
+  .thesis { font: 600 clamp(19px, 1.8vw, 23px)/1.6 var(--f-body); text-wrap: pretty; }
   .small { font-size: 14px; }
   .plain { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-3); }
   .timeline { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2); }
