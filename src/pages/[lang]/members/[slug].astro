@@ -2,6 +2,7 @@
 import Base from '@/layouts/Base.astro';
 import ClayFigure from '@/components/ClayFigure.astro';
 import ClayBuddy from '@/components/three/ClayBuddy';
+import ClayKnead from '@/components/ClayKnead.astro';
 import { Picture, getImage } from 'astro:assets';
 import CustomFrame from '@/components/CustomFrame.astro';
 import Mate from '@/components/Mate.astro';
@@ -88,6 +89,7 @@ const links = [
           hint={zh ? '拖曳轉圈，點一下會跳' : 'Drag to spin, click to hop'}
           hintTouch={zh ? '左右滑轉圈，點一下會跳' : 'Swipe to spin, tap to hop'}
         />
+          <ClayKnead lang={lang} clay={d.placeholder ? 'grey' : d.figure.clay} />
       </div>
       {d.photo && (
         <button type="button" class="flip chip" aria-pressed="false" data-on={zh ? '換回照片' : 'Show photo'} data-off={zh ? '換成黏土公仔' : 'Show clay figure'}>{zh ? '換成黏土公仔' : 'Show clay figure'}</button>

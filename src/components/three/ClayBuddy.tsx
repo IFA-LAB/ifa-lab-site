@@ -93,6 +93,13 @@ function Buddy({ clay, accessory, model, placeholder, reduce, ctl }: { clay: str
   );
 }
 
+/** Calls back after the third frame: by then the shaders have compiled and the figure is on screen. */
+function Drawn({ onDrawn }: { onDrawn: () => void }) {
+  const n = useRef(0);
+  useFrame(() => { if (++n.current === 3) onDrawn(); });
+  return null;
+}
+
 /** Interactive 3D clay figure for a member's page. Drag to spin, click to make it hop.
     Renders an empty host until WebGL is confirmed; the CSS ClayFigure underneath stays as fallback. */
 export default function ClayBuddy({ clay, accessory, model, placeholder = false, hint, hintTouch }: Props) {
@@ -103,16 +110,20 @@ export default function ClayBuddy({ clay, accessory, model, placeholder = false,
   const touch = useMedia('(hover: none)');
   const ctl = useRef<Ctl>({ spin: -0.35, vel: 0, dragging: false, jump: 0 });
 
-  useEffect(() => setOk(canRun3D()), []);
+  useEffect(() => {
+    const can = canRun3D();
+    setOk(can);
+    // no 3D after all: drop the kneading lump (ClayKnead) so the CSS figure shows
+    if (!can) host.current?.closest('[data-buddy]')?.removeAttribute('data-knead');
+  }, []);
   useEffect(() => {
     if (!host.current) return;
     const io = new IntersectionObserver(([e]) => setVisible(e.isIntersecting));
     io.observe(host.current);
     return () => io.disconnect();
   }, [ok]);
-  useEffect(() => {
-    if (ok) host.current?.closest('[data-buddy]')?.setAttribute('data-live', '');
-  }, [ok]);
+  // the box goes live only once the figure has really drawn, so the flat figure (or the kneading lump) never gives way to an empty canvas
+  const drawn = () => host.current?.closest('[data-buddy]')?.setAttribute('data-live', '');
 
   // Pointer handling on the host: horizontal drag spins, a tap without movement hops.
   useEffect(() => {
@@ -169,6 +180,7 @@ export default function ClayBuddy({ clay, accessory, model, placeholder = false,
           <circleGeometry args={[2.2, 40]} />
           <shadowMaterial opacity={0.18} />
         </mesh>
+        <Drawn onDrawn={drawn} />
         <Buddy clay={clay} accessory={accessory} model={model} placeholder={placeholder} reduce={reduce} ctl={ctl} />
       </Canvas>
       <span className="buddy-hint">{touch ? hintTouch : hint}</span>

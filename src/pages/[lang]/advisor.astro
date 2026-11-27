@@ -4,6 +4,7 @@ import Base from '@/layouts/Base.astro';
 import ClayFigure from '@/components/ClayFigure.astro';
 import CareerSteps from '@/components/CareerSteps.astro';
 import ClayBuddy from '@/components/three/ClayBuddy';
+import ClayKnead from '@/components/ClayKnead.astro';
 import { Picture, getImage } from 'astro:assets';
 import photo from '@/assets/advisor.jpg';
 import { advisor, lab } from '@/data/lab';
@@ -43,6 +44,7 @@ const person = {
         <div class="buddy" data-buddy>
           <div class="stage"><ClayFigure clay="sun" accessory="guitar" size={160} model="prof" /></div>
           <ClayBuddy client:visible clay="sun" accessory="guitar" model="prof" hint={zh ? '拖曳轉圈，點一下會跳' : 'Drag to spin, click to hop'} hintTouch={zh ? '左右滑轉圈，點一下會跳' : 'Swipe to spin, tap to hop'} />
+          <ClayKnead lang={lang} clay="sun" />
         </div>
         <button type="button" class="flip chip" aria-pressed="false" data-on={zh ? '換回照片' : 'Show photo'} data-off={zh ? '換成黏土公仔' : 'Show clay figure'}>{zh ? '換成黏土公仔' : 'Show clay figure'}</button>
       </div>
