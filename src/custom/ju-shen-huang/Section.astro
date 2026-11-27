@@ -37,7 +37,7 @@ const lead = zh
         <span class="tab" aria-hidden="true"></span>
         <span class="yr">{r.year}</span>
         <div>
-          <p class="title">{t(r.title)}</p>
+          <p class="title">{r.href ? <a href={r.href} target="_blank" rel="noopener">{t(r.title)} ↗</a> : t(r.title)}</p>
           {r.result && <p class="result">{t(r.result)}</p>}
         </div>
         <span class="who">{zh ? '指導：' : 'With '}{t(r.who)}</span>

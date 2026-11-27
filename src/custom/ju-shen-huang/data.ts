@@ -52,7 +52,7 @@ export const YEARS: Year[] = [
     year: '2025', note: { zh: '產品上架，兩座首獎', en: 'Products ship, two first prizes' },
     items: [
       { id: 'itri', kind: 'role', text: { zh: '工研院產科國際所 AI Intern', en: 'AI intern, ITRI ISTI' } },
-      { id: 'lak', kind: 'research', text: { zh: 'LAK 2025 國際會議發表：知識圖譜 × LLM 分析學習軌跡', en: 'LAK 2025 paper: learning trajectories with knowledge graphs and LLMs' } },
+      { id: 'lak', kind: 'research', text: { zh: 'LAK 2025 國際會議發表：知識圖譜 × LLM 分析學習軌跡', en: 'LAK 2025 paper: learning trajectories with knowledge graphs and LLMs' }, href: 'https://arxiv.org/abs/2504.11481' },
       { id: 'nstc-osave', kind: 'research', text: { zh: '國科會大專生計畫：財伴 oSave 的 82 人準實驗', en: 'NSTC project: an 82-person quasi-experiment on oSave' } },
       { id: 'osave', kind: 'work', text: { zh: '財伴 oSave 上架 iOS、Android', en: 'oSave ships on iOS and Android' }, href: `${W}osave/` },
       { id: 'catalyst', kind: 'work', text: { zh: 'Catalyst：Multi-Agent 軟體開發自動化', en: 'Catalyst: multi-agent software automation' }, href: `${W}catalyst/` },
@@ -109,9 +109,9 @@ export const MORE: Work[] = [
   { name: 'Ched.AI', status: { zh: '研究室作品', en: 'Lab project' }, live: false, clay: 'grey', line: { zh: '給授信人員的生成式 AI 徵信助手；GenAI Stars 優選。', en: 'A generative-AI credit assistant for account officers; Merit Award, GenAI Stars.' }, role: { zh: '團隊成員', en: 'Team member' }, facts: [], href: 'https://github.com/OG-Matcha/Credit-Report' },
 ];
 
-export const RESEARCH: { year: string; clay: string; title: Bi; result?: Bi; who: Bi }[] = [
+export const RESEARCH: { year: string; clay: string; title: Bi; result?: Bi; who: Bi; href?: string }[] = [
   { year: '2025–26', clay: 'pink', title: { zh: '國科會大專生計畫：財伴 oSave 的實證研究', en: 'NSTC undergraduate project: an empirical study of oSave' }, result: { zh: '4 週準實驗 82 人：每週記帳天數 +176%，預算達成率翻倍到 76.8%，財務焦慮顯著下降（p<0.01）', en: '4-week quasi-experiment, 82 people: logging days a week +176%, budget attainment doubled to 76.8%, financial anxiety significantly down (p<0.01)' }, who: { zh: '邱信瑜教授', en: 'Prof. Hsin-Yu Chiu' } },
-  { year: '2025', clay: 'violet', title: { zh: 'LAK 2025 Practitioner Track：運用知識圖譜與大型語言模型分析學習軌跡', en: 'LAK 2025 Practitioner Track: learning trajectories with knowledge graphs and LLMs' }, who: { zh: '張家凱教授', en: 'Prof. Chia-Kai Chang' } },
+  { year: '2025', clay: 'violet', title: { zh: 'LAK 2025 Practitioner Track：運用知識圖譜與大型語言模型追蹤、分析學習軌跡', en: 'LAK 2025 Practitioner Track: Leveraging Knowledge Graphs and Large Language Models to Track and Analyze Learning Trajectories' }, result: { zh: 'LAK 是學習分析領域的旗艦國際會議（SoLAR 主辦）。LLM 把教材轉成知識圖譜，再用學生的測驗資料畫出每個人的學習軌跡，也找出考題可能的偏差。第二作者，與 Yu-Hxiang Chen、Jia-Yu Hung、張家凱合著', en: 'LAK is the flagship international conference of learning analytics (run by SoLAR). An LLM turns course material into a knowledge graph, then each student’s test data into a learning-trajectory graph, which also flags possible bias in exam questions. Second author, with Yu-Hxiang Chen, Jia-Yu Hung and Chia-Kai Chang' }, href: 'https://arxiv.org/abs/2504.11481', who: { zh: '張家凱教授', en: 'Prof. Chia-Kai Chang' } },
   { year: '2024–25', clay: 'up', title: { zh: '國科會大專生計畫：結合股市異常現象指標及生成式 AI 之股票追蹤系統', en: 'NSTC undergraduate project: a stock tracker combining market anomalies with generative AI' }, who: { zh: '邱信瑜教授', en: 'Prof. Hsin-Yu Chiu' } },
   { year: '2024–25', clay: 'down', title: { zh: '國科會大專生計畫：探討生成式 AI 於社交工程之發展應用', en: 'NSTC undergraduate project: generative AI in social engineering' }, result: { zh: 'PhishForge 的研究版', en: 'The research side of PhishForge' }, who: { zh: '胡雅涵教授', en: 'Prof. Ya-Han Hu' } },
 ];
