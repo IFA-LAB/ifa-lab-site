@@ -139,7 +139,7 @@ const text = {
   .walk[data-flat] { display: none; }
   @media (prefers-reduced-motion: reduce) { .walk { display: none; } }
   /* jump past the chart */
-  .stage :global(.walk-skip) { position: absolute; right: max(clamp(16px, 4vw, 48px), calc((100% - var(--page)) / 2 + 16px)); top: calc(var(--header-h, 64px) + var(--space-6)); z-index: 1; }
+  .stage :global(.walk-skip) { font-size: 14px; color: var(--ink-2); }
   .stage :global(.walk-more) { font-size: 14px; }
   .stage :global(.walk-hint) { transition: opacity var(--dur-base) var(--ease-out); }
   .stage :global(.walk-hint[data-off]) { opacity: 0; }

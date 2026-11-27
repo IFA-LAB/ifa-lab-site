@@ -93,9 +93,10 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
           {s.anchor && <a className="walk-more" href={s.anchor} tabIndex={-1}>{text.more}</a>}
         </>}
         <p className="walk-tot">{(cumPeople[idx] ? text.totals : text.solo).replace('{w}', String(cumWorks[idx])).replace('{m}', String(cumPeople[idx]))}</p>
+        {/* inside the card, so it never sits on top of the scene */}
+        {!end && <a className="walk-skip" href={text.skipHref} tabIndex={-1}>{text.skip}</a>}
       </div>
       <span className="walk-hint" aria-hidden="true" data-off={scrolled ? '' : undefined}>{text.hint}</span>
-      {!end && <a className="walk-skip btn secondary" href={text.skipHref} tabIndex={-1}>{text.skip}</a>}
       {pick && <Tip pick={pick} host={host.current} />}
     </div>
   );

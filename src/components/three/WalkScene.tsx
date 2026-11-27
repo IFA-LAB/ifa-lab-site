@@ -91,7 +91,7 @@ function Candle({ i, s, L, c }: { i: number; s: WalkStep; L: Layout; c: Ctx }) {
 /** The year under each candle, shown once the climb reaches it. */
 function YearTag({ i, s, L, c }: { i: number; s: WalkStep; L: Layout; c: Ctx }) {
   const g = useRef<Group>(null);
-  useFrame(() => { const o = g.current; if (o) { const k = ease(clamp((now(c, L) - (i - 1) - 0.2) / 0.3)); o.visible = k > 0.001 || i === 0; o.scale.setScalar(i === 0 ? 1 : Math.max(0.001, k)); } });
+  useFrame(() => { const o = g.current; if (o) { const k = ease(clamp((now(c, L) - (i - 0.35)) / 0.3)); o.visible = k > 0.001 || i === 0; o.scale.setScalar(i === 0 ? 1 : Math.max(0.001, k)); } });
   return <group ref={g} position={[L[i].x, L[i].open - 0.55, 0.55]}><TagSprite text={s.label} position={[0, 0, 0]} height={0.3} /></group>;
 }
 
