@@ -23,12 +23,17 @@ interface Props {
   crumbs?: { name: string; path: string }[];
   /** The page opens on a 3D scene: hold it behind the loading screen until the scene has drawn (Gate.astro). */
   gate?: boolean;
+  /** Keep this page out of search results (an empty profile reads as a soft 404). */
+  noindex?: boolean;
 }
-const { lang, title, description, jsonld = [], ogType = 'website', image, crumbs, gate = false } = Astro.props;
+const { lang, title, description, jsonld = [], ogType = 'website', image, crumbs, gate = false, noindex = false } = Astro.props;
 const site = Astro.site!;
 const path = Astro.url.pathname;
 const canonical = new URL(path, site).href;
-const fullTitle = title === lab.short ? `${lab.short}｜${t(lab.name, lang)}` : `${title}｜${lab.short}`;
+// titles carry what people actually search for (中央大學, 資管), not only the lab's short name
+const fullTitle = title === lab.short
+  ? (lang === 'zh-tw' ? `${lab.short} ${lab.name.zh}｜中央大學資管系` : `${lab.short} | ${lab.name.en}, National Central University`)
+  : (lang === 'zh-tw' ? `${title}｜IFA Lab 中央大學資管` : `${title} | IFA Lab, NCU`);
 
 const org = {
   '@context': 'https://schema.org',
@@ -73,6 +78,7 @@ const graph = [org, webPage, ...jsonld];
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <link rel="canonical" href={canonical} />
     {locales.map((l) => <link rel="alternate" hreflang={htmlLang[l]} href={new URL(swapLocale(path, l), site).href} />)}
     <link rel="alternate" hreflang="x-default" href={new URL(swapLocale(path, 'zh-tw'), site).href} />

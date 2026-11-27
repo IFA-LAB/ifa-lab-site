@@ -168,8 +168,12 @@ async function ask(req: Request, env: Env): Promise<Response> {
 
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
-    const { pathname } = new URL(req.url);
-    if (pathname === '/api/ask') return ask(req, env);
+    const url = new URL(req.url);
+    // one copy of every page: plain http moves to https for good
+    if (url.protocol === 'http:') { url.protocol = 'https:'; return Response.redirect(url.href, 301); }
+    if (url.pathname === '/api/ask') return ask(req, env);
+    // the asset server would answer /zh-tw/members with a temporary 307; search engines want a permanent move
+    if (!url.pathname.endsWith('/') && !/\.[a-z0-9]+$/i.test(url.pathname)) { url.pathname += '/'; return Response.redirect(url.href, 301); }
     return env.ASSETS.fetch(req);
   },
 };

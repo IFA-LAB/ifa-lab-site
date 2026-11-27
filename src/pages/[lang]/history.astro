@@ -46,7 +46,7 @@ const kindOf = (k: Kind) => KINDS.find((x) => x.key === k)!;
 const total = (k: Kind) => events.filter((e) => e.kind === k).length;
 const shown = KINDS.filter((k) => total(k.key) > 0);
 ---
-<Base gate lang={lang} title={t(ui.nav.history, lang)} description={zh ? `IFA Lab 從 2023 年 8 月成立以來的 ${events.length} 個重要時刻：論文、計畫、碩士論文與獎項。` : `IFA Lab since August 2023: ${events.length} moments across papers, grants, theses and awards.`}>
+<Base gate lang={lang} title={t(ui.nav.history, lang)} description={zh ? `中央大學資管系 IFA Lab（智能金融分析實驗室）2023 年 8 月成立，至今的 ${events.length} 個重要時刻：期刊論文、國科會計畫、碩士論文、成員加入與競賽獎項，依年份排列。` : `IFA Lab since August 2023: ${events.length} moments across papers, grants, theses and awards.`}>
   <LabChart lang={lang} listId="record" />
   <div class="wrap section">
     <div class="section-head has-cat" id="record">

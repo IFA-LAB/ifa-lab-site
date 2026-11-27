@@ -15,7 +15,8 @@
     "binding": "ASSETS",
     "html_handling": "force-trailing-slash",
     "not_found_handling": "404-page",
-    "run_worker_first": ["/api/*"]
+    // every request passes the worker first, so http→https and /path→/path/ are permanent (301) redirects
+    "run_worker_first": true
   },
   // the assistant's model runs on the lab's DGX Spark; services/ask/proxy forwards to it through a tunnel
   "services": [{ "binding": "ASK", "service": "ifa-ask-proxy" }],
