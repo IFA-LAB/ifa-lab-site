@@ -1,8 +1,11 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
-import { canRun3D, usePrefersReducedMotion, useMedia } from './env';
+import { canRun3D, gated, usePrefersReducedMotion, useMedia } from './env';
 import type { Pick, WalkMember, WalkStep } from './WalkScene';
 
-const WalkScene = lazy(() => import('./WalkScene'));
+// behind the loading screen, fetch the scene as soon as this island's script runs, not after the first render
+const loadScene = () => import('./WalkScene');
+if (gated()) void loadScene();
+const WalkScene = lazy(loadScene);
 
 type Text = { eyebrow: string; totals: string; solo: string; more: string; skip: string; skipHref: string; hint: string; endH: string; endP: string; mail: string; mailHref: string; join: string; joinHref: string };
 

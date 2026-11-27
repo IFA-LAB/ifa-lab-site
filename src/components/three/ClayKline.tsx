@@ -23,7 +23,10 @@ type Props = {
 };
 
 // three.js (~240 KB gzip) is only fetched and parsed when the scene is about to show.
-const KlineScene = lazy(() => import('./KlineScene'));
+// behind the loading screen, fetch the scene as soon as this island's script runs, not after the first render
+const loadScene = () => import('./KlineScene');
+if (gated()) void loadScene();
+const KlineScene = lazy(loadScene);
 
 export default function ClayKline({ bars, steps = [], hint, hintTouch, unit, wake, text }: Props) {
   const touch = useMedia('(hover: none)');

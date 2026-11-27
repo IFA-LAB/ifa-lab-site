@@ -13,7 +13,10 @@ type Props = {
   openTouch: string;
 };
 
-const ShelfScene = lazy(() => import('./ShelfScene'));
+// behind the loading screen, fetch the scene as soon as this island's script runs, not after the first render
+const loadScene = () => import('./ShelfScene');
+if (gated()) void loadScene();
+const ShelfScene = lazy(loadScene);
 
 /** The members cabinet in 3D. The CSS cabinet underneath is the fallback and stays until this draws.
     Mouse: hover picks a figure, click opens the profile. Touch: the first tap picks, the second opens. */
