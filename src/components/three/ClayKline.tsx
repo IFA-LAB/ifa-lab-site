@@ -125,7 +125,7 @@ export default function ClayKline({ bars, steps = [], hint, hintTouch, unit, wak
           </button>
           <span className="kline-year">
             <b>{steps[step]?.label}</b>
-            <small>{total} {text.total}{atNow && !playing && text.replay ? <span className="nw" style={{ display: 'block' }}>{text.replay.replace('{y}', steps[0].label)}</span> : null}</small>
+            <small>{total} {text.total}{text.replay ? <span className="nw" style={{ display: 'block', visibility: atNow && !playing ? 'visible' : 'hidden' }}>{text.replay.replace('{y}', steps[0].label)}</span> : null}</small>
           </span>
           <input
             type="range" min={0} max={last} step={1} value={step}

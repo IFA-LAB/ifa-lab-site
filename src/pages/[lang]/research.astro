@@ -268,7 +268,7 @@ const jsonld = journals.map((p) => ({
   for (const b of document.querySelectorAll<HTMLButtonElement>('button.copy')) {
     const label = b.textContent;
     b.addEventListener('click', async () => {
-      try { await navigator.clipboard.writeText(b.dataset.copy ?? ''); b.textContent = b.dataset.done ?? label; setTimeout(() => (b.textContent = label), 1600); } catch {}
+      try { await navigator.clipboard.writeText(b.dataset.copy ?? ''); b.textContent = '✓ ' + (b.dataset.done ?? label); setTimeout(() => (b.textContent = label), 2000); } catch {}
     });
   }
 </script>

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import type { PerspectiveCamera, PointLight } from 'three';
 import { useRef } from 'react';
 import { Color, type Group, type MeshStandardMaterial } from 'three';
-import { CLAY, RoundedBox, TagSprite, useTextTexture } from './util';
+import { CLAY, RoundedBox, TagSprite, useDark, useTextTexture } from './util';
 import { Accessory, BODY_Y, Face, MatchaLatte, R, type Accessory as AccessoryKind, type Model } from './figure';
 
 export type ShelfMember = { id: string; name: string; sub: string; clay: string; accessory: AccessoryKind; model?: Model; href: string };
@@ -17,6 +17,9 @@ const SCALE = 0.62;
 // warm clay wood, so the cabinet reads as a toy object rather than a grey box
 const WOOD = '#ecdcc2';
 const BACK = '#f7efe1';
+// dark page: slate clay, like the home board's dark tray
+const WOOD_DARK = '#59627a';
+const BACK_DARK = '#3b4356';
 const INK = '#1d2633';
 const GLOW = new Color('#4f7fc4');
 
@@ -42,6 +45,7 @@ function PlankLabel({ text, y }: { text: string; y: number }) {
 /** One plank; it glows faintly in the accent colour while one of its figures is picked. */
 function Plank({ y, lit }: { y: number; lit: boolean }) {
   const mat = useRef<MeshStandardMaterial>(null);
+  const dark = useDark();
   useFrame(() => {
     if (!mat.current) return;
     const k = mat.current.emissiveIntensity;
@@ -49,7 +53,7 @@ function Plank({ y, lit }: { y: number; lit: boolean }) {
   });
   return (
     <RoundedBox args={[W + 0.6, 0.46, DEPTH]} radius={0.12} smoothness={3} position={[0, y - 0.23, 0]} castShadow receiveShadow>
-      <meshStandardMaterial ref={mat} color={WOOD} emissive={GLOW} emissiveIntensity={0} roughness={0.92} />
+      <meshStandardMaterial ref={mat} color={dark ? WOOD_DARK : WOOD} emissive={GLOW} emissiveIntensity={0} roughness={0.92} />
     </RoundedBox>
   );
 }
@@ -133,6 +137,7 @@ export default function ShelfScene({ rows, visible, reduce, active, onHover, onP
   onHover: (m: ShelfMember | null) => void; onPick: (m: ShelfMember) => void;
 }) {
   const H = rows.length * GAP;
+  const dark = useDark();
   return (
     <Canvas
       shadows="percentage"
@@ -155,15 +160,15 @@ export default function ShelfScene({ rows, visible, reduce, active, onHover, onP
       {/* the cabinet: back, sides, top */}
       <mesh position={[0, H / 2, -DEPTH / 2 + 0.05]}>
         <boxGeometry args={[W + 0.6, H + 0.46, 0.1]} />
-        <meshStandardMaterial color={BACK} roughness={0.95} />
+        <meshStandardMaterial color={dark ? BACK_DARK : BACK} roughness={0.95} />
       </mesh>
       {[-1, 1].map((s) => (
         <RoundedBox key={s} args={[0.4, H + 0.9, DEPTH]} radius={0.12} smoothness={3} position={[s * (W / 2 + 0.3), H / 2 - 0.23, 0]} castShadow receiveShadow>
-          <meshStandardMaterial color={WOOD} roughness={0.92} />
+          <meshStandardMaterial color={dark ? WOOD_DARK : WOOD} roughness={0.92} />
         </RoundedBox>
       ))}
       <RoundedBox args={[W + 1, 0.4, DEPTH]} radius={0.12} smoothness={3} position={[0, H + 0.2, 0]} castShadow receiveShadow>
-        <meshStandardMaterial color={WOOD} roughness={0.92} />
+        <meshStandardMaterial color={dark ? WOOD_DARK : WOOD} roughness={0.92} />
       </RoundedBox>
       {rows.map((r, i) => {
         const y = i * GAP;

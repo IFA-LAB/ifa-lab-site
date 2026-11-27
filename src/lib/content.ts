@@ -36,11 +36,22 @@ export function apa(p: Publication['data'], lang: Locale) {
 export const isLocale = (v: string | undefined): v is Locale => (locales as readonly string[]).includes(v ?? '');
 
 /** One-line citation (APA-like) for copy-to-clipboard. */
+/** "Chao-Jung Chen" -> "Chen, C.-J." (APA: surname, then initials; hyphenated given names keep the hyphen). */
+function apaName(full: string) {
+  const parts = full.trim().split(/\s+/);
+  if (parts.length < 2) return full;
+  const surname = parts.pop()!;
+  const initials = parts.map((g) => g.split('-').map((x) => `${x[0]}.`).join('-')).join(' ');
+  return `${surname}, ${initials}`;
+}
+
 export function citation(p: Publication['data']) {
-  const year = p.status === 'forthcoming' ? `${p.year}, forthcoming` : String(p.year);
+  const year = p.status === 'forthcoming' ? 'in press' : String(p.year);
+  const names = p.authors.map(apaName);
+  const who = names.length === 1 ? names[0] : `${names.slice(0, -1).join(', ')}, & ${names[names.length - 1]}`;
   const tail = [p.venue, p.volume, p.pages].filter(Boolean).join(', ');
   const link = p.doi ? ` https://doi.org/${p.doi}` : p.url ? ` ${p.url}` : '';
-  return `${p.authors.join(', ')} (${year}). ${p.title}.${tail ? ` ${tail}.` : p.kind === 'working' ? ' Working paper.' : ''}${link}`;
+  return `${who} (${year}). ${p.title}.${tail ? ` ${tail}.` : p.kind === 'working' ? ' [Working paper].' : ''}${link}`;
 }
 
 /** BibTeX entry; key = first author's surname + year + first title word. */

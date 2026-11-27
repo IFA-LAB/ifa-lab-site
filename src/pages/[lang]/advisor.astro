@@ -63,9 +63,9 @@ const person = {
     <section class="lead" aria-label={t(ui.sections.bio, lang)}>
       <p class="bio">{t(advisor.bio, lang)}</p>
       <dl class="facts">
-        <div><dt>{zh ? '在大學任教' : 'Teaching since'}</dt><dd><b>2017</b>{zh ? ' 年起' : ''}</dd></div>
-        <div><dt>{zh ? '期刊論文' : 'Journal papers'}</dt><dd><b>{journals}</b>{zh ? ' 篇' : ''}</dd></div>
-        <div><dt>{zh ? '這兩學期開的課' : 'Courses this year'}</dt><dd><b>{advisor.courses.length}</b>{zh ? ' 門' : ''}</dd></div>
+        <div><dt>{zh ? '在大學任教' : 'Teaching since'}</dt><dd class="nw"><b>2017</b>{zh ? ' 年起' : ''}</dd></div>
+        <div><dt>{zh ? '期刊論文' : 'Journal papers'}</dt><dd class="nw"><b>{journals}</b>{zh ? ' 篇' : ''}</dd></div>
+        <div><dt>{zh ? '這兩學期開的課' : 'Courses this year'}</dt><dd class="nw"><b>{advisor.courses.length}</b>{zh ? ' 門' : ''}</dd></div>
       </dl>
     </section>
     <section class="sec">

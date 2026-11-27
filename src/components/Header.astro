@@ -29,7 +29,7 @@ const other = otherLocale(lang);
       </ul>
     </nav>
     <details class="menu">
-      <summary>{t(ui.menu, lang)}</summary>
+      <summary><span class="when-shut">{t(ui.menu, lang)}</span><span class="when-open" aria-hidden="true">{lang === 'en' ? 'Close' : '關閉'}</span></summary>
       <nav aria-label={t(ui.menu, lang)}>
         <ul class="links">
           {items.map((i) => (
@@ -161,6 +161,10 @@ const other = otherLocale(lang);
       background: var(--surface-2); cursor: pointer; list-style: none; font-weight: 500; white-space: nowrap;
     }
     .menu summary::-webkit-details-marker { display: none; }
+    /* open, the button says how to close it; the page you are on is marked in the list */
+    .menu .when-open, .menu[open] .when-shut { display: none; }
+    .menu[open] .when-open { display: inline; }
+    .menu .links a[aria-current='page'] { font-weight: 700; box-shadow: inset 3px 0 0 var(--accent); }
     .menu .links {
       position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); top: 68px;
       flex-direction: column; padding: var(--space-3); background: var(--surface); border-radius: var(--r-md);

@@ -136,7 +136,8 @@ const jsonld = [{
     b.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(b.dataset.copy ?? '');
-        b.textContent = b.dataset.done ?? label;
+        b.style.minWidth = `${b.offsetWidth}px`; // the shorter '已複製' must not shrink the button
+        b.textContent = '✓ ' + (b.dataset.done ?? label);
         setTimeout(() => (b.textContent = label), 1600);
       } catch {
         // clipboard blocked: select the text so the visitor can copy it by hand

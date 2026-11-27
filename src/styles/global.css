@@ -96,6 +96,7 @@ h1 { font-size: clamp(32px, 5vw, 56px); }
 h2 { font-size: clamp(28px, 4vw, 48px); line-height: 1.2; }
 h3 { font-size: 20px; }
 p { margin: 0; text-wrap: pretty; }
+:lang(zh) :is(p, li, dd, dt, h1, h2, h3, h4, figcaption, summary) { word-break: auto-phrase; }
 /* headings split into phrases: each phrase stays whole, lines break between phrases */
 .lines > span { display: inline-block; }
 a { color: var(--accent); text-underline-offset: 3px; }

@@ -8,9 +8,12 @@ import { href } from '@/i18n/ui';
   <div class="wrap section lost">
     <LabCat lang="zh-tw" size={120} bubble="right" lines={[{ zh: '我也找不到這塊積木……', en: '' }, { zh: '回首頁看看？', en: '' }]} />
     <h1>這塊積木不見了</h1>
-    <p lang="en">This page doesn’t exist.</p>
+    <p>這個網址沒有頁面，可能已經搬家了。從這幾個地方找找看：</p>
     <p class="cta">
       <a class="btn" href={href('zh-tw')}>回首頁</a>
+      <a class="btn secondary" href={href('zh-tw', 'research')}>研究成果</a>
+      <a class="btn secondary" href={href('zh-tw', 'members')}>成員</a>
+      <a class="btn secondary" href={href('zh-tw', 'join')}>加入我們</a>
       <a class="btn secondary" href={href('en')} lang="en">English home</a>
     </p>
   </div>

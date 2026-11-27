@@ -57,7 +57,7 @@ function Candle({ i, s, L, c }: { i: number; s: WalkStep; L: Layout; c: Ctx }) {
     });
     if (wick.current) { const k = ease(clamp(b * 1.4 - 0.4)); wick.current.scale.set(1, Math.max(0.001, k), 1); wick.current.visible = k > 0.001; }
   });
-  const top = close + 0.32, bottom = open - 0.32;
+  const top = close + (s.joins.length ? 0 : 0.32), bottom = open - 0.32;
   return (
     <group position={[x, 0, 0]}>
       <group ref={wick} position={[0, bottom, 0]}>
@@ -177,15 +177,15 @@ function Climber({ L, c, at }: { L: Layout; c: Ctx; at: RefObject<Vector3> }) {
     const T = now(c, L);
     pathAt(L, T, v);
     const walking = !c.reduce && T % 1 < 0.6 && T < L.length - 1;
-    // a little right of centre and to the front edge, so it does not sit in front of the year's new members
-    g.current.position.set(v.x + 0.36, v.y + (walking ? Math.abs(Math.sin(clock.getElapsedTime() * 12)) * 0.05 : 0), 0.5);
+    // right of centre and toward the back: the members stand in front, so the cat (taller) never hides them
+    g.current.position.set(v.x + 0.36, v.y + (walking ? Math.abs(Math.sin(clock.getElapsedTime() * 12)) * 0.05 : 0), -0.3);
     at.current!.copy(v);
   });
   return <group ref={g} rotation={[0, -0.45, 0]}><CatBody reduce={c.reduce} /></group>;
 }
 
 /** A member drops onto the candle of the year they joined and stays there, so the finished chart shows who arrived when.
-    Up to four stand in a back row; more fill a second row behind it. The cat walks along the front edge. */
+    Up to four stand in a front row; more fill a second row behind it. The cat walks along the back. */
 function Follower({ m, join, slot, L, c }: { m: WalkMember; join: number; slot: number; L: Layout; c: Ctx }) {
   const g = useRef<Group>(null), inner = useRef<Group>(null);
   const body = CLAY[m.clay] ?? CLAY.grey;
@@ -193,7 +193,7 @@ function Follower({ m, join, slot, L, c }: { m: WalkMember; join: number; slot: 
   const row = Math.floor(slot / 4), col = slot % 4;
   // the advisor stands at the front-left corner of the first candle, clear of the cat
   const lead = m.id === 'advisor';
-  const x = lead ? top.x - 0.5 : top.x + (col - 1.5) * 0.32 + row * 0.16, z = lead ? 0.12 : -0.22 - row * 0.26;
+  const x = lead ? top.x - 0.5 : top.x + (col - 1.5) * 0.32 + row * 0.16, z = lead ? 0.12 : 0.24 - row * 0.26;
   useFrame(({ clock }) => {
     const o = g.current; if (!o) return;
     const T = now(c, L);
