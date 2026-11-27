@@ -230,7 +230,7 @@ function Rig({ at, L, c, reveal, focus }: { at: RefObject<Vector3>; L: Layout; c
   const wide = size.width / size.height > 1.15;
   useEffect(() => {
     const cam = camera as PerspectiveCamera;
-    cam.setViewOffset(size.width, size.height, wide ? -size.width * 0.15 : 0, wide ? 0 : size.height * 0.16, size.width, size.height);
+    cam.setViewOffset(size.width, size.height, wide ? -size.width * 0.15 : 0, wide ? 0 : size.height * 0.24, size.width, size.height);
     cam.updateProjectionMatrix();
     return () => { cam.clearViewOffset(); cam.updateProjectionMatrix(); };
   }, [camera, size.width, size.height, wide]);

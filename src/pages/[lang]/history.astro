@@ -71,7 +71,7 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
       ))}
     </div>
     <p class="status" aria-live="polite" data-status></p>
-    <p class="muted key">{zh ? '形狀代表類型；論文與碩士論文的顏色是研究領域。' : 'Shape shows the kind; papers and theses are colored by research area.'}</p>
+    <p class="muted key">{zh ? '由新到舊排列。形狀代表類型；論文與碩士論文的顏色是研究領域。' : 'Newest first. Shape shows the kind; papers and theses are colored by research area.'}</p>
 
     <ol class="tower">
       {byYear.map(({ year, items }) => (
