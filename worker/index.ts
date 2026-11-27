@@ -79,17 +79,16 @@ function search(ix: Index, q: string, lang: string, k = 5): Passage[] {
 }
 
 // Gemma 4 26B (MoE, 4B active): the cheapest capable chat model in the catalog (qwen3-30b-a3b was retired 2026-11-20).
-// About 35 neurons a typical question (3k tokens in, 300 out), about 60 at most (4.5k in, 700 out);
-// 160 a day stays under the free 10,000 neurons a day even if every question is the longest kind.
+// The reply reports the neurons it used; the day's total is kept in KV and the fallback stops at 9,000, under the
+// free 10,000 neurons a day (reset 00:00 UTC), so it never costs money. A typical question uses about 35.
 const CF_MODEL = '@cf/google/gemma-4-26b-a4b-it';
-const CF_PER_DAY = 160;
+const CF_NEURONS_PER_DAY = 9000;
 
 async function cloudAnswer(env: Env, q: string, lang: 'zh-tw' | 'en', hits: Passage[]): Promise<string> {
   if (!env.AI || !env.ASK_DAY) return '';
   const key = `n:${new Date().toISOString().slice(0, 10)}`;
-  const n = Number((await env.ASK_DAY.get(key)) ?? 0);
-  if (n >= CF_PER_DAY) return '';
-  await env.ASK_DAY.put(key, String(n + 1), { expirationTtl: 172800 });
+  const used = Number((await env.ASK_DAY.get(key)) ?? 0);
+  if (used >= CF_NEURONS_PER_DAY) return '';
   const ctx = hits.map((p, i) => `[${i + 1}] ${p.title} › ${p.section}\n${p.text}`).join('\n\n') || '（沒有找到相關資料）';
   try {
     const out = (await env.AI.run(CF_MODEL, {
@@ -99,8 +98,13 @@ async function cloudAnswer(env: Env, q: string, lang: 'zh-tw' | 'en', hits: Pass
       ],
       max_tokens: 700,
       temperature: 0.3,
-    })) as { response?: string; choices?: { message?: { content?: string } }[] };
+      // Gemma 4 thinks first by default and spends the whole budget on it; answer directly
+      chat_template_kwargs: { enable_thinking: false },
+    })) as { response?: string; choices?: { message?: { content?: string } }[]; usage?: { neurons?: number } };
+    // count what was spent even when the answer comes back empty; a missing figure counts as a long question
+    await env.ASK_DAY.put(key, String(used + (out.usage?.neurons ?? 60)), { expirationTtl: 172800 });
     const text = out.response ?? out.choices?.[0]?.message?.content ?? '';
+    if (!text) console.log('workers ai empty', JSON.stringify(out).slice(0, 400));
     return text.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
   } catch (e) {
     console.log('workers ai error', String(e));

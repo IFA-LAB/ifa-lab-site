@@ -16,7 +16,7 @@
   "services": [{ "binding": "ASK", "service": "ifa-ask-proxy" }],
   // 8 questions a minute per visitor
   "ratelimits": [{ "name": "ASK_LIMIT", "namespace_id": "1801", "simple": { "limit": 8, "period": 60 } }],
-  // when the Spark has no model running, Workers AI answers instead, at most 160 a day (inside the free allocation)
+  // when the Spark has no model running, Workers AI answers instead, stopping at 9,000 neurons a day (free allocation is 10,000)
   "ai": { "binding": "AI" },
   "kv_namespaces": [{ "binding": "ASK_DAY", "id": "c73a5601fdf849389ed6a478a2bb91b6" }]
 }
