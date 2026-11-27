@@ -24,10 +24,11 @@ const memberCount = cohorts.reduce((n, [, ms]) => n + ms.length, 0);
 
 const perArea = (k: string) => pubs.filter((p) => p.data.area === k).length + theses.filter((x) => x.data.area === k).length;
 const stats = [
-  { n: pubs.filter((p) => p.data.kind === 'journal').length, label: t(ui.pubs.journal, lang) },
-  { n: pubs.filter((p) => p.data.kind === 'working').length, label: t(ui.pubs.working, lang) },
-  { n: grants.length, label: t(ui.pubs.grants, lang) },
-  { n: theses.length, label: t(ui.pubs.theses, lang) },
+  // short English labels, so the five figures fit one row beside the board
+  { n: pubs.filter((p) => p.data.kind === 'journal').length, label: zh ? t(ui.pubs.journal, lang) : 'Journal papers' },
+  { n: pubs.filter((p) => p.data.kind === 'working').length, label: zh ? t(ui.pubs.working, lang) : 'Working papers' },
+  { n: grants.length, label: zh ? t(ui.pubs.grants, lang) : 'NSTC grants' },
+  { n: theses.length, label: zh ? t(ui.pubs.theses, lang) : 'Theses' },
   { n: memberCount, label: zh ? '位成員' : 'Members' },
 ];
 // latest news: the newest event of each kind, three cards
@@ -69,6 +70,10 @@ const description = zh
           <a class="btn" href={href(lang, 'research')}>{zh ? '看研究成果' : 'See our research'}</a>
           <a class="btn secondary" href={href(lang, 'join')}>{t(ui.nav.join, lang)}</a>
         </div>
+        {/* the record in one quiet line under the buttons, not a second hero */}
+        <dl class:list={['facts', { en: !zh }]} aria-label={zh ? '研究成果數量' : 'Output at a glance'}>
+          {stats.map((s) => <div><dd>{s.n}</dd><dt>{s.label}</dt></div>)}
+        </dl>
       </div>
       <div class="visual" data-kline>
         <ClayCandles bars={areas.map((a) => ({ clay: a.clay, count: perArea(a.key) }))} label={zh ? '黏土做的 K 線模型：每個研究領域一根積木 K 棒，越高代表成果越多，上方漂著金幣' : 'A clay candlestick model: one block per research area, taller for more work, with floating coins'} />
@@ -88,11 +93,6 @@ const description = zh
       <ul class="legend" aria-label={zh ? '六個研究領域' : 'Six research areas'}>
         {areas.map((a) => <li style={`--c: var(--clay-${a.clay})`}><i aria-hidden="true"></i>{zh ? a.name.zh : boardEn[a.key]}</li>)}
       </ul>
-    </div>
-    <div class="wrap">
-      <dl class="ticker clay" aria-label={zh ? '研究成果數量' : 'Output at a glance'}>
-        {stats.map((s) => <div><dt>{s.label}</dt><dd>{s.n}</dd></div>)}
-      </dl>
     </div>
   </section>
 
@@ -205,6 +205,14 @@ const description = zh
   .lede { font-size: 19px; color: var(--ink-2); max-width: 30em; }
   .cta { display: flex; flex-wrap: wrap; gap: var(--space-3); }
   .cta .btn { min-height: 52px; padding: 14px 26px; font-size: 17px; }
+  /* number over label, so all five fit one row beside the board */
+  .facts { margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-5); }
+  /* English labels stack one word per line (Journal / papers), keeping the five figures on one row */
+  .facts.en { column-gap: var(--space-4); }
+  .facts.en dt { width: min-content; white-space: normal; }
+  .facts div { display: grid; gap: 4px; align-content: start; }
+  .facts dd { margin: 0; font: 600 26px/1 var(--f-display); font-variant-numeric: tabular-nums; }
+  .facts dt { order: 2; font-size: 14px; line-height: 1.3; color: var(--ink-2); white-space: nowrap; }
 
   /* the scene bleeds to the right edge of the viewport on wide screens */
   .visual { position: relative; margin-right: min(0px, calc((var(--page) - 100vw) / 2)); margin-bottom: var(--space-5); aspect-ratio: 7 / 5.4; }
@@ -245,12 +253,6 @@ const description = zh
   .legend li { display: inline-flex; align-items: center; gap: 6px; }
   .legend i { width: 10px; height: 10px; border-radius: 3px; background: var(--c); box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.16); }
   @media (max-width: 559px) { .legend { display: flex; } }
-  .ticker { margin: var(--space-6) 0 0; padding: var(--space-5) var(--space-6); display: grid; grid-template-columns: repeat(5, 1fr); }
-  .ticker > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: var(--space-1); padding-inline: var(--space-5); }
-  @media (min-width: 768px) { .ticker > div + div { box-shadow: inset 1px 0 0 var(--line); } }
-  .ticker > div:first-child { padding-left: 0; }
-  .ticker dd { margin: 0; font: 600 clamp(40px, 4.4vw, 60px)/1 var(--f-display); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
-  .ticker dt { font-size: 15px; color: var(--ink-2); }
 
   .areas { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
   .area {
@@ -332,10 +334,7 @@ const description = zh
     .hero-grid, .mission { grid-template-columns: 1fr; }
     .visual { margin-right: 0; }
     .areas { grid-template-columns: repeat(2, 1fr); }
-    /* tablets keep all five figures on one row: tighter cells instead of a ragged 3 + 2 */
-    .ticker { padding-inline: var(--space-5); }
-    .ticker > div { padding-inline: var(--space-3); }
-    .row::after { inset: auto 0 0; }
+        .row::after { inset: auto 0 0; }
   }
   @media (max-width: 899px) {
     .news { grid-template-columns: 1fr; }
@@ -344,6 +343,15 @@ const description = zh
   }
   @media (max-width: 767px) {
     .hero { padding-top: var(--space-4); }
+    /* phones: eyebrow and title, then the scene, then the words, so the board is on the first screen */
+    .hero-grid { row-gap: var(--space-4); }
+    .copy { display: contents; }
+    .copy > .eyebrow, .copy > h1 { order: 0; }
+    .visual { order: 1; }
+    .copy > .lede { order: 2; font-size: 17px; }
+    .copy > .cta { order: 3; }
+    .copy > .facts { order: 4; }
+    .legend { order: 1; }
     .visual { margin-inline: -16px; aspect-ratio: 1 / 0.8; margin-bottom: var(--space-6); }
     .visual :global(.kline-hint) { bottom: calc(-1 * var(--space-6)); }
     .area h3 { font-size: 18px; word-break: keep-all; overflow-wrap: anywhere; }
@@ -355,15 +363,6 @@ const description = zh
     .areas { gap: var(--space-3); }
     .area .muted { display: none; }
     .shelf { grid-template-columns: 1fr; }
-    /* 3 on top, 2 below */
-    .ticker { grid-template-columns: repeat(2, 1fr); padding: var(--space-5); row-gap: var(--space-5); }
-    .ticker > div { grid-column: auto; padding: 0 var(--space-4); box-shadow: none; }
-    .ticker > div:nth-child(even) { box-shadow: inset 1px 0 0 var(--line); }
-    .ticker > div:nth-child(odd) { padding-left: 0; box-shadow: none; }
-    .ticker > div:nth-child(4) { padding-left: var(--space-4); box-shadow: inset 1px 0 0 var(--line); }
-    /* the fifth figure reads as one line across the bottom ("12 位成員") instead of a lone half-empty cell */
-    .ticker > div:last-child { grid-column: 1 / -1; padding: var(--space-4) 0 0; box-shadow: inset 0 1px 0 var(--line); flex-direction: row-reverse; justify-content: flex-end; align-items: baseline; gap: var(--space-2); }
-    .ticker > div:last-child dd { font-size: 32px; }
-    .advisor { flex-direction: column; align-items: start; }
+                  .advisor { flex-direction: column; align-items: start; }
   }
 </style>
