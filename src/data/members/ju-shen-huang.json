@@ -143,7 +143,7 @@
       "year": "2024",
       "desc": {
         "zh": "依部門和近期情境讓 AI 寫出客製釣魚信與仿冒登入頁的資安演練平台，只記錄行為、不存密碼。大專資訊服務創新賽資安應用組第一名，也是 113 國科會計畫題目。",
-        "en": "A phishing-drill platform where AI writes emails and fake login pages tailored to each department; it records behaviour, never passwords. 1st place in the InnoServe security track and the topic of an NSTC project."
+        "en": "A phishing-drill platform where AI writes emails and fake login pages tailored to each department; it records behavior, never passwords. 1st place in the InnoServe security track and the topic of an NSTC project."
       },
       "url": "https://www.ogmatcha.com/work/phishforge/"
     },

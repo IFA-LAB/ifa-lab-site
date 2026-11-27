@@ -64,7 +64,7 @@ export default function MyKline({ lang }: Props) {
           </Suspense>
         ) : <Flat sel={sel} onPick={setSel} />}
         {tip && <span className="jsk-tip" aria-hidden="true" style={{ left: tip.x, top: tip.y }}>{tip.text}</span>}
-        <ul className="jsk-legend" aria-label={zh ? '顏色' : 'Colours'}>
+        <ul className="jsk-legend" aria-label={zh ? '顏色' : 'Colors'}>
           {ORDER.map((k) => <li key={k}><i style={{ background: `var(--clay-${KINDS[k].clay})` }} aria-hidden="true" />{pick(KINDS[k].name)}</li>)}
         </ul>
       </div>

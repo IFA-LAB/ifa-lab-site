@@ -56,7 +56,14 @@ for (const f of files) {
   const parts = main.split(/(?=<h[12]\b)/i);
   const first = out.length;
   const h1 = text(main.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1] ?? '');
-  for (const part of parts) {
+  for (let part of parts) {
+    // each FAQ answer is its own passage under its question, so "收幾位" finds that answer and not the whole FAQ block
+    const faqId = part.match(/<h2\b[^>]*\bid="([^"]+)"/i)?.[1];
+    part = part.replace(/<section class="qa"[^>]*>([\s\S]*?)<\/section>/gi, (_, qa) => {
+      const q = text(qa.match(/<h3\b[^>]*>([\s\S]*?)<\/h3>/i)?.[1] ?? '');
+      out.push({ id: out.length, lang, url: faqId ? `${url}#${faqId}` : url, title, section: q, text: text(qa) });
+      return ' ';
+    });
     const head = text(part.match(/<h[12]\b[^>]*>([\s\S]*?)<\/h[12]>/i)?.[1] ?? '');
     const id = part.match(/<h[12]\b[^>]*\bid="([^"]+)"/i)?.[1] ?? part.match(/<section\b[^>]*\bid="([^"]+)"/i)?.[1];
     const body = text(part);

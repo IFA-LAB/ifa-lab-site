@@ -87,9 +87,10 @@ const other = otherLocale(lang);
       } catch {}
     }),
   );
-  // Close the mobile menu after picking a link or pressing Escape.
+  // Close the mobile menu on Escape or a tap anywhere outside it.
   document.querySelectorAll<HTMLDetailsElement>('details.menu').forEach((d) => {
     d.addEventListener('keydown', (e) => { if (e.key === 'Escape' && d.open) { d.open = false; d.querySelector('summary')?.focus(); } });
+    document.addEventListener('pointerdown', (e) => { if (d.open && !d.contains(e.target as Node)) d.open = false; });
   });
 </script>
 

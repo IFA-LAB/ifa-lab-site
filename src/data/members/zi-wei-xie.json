@@ -15,7 +15,7 @@
   },
   "now": {
     "zh": "中華電信研究院（研發替代役）",
-    "en": "Chunghwa Telecom Laboratories (R&D alternative service)"
+    "en": "Chunghwa Telecom Laboratories (R&D Substitute Service)"
   },
   "bio": {
     "zh": "中央資管學士、碩士，專長時空網路（Spatio-Temporal Network）、LangChain Agent、FastAPI 與 Flask。碩士論文提出 SeqTAG，用條件式格蘭傑因果圖與圖卷積建構台灣股市投資組合。曾在台積電、工研院實習，也擔任統計與 Python 課程助教。",
