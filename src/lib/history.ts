@@ -23,7 +23,7 @@ export async function labEvents(lang: Locale): Promise<Event[]> {
   const milestones: Event[] = [
     { date: '2023-02', kind: 'milestone', text: { zh: '邱信瑜老師到中央大學資訊管理學系任教。', en: 'Prof. Hsin-Yu Chiu joins NCU Information Management.' } },
     { date: '2023-08', kind: 'milestone', text: { zh: 'IFA Lab 在志希館 712 室成立。', en: 'IFA Lab was founded in Room 712, Zhixi Building.' }, who: founders.map((m) => m.id) },
-    { date: '2024-10', kind: 'award', text: { zh: 'Ched.AI（財報分析與徵信風險評估）獲國科會 GenAI Stars 創意創客組優選。', en: 'Ched.AI (financial-statement analysis and credit-risk assessment) wins a Merit Award at NSTC GenAI Stars.' }, who: ['yun-cheng-chiang', 'dao-en-liu', 'chia-en-tsai', 'ju-shen-huang'], link: href(lang, 'research#s-h'), photo: 'ched' },
+    { date: '2024-10', kind: 'award', text: { zh: 'Ched.AI（財報分析與徵信風險評估）獲國科會 GenAI Stars 創意創客組優選。', en: 'Ched.AI (financial-statement analysis and credit-risk assessment) won a Merit Award at NSTC GenAI Stars.' }, who: ['yun-cheng-chiang', 'dao-en-liu', 'chia-en-tsai', 'ju-shen-huang'], link: href(lang, 'research#s-h'), photo: 'ched' },
   ];
 
   // 2. The rest comes from the data files, so the history grows when members add data.

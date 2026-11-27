@@ -105,7 +105,7 @@ const T = {
         seen.add(s.url);
         const li = el('li', '') as HTMLLIElement;
         if (s.n) li.value = s.n;
-        const a = el('a', '', s.title) as HTMLAnchorElement; a.href = s.url;
+        const a = el('a', '', s.title.replace(/\s*[｜|]\s*IFA Lab$/, '')) as HTMLAnchorElement; a.href = s.url;
         li.append(a);
         if (withText) li.append(el('span', 'snip', s.text + '…'));
         ol.append(li);
@@ -133,9 +133,13 @@ const T = {
         if (r.status === 429) log.append(el('p', 'a', T.limited));
         else if (!r.ok) log.append(el('p', 'a', T.error));
         else if (d.answer) {
-          log.append(answerNode(d.answer, src));
+          // number the sources in the order the answer first cites them (the model's own numbers ran 3, 5, 1)
           const cited = [...new Set([...d.answer.matchAll(/\[(\d+)\]/g)].map((m: RegExpMatchArray) => +m[1]))].filter((n) => src[n - 1]);
-          if (cited.length) log.append(sourcesNode(cited.map((n) => ({ ...src[n - 1], n })), false));
+          const renum = new Map(cited.map((n, i) => [n, i + 1]));
+          const text = d.answer.replace(/\[(\d+)\]/g, (m: string, n: string) => (renum.has(+n) ? `[${renum.get(+n)}]` : m));
+          const ordered = cited.map((n, i) => ({ ...src[n - 1], n: i + 1 }));
+          log.append(answerNode(text, ordered));
+          if (ordered.length) log.append(sourcesNode(ordered, false));
         }
         else if (!src.length) log.append(el('p', 'a', T.none));
         else { log.append(el('p', 'a', d.mode === 'warming' ? T.warming : T.search)); log.append(sourcesNode(src.slice(0, 3), true)); }

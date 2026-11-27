@@ -81,7 +81,7 @@ const description = zh
           client:visible
           bars={areas.map((a) => ({ key: a.key, label: zh ? a.name.zh : boardEn[a.key], name: t(a.name, lang), count: perArea(a.key), href: href(lang, `research#${a.key}`), clay: a.clay }))}
           hint={zh ? '每根 K 棒是一個研究領域，滑過看看、點進去' : 'Each candle is a research area. Hover, then click'}
-          hintTouch={zh ? '每根 K 棒是一個研究領域，點一下看論文' : 'Each candle is a research area. Tap one to see its papers.'}
+          hintTouch={zh ? '每根 K 棒是一個研究領域，點一下看論文' : 'Each candle is a research area. Tap to open.'}
           unit={zh ? '篇' : 'works'}
           wake={zh ? '點一下，讓 K 棒動起來' : 'Tap to bring the candles to life'}
           steps={steps}
@@ -221,7 +221,7 @@ const description = zh
   .visual :global(.kline-canvas canvas) { touch-action: pan-y; }
   .visual[data-live] :global(.stage > *) { opacity: 0; transition: opacity var(--dur-base) var(--ease-out); }
   .visual :global(.kline-hint) {
-    position: absolute; left: 50%; bottom: -28px; transform: translateX(-50%); white-space: nowrap;
+    position: absolute; left: 50%; bottom: -28px; transform: translateX(-50%); white-space: nowrap; max-width: calc(100vw - 32px); overflow: hidden; text-overflow: ellipsis;
     font: 500 14px/1.4 var(--f-body); color: var(--ink-2);
     background: var(--surface); padding: 8px 16px; border-radius: var(--r-full); box-shadow: 4px 6px 14px var(--lo);
   }

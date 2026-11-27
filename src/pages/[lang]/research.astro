@@ -67,7 +67,7 @@ const jsonld = journals.map((p) => ({
   url: new URL(href(lang, `papers/${p.id}`), site).href,
 }));
 ---
-<Base lang={lang} title={t(ui.nav.research, lang)} description={zh ? `IFA Lab 的 ${journals.length} 篇期刊論文、${working.length} 篇工作論文、${grants.length} 件國科會計畫與 ${theses.length} 篇碩士論文。` : `IFA Lab's ${journals.length} journal articles, ${working.length} working papers, ${grants.length} NSTC projects and ${theses.length} master's theses.`} jsonld={jsonld}>
+<Base lang={lang} title={t(ui.nav.research, lang)} description={zh ? `IFA Lab 的 ${journals.length} 篇期刊論文、${working.length} 篇工作論文、${grants.length} 件國科會計畫與 ${theses.length} 篇碩士論文。` : `IFA Lab's ${journals.length} journal papers, ${working.length} working papers, ${grants.length} NSTC grants and ${theses.length} master's theses.`} jsonld={jsonld}>
   <div class="wrap section">
     <div class="section-head">
       <p class="eyebrow">{t(ui.nav.research, lang)}</p>

@@ -21,10 +21,10 @@ export const GET: APIRoute = async ({ site }) => {
     '',
     '## Pages',
     `- [Home](${u('/en/')}) / [中文](${u('/zh-tw/')})`,
-    `- [Research](${u('/en/research/')}): journal articles, working papers, theses, NSTC projects`,
+    `- [Research](${u('/en/research/')}): journal papers, working papers, theses, NSTC grants`,
     `- [Members](${u('/en/members/')}): members by cohort`,
     `- [Advisor](${u('/en/advisor/')})`,
-    `- [Join Us](${u('/en/join/')})`,
+    `- [Join us](${u('/en/join/')})`,
     '',
     '## Members',
     ...members.map((m) => {

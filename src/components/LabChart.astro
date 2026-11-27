@@ -100,7 +100,8 @@ const text = {
 <style>
   /* about 3/4 of a screen of scroll per year, then the pull-back; the scene stays pinned */
   .walk { position: relative; height: calc(var(--n) * 75dvh + 100dvh); }
-  .stage { position: sticky; top: 0; height: 100dvh; overflow: hidden; }
+  /* below the 64px header, not under it: the first screen's bottom 64px was cut off and the frame's top hidden */
+  .stage { position: sticky; top: 64px; height: calc(100dvh - 64px); overflow: hidden; }
   /* the header is see-through: cut the 3D off under it so blocks do not show through the bar */
   .stage :global(.walk-canvas) { position: absolute; inset: 0; clip-path: inset(var(--header-h, 64px) 0 0 0); }
   .stage :global(.walk-3d) { position: absolute; inset: 0; }
