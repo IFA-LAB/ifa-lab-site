@@ -35,9 +35,8 @@ const jsonld = people.map((m) => ({
   <div class="wrap section">
     <div class="intro">
       <div class="section-head">
-        <p class="eyebrow">{t(ui.nav.members, lang)}</p>
         <h1>{zh ? '各屆成員' : 'Members by cohort'}</h1>
-        <p class="muted">{zh ? '2023 年 8 月成立至今，一屆一層，第一屆在最下面。' : 'Since August 2023, one shelf per cohort, the first at the bottom. '}<span class="by-hover">{zh ? '滑過櫃子裡的公仔看是誰，點一下進個人頁；' : 'Point at a figure in the cabinet to see who it is, click to open their page; '}</span><span class="by-touch">{zh ? '點一下櫃子裡的公仔看是誰，再點一下進個人頁；' : 'Tap a figure in the cabinet to see who it is, tap again to open their page; '}</span>{zh ? '下面是每個人的卡片。' : 'cards for everyone follow below.'}</p>
+        <p class="muted">{zh ? '2023 年 8 月成立至今，一屆一層，第一屆在最下面。' : 'Since August 2023, one shelf per cohort, the first at the bottom.'}</p>
       </div>
       <div class="cabinet has-cat" data-shelf>
         <span class="cat-perch" style="right: 28px; top: -52px;"><LabCat lang={lang} bubble="left" lines={[{ zh: '每個公仔都是成員自己挑顏色和配件的。', en: 'Each member picks their own figure color and prop.' }, { zh: '耳機、吉他、眼鏡……配件會透露他們的興趣。', en: 'Headphones, a guitar, glasses: the props give away their hobbies.' }, { zh: '我住在櫃子頂上，最高的那一層歸我。', en: 'I live on top of the cabinet. The top shelf is mine.' }]} /></span>
@@ -53,7 +52,7 @@ const jsonld = people.map((m) => ({
         <ClayShelf client:visible rows={rows}
           hint={zh ? '滑過公仔看是誰，點一下進個人頁' : 'Hover a figure to see who it is, click to open'}
           hintTouch={zh ? '點公仔看是誰，再點一次進個人頁' : 'Tap a figure to see who it is, tap again to open'}
-          open={zh ? '點一下進個人頁' : 'click to open'}
+          open=""
           openTouch={zh ? '再點一次進個人頁' : 'tap again to open'} />
       </div>
     </div>
@@ -93,8 +92,6 @@ const jsonld = people.map((m) => ({
 
 <style>
   /* the cabinet answers to a pointer on desktop and to taps on phones; say the one that applies */
-  .by-touch { display: none; }
-  @media (hover: none) { .by-hover { display: none; } .by-touch { display: inline; } }
   .now { font-size: 14px; color: var(--ink); }
   /* heading on the left, the cabinet on the right; stacked on phones */
   /* heading sits at the same height as on every other page; the cabinet extends below it */

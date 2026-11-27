@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState, type KeyboardEvent } from 'react';
-import { canRun3D, usePrefersReducedMotion, useMedia } from '@/components/three/util';
+import { canRun3D, usePrefersReducedMotion } from '@/components/three/util';
 import { KINDS, YEARS, type Kind } from './data';
 import './kline.css';
 
@@ -20,7 +20,6 @@ export default function MyKline({ lang }: Props) {
   const [ok, setOk] = useState(false);
   const [visible, setVisible] = useState(false);
   const reduce = usePrefersReducedMotion();
-  const touch = useMedia('(hover: none)');
   const stage = useRef<HTMLDivElement>(null);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -55,7 +54,6 @@ export default function MyKline({ lang }: Props) {
   const y = YEARS[sel];
   const items = [...y.items].sort((a, b) => ORDER.indexOf(b.kind) - ORDER.indexOf(a.kind));
   const link = (h: string) => (h.startsWith('http') ? h : `/${lang}/${h}`);
-  const hint = touch ? (zh ? '點一根 K 棒，看那一年' : 'Tap a candle to see that year') : (zh ? '點一根 K 棒看那一年，滑過積木看是什麼' : 'Click a candle for its year; hover a brick to see what it is');
 
   return (
     <div className="jsk">
@@ -69,7 +67,6 @@ export default function MyKline({ lang }: Props) {
         <ul className="jsk-legend" aria-label={zh ? '顏色' : 'Colours'}>
           {ORDER.map((k) => <li key={k}><i style={{ background: `var(--clay-${KINDS[k].clay})` }} aria-hidden="true" />{pick(KINDS[k].name)}</li>)}
         </ul>
-        <p className="jsk-hint" aria-hidden="true">{hint}</p>
       </div>
 
       <div className="jsk-panel">

@@ -70,9 +70,8 @@ const jsonld = journals.map((p) => ({
 <Base lang={lang} title={t(ui.nav.research, lang)} description={zh ? `IFA Lab 的 ${journals.length} 篇期刊論文、${working.length} 篇工作論文、${grants.length} 件國科會計畫與 ${theses.length} 篇碩士論文。` : `IFA Lab's ${journals.length} journal papers, ${working.length} working papers, ${grants.length} NSTC grants and ${theses.length} master's theses.`} jsonld={jsonld}>
   <div class="wrap section">
     <div class="section-head">
-      <p class="eyebrow">{t(ui.nav.research, lang)}</p>
       <h1>{zh ? '研究成果' : 'Research'}</h1>
-      <p class="muted">{zh ? '依六個研究領域上色。粗體作者是實驗室成員，* 為通訊作者。' : 'Colored by research area. Lab members are in bold; * marks the corresponding author.'}</p>
+      <p class="muted">{zh ? '粗體作者是實驗室成員，* 為通訊作者。' : 'Lab members are in bold; * marks the corresponding author.'}</p>
     </div>
 
     <figure class="wall clay" aria-label={zh ? `成果牆：${wall.map((c) => `${c.year} 年 ${c.bricks.length} 件`).join('、')}` : `Output wall: ${wall.map((c) => `${c.year}: ${c.bricks.length}`).join(', ')}`}>
@@ -89,7 +88,7 @@ const jsonld = journals.map((p) => ({
           </div>
         ))}
       </div>
-      <figcaption class="muted">{zh ? '每一塊積木是一篇論文或碩士論文，依完成年份往上疊；顏色是研究領域，空心的是工作論文。' : 'One brick per paper or thesis, stacked by year; color is the research area, hollow bricks are working papers.'}</figcaption>
+      <figcaption class="muted">{zh ? '顏色是研究領域，空心的是工作論文。' : 'Colour is the research area; hollow bricks are working papers.'}</figcaption>
     </figure>
 
     <div class="filter" role="group" aria-label={zh ? '依研究領域篩選' : 'Filter by research area'}>
@@ -240,7 +239,7 @@ const jsonld = journals.map((p) => ({
     }
     for (const p of document.querySelectorAll<HTMLElement>('[data-people]')) p.hidden = p.dataset.people !== area;
     const label = buttons.find((b) => b.dataset.area === area)?.textContent?.trim();
-    status.textContent = area ? (zh ? `只顯示「${label}」：${n} 件（論文與碩士論文）` : `Showing ${label}: ${n} ${n === 1 ? 'work' : 'works'} (papers and theses)`) : '';
+    status.textContent = area ? (zh ? `${label}：${n} 件` : `${label}: ${n} ${n === 1 ? 'work' : 'works'}`) : '';
     if (scroll) document.querySelector('.filter')?.scrollIntoView({ block: 'start' });
   }
   for (const b of buttons) b.addEventListener('click', () => {

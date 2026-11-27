@@ -55,7 +55,7 @@ const steps = [
     const names = ms.map((m) => t(m.data.name, lang));
     const firstPaper = ws.find((w) => w.kind === 'journal') ?? ws[0];
     const caption = ev ? t(ev.text, lang)
-      : ms.length ? (zh ? `${names.join('、')}加入，跟著 K 喵一起往上爬。` : `${names.join(', ')} joined the climb.`)
+      : ms.length ? (zh ? `${names.join('、')}加入。` : `${names.join(', ')} joined.`)
       : firstPaper ? (zh ? `〈${firstPaper.title}〉` : `“${firstPaper.title}”`)
       : zh ? '這年沒有新成果，K 線上是一根十字線。' : 'No new work this year: a doji on the chart.';
     const areasHere = [...new Set(ws.map((w) => areaName(w.area)))];

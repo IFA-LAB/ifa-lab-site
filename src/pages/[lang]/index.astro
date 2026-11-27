@@ -80,14 +80,14 @@ const description = zh
         <ClayKline
           client:visible
           bars={areas.map((a) => ({ key: a.key, label: zh ? a.name.zh : boardEn[a.key], name: t(a.name, lang), count: perArea(a.key), href: href(lang, `research#${a.key}`), clay: a.clay }))}
-          hint={zh ? '每根 K 棒是一個研究領域，滑過看看、點進去' : 'Each candle is a research area. Hover, then click'}
-          hintTouch={zh ? '每根 K 棒是一個研究領域，點一下看論文' : 'Each candle is a research area. Tap to open.'}
+          hint={zh ? 'K 棒越高，那個領域的論文越多' : 'The taller the candle, the more work in that area'}
+          hintTouch={zh ? 'K 棒越高，那個領域的論文越多' : 'The taller the candle, the more work in that area'}
           unit={zh ? '篇' : 'works'}
           wake={zh ? '點一下，讓 K 棒動起來' : 'Tap to bring the candles to life'}
           steps={steps}
           text={zh
-            ? { play: '播放實驗室的成長', pause: '暫停', year: '年份', total: '篇累積', replay: '按 ▶ 從 {y} 播', open: '點一下看這個領域的論文', more: '其他 +', coin: ['叮！研究經費 +1（假的）', '金幣翻面了，論文還是要自己寫。', '再點也不會變成國科會計畫喔。'], cat: ['喵！我是 K 喵。', '按左上角的播放鍵，看 K 棒一年一年長高。', '滑過或點一下 K 棒，我就跑過去看。'] }
-            : { play: 'Play the lab’s growth', pause: 'Pause', year: 'Year', total: 'works so far', replay: '▶ replays from {y}', open: 'click to see its papers', more: 'others +', coin: ['Ding! Funding +1 (not really).', 'The coin flipped. The paper still needs writing.', 'Clicking will not turn it into a grant.'], cat: ['Meow! I am K-meow.', 'Press play, top left, to watch the candles grow year by year.', 'Point at or tap a candle and I will go look.'] }}
+            ? { play: '播放實驗室的成長', pause: '暫停', year: '年份', total: '篇累積', replay: '', open: '', more: '其他 +', coin: ['叮！研究經費 +1（假的）', '金幣翻面了，論文還是要自己寫。', '再點也不會變成國科會計畫喔。'], cat: ['喵！我是 K 喵。', '按左上角的播放鍵，看 K 棒一年一年長高。', '滑過或點一下 K 棒，我就跑過去看。'] }
+            : { play: 'Play the lab’s growth', pause: 'Pause', year: 'Year', total: 'works so far', replay: '', open: '', more: 'others +', coin: ['Ding! Funding +1 (not really).', 'The coin flipped. The paper still needs writing.', 'Clicking will not turn it into a grant.'], cat: ['Meow! I am K-meow.', 'Press play, top left, to watch the candles grow year by year.', 'Point at or tap a candle and I will go look.'] }}
         />
       </div>
       <ul class="legend" aria-label={zh ? '六個研究領域' : 'Six research areas'}>
@@ -98,9 +98,10 @@ const description = zh
 
   <section class="wrap section mission" aria-labelledby="mission-h">
     <div>
-      <p class="eyebrow">{zh ? '使命' : 'Mission'} · {t(lab.tagline, lang)}</p>
+      <p class="eyebrow">{zh ? '使命' : 'Mission'}</p>
       <h2 id="mission-h" class="quote">{zh ? <><span>用台灣市場的資料檢驗財務理論，</span><span>再把它做成用得上的模型。</span></> : 'We test finance theory on Taiwan market data, then turn it into models people can use.'}</h2>
-      <p class="lede">{t(lab.mission[0], lang)}</p>
+      {/* facts, not the list of areas: the next section shows the six areas with their counts */}
+      <p class="lede">{zh ? `2023 年 8 月在中央資管成立，現在 ${memberCount} 位成員，每週 meeting 一次。` : `Founded in August 2023 in NCU Information Management; ${memberCount} members now, meeting once a week.`}</p>
     </div>
     <a class="advisor clay" href={href(lang, 'advisor')}>
       <Image class="advisor-photo" src={advisorPhoto} alt="" width={128} height={128} densities={[1, 2]} format="webp" />
@@ -115,7 +116,6 @@ const description = zh
 
   <section class="wrap section" aria-labelledby="areas-h">
     <div class="section-head">
-      <p class="eyebrow">{zh ? '研究領域' : 'Research areas'}</p>
       <h2 id="areas-h">{zh ? 'IFA Lab 在研究什麼？' : 'What does IFA Lab research?'}</h2>
       <p class="muted">{zh
         ? '六個領域，每一塊積木都是一篇論文或碩士論文。'
@@ -157,9 +157,7 @@ const description = zh
 
   <section class="wrap section" aria-labelledby="shelf-h">
     <div class="section-head">
-      <p class="eyebrow">{t(ui.nav.members, lang)}</p>
       <h2 id="shelf-h">{zh ? '一屆一層的成員書架' : 'One shelf per cohort'}</h2>
-      <p class="muted">{zh ? '點一個公仔，看他們在做什麼。' : 'Pick a figure to see what they work on.'}</p>
     </div>
     <div class="shelf">
       {cohorts.map(([c, ms]) => (
@@ -183,7 +181,7 @@ const description = zh
     <div class="join clay has-cat">
       <span class="cat-perch" style="right: 56px; top: -64px;"><LabCat lang={lang} bubble="left" lines={[{ zh: '我是 K 喵，IFA Lab 的吉祥物。', en: 'I am K-meow, the IFA Lab mascot.' }, { zh: '上面那隻 3D 的也是我，滑過或點一下 K 棒，我會跑過去看。', en: 'The 3D cat up top is me too. Point at or tap a candle and I go look.' }, { zh: '想加入？先寄一封信給老師，我幫你顧信箱。', en: 'Want to join? Email the professor first. I will watch the inbox.' }]} /></span>
       <div>
-        <h2>{zh ? '想一起把題目疊起來？' : 'Want to stack a question with us?'}</h2>
+        <h2>{zh ? '想一起把題目疊起來？' : 'Have a question you want to work on?'}</h2>
         <p class="muted">{zh ? '修過財務或程式的課都可以，先寄一封信聊聊你好奇的事。' : 'Finance or programming background both work. Start with an email about what you are curious about.'}</p>
         <a class="btn" href={href(lang, 'join')}>{t(ui.nav.join, lang)}</a>
       </div>

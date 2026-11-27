@@ -10,9 +10,9 @@ export const getStaticPaths = langPaths;
 const lang = Astro.params.lang as Locale;
 const zh = lang === 'zh-tw';
 const ways: { title: Bi; body: Bi; clay: string }[] = [
-  { clay: 'blue', title: { zh: '產業合作', en: 'Industry partners' }, body: { zh: '歡迎企業、金融機構與科技公司來談聯合研究、顧問，或能實際落地的解決方案。', en: 'We welcome businesses, financial institutions and tech companies for joint research, consulting or applied solutions.' } },
+  { clay: 'blue', title: { zh: '產業合作', en: 'Industry partners' }, body: { zh: '和兆豐做過一個（見下方）。金融機構或科技公司有資料、有問題想研究，都可以來談。', en: 'We have done one with Mega (below). Financial firms or tech companies with data and a question are welcome to talk to us.' } },
   { clay: 'sun', title: { zh: '學術合作', en: 'Academic collaboration' }, body: { zh: '共同研究、交換計畫與合著論文。我們和其他學校的學者合寫過期刊論文，也歡迎一起申請國科會計畫。', en: 'Joint research, exchange programs and co-authored papers. We have co-authored journal papers with researchers at other universities, and welcome joint NSTC proposals.' } },
-  { clay: 'pink', title: { zh: '跨領域研究', en: 'Interdisciplinary research' }, body: { zh: '結合資訊科技、經濟學、心理學與資料科學，也歡迎非金融領域的研究者。', en: 'Combining IT, economics, psychology and data science; researchers outside finance are welcome.' } },
+  { clay: 'pink', title: { zh: '跨領域研究', en: 'Interdisciplinary research' }, body: { zh: '不做金融的研究者也可以，題目碰得到資料和模型就好。', en: 'You do not have to work in finance; a question that involves data and models is enough.' } },
 ];
 // Real collaboration record, computed from the publication list
 const pubs = await getCollection('publications');
@@ -26,11 +26,11 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
   <div class="wrap section">
     <div class="section-head">
       <p class="eyebrow">{t(ui.nav.collaboration, lang)}</p>
-      <h1>{zh ? '一起做金融 × 科技的研究' : 'Research at the intersection of finance and technology'}</h1>
+      <h1>{zh ? '跟 IFA Lab 合作' : 'Work with IFA Lab'}</h1>
       <p class="muted">{zh ? `和兆豐完成過一個產學合作，也和 ${people.length} 位其他學者合寫過論文，刊在 ${venues.length} 本期刊。` : `A completed industry project with Mega Bank, and papers co-written with ${people.length} other researchers, in ${venues.length} journals.`}</p>
     </div>
     <section class="case" aria-labelledby="case-h">
-      <span class="cat-perch"><LabCat lang={lang} size={68} bubble="left" lines={[{ zh: '這是學長姐跟企業一起做的案子。', en: 'Our seniors built this one together with a company.' }, { zh: '有資料、有問題？寄信來，我們聊聊。', en: 'Got data and a question? Email us and let us talk.' }]} /></span>
+      <span class="cat-perch"><LabCat lang={lang} size={68} bubble="left" lines={[{ zh: '這是學長姐跟企業一起做的案子。', en: 'Past members built this one together with a company.' }, { zh: '有資料、有問題？寄信來，我們聊聊。', en: 'Got data and a question? Email us and let us talk.' }]} /></span>
       <p class="eyebrow">{zh ? '已完成的產學合作' : 'Completed industry project'}</p>
       <h2 id="case-h">{zh ? '兆豐 × IFA Lab：隨機優勢能不能預測？' : 'Mega × IFA Lab: can stochastic dominance be predicted?'}</h2>
       <p class="lede">{zh
