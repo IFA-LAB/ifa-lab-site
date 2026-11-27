@@ -2,6 +2,7 @@
 import LabCat from '@/components/LabCat.astro';
 import Base from '@/layouts/Base.astro';
 import ClayFigure from '@/components/ClayFigure.astro';
+import CareerSteps from '@/components/CareerSteps.astro';
 import ClayBuddy from '@/components/three/ClayBuddy';
 import { Picture, getImage } from 'astro:assets';
 import photo from '@/assets/advisor.jpg';
@@ -14,7 +15,9 @@ export const getStaticPaths = langPaths;
 const lang = Astro.params.lang as Locale;
 const zh = lang === 'zh-tw';
 const site = Astro.site!;
-const recent = (await getCollection('publications')).filter((p) => p.data.kind === 'journal').sort((a, b) => b.data.year - a.data.year).slice(0, 5);
+const allJournal = (await getCollection('publications')).filter((p) => p.data.kind === 'journal').sort((a, b) => b.data.year - a.data.year);
+const recent = allJournal.slice(0, 5);
+const journals = allJournal.length;
 const share = await getImage({ src: photo, width: 336, format: 'jpg' });
 const person = {
   '@context': 'https://schema.org',
@@ -57,13 +60,24 @@ const person = {
         </ul>
       </div>
     </header>
-    <div class="blocks">
-      <div class="main">
-      <section class="block"><h2>{t(ui.sections.bio, lang)}</h2><p>{t(advisor.bio, lang)}</p></section>
-      <section class="block"><h2>{zh ? '近期期刊論文' : 'Recent journal papers'}</h2>
+    <section class="lead" aria-label={t(ui.sections.bio, lang)}>
+      <p class="bio">{t(advisor.bio, lang)}</p>
+      <dl class="facts">
+        <div><dt>{zh ? '在大學任教' : 'Teaching since'}</dt><dd><b>2017</b>{zh ? ' 年起' : ''}</dd></div>
+        <div><dt>{zh ? '期刊論文' : 'Journal papers'}</dt><dd><b>{journals}</b>{zh ? ' 篇' : ''}</dd></div>
+        <div><dt>{zh ? '這兩學期開的課' : 'Courses this year'}</dt><dd><b>{advisor.courses.length}</b>{zh ? ' 門' : ''}</dd></div>
+      </dl>
+    </section>
+    <section class="sec">
+      <h2 id="career-h">{zh ? '一路疊上來' : 'How he got here'}</h2>
+      <p class="muted small">{zh ? '一列一個階段，積木的位置和長度就是那段時間：先唸書，進業界做風險管理，回去讀博士，然後一路教到中央。' : 'One row per stage; each brick sits on the years it covers: school, risk management in industry, back for a PhD, then teaching, now at NCU.'}</p>
+      <CareerSteps lang={lang} />
+    </section>
+    <div class="two">
+      <section class="sec"><h2>{zh ? '近期期刊論文' : 'Recent journal papers'}</h2>
         <ol class="recent">{recent.map((p) => <li><a href={href(lang, `papers/${p.id}`)} lang="en">{p.data.title}</a> <span class="mono muted nowrap">{p.data.year > new Date().getFullYear() ? (zh ? `${p.data.year} 即將刊登` : `${p.data.year}, forthcoming`) : p.data.year}</span></li>)}</ol>
         <p><a href={href(lang, 'research')}>{zh ? '全部論文與研究計畫 →' : 'All papers and grants →'}</a></p></section>
-      <section class="block"><h2>{zh ? '老師開的課' : 'Courses'}</h2>
+      <section class="sec"><h2>{zh ? '老師開的課' : 'Courses'}</h2>
         <p class="muted small">{zh ? '114-2 與 115-1 學期。修過老師的課，是認識實驗室最快的路。' : '2026 spring and fall terms. Taking one of these is the quickest way to get to know the lab.'}</p>
         {(['ug', 'grad'] as const).map((lv) => (
           <div class="courses">
@@ -72,19 +86,22 @@ const person = {
           </div>
         ))}
       </section>
-      <section class="block"><h2>{t(ui.sections.experience, lang)}</h2>
-        <ul class="timeline">{advisor.experience.map((e) => <li><span class="mono">{e.period.replace(/[–-]$/, zh ? '–至今' : '–present')}</span><span>{t(e.title, lang)}{zh ? '・' : ' · '}{t(e.org, lang)}</span></li>)}</ul></section>
-      <section class="block"><h2>{zh ? '獎項' : 'Awards'}</h2><ul class="plain">{advisor.awards.map((x) => <li>{t(x, lang)}</li>)}</ul></section>
-      <section class="block"><h2>{zh ? '證照' : 'Licenses'}</h2><ul class="plain lic">{advisor.licenses.map((l) => <li>{t(l, lang)}</li>)}</ul></section>
+    </div>
+    <section class="band">
+      <div>
+        <h2>{t(ui.sections.research, lang)}</h2>
+        <ul class="tags">{advisor.research.map((r) => <li lang="en">{r}</li>)}</ul>
       </div>
-      <aside class="side">
-      <section class="block"><h2>{t(ui.sections.research, lang)}</h2><ul class="tags">{advisor.research.map((r) => <li lang="en">{r}</li>)}</ul></section>
-      <section class="block"><h2>{t(ui.sections.education, lang)}</h2>
-        <ul class="timeline">{advisor.education.map((e) => <li><span class="mono">{e.period.replace(/[–-]$/, zh ? '–至今' : '–present')}</span><span>{t(e.school, lang)}{zh ? '・' : ' · '}{t(e.degree, lang)}</span></li>)}</ul></section>
-      <section class="block"><h2>{t(ui.sections.interests, lang)}</h2><ul class="tags">{advisor.hobbies.map((h) => <li>{t(h, lang)}</li>)}</ul>
+      <div>
+        <h2>{t(ui.sections.interests, lang)}</h2>
+        <ul class="tags">{advisor.hobbies.map((h) => <li>{t(h, lang)}</li>)}</ul>
         <p class="muted artists">{zh ? '常聽：' : 'On repeat: '}{advisor.artists.map((a, i) => <>{i > 0 && (zh ? '、' : ', ')}<span class="nm">{a}</span></>)}</p>
-        <span class="cat-row"><LabCat lang={lang} size={64} bubble="right" lines={[{ zh: '老師愛貓，所以我住在這一頁。', en: 'The professor loves cats, so I live on this page.' }, { zh: '他也彈電吉他。我比較喜歡安靜的 Fusion。', en: 'He plays electric guitar too. I prefer the quieter fusion.' }]} /></span></section>
-      </aside>
+      </div>
+      <span class="cat-row"><LabCat lang={lang} size={64} bubble="left" lines={[{ zh: '老師愛貓，所以我住在這一頁。', en: 'The professor loves cats, so I live on this page.' }, { zh: '他也彈電吉他。我比較喜歡安靜的 Fusion。', en: 'He plays electric guitar too. I prefer the quieter fusion.' }]} /></span>
+    </section>
+    <div class="two">
+      <section class="sec"><h2>{zh ? '獎項' : 'Awards'}</h2><ul class="plain">{advisor.awards.map((x) => <li>{t(x, lang)}</li>)}</ul></section>
+      <section class="sec"><h2>{zh ? '證照' : 'Licenses'}</h2><ul class="plain lic">{advisor.licenses.map((l) => <li>{t(l, lang)}</li>)}</ul></section>
     </div>
   </article>
 </Base>
@@ -135,33 +152,39 @@ const person = {
   .en { font: 500 20px/1.3 var(--f-display); color: var(--ink-2); }
   .links { list-style: none; padding: 0; margin: var(--space-3) 0 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .links a { text-decoration: none; min-height: 40px; }
-  /* long story on the left, short facts in a side column: the two can end at different heights without leaving holes */
-  .cat-row { display: flex; justify-content: flex-end; margin-top: calc(-1 * var(--space-3)); }
-  .blocks { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: var(--space-5); align-items: start; }
-  .main, .side { display: grid; gap: var(--space-5); align-content: start; min-width: 0; }
-  /* the side column is narrow: dates sit above their line */
-  .side .timeline li { grid-template-columns: 1fr; gap: 0; }
-  /* short facts stay in view while the story scrolls */
-  @media (min-width: 900px) and (min-height: 820px) { .side { position: sticky; top: 88px; } }
-  .block { padding: var(--space-5) var(--space-6); border-radius: var(--r-lg); background: var(--surface); box-shadow: 8px 10px 22px var(--lo), inset -4px -6px 12px rgb(0 0 0 / 0.04), inset 4px 6px 12px var(--hi); display: grid; gap: var(--space-3); align-content: start; min-width: 0; }
-  .block .sub { margin-top: var(--space-4); }
+  .lead { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-7); align-items: end; margin-bottom: var(--space-9); }
+  .bio { margin: 0; font: 500 clamp(19px, 1.6vw, 22px)/1.8 var(--f-body); max-width: 38em; text-wrap: pretty; }
+  .facts { margin: 0; display: grid; gap: var(--space-4); }
+  .facts div { display: grid; gap: 2px; padding-left: var(--space-4); border-left: 4px solid var(--clay-sun); }
+  .facts dt { font-size: 14px; color: var(--ink-2); }
+  .facts dd { margin: 0; font-size: 15px; }
+  .facts b { font: 700 36px/1.1 var(--f-display); font-variant-numeric: tabular-nums; }
+  .sec { display: grid; gap: var(--space-3); align-content: start; min-width: 0; margin-bottom: var(--space-9); }
+  .sec h2, .band h2 { font-size: clamp(22px, 2.2vw, 28px); }
+  .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-8); }
+  /* the one coloured surface on the page: what he works on and what he plays */
+  .band {
+    position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6) var(--space-8);
+    padding: var(--space-7) var(--space-7) var(--space-8); margin-bottom: var(--space-9); border-radius: var(--r-lg);
+    background: color-mix(in oklab, var(--clay-sun) 22%, var(--surface));
+    box-shadow: 10px 14px 28px var(--lo), inset 0 2px 0 var(--hi), inset -6px -8px 14px rgb(0 0 0 / 0.05);
+  }
+  .band > div { display: grid; gap: var(--space-3); align-content: start; }
+  .band .tags li { background: var(--surface); }
+  .cat-row { position: absolute; right: var(--space-6); bottom: calc(-1 * var(--space-6)); }
   .recent { margin: 0; padding-left: 1.4em; display: grid; gap: var(--space-2); }
   .recent .mono { font-size: 13px; margin-left: var(--space-1); }
-  .block h2 { font-size: 18px; display: flex; align-items: center; gap: var(--space-2); }
-  .block h2::before { content: ''; width: 12px; height: 12px; border-radius: 4px; background: var(--clay-sun); }
   .plain { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2); }
-  .timeline { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2); }
-  /* school and degree names break at their spaces, not mid-word */
-  .timeline li > span:last-child { word-break: keep-all; }
-  .timeline li { display: grid; grid-template-columns: 9.5em 1fr; gap: var(--space-3); }
-  .timeline .mono { color: var(--ink-2); }
-  /* six short names: two columns, so the main column ends near the sidebar */
   /* licence names stay whole: two columns only when each column can hold the longest name */
   .lic li { word-break: keep-all; }
   @media (min-width: 768px) { .lic { display: grid; grid-template-columns: repeat(auto-fit, minmax(14em, 1fr)); column-gap: var(--space-5); } }
-  /* tablets: one column, like the member pages, so the timeline is not squeezed beside a short sidebar */
-  @media (max-width: 899px) { .blocks { grid-template-columns: 1fr; } }
-  @media (max-width: 767px) { .blocks { grid-template-columns: 1fr; } .timeline li { grid-template-columns: 1fr; gap: 0; } }
+  @media (max-width: 899px) { .lead { grid-template-columns: 1fr; gap: var(--space-6); } .facts { grid-template-columns: repeat(3, auto); justify-content: start; column-gap: var(--space-6); } }
+  @media (max-width: 767px) {
+    .two, .band { grid-template-columns: 1fr; }
+    .band { padding: var(--space-6) var(--space-5) var(--space-8); }
+    .sec, .lead, .band { margin-bottom: var(--space-8); }
+    .facts { grid-template-columns: 1fr 1fr; }
+  }
   /* the title and 國立中央大學 管理學院 資訊管理學系 break only at their spaces */
   .role { word-break: keep-all; }
   .artists { margin: var(--space-3) 0 0; font-size: 15px; }

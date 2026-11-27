@@ -76,12 +76,12 @@ export const advisor = {
     { degree: { zh: '學士', en: 'Bachelor' }, school: { zh: '國立臺灣大學 工商管理學系', en: 'National Taiwan University, Business Administration' }, period: '1999–2004' },
   ],
   experience: [
-    { title: { zh: '副教授', en: 'Associate Professor' }, org: { zh: '中央大學 資訊管理學系', en: 'NCU, Information Management' }, period: '2023/02–' },
-    { title: { zh: '副教授', en: 'Associate Professor' }, org: { zh: '屏東大學 財務金融學系', en: 'National Pingtung University, Finance' }, period: '2020/08–2023/01' },
-    { title: { zh: '助理教授', en: 'Assistant Professor' }, org: { zh: '屏東大學 財務金融學系', en: 'National Pingtung University, Finance' }, period: '2017/08–2020/07' },
-    { title: { zh: '博士後研究', en: 'Postdoctoral Researcher' }, org: { zh: '中央研究院 經濟研究所', en: 'Institute of Economics, Academia Sinica' }, period: '2017/01–2017/07' },
-    { title: { zh: '襄理', en: 'Assistant Manager' }, org: { zh: '元大銀行 金融交易行銷部', en: 'Yuanta Bank, Treasury Marketing' }, period: '2009/03–2009/09' },
-    { title: { zh: '風險管理專員', en: 'Risk Management Specialist' }, org: { zh: '宏泰人壽', en: 'Hontai Life Insurance' }, period: '2008/01–2009/02' },
+    { title: { zh: '副教授', en: 'Associate Professor' }, org: { zh: '中央大學 資訊管理學系', en: 'NCU, Information Management' }, kind: 'academia', period: '2023/02–' },
+    { title: { zh: '副教授', en: 'Associate Professor' }, org: { zh: '屏東大學 財務金融學系', en: 'National Pingtung University, Finance' }, kind: 'academia', period: '2020/08–2023/01' },
+    { title: { zh: '助理教授', en: 'Assistant Professor' }, org: { zh: '屏東大學 財務金融學系', en: 'National Pingtung University, Finance' }, kind: 'academia', period: '2017/08–2020/07' },
+    { title: { zh: '博士後研究', en: 'Postdoctoral Researcher' }, org: { zh: '中央研究院 經濟研究所', en: 'Institute of Economics, Academia Sinica' }, kind: 'academia', period: '2017/01–2017/07' },
+    { title: { zh: '襄理', en: 'Assistant Manager' }, org: { zh: '元大銀行 金融交易行銷部', en: 'Yuanta Bank, Treasury Marketing' }, kind: 'industry', period: '2009/03–2009/09' },
+    { title: { zh: '風險管理專員', en: 'Risk Management Specialist' }, org: { zh: '宏泰人壽', en: 'Hontai Life Insurance' }, kind: 'industry', period: '2008/01–2009/02' },
   ],
   licenses: [
     { zh: '金融風險管理師（FRM）', en: 'Financial Risk Manager (FRM)' },

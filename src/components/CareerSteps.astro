@@ -1,0 +1,102 @@
+---
+// The advisor's education and jobs on one time axis, oldest at the top: each phase is a clay brick placed by its
+// years, so the gaps, the overlap (bank job in the first PhD year) and the long PhD all show without reading dates.
+import { advisor } from '@/data/lab';
+import { t, type Bi, type Locale } from '@/i18n/ui';
+
+interface Props { lang: Locale }
+const { lang } = Astro.props;
+const zh = lang === 'zh-tw';
+
+const NOW = 2026 + 10.5 / 12; // the build date would make the page change on every rebuild; bump when the data changes
+const START = 1999, END = 2027;
+/** '2009–2016' | '2023/02–' | '2017/01–2017/07' → [from, to] in decimal years; a bare end year means its end */
+function span(p: string): [number, number] {
+  const [a, b] = p.split(/[–-]/);
+  const y = (s: string, end: boolean) => {
+    const [yr, mo] = s.split('/').map(Number);
+    return mo ? yr + (mo - (end ? 0 : 1)) / 12 : yr + (end ? 1 : 0);
+  };
+  return [y(a, false), b ? y(b, true) : NOW];
+}
+type Kind = 'school' | 'industry' | 'academia';
+const rows: { kind: Kind; what: Bi; where: Bi; period: string; from: number; to: number }[] = [
+  ...advisor.education.map((e) => ({ kind: 'school' as Kind, what: e.degree, where: e.school, period: e.period })),
+  ...advisor.experience.map((e) => ({ kind: e.kind as Kind, what: e.title, where: e.org, period: e.period })),
+].map((r) => { const [from, to] = span(r.period); return { ...r, from, to }; }).sort((a, b) => a.from - b.from);
+
+const pct = (y: number) => ((y - START) / (END - START)) * 100;
+const ticks = [2000, 2005, 2010, 2015, 2020, 2025];
+const label: Record<Kind, Bi> = {
+  school: { zh: '求學', en: 'Study' },
+  industry: { zh: '業界', en: 'Industry' },
+  academia: { zh: '學界', en: 'Academia' },
+};
+const shown = (p: string) => p.replace(/[–-]$/, zh ? '–至今' : '–now');
+---
+<figure class="steps" aria-labelledby="career-h">
+  <ul class="key" aria-hidden="true">
+    {(Object.keys(label) as Kind[]).map((k) => <li data-kind={k}><i></i>{t(label[k], lang)}</li>)}
+  </ul>
+  <ol class="rows">
+    {rows.map((r, i) => (
+      <li class="row" data-kind={r.kind} style={`--from:${pct(r.from)}%;--to:${pct(r.to)}%;--i:${i}`}>
+        <p class="txt">
+          <span class="what">{t(r.what, lang)}</span>
+          <span class="where">{t(r.where, lang)}</span>
+          <span class="when mono">{shown(r.period)}<span class="sr">{zh ? `，${t(label[r.kind], lang)}` : `, ${t(label[r.kind], lang)}`}</span></span>
+        </p>
+        <span class="track" aria-hidden="true"><span class="brick">{r.to === NOW && <b class="now">{zh ? '現在' : 'now'}</b>}</span></span>
+      </li>
+    ))}
+  </ol>
+  <div class="axis" aria-hidden="true">
+    <div class="ax">{ticks.map((y) => <span style={`--x:${pct(y)}%`}>{y}</span>)}</div>
+  </div>
+</figure>
+
+<style>
+  .steps { margin: 0; display: grid; gap: var(--space-3); }
+  .key { list-style: none; margin: 0; padding: 0; display: flex; gap: var(--space-4); font-size: 14px; color: var(--ink-2); }
+  .key li { display: flex; align-items: center; gap: var(--space-2); }
+  .key i { width: 14px; height: 14px; border-radius: 5px; background: var(--c); }
+  [data-kind='school'] { --c: var(--clay-blue); }
+  [data-kind='industry'] { --c: var(--clay-sun); }
+  [data-kind='academia'] { --c: var(--clay-up); }
+  .rows { list-style: none; margin: 0; padding: 0; display: grid; }
+  /* text column + a track that shares one time axis with every other row and with the year axis below */
+  .row, .axis { display: grid; grid-template-columns: minmax(13rem, 17rem) minmax(0, 1fr); column-gap: var(--space-5); }
+  .row { align-items: center; min-height: 52px; padding: var(--space-1) 0; border-top: 1px solid color-mix(in oklab, var(--ink) 9%, transparent); }
+  .txt { margin: 0; display: flex; flex-wrap: wrap; column-gap: var(--space-2); align-items: baseline; line-height: 1.4; }
+  .what { font-weight: 700; }
+  .where { color: var(--ink-2); word-break: keep-all; }
+  .when { flex-basis: 100%; font-size: 13px; color: var(--ink-2); }
+  .track { margin-right: 2.75em; position: relative; height: 28px; border-radius: var(--r-full); background: repeating-linear-gradient(90deg, color-mix(in oklab, var(--ink) 7%, transparent) 0 1px, transparent 1px calc(100% / 28)); }
+  .brick {
+    position: absolute; top: 2px; bottom: 2px; left: var(--from); width: max(10px, calc(var(--to) - var(--from)));
+    border-radius: 9px; background: var(--c);
+    box-shadow: 3px 5px 10px var(--lo), inset -3px -4px 6px rgb(0 0 0 / 0.16), inset 3px 4px 6px rgb(255 255 255 / 0.3);
+    transform-origin: left center;
+  }
+  .now {
+    position: absolute; left: calc(100% + var(--space-2)); top: 50%; transform: translateY(-50%);
+    font: 700 12px/1 var(--f-body); color: var(--clay-up); white-space: nowrap;
+  }
+  .axis { font: 500 12px/1 var(--f-mono); color: var(--ink-2); padding-top: var(--space-2); }
+  .ax { grid-column: 2; position: relative; height: 1em; margin-right: 2.75em; }
+  .ax span { position: absolute; left: var(--x); transform: translateX(-50%); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  /* bricks settle into place one after another as the chart scrolls in; without support they are simply there */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .brick { animation: lay linear both; animation-timeline: view(); animation-range: entry 10% entry calc(60% + var(--i) * 4%); }
+      @keyframes lay { from { opacity: 0; transform: translateY(-10px) scaleX(0.7); } }
+    }
+  }
+  /* phones: text above its brick, the track spans the width */
+  @media (max-width: 639px) {
+    .row, .axis { grid-template-columns: minmax(0, 1fr); }
+    .row { row-gap: var(--space-2); padding: var(--space-3) 0; }
+    .ax { grid-column: 1; }
+  }
+</style>
