@@ -255,11 +255,12 @@ function Rig({ at, L, c, reveal, focus }: { at: RefObject<Vector3>; L: Layout; c
     // about 5 candles across on desktop, 2.6 on phones; on wide screens also far enough back that this year's whole candle
     // fits in height (a tall year was cut off at the top, leaving most of the frame empty), then each year's own zoom
     const yr = L[clamp(Math.round(T), 0, L.length - 1)], h = yr.close - yr.open;
-    const dH = (wide ? GX * 5 : GX * 2.6) / (2 * tan * aspect), dV = wide ? (h + 3.2) / (2 * tan) : 0;
+    // phones: the text card covers the lower third, so the candle and its year tag must fit the ~60% of height above it
+    const dH = (wide ? GX * 5 : GX * 2.6) / (2 * tan * aspect), dV = wide ? (h + 3.2) / (2 * tan) : (h + 3.6) / (2 * tan * 0.6);
     const d = Math.max(dH, dV) * keyAt(ZOOM, T);
     const yaw = keyAt(YAW, T), lift = keyAt(LIFT, T);
-    // wide screens aim between the cat and the candle's foot, so the year's bricks and the cat share the frame
-    const lookY = a.y + 0.6 - (wide ? h * 0.42 : 0);
+    // aim between the cat and the candle's foot, so the year's bricks, its tag and the cat share the frame
+    const lookY = a.y + 0.6 - h * (wide ? 0.42 : 0.5);
     want.set(a.x + Math.sin(yaw) * d, lookY + lift * d, Math.cos(yaw) * d);
     wantLook.set(a.x + 0.2, lookY, 0);
     // the ending: the whole chart from a high three-quarter view, the dashed next candle included
