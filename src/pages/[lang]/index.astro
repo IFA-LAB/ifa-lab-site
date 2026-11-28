@@ -353,6 +353,9 @@ const description = zh
     .visual { order: 1; }
     .copy > .lede { order: 0; font-size: 17px; }
     .copy > .cta { order: 0; }
+    /* the partner link was a 52-px row of its own, pushing the figures off the first screen */
+    .cta .partner { min-height: 44px; font-size: 16px; }
+    .cta { row-gap: 0; }
     .copy > .facts { order: 4; }
     /* all five figures on one row (4 + 1 left the member count alone on a second line) */
     @media (min-width: 360px) { .facts, .facts.en { display: grid; grid-template-columns: repeat(4, auto); justify-content: space-between; column-gap: var(--space-2); } }

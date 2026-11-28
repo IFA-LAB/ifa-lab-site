@@ -12,7 +12,7 @@ const zh = lang === 'zh-tw';
 const ways: { title: Bi; body: Bi; clay: string }[] = [
   { clay: 'blue', title: { zh: '產業合作', en: 'Industry partners' }, body: { zh: '帶著資料和想問的問題來談，就像兆豐那樣。', en: 'Bring a dataset and a question, as Mega Bank did.' } },
   { clay: 'sun', title: { zh: '學術合作', en: 'Academic collaboration' }, body: { zh: '已和 {n} 位校外研究者合寫論文，名單和合寫篇數在下方地圖。', en: 'We have written papers with {n} outside researchers; the map below shows who and how many.' } },
-  { clay: 'pink', title: { zh: '跨領域研究', en: 'Interdisciplinary research' }, body: { zh: '做行為、語言或網路資料的研究者，可以拿金融市場的資料來驗證自己的方法。', en: 'Researchers working on behavior, language or network data can test their methods on financial market data.' } },
+  { clay: 'pink', title: { zh: '跨領域研究', en: 'Interdisciplinary research' }, body: { zh: '做語言模型或網路分析的研究者：實驗室已用 LLM 讀過財報、用格蘭傑網路預測台股報酬，有現成的資料和流程可以一起驗證方法。', en: 'Researchers in language models or network analysis: the lab has read financial reports with LLMs and forecast Taiwan returns with Granger networks, so data and pipelines are ready to test new methods on.' } },
 ];
 // Real collaboration record, computed from the publication list
 const pubs = await getCollection('publications');

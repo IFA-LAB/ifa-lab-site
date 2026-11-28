@@ -215,16 +215,23 @@ async function ask(req: Request, env: Env): Promise<Response> {
   if (req.headers.get('Origin') && req.headers.get('Origin') !== origin) return json({ error: 'forbidden' }, 403);
   const ip = req.headers.get('CF-Connecting-IP') ?? 'anon';
   if (env.ASK_LIMIT && !(await env.ASK_LIMIT.limit({ key: ip })).success) return json({ error: 'slow down', mode: 'limited' }, 429);
-  let q = '', lang = 'zh-tw';
+  let q = '', lang = 'zh-tw', at = '';
   try {
-    const b = (await req.json()) as { q?: unknown; lang?: unknown };
+    const b = (await req.json()) as { q?: unknown; lang?: unknown; page?: unknown };
     q = String(b.q ?? '').trim().slice(0, 400);
     lang = b.lang === 'en' ? 'en' : 'zh-tw';
+    at = String(b.page ?? '').slice(0, 200);
   } catch { return json({ error: 'bad request' }, 400); }
   if (q.length < 2) return json({ error: 'empty question' }, 400);
 
   cached ??= loadIndex(env, origin).catch((e) => { cached = null; throw e; });
-  const hits = search(await cached, q, lang);
+  const ix = await cached;
+  // asked from a paper's or member's own page about that page (the suggested questions name it): that page's passages
+  // lead, so "the main finding?" is answered from the paper itself, not from the research overview's one-line entry
+  const own = /^\/(zh-tw|en)\/(papers|members)\/[a-z0-9-]+\/$/.test(at)
+    ? ix.ps.filter((p) => p.lang === lang && p.url.split('#')[0] === at && q.toLowerCase().includes(p.title.split(/\s*[｜|]\s*/)[0].toLowerCase().slice(0, 12)))
+    : [];
+  const hits = [...own.slice(0, 2), ...search(ix, q, lang).filter((h) => !own.includes(h))].slice(0, 5);
   // the page's own name: the title before its first separator (the home page's long SEO title included)
   const page = (t: string) => t.split(/\s*[｜|]\s*/)[0];
   const sources = hits.map((p) => ({

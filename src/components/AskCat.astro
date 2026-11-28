@@ -11,7 +11,7 @@ const T = {
   title: zh ? '問 K 喵' : 'Ask K-meow',
   close: zh ? '關閉' : 'Close',
   intro: zh ? '問我論文、課程、招生和成員的事，我會附上出處連結。' : 'Ask me about papers, courses, admissions or members. I link to where each answer comes from.',
-  note: zh ? '回答由實驗室 DGX Spark 上的模型產生，可能出錯；重要的事請寄信跟老師確認。' : 'Answers come from a model on the lab’s DGX Spark and can be wrong. For anything important, email Prof. Chiu.',
+  note: zh ? '回答由 AI 產生，可能出錯；重要的事請寄信跟邱老師確認。' : 'Answers are AI-generated and can be wrong. For anything important, email Prof. Chiu.',
   chips: zh ? ['碩士班收幾位？', '一定要做金融題目嗎？', '學長姐畢業後去哪？', '老師開哪些課？'] : ['How many master’s students?', 'Do I have to work on finance?', 'Where did graduates go?', 'Which courses does Prof. Chiu teach?'],
   placeholder: zh ? '想問什麼？' : 'Your question',
   send: zh ? '送出' : 'Ask',
@@ -88,8 +88,14 @@ const T = {
         for (const part of line.split(/(\[\d+\])/)) {
           const m = part.match(/^\[(\d+)\]$/);
           const s = m ? src[+m[1] - 1] : undefined;
-          // word joiners keep the source number on the line of the word before it and the full stop after it
-          if (s) { const a = el('a', 'cite', m![1]) as HTMLAnchorElement; a.href = s.url; a.title = s.title; node.append('⁠', a, '⁠'); }
+          // the source number shares a no-wrap box with the two characters before it ("習。1"), so it never starts a line
+          // alone (word joiners around the link did not hold on phones)
+          if (s) {
+            const a = el('a', 'cite', m![1]) as HTMLAnchorElement; a.href = s.url; a.title = s.title;
+            const box = el('span', 'nw'), last = node.lastChild;
+            if (last instanceof Text && last.length > 0) box.append(last.length > 2 ? last.splitText(last.length - 2) : last);
+            box.append(a); node.append(box);
+          }
           else if (!m) put(node, part.replace(/\*\*/g, ''));
         }
       };
@@ -143,7 +149,7 @@ const T = {
       input.value = '';
       wait.scrollIntoView({ block: 'end' });
       try {
-        const r = await fetch('/api/ask', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ q, lang }) });
+        const r = await fetch('/api/ask', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ q, lang, page: location.pathname }) });
         const d = await r.json().catch(() => ({}));
         wait.remove();
         const src: Src[] = d.sources ?? [];
@@ -197,6 +203,7 @@ const T = {
   .ask :global(.q) { justify-self: end; max-width: 85%; padding: 10px 14px; border-radius: var(--r-md) var(--r-md) 4px var(--r-md); background: var(--accent); color: var(--accent-ink); font-size: 16px; line-height: 1.6; }
   .ask :global(.a), .ask :global(.wait) { max-width: 95%; font-size: 16px; line-height: 1.75; display: grid; gap: var(--space-2); }
   .ask :global(.wait) { color: var(--ink-2); }
+  .ask :global(.nw) { white-space: nowrap; }
   .ask :global(.cite) { display: inline-grid; place-items: center; min-width: 22px; height: 22px; margin: 0 2px; padding: 0 5px; border-radius: var(--r-full); background: var(--surface-2); font: 600 12px/1 var(--f-mono); text-decoration: none; vertical-align: 2px; }
   .ask :global(.src) { padding: var(--space-3) var(--space-4); border-radius: var(--r-md); background: var(--surface-2); font-size: 14px; }
   .ask :global(.src-h) { font: 600 13px/1.4 var(--f-mono); color: var(--ink-2); margin-bottom: var(--space-1); }

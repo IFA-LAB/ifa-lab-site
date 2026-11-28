@@ -115,6 +115,8 @@ const jsonld = people.map((m) => ({
   .roster dt { font: 600 14px/1.4 var(--f-body); color: var(--ink-2); }
   .roster dt a { color: inherit; text-decoration: none; }
   .roster dt a:hover { color: var(--accent); }
+  /* touch: the cohort link was 84×21 px; a taller box, same look */
+  @media (pointer: coarse) { .roster dt a { display: inline-flex; align-items: center; min-height: 44px; margin-block: -11px; } }
   .roster dd { margin: 0; line-height: 1.6; }
   .intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); gap: var(--space-7); align-items: center; } /* the heading sits level with the middle of the cabinet, not stranded above empty space */
   @media (max-width: 899px) { .intro { grid-template-columns: 1fr; gap: var(--space-6); } .cabinet { justify-self: center; width: min(100%, 460px); aspect-ratio: 1 / 1.12; } }
