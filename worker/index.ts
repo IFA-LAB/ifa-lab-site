@@ -184,6 +184,8 @@ async function cloudAnswer(env: Env, q: string, lang: 'zh-tw' | 'en', hits: Pass
  *  (a refusal once ended in a bare "[3, 4]"). */
 function cite(answer: string, n: number): string {
   return answer
+    // the reader never saw any "passages": they saw pages
+    .replace(/\b(P|p)assage(s?)\b/g, (_, c: string, pl: string) => `${c === 'P' ? 'P' : 'p'}age${pl}`)
     .replace(/\[(\d+(?:\s*[,，、]\s*\d+)+)\]/g, (_, list: string) => list.split(/\s*[,，、]\s*/).map((k) => `[${k}]`).join(''))
     .replace(/\s*\[(\d+)\]/g, (m, k: string) => (+k >= 1 && +k <= n ? m : ''))
     // the same source twice in a row ("[1][1]", once shown as "1, 1") reads as a glitch
@@ -261,7 +263,16 @@ async function ask(req: Request, env: Env): Promise<Response> {
     return json({ answer, mode: 'page', sources: [] });
   }
   const noThesis = mine.length > 0 && /碩論|碩士論文|thesis/i.test(q) && !own.some((p) => /thesis/.test(p.url));
-  const hits = mine.length ? (noThesis ? mine.filter((p) => !/^(論文|papers)$/i.test(p.section)) : mine) : [...own.slice(0, 2), ...search(ix, q, lang).filter((h) => !own.includes(h))].slice(0, 5);
+  // "how does this compare with the other paper?" on a paper page: this paper's Finding row and those of the papers in the
+  // same research area (the sidebar's 行為財務・3 篇 list), ranked by the words they share with the question. Search alone
+  // picked the option-pricing paper for "the options-market paper", or found nothing and said the site had no such paper
+  const cmp = /^\/(zh-tw|en)\/papers\/[a-z0-9-]+\/$/.test(at) && /比較|相比|差異|不同|另一篇|別篇|和.{1,20}比|跟.{1,20}比|\b(compare[sd]?|comparison|versus|vs|another|differ\w*|other paper)\b/i.test(q);
+  const area = cmp ? ix.ps.find((p) => p.lang === lang && p.url === `${at}#rel-h`)?.section : undefined;
+  const sibs = area ? [...new Set(ix.ps.filter((p) => p.lang === lang && p.section === area && /#rel-h$/.test(p.url)).map((p) => p.url.split('#')[0]))].filter((u) => u !== at) : [];
+  const pr = (u: string) => ix.ps.find((p) => p.lang === lang && p.url === `${u}#pts-h`);
+  const versus = [pr(at), ...sibs.map(pr).filter((p): p is NonNullable<typeof p> => !!p).sort((a, b) => hit(b) - hit(a))].filter((p): p is NonNullable<typeof p> => !!p).slice(0, 4);
+  if (versus.length > 1) q = `${q}（${lang === 'en' ? 'this page is: ' : '本頁是：'}${versus[0].title.split(/\s*[｜|]\s*/)[0]}）`;
+  const hits = versus.length > 1 ? versus : mine.length ? (noThesis ? mine.filter((p) => !/^(論文|papers)$/i.test(p.section)) : mine) : [...own.slice(0, 2), ...search(ix, q, lang).filter((h) => !own.includes(h))].slice(0, 5);
   // a paper page found by search brings its Finding row along: given only the abstract or a related-papers line, the
   // model said an options paper "does not state its conclusions"
   for (let k = 0; k < hits.length && hits.length < 7; k++) {
