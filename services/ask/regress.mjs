@@ -17,6 +17,8 @@ const cases = [
   { lang: 'zh-tw', q: '他做過哪些研究？', page: '/zh-tw/members/sheng-le-wu/', want: ['沒', '未'], deny: ['邱信瑜老師個人'] },
   { lang: 'en', q: 'What did this paper find?', page: '/en/papers/disposition-short-sellers/', want: ['short'], deny: ['holding onto losing', 'hold onto losing', 'hold losing'] },
   { lang: 'zh-tw', q: '其他成員在做什麼研究？', page: '/zh-tw/members/sheng-le-wu/', want: ['格蘭傑', '推薦', 'SeqTAG'], deny: ['未提及其他成員'] },
+  { lang: 'zh-tw', q: '這篇和選擇權市場那篇處分效果論文比較起來有什麼不同？', page: '/zh-tw/papers/disposition-short-sellers/', want: ['MPS', '選擇權'], deny: ['沒有提到「選擇權', '無法比較'] },
+  { lang: 'en', q: 'How do the results compare with the options-market paper?', page: '/en/papers/disposition-short-sellers/', want: ['MPS', 'moneyness', 'at-the-money'], deny: ['volatility jumps', 'passage'] },
   { lang: 'zh-tw', q: '實驗室有博士班嗎？', want: ['沒寫', '沒有提', '未提', 'hychiu'], deny: ['沒有博士班。'] },
   { lang: 'zh-tw', q: '碩士班一年收幾位？', want: ['3'], deny: ['每年收', '每年都收'] },
   { lang: 'zh-tw', q: '老師開哪些課？哪些是英語授課？', want: ['Python'], deny: [] },
