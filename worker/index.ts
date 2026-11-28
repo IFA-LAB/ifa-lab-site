@@ -49,10 +49,29 @@ async function loadIndex(env: Env, origin: string): Promise<Index> {
   return { ps, docs, lens, df, avg: lens.reduce((a, b) => a + b, 0) / Math.max(1, lens.length) };
 }
 
-/** BM25 over the passages, preferring the visitor's language; one passage per page section. */
+/** A question that asks two things (研究什麼？怎麼申請？ / what … and how …) is searched part by part and the
+ *  results interleaved, so the second part is not crowded out by passages matching the first. */
 function search(ix: Index, q: string, lang: string, k = 5): Passage[] {
+  const parts = q.split(/[？?；;]+|\band (?=how|what|where|when|who|which|can|do)|，(?=要|怎|有沒有|可以|那)/i).map((s) => s.trim()).filter((s) => s.length >= 2);
+  if (parts.length < 2) return searchOne(ix, q, lang, k);
+  const lists = parts.slice(0, 3).map((p) => searchOne(ix, p, lang, 3));
+  const out: Passage[] = [], seen = new Set<string>();
+  for (let r = 0; r < 3; r++) for (const l of lists) {
+    const p = l[r];
+    if (p && !seen.has(p.url + p.section) && out.length < k + 1) { seen.add(p.url + p.section); out.push(p); }
+  }
+  return out;
+}
+
+/** BM25 over the passages, preferring the visitor's language; one passage per page section. */
+function searchOne(ix: Index, q: string, lang: string, k = 5): Passage[] {
   // short forms people type for the headings the site uses
-  const qn = q.replace(/碩論/g, '碩士論文').toLowerCase();
+  let qn = q.replace(/碩論/g, '碩士論文').toLowerCase();
+  // how people ask to join: the site answers under 加入 / 寄信 and "join" / "email"
+  if (/申請|報名|考進|進實驗室|進 ?lab/.test(qn)) qn += ' 加入 寄信';
+  if (/\b(apply|applying|application|admission|get in)\b/.test(qn)) qn += ' join email';
+  // does the question name a member? then their pages lead; otherwise the lab's own pages do
+  const named = ix.ps.some((p) => { const w = p.title.split(/\s*[｜|]\s*/)[0].toLowerCase(); return p.url.includes('/members/') && w.length >= 2 && !w.startsWith('ifa lab') && qn.includes(w); });
   const qs = count(grams(qn));
   const scored: [number, number][] = [];
   ix.docs.forEach((d, i) => {
@@ -67,18 +86,23 @@ function search(ix: Index, q: string, lang: string, k = 5): Passage[] {
     // the question names this section's heading (碩士論文, 經歷, thesis…): that section answers it, however long it is
     // (length normalisation had put a 505-character 碩士論文 below a short 論文 list that marks the same work 工作論文)
     const sec = ix.ps[i].section.toLowerCase();
-    if (s > 0 && sec.length >= 2 && (qn.includes(sec) || sec.split(/[\s'’]+/).some((w) => w.length >= 5 && qn.includes(w)))) s *= 1.6;
+    if (s > 0 && sec.length >= 2 && (qn.includes(sec) || sec.split(/[\s'’?？]+/).some((w) => w.length >= 5 && qn.includes(w)))) s *= 1.6;
     // the question names a person: their own page comes before other members' sections on the same topic
     const who = ix.ps[i].title.split(/\s*[｜|]\s*/)[0].toLowerCase();
     if (s > 0 && who.length >= 2 && !who.startsWith('ifa lab') && qn.includes(who)) s *= 1.5;
+    if (s > 0 && !named && ix.ps[i].url.includes('/members/')) s *= 0.6;
     if (s > 0) scored.push([ix.ps[i].lang === lang ? s : s * 0.5, i]);
   });
   scored.sort((a, b) => b[0] - a[0]);
-  const out: Passage[] = [], seen = new Set<string>();
+  const out: Passage[] = [], seen = new Set<string>(), perSection = new Map<string, number>();
   for (const [, i] of scored) {
     const p = ix.ps[i];
     if (p.lang !== lang || seen.has(p.url + p.section)) continue;
     seen.add(p.url + p.section);
+    // at most two pages' copy of the same heading (Research interests ×5 crowded out the join steps)
+    const h = p.section.toLowerCase(), n = perSection.get(h) ?? 0;
+    if (n >= 2) continue;
+    perSection.set(h, n + 1);
     // a long section is stored in pieces; hand over the whole section, not only the piece that matched
     const whole = ix.ps.filter((o) => o.url === p.url && o.section === p.section).map((o) => o.text).join('\n');
     out.push({ ...p, text: whole.slice(0, 1400) });
