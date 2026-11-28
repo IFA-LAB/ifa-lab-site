@@ -63,6 +63,12 @@ const decode = (s) => s.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/
   check(s.status === 301 && s.headers.get('location')?.endsWith('/zh-tw/research/'), 'trailing-slash', `/zh-tw/research → ${s.status} ${s.headers.get('location')}`);
   const root = await get(`${BASE}/`);
   check([200, 301, 302].includes(root.status), 'root', `/ → ${root.status} ${root.headers.get('location') ?? ''}`);
+  // Google takes the search-result icon from the domain's home page: if / is a page, it must name the icons itself
+  if (root.status === 200) {
+    const rh = await root.text();
+    check(/<link[^>]+rel="icon"[^>]+sizes="48x48"/.test(rh), 'root-icon', '/ names a 48×48 icon (Google reads the site icon from the home page)');
+    check(!/name="robots"[^>]+noindex/.test(rh) || !/rel="canonical"/.test(rh), 'root-noindex', '/ is not noindex while naming a canonical');
+  }
   const nf = await get(`${BASE}/no-such-page-${Date.now()}/`);
   check(nf.status === 404, '404-status', `unknown page → ${nf.status}`);
   check(/noindex/i.test(meta(nf.text(), 'robots') ?? ''), '404-noindex', '404 page says noindex', true);
