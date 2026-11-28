@@ -34,7 +34,7 @@ const jsonld = people.map((m) => ({
   affiliation: { '@id': new URL('/#org', site).href },
 }));
 ---
-<Base gate lang={lang} title={zh ? '實驗室成員' : 'Lab members'} description={zh ? '中央大學資管系 IFA Lab（智能金融分析實驗室）各屆成員：碩士論文、研究方向、參與的專案與畢業去向。' : 'IFA Lab members by cohort: theses, research interests and projects.'} jsonld={jsonld}>
+<Base gate lang={lang} title={zh ? '實驗室成員' : 'Lab members'} description={zh ? '中央大學資管系 IFA Lab（智能金融分析實驗室）各屆成員：碩士論文、研究方向、參與的專案與畢業去向。' : 'IFA Lab members by cohort since 2023: their master’s theses, research interests, projects and where graduates went.'} jsonld={jsonld}>
   <div class="wrap section">
     <div class="intro">
       <div class="section-head">

@@ -73,7 +73,7 @@ const faqLd = {
   mainEntity: faq.map((f) => ({ '@type': 'Question', name: t(f.q, lang), acceptedAnswer: { '@type': 'Answer', text: t(f.a, lang) } })),
 };
 ---
-<Base lang={lang} title={zh ? '加入我們：中央資管碩士班' : 'Join us: master’s students at NCU IM'} description={zh ? 'IFA Lab 招收碩士班學生：題目不限金融，資訊管理領域的方向都可以討論，每週 meeting 一次、壓力不大、可以實習。學長姐畢業後去了台積電、中華電信研究院、世界先進。' : 'IFA Lab takes master’s students: any information-management topic, one meeting a week, a relaxed pace, internships welcome. Graduates went on to TSMC, Chunghwa Telecom Labs and VIS.'} jsonld={[faqLd]}>
+<Base lang={lang} title={zh ? '加入我們：中央資管碩士班' : 'Join us: master’s students at NCU IM'} description={zh ? 'IFA Lab 招收碩士班學生：題目不限金融，資訊管理領域的方向都可以討論，每週 meeting 一次、壓力不大、可以實習。學長姐畢業後去了台積電、中華電信研究院、世界先進。' : 'IFA Lab takes master’s students on any information-management topic: one meeting a week, internships welcome. Graduates went on to TSMC, Chunghwa Telecom Labs and VIS.'} jsonld={[faqLd]}>
   <div class="wrap section">
     <div class="section-head">
       <h1 class="lines">{(zh ? ['加入 IFA Lab：', '碩士班與研究助理'] : ['Join IFA Lab:', 'master’s students and RAs']).map((l, i) => <>{i ? ' ' : ''}<span>{l}</span></>)}</h1>

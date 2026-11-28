@@ -35,7 +35,7 @@ const path = Astro.url.pathname;
 const canonical = new URL(path, site).href;
 // titles carry what people actually search for (中央大學, 資管), not only the lab's short name
 const fullTitle = title === lab.short
-  ? (lang === 'zh-tw' ? `${lab.short} ${lab.name.zh}｜中央大學資管系 金融科技` : `${lab.short} | ${lab.name.en}, National Central University`)
+  ? (lang === 'zh-tw' ? `${lab.short} ${lab.name.zh}｜中央大學資管系 金融科技` : `${lab.short} | ${lab.name.en}, NCU Taiwan`)
   : (lang === 'zh-tw' ? `${title}｜IFA Lab 中央大學資管` : `${title} | IFA Lab, NCU`);
 
 const org = {
@@ -114,6 +114,7 @@ const graph = [org, webPage, ...jsonld.filter((j) => j !== subject)];
     <link rel="icon" href="/icon-96.png" sizes="96x96" type="image/png" />
     <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <script is:inline>
       try { const s = localStorage.getItem('theme'); if (s === 'light' || s === 'dark') document.documentElement.dataset.theme = s; } catch {}

@@ -1,0 +1,17 @@
+{
+  "name": "IFA Lab 智能金融分析實驗室",
+  "short_name": "IFA Lab",
+  "description": "國立中央大學資訊管理學系 智能金融分析實驗室（IFA Lab）",
+  "lang": "zh-Hant-TW",
+  "start_url": "/zh-tw/",
+  "scope": "/",
+  "display": "browser",
+  "background_color": "#eef2f6",
+  "theme_color": "#eef2f6",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

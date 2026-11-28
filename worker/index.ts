@@ -237,6 +237,14 @@ export default {
     if (url.pathname === '/api/ask') return ask(req, env);
     // the asset server would answer /zh-tw/members with a temporary 307; search engines want a permanent move
     if (!url.pathname.endsWith('/') && !/\.[a-z0-9]+$/i.test(url.pathname)) { url.pathname += '/'; return Response.redirect(url.href, 301); }
-    return env.ASSETS.fetch(req);
+    const res = await env.ASSETS.fetch(req);
+    // the asset server sends HTML as bare text/html; say the encoding in the header too (the page's <meta charset> only
+    // counts once the first bytes are read)
+    if (res.headers.get('Content-Type') === 'text/html') {
+      const out = new Response(res.body, res);
+      out.headers.set('Content-Type', 'text/html; charset=utf-8');
+      return out;
+    }
+    return res;
   },
 };

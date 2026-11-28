@@ -22,7 +22,12 @@ const [first, last] = (d.pages ?? '').split(/[–-]/);
 const url = new URL(href(lang, `papers/${paper.id}`), site).href;
 
 // search snippets cut near 160 characters: end on a whole sentence or word; a very short summary gets the title added
-const clip = (s: string, n = 170) => (s.length <= n ? s : (s.slice(0, n).match(/^[\s\S]*[。.;；](?=\s|$)/)?.[0] ?? s.slice(0, n).replace(/\s+\S*$/, '') + '…'));
+// cut at the last sentence end that still leaves most of the text (a cut at an early ';' once left a 52-character fragment)
+const clip = (s: string, n = 165) => {
+  if (s.length <= n) return s;
+  const head = s.slice(0, n), end = head.match(/^[\s\S]*[。.!?！？](?=\s|$)/)?.[0];
+  return end && end.length >= n * 0.6 ? end : head.replace(/[\s,，、;；:：]+\S*$/, '') + '…';
+};
 const plain = d.plain ? t(d.plain, lang) : '';
 const description = clip(plain.length >= 40 ? plain : (plain ? `${plain}${lang === 'en' ? ' — ' : '論文原題：'}` : '') + d.title);
 const jsonld = [{
