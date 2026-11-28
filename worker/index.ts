@@ -246,7 +246,7 @@ async function ask(req: Request, env: Env): Promise<Response> {
   const mine = deictic && own.length ? [...new Set([...own.filter((p) => rank(p) === 0), ...byQ, ...own])].filter((p) => rank(p) < 9 && p.text.length > 40).slice(0, 4) : [];
   // "what did this paper find?" on a paper page: the page's own Finding line, word for word. The model, given the
   // abstract, kept adding the textbook definition of the effect (short sellers "holding onto losing ones")
-  const pts = /^\/(zh-tw|en)\/papers\/[a-z0-9-]+\/$/.test(at) && /發現|結果|結論|\b(find|finds|found|findings?|results?|conclu\w*|shows?|takeaways?)\b/i.test(q) ? ix.ps.find((p) => p.lang === lang && p.url === `${at}#pts-h`) : undefined;
+  const pts = /^\/(zh-tw|en)\/papers\/[a-z0-9-]+\/$/.test(at) && /發現|結果|結論|\b(find|finds|found|findings?|results?|conclu\w*|shows?|takeaways?)\b/i.test(q) && !/實驗室|老師|其他|(lab|prof|professor|other)/i.test(q) ? ix.ps.find((p) => p.lang === lang && p.url === `${at}#pts-h`) : undefined;
   const finding = pts?.text.split(/\n(?:Finding|發現)\n/)[1]?.split('\n')[0]?.trim();
   if (pts && finding) {
     const intro = lang === 'en' ? 'In short: ' : '簡單說：';
