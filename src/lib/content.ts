@@ -69,7 +69,9 @@ export function bibtex(id: string, p: Publication['data']) {
     ['author', p.authors.join(' and ')],
     ['year', String(p.year)],
     [p.kind === 'journal' ? 'journal' : 'note', p.kind === 'journal' ? p.venue : 'Working paper'],
-    ['volume', p.volume],
+    // '50(1)' is volume 50, issue 1: BibTeX keeps them in separate fields
+    ['volume', p.volume?.replace(/\s*\(.*\)$/, '')],
+    ['number', p.volume?.match(/\(([^)]+)\)$/)?.[1]],
     ['pages', p.pages?.replace('–', '--')],
     ['publisher', p.kind === 'journal' ? undefined : repo],
     ['doi', p.doi],

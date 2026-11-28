@@ -188,6 +188,8 @@ const graph = [org, webPage, ...jsonld];
         // Lines break between words, never inside one (投資人, not 投／資人): Chrome's word-break: auto-phrase only knows
         // Japanese, so mark the word boundaries with <wbr> and let .wb (keep-all) forbid every other break between characters.
         if (!seg) return;
+        // a one-character suffix the dictionary splits off (方向／性, 在地／化) never starts a line (SUFFIX in glue.ts)
+        const suffix = /^[性化率度]$/;
         const pair = /[㐀-鿿豈-﫿]$/;
         for (const el of document.querySelectorAll('main :is(p, li, dd, dt, h1, h2, h3, h4, td, figcaption, summary), footer p')) {
           if (el.closest('astro-island, pre, code, .lines')) continue;
@@ -206,7 +208,7 @@ const graph = [org, webPage, ...jsonld];
             let prev = '';
             for (const x of seg.segment(node.data)) {
               // a break point only where a Chinese word meets another Chinese word
-              if (prev && pair.test(prev) && cjk.test(x.segment[0]) && !inside.has(x.index)) f.append(document.createElement('wbr'));
+              if (prev && pair.test(prev) && cjk.test(x.segment[0]) && !inside.has(x.index) && !suffix.test(x.segment)) f.append(document.createElement('wbr'));
               f.append(x.segment);
               prev = x.segment;
             }

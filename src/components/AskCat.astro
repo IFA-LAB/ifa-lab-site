@@ -146,7 +146,9 @@ const T = {
         else if (!r.ok) log.append(el('p', 'a', T.error));
         else if (d.answer) {
           // number the sources in the order the answer first cites them (the model's own numbers ran 3, 5, 1)
-          const cited = [...new Set([...d.answer.matchAll(/\[(\d+)\]/g)].map((m: RegExpMatchArray) => +m[1]))].filter((n) => src[n - 1]);
+          const marked = [...new Set([...d.answer.matchAll(/\[(\d+)\]/g)].map((m: RegExpMatchArray) => +m[1]))].filter((n) => src[n - 1]);
+          // the model sometimes answers without any [n]: then the best-ranked passage is the answer's source, not none
+          const cited = marked.length ? marked : src.length ? [1] : [];
           const pageOf = (u: string) => u.split('#')[0];
           const pages = [...new Set(cited.map((n) => pageOf(src[n - 1].url)))];
           const renum = new Map(cited.map((n) => [n, pages.indexOf(pageOf(src[n - 1].url)) + 1]));

@@ -100,7 +100,7 @@ function YearTag({ i, s, L, c, reveal }: { i: number; s: WalkStep; L: Layout; c:
   // so the bigger tag stays under its candle
   const grow = size.width / size.height > 1.15 ? 1.6 : 2.2;
   // after a flat year two tags sit at the same height and, grown, run into each other: this one steps down a tag's height
-  const stagger = i > 0 && L[i].open - L[i - 1].open < 0.5 ? 0.3 * (1 + grow) : 0;
+  const stagger = i > 0 && L[i].open - L[i - 1].open < 0.5 ? 0.42 * (1 + grow) : 0;
   // a tall year pulls the camera back and its tag shrank to a chip: keep tags about one size on screen,
   // measured against the distance of a short year (the width-bound distance the rig uses)
   const wide = size.width / size.height > 1.15;
@@ -132,7 +132,8 @@ function Ghost({ x, y, c, L, label, reveal }: { x: number; y: number; c: Ctx; L:
     g.current.scale.setScalar(Math.max(0.001, ease(a)));
     g.current.position.y = y + h / 2 + (c.reduce ? 0 : Math.sin(clock.getElapsedTime() * 1.6) * 0.08);
     // the pull-back shrank its word to about 6 px: it grows with the year tags
-    if (tag.current) tag.current.scale.setScalar(1 + (size.width / size.height > 1.15 ? 1.6 : 2.2) * ease(clamp(reveal.current ?? 0)));
+    // above the dashed box, not below it: grown, the word under it covered the cat and the forthcoming bricks
+    if (tag.current) { const gr = (size.width / size.height > 1.15 ? 1.6 : 2.2) * ease(clamp(reveal.current ?? 0)); tag.current.scale.setScalar(1 + gr); tag.current.position.y = h / 2 + 0.35 + 0.15 * gr; }
   });
   return (
     <group ref={g} position={[x, y, 0]}>
@@ -141,7 +142,7 @@ function Ghost({ x, y, c, L, label, reveal }: { x: number; y: number; c: Ctx; L:
       </lineSegments>
       <mesh><boxGeometry args={[BW, h, BD]} /><meshBasicMaterial color="#4f7fc4" transparent opacity={0.12} depthWrite={false} /></mesh>
       {/* without a word the empty dashed box read as a rendering glitch */}
-      {label && <group ref={tag} position={[0, -h / 2 - 0.35, 0.55]}><TagSprite text={label} position={[0, 0, 0]} height={0.3} /></group>}
+      {label && <group ref={tag} position={[0, h / 2 + 0.35, 0.55]}><TagSprite text={label} position={[0, 0, 0]} height={0.3} /></group>}
     </group>
   );
 }

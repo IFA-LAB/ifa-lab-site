@@ -25,7 +25,6 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
   <div class="wrap section">
     <div class="section-head">
       <h1>{zh ? '跟 IFA Lab 合作' : 'Work with IFA Lab'}</h1>
-      <p class="muted">{zh ? `和兆豐完成過一個產學合作，也和 ${people.length} 位其他學者合寫過論文，刊在 ${venues.length} 本期刊。` : `A completed industry project with Mega Bank, and papers co-written with ${people.length} other researchers, in ${venues.length} journals.`}</p>
     </div>
     <section class="case" aria-labelledby="case-h">
       <h2 id="case-h">{zh ? '兆豐 × IFA Lab：隨機優勢能不能預測？' : 'Mega × IFA Lab: can stochastic dominance be predicted?'}</h2>

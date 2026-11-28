@@ -109,8 +109,7 @@ const jsonld = [{
 
     <aside class="side">
       <nav class="pile clay" aria-labelledby="rel-h">
-        <p class="eyebrow">{t(area.name, lang)}</p>
-        <h2 id="rel-h">{zh ? `這個領域的 ${sameArea.length} 篇論文` : `${sameArea.length} ${sameArea.length === 1 ? 'paper' : 'papers'} in this area`}</h2>
+        <h2 id="rel-h">{zh ? `${t(area.name, lang)}・${sameArea.length} 篇` : `${t(area.name, lang)} · ${sameArea.length}`}</h2>
         {/* one brick per paper in the area, newest on top; this paper is the lit one */}
         <ol class="bricks">
           {sameArea.map((p) => (
