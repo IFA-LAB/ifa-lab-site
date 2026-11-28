@@ -21,8 +21,9 @@ const cases = [
   // two questions in one: both halves need an answer (it once listed paper counts and said the site had no way to apply)
   { lang: 'en', q: 'What does the lab research, and how do I apply?', want: ['email'], deny: ['does not say how to apply'] },
   { lang: 'zh-tw', q: '實驗室研究什麼？要怎麼申請？', want: ['寄信', 'hychiu'], deny: ['沒有提到怎麼申請'] },
-  // the join page answers both halves (對金融有興趣很好，沒有也沒關係 / 畢業沒有硬性門檻)
-  { lang: 'zh-tw', q: '我大學不是讀資管，也沒學過財務，可以申請嗎？畢業要發表論文嗎？', want: ['沒關係', '沒有硬性', '不用'], deny: ['網站沒有提到相關規定'] },
+  // the FAQ on who the lab is for answers the first half (對金融有興趣很好，沒有也沒關係); the site does not say
+  // whether a publication is required, so "the site doesn't say" is the honest answer for the second
+  { lang: 'zh-tw', q: '我大學不是讀資管，也沒學過財務，可以申請嗎？畢業要發表論文嗎？', want: ['沒關係', '都可以', '不限'], deny: [] },
   { lang: 'en', q: 'What is the weather today, and what is Prof. Chiu\'s h-index?', want: ['hychiu', 'not', 'no'], deny: ['[3, 4]', '[3,4]'] },
 ];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

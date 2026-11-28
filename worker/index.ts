@@ -71,6 +71,9 @@ function searchOne(ix: Index, q: string, lang: string, k = 5): Passage[] {
   if (/申請|報名|考進|進實驗室|進 ?lab/.test(qn)) qn += ' 加入 寄信';
   // 財務 and 金融 are used for the same thing (the FAQ says 對金融有興趣很好，沒有也沒關係)
   if (qn.includes('財務') && !qn.includes('金融')) qn += ' 金融';
+  // "I didn't study X, can I…": the answer is the FAQ on who the lab is for, not the one on undergraduates
+  if (/不是讀|沒學過|沒修過|沒有.{0,4}背景|非本科|跨領域|轉領域/.test(qn)) qn += ' 適合 什麼樣 學生 沒關係';
+  if (/\b(background|not from|never studied|no experience|didn't study)\b/.test(qn)) qn += ' who is ifa lab for';
   if (/\b(apply|applying|application|admission|get in)\b/.test(qn)) qn += ' join email';
   // does the question name a member? then their pages lead; otherwise the lab's own pages do
   const named = ix.ps.some((p) => { const w = p.title.split(/\s*[｜|]\s*/)[0].toLowerCase(); return p.url.includes('/members/') && w.length >= 2 && !w.startsWith('ifa lab') && qn.includes(w); });
