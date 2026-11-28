@@ -186,6 +186,9 @@ function cite(answer: string, n: number): string {
     .replace(/\s*\[(\d+)\]/g, (m, k: string) => (+k >= 1 && +k <= n ? m : ''))
     // the same source twice in a row ("[1][1]", once shown as "1, 1") reads as a glitch
     .replace(/\[(\d+)\](?:\s*\[\1\])+/g, '[$1]')
+    // a space between Chinese and Latin letters or digits ("由Chao-Jung Chen" → "由 Chao-Jung Chen"); models skip it despite the prompt
+    .replace(/([一-鿿])([A-Za-z0-9])/g, '$1 $2')
+    .replace(/([A-Za-z0-9%])([一-鿿])/g, '$1 $2')
     .trim();
 }
 
