@@ -246,7 +246,7 @@ async function ask(req: Request, env: Env): Promise<Response> {
   const mine = deictic && own.length ? [...new Set([...own.filter((p) => rank(p) === 0), ...byQ, ...own])].filter((p) => rank(p) < 9 && p.text.length > 40).slice(0, 4) : [];
   // "what did this paper find?" on a paper page: the page's own Finding line, word for word. The model, given the
   // abstract, kept adding the textbook definition of the effect (short sellers "holding onto losing ones")
-  const pts = /^\/(zh-tw|en)\/papers\/[a-z0-9-]+\/$/.test(at) && /發現|結果|結論|\b(find|finds|found|findings?|results?|conclu\w*|shows?|takeaways?)\b/i.test(q) && !/實驗室|老師|其他|\b(lab|prof|professor|other)\b/i.test(q) ? ix.ps.find((p) => p.lang === lang && p.url === `${at}#pts-h`) : undefined;
+  const pts = /^\/(zh-tw|en)\/papers\/[a-z0-9-]+\/$/.test(at) && /發現|結果|結論|\b(find|finds|found|findings?|results?|conclu\w*|shows?|takeaways?)\b/i.test(q) && !/實驗室|老師|其他|另一篇|別篇|比較|相比|差異|和.{1,20}比|跟.{1,20}比|\b(compare[sd]?|comparison|versus|vs|another|differ\w*)\b|\b(lab|prof|professor|other)\b/i.test(q) ? ix.ps.find((p) => p.lang === lang && p.url === `${at}#pts-h`) : undefined;
   const finding = pts?.text.split(/\n(?:Finding|發現)\n/)[1]?.split('\n')[0]?.trim();
   if (pts && finding) {
     const intro = lang === 'en' ? 'In short: ' : '簡單說：';
@@ -262,6 +262,13 @@ async function ask(req: Request, env: Env): Promise<Response> {
   }
   const noThesis = mine.length > 0 && /碩論|碩士論文|thesis/i.test(q) && !own.some((p) => /thesis/.test(p.url));
   const hits = mine.length ? (noThesis ? mine.filter((p) => !/^(論文|papers)$/i.test(p.section)) : mine) : [...own.slice(0, 2), ...search(ix, q, lang).filter((h) => !own.includes(h))].slice(0, 5);
+  // a paper page found by search brings its Finding row along: given only the abstract or a related-papers line, the
+  // model said an options paper "does not state its conclusions"
+  for (let k = 0; k < hits.length && hits.length < 7; k++) {
+    const m = hits[k].url.match(/^(\/(?:zh-tw|en)\/papers\/[a-z0-9-]+\/)/);
+    const f = m && !mine.length ? ix.ps.find((p) => p.lang === lang && p.url === `${m[1]}#pts-h`) : undefined;
+    if (f && !hits.includes(f)) hits.splice(k + 1, 0, f);
+  }
   // a current student's page has papers but no thesis yet; without this the model calls the first paper the thesis
   if (noThesis) q += lang === 'en' ? " (This page has no master's thesis section; the papers listed are not the thesis.)" : '（這一頁沒有碩士論文段落，列出的論文不是碩論）';
   if (mine.length) q = `${q}（${lang === 'en' ? 'about: ' : '指的是：'}${mine[0].title.split(/\s*[｜|]\s*/)[0]}）`;

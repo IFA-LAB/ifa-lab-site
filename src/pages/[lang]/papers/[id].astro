@@ -85,9 +85,9 @@ const jsonld = [{
       <section class="points" aria-labelledby="pts-h">
         <h2 id="pts-h">{zh ? '這篇在做什麼' : 'What this paper does'}</h2>
         <dl>
-          <div><dt>{zh ? '研究問題' : 'Question'}</dt><dd class={zh ? 'wb' : undefined}>{t(d.points.question, lang)}</dd></div>
-          <div><dt>{zh ? '資料與方法' : 'Data and method'}</dt><dd class={zh ? 'wb' : undefined}>{t(d.points.method, lang)}</dd></div>
-          <div><dt>{zh ? '發現' : 'Finding'}</dt><dd class={zh ? 'wb' : undefined}>{t(d.points.finding, lang)}</dd></div>
+          <div><dt>{zh ? '研究問題' : 'Question'}</dt><dd>{t(d.points.question, lang)}</dd></div>
+          <div><dt>{zh ? '資料與方法' : 'Data and method'}</dt><dd>{t(d.points.method, lang)}</dd></div>
+          <div><dt>{zh ? '發現' : 'Finding'}</dt><dd>{t(d.points.finding, lang)}</dd></div>
         </dl>
         <p class="muted small">{zh ? '整理自期刊摘要（下方原文）。' : 'Summarised from the journal abstract below.'}</p>
       </section>

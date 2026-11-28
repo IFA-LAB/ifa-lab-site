@@ -339,6 +339,8 @@ const jsonld = journals.map((p) => ({
   .pile a:nth-child(even) { margin-inline: 3px -3px; }
   .pile a { transition: opacity var(--dur-base) var(--ease-out), filter var(--dur-base) var(--ease-out), translate var(--dur-fast) var(--ease-out); }
   .pile a.off { opacity: 0.16; filter: saturate(0.2); }
+  /* on touch a 22×12 brick is too small to aim at; the list right below links every paper */
+  @media (pointer: coarse) { .pile a { pointer-events: none; } }
   /* hollow = a solid outline in the area color around the page color: reads in both themes (a dashed edge vanished on dark) */
   .pile a.working { background: color-mix(in oklab, var(--c) 14%, var(--bg)); box-shadow: inset 0 0 0 2.5px var(--c), 0 3px 5px var(--lo); }
   .num { font: 600 28px/1 var(--f-display); }
