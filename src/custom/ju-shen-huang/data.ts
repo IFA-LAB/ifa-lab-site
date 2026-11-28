@@ -23,7 +23,7 @@ export const YEARS: Year[] = [
   {
     year: '2022', note: { zh: '進中央資管', en: 'Starting at NCU' },
     items: [
-      { id: 'bs', kind: 'role', text: { zh: '進入中央大學資訊管理學系', en: 'B.S. in Information Management begins, NCU' } },
+      { id: 'bs', kind: 'role', text: { zh: '進入中央大學資訊管理學系', en: 'BBA in Information Management begins, NCU' } },
       { id: 'sap', kind: 'role', text: { zh: '加入中央大學 SAP 學生團隊，後來當暑期講師', en: 'Joins the NCU SAP Student Team, later a summer instructor' } },
     ],
   },
@@ -63,9 +63,9 @@ export const YEARS: Year[] = [
     ],
   },
   {
-    year: '2026', note: { zh: '第二家公司，直升碩士班', en: 'A second company, then the M.S.' },
+    year: '2026', note: { zh: '第二家公司，直升碩士班', en: 'A second company, then the MBA' },
     items: [
-      { id: 'ms', kind: 'role', text: { zh: '直升中央資管碩士班', en: 'Starts the M.S. at NCU' } },
+      { id: 'ms', kind: 'role', text: { zh: '直升中央資管碩士班', en: 'Starts the MBA at NCU' } },
       { id: 'medalink', kind: 'work', text: { zh: '共同創辦醫數行銷 MedaLink：診所的 AI 櫃檯', en: 'Co-founds MedaLink: an AI front desk for clinics' }, href: `${W}medalink/` },
       { id: 'tessera', kind: 'work', text: { zh: 'tessera：開源的 Claude Code mod', en: 'tessera: an open-source Claude Code mod' }, href: 'https://github.com/OG-Matcha/tessera' },
       { id: 'wp', kind: 'research', text: { zh: '工作論文：投資風格之間的傳遞網路', en: 'Working paper: style transmission networks' }, href: 'papers/wp-style-transmission/' },

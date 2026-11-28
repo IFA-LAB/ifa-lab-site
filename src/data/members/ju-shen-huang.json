@@ -12,11 +12,11 @@
   "customCovers": ["projects", "awards"],
   "headline": {
     "zh": "資管所碩士班・Finctory 技術長",
-    "en": "M.S. student · CTO, Finctory"
+    "en": "MBA student · CTO, Finctory"
   },
   "bio": {
     "zh": "我把 AI 從展示品，做到三個月後還有人在用。中央資管碩士班學生（2026 年 9 月起直升），2023 年起在邱信瑜老師的研究計畫當研究助理，跟著老師做過兩個國科會大專生計畫：把股市異常指標接上生成式 AI 的股票追蹤系統，以及財伴 oSave 的 82 人準實驗（每週記帳天數提升 176%、財務焦慮顯著下降）。課外是斐闊 Finctory 共同創辦人暨技術長、醫數行銷 MedaLink 共同創辦人暨前線部署工程師，也在工研院產科國際所當 AI Intern。累計 16 項競賽獎，5 座全國首獎。",
-    "en": "I take AI from demo to something people still use three months later. M.S. student in Information Management at NCU from September 2026. Since 2023 I have been a research assistant on Prof. Hsin-Yu Chiu's projects, and ran two NSTC undergraduate projects with him: a stock tracker that feeds market-anomaly indicators into generative AI, and an 82-person quasi-experiment on the oSave app (logging days per week up 176%, financial anxiety significantly down). Outside the lab I am co-founder and CTO of Finctory, co-founder and forward-deployed engineer at MedaLink, and an AI intern at ITRI's ISTI. 16 competition awards, 5 of them national first prizes."
+    "en": "I take AI from demo to something people still use three months later. MBA student in Information Management at NCU from September 2026. Since 2023 I have been a research assistant on Prof. Hsin-Yu Chiu's projects, and ran two NSTC undergraduate projects with him: a stock tracker that feeds market-anomaly indicators into generative AI, and an 82-person quasi-experiment on the oSave app (logging days per week up 176%, financial anxiety significantly down). Outside the lab I am co-founder and CTO of Finctory, co-founder and forward-deployed engineer at MedaLink, and an AI intern at ITRI's ISTI. 16 competition awards, 5 of them national first prizes."
   },
   "education": [
     {
@@ -26,7 +26,7 @@
       },
       "degree": {
         "zh": "碩士班",
-        "en": "M.S."
+        "en": "MBA"
       },
       "period": "2026/09–"
     },
@@ -37,7 +37,7 @@
       },
       "degree": {
         "zh": "學士",
-        "en": "B.S."
+        "en": "BBA"
       },
       "period": "2022–2026/06"
     }
