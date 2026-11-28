@@ -78,7 +78,8 @@ const steps = [
 // the advisor stands on the first candle from the start (not counted as a member: the step text says "alone" there)
 const crew = [{ id: 'advisor', name: zh ? `${advisor.name.zh}老師` : `Prof. ${advEn}`, clay: 'sun', accessory: 'none' as const, model: 'prof' as const, href: href(lang, 'advisor') }, ...members.map((m) => ({ id: m.id, name: t(m.data.name, lang), clay: m.data.placeholder ? 'grey' : m.data.figure.clay, accessory: m.data.placeholder ? 'none' as const : m.data.figure.accessory, model: m.data.placeholder ? undefined : m.data.figure.model, href: href(lang, `members/${m.id}`) }))];
 const text = {
-  eyebrow: '',
+  // the page's name on its first screen (the h1 waits below the walk); shown on the first step only
+  eyebrow: zh ? 'IFA Lab 沿革' : 'IFA Lab history',
   totals: zh ? '累積 {w} 件成果・{m} 位成員' : '{w} works so far · {m} members',
   // the step's own caption already says how much came before the lab
   solo: '',
@@ -138,7 +139,7 @@ const text = {
   /* phones and portrait tablets: the chart fills the top, the card sits at the bottom */
   @media (max-aspect-ratio: 23/20) {
     .stage :global(.walk-card) { top: auto; bottom: var(--space-4); translate: none; left: 16px; right: 16px; width: auto; padding: var(--space-4) var(--space-5); gap: var(--space-1); background: var(--surface); backdrop-filter: none; }
-    .stage :global(.walk-card .eyebrow), .stage :global(.walk-sub) { display: none; }
+    .stage :global(.walk-sub) { display: none; }
     .stage :global(.walk-year) { font-size: 32px; }
     .stage :global(.walk-cap) { font-size: 15px; -webkit-line-clamp: 3; }
     .stage :global(.walk-tot) { margin-top: var(--space-1) !important; }

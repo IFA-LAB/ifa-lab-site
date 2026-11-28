@@ -58,7 +58,7 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
 
     <p class="eyebrow scope">{zh ? '2023 年 8 月成立以來' : 'Since August 2023'}</p>
     <ul class="totals" aria-label={zh ? '成立以來累計' : 'Since founding'}>
-      {shown.map((k) => <li data-k={k.key}><b>{total(k.key)}</b><span class="nw">{unit(k, total(k.key))}</span></li>)}
+      {shown.filter((k) => k.key !== 'milestone').map((k) => <li data-k={k.key}><b>{total(k.key)}</b><span class="nw">{unit(k, total(k.key))}</span></li>)}
     </ul>
 
     <div class="filter" role="group" aria-label={zh ? '只看某一類' : 'Show one kind'}>

@@ -28,7 +28,7 @@ export const lab = {
     lab: { zh: '中央大學 志希館 712 室', en: 'Room 712, Zhixi Building, National Central University' } satisfies Bi,
     /** The advisor's office (department faculty page). */
     room: { zh: '邱信瑜老師辦公室：管理二館 I1‑932', en: 'Prof. Chiu’s office: Room I1‑932, Management Building II' } satisfies Bi,
-    address: { zh: '32001 桃園市中壢區中大路 300 號', en: 'No. 300, Zhongda Rd., Zhongli District, Taoyuan City 32001, Taiwan' } satisfies Bi,
+    address: { zh: '32001 桃園市中壢區中大路 300 號', en: 'No. 300, Zhongda Rd., Zhongli District, Taoyuan City 32001, Taiwan' } satisfies Bi,
   },
 };
 
@@ -36,7 +36,7 @@ export type AreaKey = 'empirical' | 'behavioral' | 'pricing' | 'ai' | 'forecast'
 
 /** The six research areas. `clay` picks the block colour on the research city. */
 export const areas: { key: AreaKey; name: Bi; blurb: Bi; clay: string; /** for tight spots like filter chips */ short?: Bi }[] = [
-  { key: 'empirical', clay: 'blue', name: { zh: '實證財務', en: 'Empirical Finance' }, blurb: { zh: '用台灣與國際市場資料檢驗理論。', en: 'Testing theory with Taiwan and global market data.' } },
+  { key: 'empirical', clay: 'blue', name: { zh: '實證財務', en: 'Empirical Finance' }, blurb: { zh: '資安事件與股價同步性、台股實證研究回顧。', en: 'Cyber incidents and stock price synchronicity; a review of Taiwan stock market research.' } },
   { key: 'behavioral', clay: 'pink', name: { zh: '行為財務', en: 'Behavioral Finance' }, blurb: { zh: '處分效果、投資人關注與情緒。', en: 'Disposition effect, investor attention and sentiment.' } },
   { key: 'pricing', clay: 'sun', name: { zh: '資產定價', en: 'Asset Pricing' }, blurb: { zh: '隨機優勢、異常報酬與衍生性商品定價。', en: 'Stochastic dominance, anomalies and derivative pricing.' } },
   { key: 'ai', clay: 'down', name: { zh: 'AI 與機器學習', en: 'AI and Machine Learning' }, blurb: { zh: '可解釋 AI、混合模型與大型語言模型。', en: 'Explainable AI, hybrid models and LLMs.' } },

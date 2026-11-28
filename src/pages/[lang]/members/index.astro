@@ -39,7 +39,7 @@ const jsonld = people.map((m) => ({
     <div class="intro">
       <div class="section-head">
         <h1>{zh ? '各屆成員' : 'Members by cohort'}</h1>
-        <p class="muted">{zh ? `2023 年 8 月成立，${cohorts.length} 屆 ${everyone.length} 位成員，其中 ${grads} 位已畢業。` : `Founded in August 2023: ${everyone.length} members in ${cohorts.length} cohorts, ${grads} of them graduated.`}</p>
+        <p class="muted">{zh ? `${cohorts.length} 屆 ${everyone.length} 位成員，${everyone.length - grads} 位在學、${grads} 位已畢業。` : `${everyone.length} members in ${cohorts.length} cohorts: ${everyone.length - grads} current, ${grads} graduated.`}</p>
         {/* the roster in words: every name on the first screen, newest cohort first like the cabinet's top shelf */}
         <dl class="roster">
           {[...cohorts].reverse().map(([c, ms]) => (
@@ -69,7 +69,8 @@ const jsonld = people.map((m) => ({
       </div>
     </div>
 
-    {cohorts.map(([c, ms]) => (
+    {/* newest cohort first, the same order as the roster above */}
+    {[...cohorts].reverse().map(([c, ms]) => (
       <section class="cohort" aria-labelledby={`c${c}`}>
         <h2 id={`c${c}`}>{t(ui.cohort(c), lang)}</h2>
         <ul class="cards">
