@@ -236,7 +236,8 @@ async function ask(req: Request, env: Env): Promise<Response> {
   // "this paper" with the page's own passages: answer from that page only (its findings, abstract, thesis first, related
   // lists dropped), and name the page in the question, so the model cannot borrow a neighbouring paper's or person's lines
   const rank = (p: (typeof own)[number]) => { const h = p.url.split('#')[1] ?? ''; return /pts|abs|thesis/.test(h) ? 0 : /rel-h/.test(h) ? 9 : 1; };
-  const mine = deictic && own.length ? own.filter((p) => rank(p) < 9 && p.text.length > 40).sort((a, b) => rank(a) - rank(b)).slice(0, 4) : [];
+  const byQ = deictic && own.length ? searchOne(ix, q, lang, 60).filter((h) => own.includes(h)) : [];
+  const mine = deictic && own.length ? [...new Set([...own.filter((p) => rank(p) === 0), ...byQ, ...own])].filter((p) => rank(p) < 9 && p.text.length > 40).slice(0, 4) : [];
   const hits = mine.length ? mine : [...own.slice(0, 2), ...search(ix, q, lang).filter((h) => !own.includes(h))].slice(0, 5);
   if (mine.length) q = `${q}（${lang === 'en' ? 'about: ' : '指的是：'}${mine[0].title.split(/\s*[｜|]\s*/)[0]}）`;
   // the page's own name: the title before its first separator (the home page's long SEO title included)
