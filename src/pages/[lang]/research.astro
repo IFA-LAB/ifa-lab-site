@@ -292,6 +292,11 @@ const jsonld = journals.map((p) => ({
   .areas { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-6); }
   .filter { scroll-margin-top: 88px; margin-bottom: var(--space-1); display: grid; gap: var(--space-2); }
   .filter .areas { margin-bottom: 0; }
+  /* phones: the seven chips scroll sideways in one row (three wrapped rows pushed the first paper below 970 px) */
+  @media (max-width: 767px) {
+    .filter .areas { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-inline: calc(-1 * var(--space-4)); padding-inline: var(--space-4); scroll-padding-inline: var(--space-4); }
+    .filter .areas li { flex: none; }
+  }
   .areas button { min-height: 44px; cursor: pointer; font: inherit; font-size: 15px; display: inline-flex; align-items: center; gap: var(--space-2); border: 0; color: var(--ink); }
   .areas button[aria-pressed='true'] { background: var(--ink); color: var(--bg); }
   /* tablets: a touch tighter so all seven chips share one row instead of leaving one alone */
