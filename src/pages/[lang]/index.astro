@@ -29,7 +29,6 @@ const stats = [
   { n: pubs.filter((p) => p.data.kind === 'working').length, label: zh ? t(ui.pubs.working, lang) : 'Working papers' },
   { n: grants.length, label: zh ? t(ui.pubs.grants, lang) : 'NSTC grants' },
   { n: theses.length, label: zh ? t(ui.pubs.theses, lang) : 'Master’s theses' },
-  { n: memberCount, label: zh ? '位成員' : 'Lab members' },
 ];
 // latest news: the newest event of each kind, three cards
 const latest = (await labEvents(lang)).sort(newestFirst).filter((e, i, all) => all.findIndex((x) => x.kind === e.kind) === i).slice(0, 3);
@@ -60,7 +59,7 @@ const description = zh
   <section class="hero" aria-labelledby="hero-h">
     <div class="wrap hero-grid">
       <div class="copy">
-        <p class="eyebrow">{lab.short} · NCU {zh ? '資訊管理學系' : 'Information Management'}</p>
+        <p class="eyebrow">{zh ? '國立中央大學 資訊管理學系' : 'National Central University · Information Management'}</p>
         <h1 id="hero-h">{titleLines.map((l, i) => <span>{l}{!zh && i < titleLines.length - 1 ? ' ' : ''}</span>)}</h1>
         <p class="lede">{zh
           ? '我們用台灣與國際市場的資料研究資產定價和投資人行為，也用機器學習和圖神經網路做財務預測。'
@@ -97,9 +96,9 @@ const description = zh
 
   <section class="wrap section mission" aria-labelledby="mission-h">
     <div>
-      <h2 id="mission-h" class="quote">{zh ? <><span>用台灣市場的資料檢驗財務理論，</span><span>再把它做成用得上的模型。</span></> : 'We test finance theory on Taiwan market data, then turn it into models people can use.'}</h2>
+      <h2 id="mission-h" class="quote">{zh ? '2023 年 8 月在中央資管成立' : 'Founded in August 2023 at NCU'}</h2>
       {/* facts, not the list of areas: the next section shows the six areas with their counts */}
-      <p class="lede">{zh ? `2023 年 8 月在中央資管成立，現在 ${memberCount} 位成員，每週 meeting 一次。` : `Founded in August 2023 in NCU Information Management; ${memberCount} members now, meeting once a week.`}</p>
+      <p class="lede">{zh ? `現在 ${memberCount} 位成員，每週 meeting 一次。` : `${memberCount} members today; we meet once a week.`}</p>
     </div>
     <a class="advisor clay" href={href(lang, 'advisor')}>
       <Image class="advisor-photo" src={advisorPhoto} alt="" width={128} height={128} densities={[1, 2]} format="webp" />
@@ -165,7 +164,7 @@ const description = zh
             ))}
           </ul>
           {(() => { const rest = ms.filter((m) => m.data.placeholder); return rest.length > 0 && (
-            <p class="also muted">{zh ? '同屆還有 ' : 'Also: '}{rest.map((m) => t(m.data.name, lang)).join(zh ? '、' : ', ')}</p>
+            <p class="also muted">{zh ? '同屆還有 ' : 'Also: '}{rest.map((m, i) => <>{i > 0 && (zh ? '、' : ', ')}<a href={href(lang, `members/${m.id}`)}>{t(m.data.name, lang)}</a></>)}</p>
           ); })()}
         </div>
       ))}
@@ -339,11 +338,11 @@ const description = zh
     .copy { display: contents; }
     .copy > .eyebrow, .copy > h1 { order: 0; }
     .visual { order: 1; }
-    .copy > .lede { order: 2; font-size: 17px; }
+    .copy > .lede { order: 0; font-size: 17px; }
     .copy > .cta { order: 0; }
     .copy > .facts { order: 4; }
     /* all five figures on one row (4 + 1 left the member count alone on a second line) */
-    @media (min-width: 360px) { .facts, .facts.en { display: grid; grid-template-columns: repeat(5, auto); justify-content: space-between; column-gap: var(--space-2); } }
+    @media (min-width: 360px) { .facts, .facts.en { display: grid; grid-template-columns: repeat(4, auto); justify-content: space-between; column-gap: var(--space-2); } }
     .legend { order: 1; }
     .visual { margin-inline: -16px; aspect-ratio: 1 / 0.8; margin-bottom: var(--space-6); }
     .visual :global(.kline-hint) { bottom: calc(-1 * var(--space-6)); }

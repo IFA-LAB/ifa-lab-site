@@ -1,5 +1,4 @@
 ---
-import LabCat from '@/components/LabCat.astro';
 import LabChart from '@/components/LabChart.astro';
 import Base from '@/layouts/Base.astro';
 import { getCollection } from 'astro:content';
@@ -49,8 +48,7 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
 <Base gate lang={lang} title={t(ui.nav.history, lang)} description={zh ? `中央大學資管系 IFA Lab（智能金融分析實驗室）2023 年 8 月成立，至今的 ${events.length} 個重要時刻：期刊論文、國科會計畫、碩士論文、成員加入與競賽獎項，依年份排列。` : `IFA Lab since August 2023: ${events.length} moments across papers, grants, theses and awards.`}>
   <LabChart lang={lang} listId="record" />
   <div class="wrap section">
-    <div class="section-head has-cat" id="record">
-      <span class="cat-perch" style="right: 0; top: 0;"><LabCat lang={lang} bubble="left" lines={[{ zh: '一年疊一層，2023 年是地基。', en: 'One floor a year. 2023 is the foundation.' }, { zh: '圓的是獎項，菱形是里程碑。', en: 'Round ones are awards, diamonds are milestones.' }]} /></span>
+    <div class="section-head" id="record">
       <h1>{t(ui.nav.history, lang)}</h1>
       <p>{zh
         ? 'IFA Lab 在 2023 年 8 月成立，最初由中央資管的大學部與碩士班學生組成，一起做金融資料的專案。'

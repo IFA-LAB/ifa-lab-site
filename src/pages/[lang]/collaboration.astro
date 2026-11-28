@@ -1,5 +1,4 @@
 ---
-import LabCat from '@/components/LabCat.astro';
 import Base from '@/layouts/Base.astro';
 import { lab } from '@/data/lab';
 import { ui, t, href, type Bi, type Locale } from '@/i18n/ui';
@@ -12,7 +11,7 @@ const zh = lang === 'zh-tw';
 const ways: { title: Bi; body: Bi; clay: string }[] = [
   { clay: 'blue', title: { zh: '產業合作', en: 'Industry partners' }, body: { zh: '金融機構或科技公司有資料、有想研究的問題，都可以來談。', en: 'Financial firms or tech companies with data and a question are welcome to talk to us.' } },
   { clay: 'sun', title: { zh: '學術合作', en: 'Academic collaboration' }, body: { zh: '共同研究、交換計畫與合著論文。我們和其他學校的學者合寫過期刊論文，也歡迎一起申請國科會計畫。', en: 'Joint research, exchange programs and co-authored papers. We have co-authored journal papers with researchers at other universities, and welcome joint NSTC proposals.' } },
-  { clay: 'pink', title: { zh: '跨領域研究', en: 'Interdisciplinary research' }, body: { zh: '不做金融的研究者也可以，題目碰得到資料和模型就好。', en: 'You do not have to work in finance; a question that involves data and models is enough.' } },
+  { clay: 'pink', title: { zh: '跨領域研究', en: 'Interdisciplinary research' }, body: { zh: '做行為、語言或網路資料的研究者，可以拿金融市場的資料來驗證自己的方法。', en: 'Researchers working on behavior, language or network data can test their methods on financial market data.' } },
 ];
 // Real collaboration record, computed from the publication list
 const pubs = await getCollection('publications');
@@ -29,7 +28,6 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
       <p class="muted">{zh ? `和兆豐完成過一個產學合作，也和 ${people.length} 位其他學者合寫過論文，刊在 ${venues.length} 本期刊。` : `A completed industry project with Mega Bank, and papers co-written with ${people.length} other researchers, in ${venues.length} journals.`}</p>
     </div>
     <section class="case" aria-labelledby="case-h">
-      <span class="cat-perch"><LabCat lang={lang} size={68} bubble="left" lines={[{ zh: '這是學長姐跟企業一起做的案子。', en: 'Past members built this one together with a company.' }, { zh: '有資料、有問題？寄信來，我們聊聊。', en: 'Got data and a question? Email us and let us talk.' }]} /></span>
       <p class="eyebrow">{zh ? '已完成的產學合作' : 'Completed industry project'}</p>
       <h2 id="case-h">{zh ? '兆豐 × IFA Lab：隨機優勢能不能預測？' : 'Mega × IFA Lab: can stochastic dominance be predicted?'}</h2>
       <p class="lede">{zh
@@ -74,7 +72,6 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
   .case h2 { font-size: clamp(26px, 3vw, 40px); max-width: 20em; text-wrap: balance; }
   .lede { margin: 0; max-width: 40em; font-size: clamp(17px, 1.4vw, 19px); line-height: 1.8; }
   .team { margin: var(--space-2) 0 0; color: var(--ink-2); }
-  .cat-perch { position: absolute; right: var(--space-7); top: -56px; }
   .ways-h { margin-top: var(--space-9); font-size: clamp(22px, 2.2vw, 28px); }
   .ways { list-style: none; margin: var(--space-5) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-7); }
   .ways li { display: grid; gap: var(--space-3); align-content: start; padding-top: var(--space-5); border-top: 3px solid var(--c); }
@@ -90,5 +87,12 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
   .venues li { font-style: italic; }
   .cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-7); }
   @media (max-width: 899px) { .record, .ways { grid-template-columns: 1fr; } .ways { gap: var(--space-6); } }
-  @media (max-width: 767px) { .case { padding: var(--space-6) var(--space-5) var(--space-7); } .cat-perch { right: var(--space-4); } }
+  /* wide screens: the question on the left, the work on the right, so the slab has no empty half */
+  @media (min-width: 900px) {
+    .case { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: var(--space-8); align-items: start; }
+    .case > .eyebrow, .case > h2 { grid-column: 1; }
+    .case > .lede { grid-column: 2; grid-row: 1 / span 2; }
+    .case > .team { grid-column: 2; }
+  }
+  @media (max-width: 767px) { .case { padding: var(--space-6) var(--space-5) var(--space-7); } }
 </style>

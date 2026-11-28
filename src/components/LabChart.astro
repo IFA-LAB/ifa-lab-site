@@ -8,6 +8,8 @@ import { areas, lab, advisor } from '@/data/lab';
 import { t, href, type Locale } from '@/i18n/ui';
 import { publications } from '@/lib/content';
 import { labEvents } from '@/lib/history';
+// a non-breaking hyphen: the walk cards are narrow and once split 'Hsin-' / 'Yu Chiu'
+const advEn = advisor.name.en.replace('-', '‑');
 
 const { lang, listId = 'record' } = Astro.props as { lang: Locale; listId?: string };
 const zh = lang === 'zh-tw';
@@ -44,7 +46,7 @@ const steps = [
   ...(before.length ? [{
     label: zh ? '成立前' : 'Before the lab',
     caption: zh ? `實驗室成立前，${advisor.name.zh}老師 ${first}–${OPEN - 1} 年已經累積 ${before.length} 件研究。`
-      : `Before the lab opened, Prof. ${advisor.name.en} had published ${before.length} works (${first}–${OPEN - 1}).`,
+      : `Before the lab opened, Prof. ${advEn} had published ${before.length} works (${first}–${OPEN - 1}).`,
     sub: zh ? `領域：${beforeAreas.join('、')}` : `Areas: ${beforeAreas.join(', ')}`,
     soon: false, bricks: before.map(brick), joins: [] as string[], anchor: '',
   }] : []),
@@ -74,17 +76,18 @@ const steps = [
   }] : []),
 ];
 // the advisor stands on the first candle from the start (not counted as a member: the step text says "alone" there)
-const crew = [{ id: 'advisor', name: zh ? `${advisor.name.zh}老師` : `Prof. ${advisor.name.en}`, clay: 'sun', accessory: 'none' as const, model: 'prof' as const, href: href(lang, 'advisor') }, ...members.map((m) => ({ id: m.id, name: t(m.data.name, lang), clay: m.data.placeholder ? 'grey' : m.data.figure.clay, accessory: m.data.placeholder ? 'none' as const : m.data.figure.accessory, model: m.data.placeholder ? undefined : m.data.figure.model, href: href(lang, `members/${m.id}`) }))];
+const crew = [{ id: 'advisor', name: zh ? `${advisor.name.zh}老師` : `Prof. ${advEn}`, clay: 'sun', accessory: 'none' as const, model: 'prof' as const, href: href(lang, 'advisor') }, ...members.map((m) => ({ id: m.id, name: t(m.data.name, lang), clay: m.data.placeholder ? 'grey' : m.data.figure.clay, accessory: m.data.placeholder ? 'none' as const : m.data.figure.accessory, model: m.data.placeholder ? undefined : m.data.figure.model, href: href(lang, `members/${m.id}`) }))];
 const text = {
   eyebrow: '',
   totals: zh ? '累積 {w} 件成果・{m} 位成員' : '{w} works so far · {m} members',
-  solo: zh ? `實驗室成立前・${advisor.name.zh}老師的 {w} 件成果` : `Before the lab · {w} works by Prof. ${advisor.name.en}`,
+  // the step's own caption already says how much came before the lab
+  solo: '',
   more: zh ? '這年的紀錄 ↓' : 'This year’s record ↓',
   skip: zh ? '跳到逐筆紀錄 ↓' : 'Skip to the full record ↓', skipHref: `#${listId}`,
   hint: zh ? '往下捲 ↓' : 'Scroll ↓',
-  endH: zh ? '下一根 K 棒，由你來畫' : 'The next candle is yours',
-  endP: zh ? `寄一封信給${advisor.name.zh}老師，說說你好奇的題目。` : `Email Prof. ${advisor.name.en} about a question you are curious about.`,
-  mail: zh ? `寄信給${advisor.name.zh}老師` : `Email Prof. ${advisor.name.en}`,
+  endH: zh ? '想加入？' : 'Want to join?',
+  endP: zh ? `寄一封信給${advisor.name.zh}老師，說說你好奇的題目。` : `Email Prof. ${advEn} about a question you are curious about.`,
+  mail: zh ? `寄信給${advisor.name.zh}老師` : `Email Prof. ${advEn}`,
   mailHref: `mailto:${lab.contact.email}`,
   join: zh ? '先看怎麼加入' : 'How to join',
   joinHref: href(lang, 'join'),

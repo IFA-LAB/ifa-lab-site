@@ -156,6 +156,8 @@ function cite(answer: string, n: number): string {
   return answer
     .replace(/\[(\d+(?:\s*[,，、]\s*\d+)+)\]/g, (_, list: string) => list.split(/\s*[,，、]\s*/).map((k) => `[${k}]`).join(''))
     .replace(/\s*\[(\d+)\]/g, (m, k: string) => (+k >= 1 && +k <= n ? m : ''))
+    // the same source twice in a row ("[1][1]", once shown as "1, 1") reads as a glitch
+    .replace(/\[(\d+)\](?:\s*\[\1\])+/g, '[$1]')
     .trim();
 }
 

@@ -18,7 +18,7 @@ const links = zh
       ? [{ zh: '我也找不到這塊積木……', en: '' }, { zh: '回首頁看看？', en: '' }]
       : [{ zh: '', en: 'I can’t find this brick either…' }, { zh: '', en: 'Back to the home page?' }]} />
     <h1>{zh ? '找不到這一頁' : 'Page not found'}</h1>
-    <p>{zh ? 'K 喵也找不到這一頁。網址可能打錯了，或這一頁搬走了。可以從這裡找：' : 'K-meow can’t find this page either. The address may be mistyped, or the page has moved. Try one of these:'}</p>
+    <p>{zh ? '這個網址沒有頁面。論文、成員和招生都在下面：' : 'There is no page at this address. Papers, members and admissions are below:'}</p>
     <p class="cta">
       {links.map(([label, url], i) => <a class:list={['btn', i > 0 && 'secondary']} href={url}>{label}</a>)}
     </p>

@@ -72,7 +72,6 @@ const person = {
     </section>
     <section class="sec">
       <h2 id="career-h">{zh ? '經歷' : 'Career'}</h2>
-      <p class="muted small">{zh ? '先唸書，進業界做風險管理，回去讀博士，然後一路教到中央。' : 'School, risk management in industry, back for a PhD, then teaching, now at NCU.'}</p>
       <CareerSteps lang={lang} />
     </section>
     <div class="two">
@@ -80,7 +79,7 @@ const person = {
         <ol class="recent">{recent.map((p) => <li><a href={href(lang, `papers/${p.id}`)} lang="en">{p.data.title}</a> <span class="mono muted nowrap">{p.data.year > new Date().getFullYear() ? (zh ? `${p.data.year} 即將刊登` : `${p.data.year}, forthcoming`) : p.data.year}</span></li>)}</ol>
         <p><a href={href(lang, 'research')}>{zh ? '全部論文與研究計畫 →' : 'All papers and grants →'}</a></p></section>
       <section class="sec"><h2>{zh ? '老師開的課' : 'Prof. Chiu’s courses'}</h2>
-        <p class="muted small">{zh ? '114-2 與 115-1 學期。修過老師的課，是認識實驗室最快的路。' : '2026 spring and fall terms. Taking one of these is the quickest way to get to know the lab.'}</p>
+        <p class="muted small">{zh ? '114-2 與 115-1 學期。' : 'Spring and fall 2026.'}</p>
         {(['ug', 'grad'] as const).map((lv) => (
           <div class="courses">
             <h3>{lv === 'ug' ? (zh ? '大學部' : 'Undergraduate') : (zh ? '研究所' : 'Graduate')}</h3>

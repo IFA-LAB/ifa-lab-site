@@ -93,7 +93,7 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
           {s.sub && <p className="walk-sub"><Glued text={s.sub} /></p>}
           {s.anchor && <a className="walk-more" href={s.anchor} tabIndex={-1}>{text.more}</a>}
         </>}
-        <p className="walk-tot">{(cumPeople[idx] ? text.totals : text.solo).replace('{w}', String(cumWorks[idx])).replace('{m}', String(cumPeople[idx]))}</p>
+        {(cumPeople[idx] ? text.totals : text.solo) && <p className="walk-tot">{(cumPeople[idx] ? text.totals : text.solo).replace('{w}', String(cumWorks[idx])).replace('{m}', String(cumPeople[idx]))}</p>}
         {/* inside the card, so it never sits on top of the scene */}
         {!end && idx === 0 && <a className="walk-skip" href={text.skipHref} tabIndex={-1}>{text.skip}</a>}
       </div>

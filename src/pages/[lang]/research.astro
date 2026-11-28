@@ -243,7 +243,7 @@ const jsonld = journals.map((p) => ({
     for (const g of document.querySelectorAll<HTMLElement>('[data-unsorted]')) g.hidden = !!area;
     for (const a of document.querySelectorAll<HTMLElement>('.jump a[href="#g-h"], .jump a[href="#s-h"]')) a.hidden = !!area;
     const label = buttons.find((b) => b.dataset.area === area)?.textContent?.trim();
-    status.textContent = area ? (zh ? `${label}：${n} 篇論文` : `${label}: ${n} ${n === 1 ? 'paper' : 'papers'}`) : '';
+    status.textContent = area ? (zh ? `${label}：${n} 件成果（含碩論）` : `${label}: ${n} ${n === 1 ? 'work' : 'works'}, theses included`) : '';
     if (scroll) document.querySelector('.filter')?.scrollIntoView({ block: 'start' });
   }
   for (const b of buttons) b.addEventListener('click', () => {

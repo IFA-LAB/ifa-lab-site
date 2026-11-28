@@ -91,17 +91,23 @@ function Candle({ i, s, L, c }: { i: number; s: WalkStep; L: Layout; c: Ctx }) {
 /** The year under each candle, shown once the climb reaches it. */
 function YearTag({ i, s, L, c, reveal }: { i: number; s: WalkStep; L: Layout; c: Ctx; reveal: RefObject<number> }) {
   const g = useRef<Group>(null);
-  const { size } = useThree();
+  const { size, camera } = useThree();
   // the ending pulls far back and a 0.3-unit tag shrank to about 8 px; it grows as the camera leaves, and drops a little
   // so the bigger tag stays under its candle
   const grow = size.width / size.height > 1.15 ? 1.6 : 2.2;
   // after a flat year two tags sit at the same height and, grown, run into each other: this one steps down a tag's height
   const stagger = i > 0 && L[i].open - L[i - 1].open < 0.5 ? 0.3 * (1 + grow) : 0;
+  // a tall year pulls the camera back and its tag shrank to a chip: keep tags about one size on screen,
+  // measured against the distance of a short year (the width-bound distance the rig uses)
+  const wide = size.width / size.height > 1.15;
+  const base = (wide ? GX * 5 : GX * 2.6) / (2 * Math.tan((32 * Math.PI) / 360) * (size.width / size.height));
   useFrame(() => {
     const o = g.current; if (!o) return;
-    const k = ease(clamp((now(c, L) - (i - 0.35)) / 0.3)), r = ease(clamp(reveal.current ?? 0));
+    // full size by the time the card switches to this year (round(T) flips at i − 0.5), not after: mid-scroll it read as a 7-px chip
+    const k = ease(clamp((now(c, L) - (i - 0.75)) / 0.25)), r = ease(clamp(reveal.current ?? 0));
     o.visible = k > 0.001 || i === 0;
-    o.scale.setScalar((i === 0 ? 1 : Math.max(0.001, k)) * (1 + grow * r));
+    const far = clamp(camera.position.distanceTo(o.position) / base, 1, 1.8);
+    o.scale.setScalar((i === 0 ? 1 : Math.max(0.001, k)) * (1 + grow * r) * (far + (1 - far) * r));
     o.position.y = L[i].open - 0.55 - r * (grow * 0.18 + stagger);
   });
   return <group ref={g} position={[L[i].x, L[i].open - 0.55, 0.55]}><TagSprite text={s.label} position={[0, 0, 0]} height={0.3} /></group>;
@@ -256,13 +262,15 @@ function Rig({ at, L, c, reveal, focus }: { at: RefObject<Vector3>; L: Layout; c
     // fits in height (a tall year was cut off at the top, leaving most of the frame empty), then each year's own zoom
     const yr = L[clamp(Math.round(T), 0, L.length - 1)], h = yr.close - yr.open;
     // phones: the text card covers the lower third, so the candle and its year tag must fit the ~60% of height above it
-    const dH = (wide ? GX * 5 : GX * 2.6) / (2 * tan * aspect), dV = wide ? (h + 3.2) / (2 * tan) : (h + 3.6) / (2 * tan * 0.6);
+    const dH = (wide ? GX * 5 : GX * 2.6) / (2 * tan * aspect), dV = wide ? (h + 3.6) / (2 * tan) : (h + 3.6) / (2 * tan * 0.6);
     const d = Math.max(dH, dV) * keyAt(ZOOM, T);
     const yaw = keyAt(YAW, T), lift = keyAt(LIFT, T);
     // aim between the cat and the candle's foot, so the year's bricks, its tag and the cat share the frame
     const lookY = a.y + 0.6 - h * (wide ? 0.42 : 0.5);
-    want.set(a.x + Math.sin(yaw) * d, lookY + lift * d, Math.cos(yaw) * d);
-    wantLook.set(a.x + 0.2, lookY, 0);
+    // on the last step the dashed next candle stands one slot right: aim a little right so it clears the scroll rail
+    const ax = a.x + (wide ? clamp(T - (L.length - 2)) * GX * 0.7 : 0);
+    want.set(ax + Math.sin(yaw) * d, lookY + lift * d, Math.cos(yaw) * d);
+    wantLook.set(ax + 0.2, lookY, 0);
     // the ending: the whole chart from a high three-quarter view, the dashed next candle included
     const r = ease(clamp(reveal.current ?? 0));
     if (r > 0) {

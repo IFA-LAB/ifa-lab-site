@@ -1,5 +1,4 @@
 ---
-import LabCat from '@/components/LabCat.astro';
 import Mate from '@/components/Mate.astro';
 import Base from '@/layouts/Base.astro';
 import { lab, advisor, areas } from '@/data/lab';
@@ -58,13 +57,13 @@ const road: { when: Bi; t: Bi; d: Bi; rule?: Bi }[] = [
     d: { zh: '來 712 聊聊，讀幾篇學長姐的碩論。沒修過資料庫管理、系統分析與設計的話，這兩門是先修課，要先排進課表。', en: 'Visit Room 712 and read a few past theses. Database management and systems analysis & design are prerequisites; plan them in if you have not taken them.' },
     rule: { zh: '先修課不列入畢業學分', en: 'Prerequisites do not count toward the degree' } },
   { when: { zh: 'M1 · 上學期', en: 'M1 · Fall' }, t: { zh: '修課，跟著開會', en: 'Courses and weekly meetings' },
-    d: { zh: '修必修課（管理資訊系統、研究方法、軟體工程等），每週 meeting 先聽學長姐報告，從一個小資料集開始動手。', en: 'Take the core courses (MIS, research methods, software engineering and more), sit in on the weekly meeting, and start on a small dataset.' },
+    d: { zh: '修必修課（管理資訊系統、研究方法、軟體工程等），先聽學長姐報告，從一個小資料集開始動手。', en: 'Take the core courses (MIS, research methods, software engineering and more), sit in on the weekly meeting, and start on a small dataset.' },
     rule: { zh: '學分抵免在第一或第二學期辦', en: 'Credit transfer: first or second semester only' } },
   { when: { zh: 'M1 · 下學期', en: 'M1 · Spring' }, t: { zh: '定下題目', en: 'Settle on a topic' },
     d: { zh: '選定研究領域和題目，讀文獻、跑第一版實驗。暑假可以去實習，學長姐去過台積電、工研院。', en: 'Pick an area and a topic, read the literature and run a first experiment. The summer is open for internships; past members interned at TSMC and ITRI.' },
     rule: { zh: '開學第二週結束前交論文指導同意書', en: 'Advisor agreement due by the end of week 2' } },
   { when: { zh: 'M2 · 上學期', en: 'M2 · Fall' }, t: { zh: '做實驗、開始寫', en: 'Experiments and writing' },
-    d: { zh: '完成主要實驗，開始寫論文，每週 meeting 報告進度。有興趣的話可以把成果整理成工作論文。', en: 'Finish the main experiments and start writing, reporting each week. If it works out, the results can become a working paper.' },
+    d: { zh: '完成主要實驗，開始寫論文，輪到自己報告進度。有興趣的話可以把成果整理成工作論文。', en: 'Finish the main experiments and start writing; now you report at the meeting. If it works out, the results can become a working paper.' },
     rule: { zh: '碩士班進修英文一學年，70 分以上才能申請口試', en: 'One year of graduate English, 70 or above, before the defense' } },
   { when: { zh: 'M2 · 下學期', en: 'M2 · Spring' }, t: { zh: '口試、畢業', en: 'Defend and graduate' },
     d: { zh: '交論文初稿、論文比對報告和學術倫理課程證明，申請口試；口試委員 3–5 位，三分之一以上來自校外。', en: 'Submit the draft, a similarity report and the research-ethics course record to apply for the defense; the committee has 3–5 members, at least a third from outside NCU.' },
@@ -80,11 +79,11 @@ const faqLd = {
   <div class="wrap section">
     <div class="section-head">
       <h1 class="lines">{(zh ? ['加入 IFA Lab：', '碩士班與研究助理'] : ['Join IFA Lab:', 'master’s students and RAs']).map((l, i) => <>{i ? ' ' : ''}<span>{l}</span></>)}</h1>
-      <p class="muted">{zh ? '2026 年秋天收了 3 位碩士生。題目不限金融，壓力不大，可以去實習。' : 'Three master’s students joined in fall 2026. Topics are not limited to finance, the pace is relaxed and internships are fine.'}</p>
+      <p class="muted">{zh ? '2026 年秋天收了 3 位碩士生，題目不限金融。' : 'Three master’s students joined in fall 2026. Topics are not limited to finance.'}</p>
       <div class="crowd" aria-label={zh ? '現在的成員' : 'Current members'}>
         {crew.map((m) => <Mate member={m} lang={lang} size={56} />)}
       </div>
-      <p class="cta top"><a class="btn" href={`mailto:${lab.contact.email}`}>{zh ? `寄信給${advisor.name.zh}老師` : `Email Prof. ${advisor.name.en}`}</a><LabCat lang={lang} size={64} bubble="right" lines={[{ zh: '信裡寫你好奇的題目，比寫自傳有用。', en: 'Write about a question you are curious about. It beats a CV.' }, { zh: '不會寫程式也沒關係，學長姐會帶。', en: 'Cannot code yet? Seniors will help you start.' }]} /></p>
+      <p class="cta top"><a class="btn" href={`mailto:${lab.contact.email}`}>{zh ? `寄信給${advisor.name.zh}老師` : `Email Prof. ${advisor.name.en}`}</a></p>
     </div>
     <section class="steps-wrap" aria-labelledby="steps-h">
       <h2 id="steps-h">{zh ? '三步加入' : 'How to join, in three steps'}</h2>

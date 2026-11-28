@@ -1,5 +1,4 @@
 ---
-import LabCat from '@/components/LabCat.astro';
 import Base from '@/layouts/Base.astro';
 import Bi from '@/components/Bi.astro';
 import { areas } from '@/data/lab';
@@ -94,13 +93,13 @@ const jsonld = [{
       <h2 id="cite-h">{zh ? '引用這篇' : 'Cite this paper'}</h2>
       <div class="cite-box">
         <p lang="en" data-copy-src>{cite}</p>
-        <button type="button" class="chip copy" data-copy={cite} data-done={zh ? '已複製' : 'Copied'}>{zh ? '複製引用' : 'Copy citation'}</button>
+        <button type="button" class="chip copy" data-copy={cite} data-done={zh ? '已複製' : 'Copied'} data-manual={zh ? '已選取，按 Ctrl+C 複製' : 'Selected: press Ctrl+C'} aria-live="polite">{zh ? '複製引用' : 'Copy citation'}</button>
       </div>
       <details>
         <summary>BibTeX</summary>
         <div class="cite-box">
           <pre lang="en"><code>{bib}</code></pre>
-          <button type="button" class="chip copy" data-copy={bib} data-done={zh ? '已複製' : 'Copied'}>{zh ? '複製 BibTeX' : 'Copy BibTeX'}</button>
+          <button type="button" class="chip copy" data-copy={bib} data-done={zh ? '已複製' : 'Copied'} data-manual={zh ? '已選取，按 Ctrl+C 複製' : 'Selected: press Ctrl+C'} aria-live="polite">{zh ? '複製 BibTeX' : 'Copy BibTeX'}</button>
         </div>
       </details>
     </section>
@@ -109,8 +108,7 @@ const jsonld = [{
     </div>
 
     <aside class="side">
-      <nav class="pile clay has-cat" aria-labelledby="rel-h">
-        <span class="cat-perch" style="right: 18px; top: -44px;"><LabCat lang={lang} pose="loaf" size={84} bubble="left" lines={[{ zh: '呼……這堆我睡過，每一塊都很好睡。', en: 'Zzz… I have napped on every block in this pile.' }, { zh: '要引用的話，左邊有一鍵複製。', en: 'Citing it? One-click copy is on the left.' }]} /></span>
+      <nav class="pile clay" aria-labelledby="rel-h">
         <p class="eyebrow">{t(area.name, lang)}</p>
         <h2 id="rel-h">{zh ? `這個領域的 ${sameArea.length} 篇論文` : `${sameArea.length} ${sameArea.length === 1 ? 'paper' : 'papers'} in this area`}</h2>
         {/* one brick per paper in the area, newest on top; this paper is the lit one */}
@@ -134,16 +132,17 @@ const jsonld = [{
   for (const b of document.querySelectorAll<HTMLButtonElement>('button.copy')) {
     const label = b.textContent;
     b.addEventListener('click', async () => {
+      b.style.minWidth = `${b.offsetWidth}px`; // the shorter '已複製' must not shrink the button
       try {
         await navigator.clipboard.writeText(b.dataset.copy ?? '');
-        b.style.minWidth = `${b.offsetWidth}px`; // the shorter '已複製' must not shrink the button
         b.textContent = '✓ ' + (b.dataset.done ?? label);
-        setTimeout(() => (b.textContent = label), 1600);
       } catch {
-        // clipboard blocked: select the text so the visitor can copy it by hand
+        // clipboard blocked: select the text so the visitor can copy it by hand, and say so
         const el = b.parentElement?.querySelector('p, pre');
         if (el) getSelection()?.selectAllChildren(el);
+        b.textContent = b.dataset.manual ?? label;
       }
+      setTimeout(() => (b.textContent = label), 2000);
     });
   }
 </script>
