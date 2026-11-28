@@ -43,6 +43,11 @@ jobs:
             echo "$code $p"; [ "$code" = 200 ] || exit 1
           done
           code=$(curl -s -o /dev/null -w '%{http_code}' "$base/no-such-page/"); echo "$code /no-such-page/ (want 404)"; [ "$code" = 404 ]
+      # Everything a search engine, a browser and a share preview expect: redirects, headers, icons, manifest, sitemap,
+      # every page's head tags and structured data, every internal link and image (scripts/audit-live.mjs). FAIL stops here.
+      - name: Audit the live site
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: node scripts/audit-live.mjs https://ifalab-ncu.com
       # Tell Bing (and the AI answer engines built on its index) which pages changed: IndexNow, key file in public/.
       - name: IndexNow
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

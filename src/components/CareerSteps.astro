@@ -83,7 +83,7 @@ const shown = (p: string) => p.replace(/[–-]$/, zh ? '–至今' : '–now');
   }
   .now {
     position: absolute; left: calc(100% + var(--space-2)); top: 50%; transform: translateY(-50%);
-    font: 700 12px/1 var(--f-body); color: var(--clay-up); white-space: nowrap;
+    font: 700 12px/1 var(--f-body); color: color-mix(in srgb, var(--clay-up) 70%, var(--ink)); white-space: nowrap;
   }
   .axis { font: 500 12px/1 var(--f-mono); color: var(--ink-2); padding-top: var(--space-2); }
   .ax { grid-column: 2; position: relative; height: 1em; margin-right: 2.75em; }
