@@ -13,10 +13,11 @@ const zh = lang === 'zh-tw';
 const cohorts = await membersByCohort();
 const site = Astro.site!;
 
-// the cabinet: one plank per cohort, members who have a profile stand on it
+// the cabinet: one plank per cohort, everyone on it (a member who has not filled in a profile stands as their grey
+// figure: leaving them out made the shelf show 8 figures under a heading that counts 12)
 const rows = cohorts.map(([c, ms]) => ({
   label: t(ui.cohort(c), lang),
-  members: ms.filter((m) => !m.data.placeholder).map((m) => ({
+  members: ms.map((m) => ({
     id: m.id, name: t(m.data.name, lang), sub: t(m.data.headline, lang) ?? '',
     clay: m.data.figure.clay, accessory: m.data.figure.accessory, model: m.data.figure.model, href: href(lang, `members/${m.id}`),
   })),
@@ -74,7 +75,7 @@ const jsonld = people.map((m) => ({
       <section class="cohort" aria-labelledby={`c${c}`}>
         <h2 id={`c${c}`}>{t(ui.cohort(c), lang)}</h2>
         <ul class="cards">
-          {ms.filter((m) => !m.data.placeholder).map((m) => (
+          {ms.map((m) => (
             <li>
               <a class="card clay" href={href(lang, `members/${m.id}`)} data-member={m.id}>
                 {m.data.photo

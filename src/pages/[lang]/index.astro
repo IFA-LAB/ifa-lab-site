@@ -63,9 +63,10 @@ const description = zh
       <div class="copy">
         <p class="eyebrow">{zh ? '國立中央大學 資訊管理學系' : 'NCU · Information Management'}</p>
         <h1 id="hero-h">{titleLines.map((l, i) => <span>{l}{!zh && i < titleLines.length - 1 ? ' ' : ''}</span>)}</h1>
+        {/* industry partners get their door here, in the lede, not only at the foot of the page */}
         <p class="lede">{zh
-          ? '我們用台灣與國際市場的資料研究資產定價和投資人行為，也用機器學習和圖神經網路做財務預測。'
-          : 'We study asset pricing and investor behavior with Taiwan and global market data, and build forecasting models with machine learning and graph neural networks.'}</p>
+          ? <>我們用台灣與國際市場的資料研究資產定價和投資人行為，也用機器學習和圖神經網路做財務預測，和兆豐銀行做過<a href={href(lang, 'collaboration')}>產學合作</a>。</>
+          : <>We study asset pricing and investor behavior with Taiwan and global market data, build forecasting models with machine learning and graph neural networks, and have run an <a href={href(lang, 'collaboration')}>industry project with Mega Bank</a>.</>}</p>
         <div class="cta">
           <a class="btn" href={href(lang, 'research')}>{zh ? '看研究成果' : 'See our research'}</a>
           <a class="btn secondary" href={href(lang, 'join')}>{t(ui.nav.join, lang)}</a>

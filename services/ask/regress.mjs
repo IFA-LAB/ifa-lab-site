@@ -6,6 +6,8 @@ const origin = process.argv[2] ?? 'https://ifalab-ncu.com';
 const cases = [
   { lang: 'zh-tw', q: '謝子尉的碩士論文題目是什麼？', want: ['條件式格蘭傑'], deny: [] },
   { lang: 'zh-tw', q: '邱老師的研究有用到圖神經網路嗎？是哪一篇？', want: ['SeqTAG'], deny: ['實習'] },
+  { lang: 'en', q: 'Has the lab published anything on the disposition effect? Which journals?', want: ['Financial Management'], deny: [] },
+  { lang: 'zh-tw', q: '實驗室有發表過處分效果的論文嗎？刊在哪？', want: ['Financial Management'], deny: [] },
   { lang: 'zh-tw', q: '實驗室有博士班嗎？', want: ['沒寫', '沒有提', '未提', 'hychiu'], deny: ['沒有博士班。'] },
   { lang: 'zh-tw', q: '碩士班一年收幾位？', want: ['3'], deny: ['每年收', '每年都收'] },
   { lang: 'zh-tw', q: '老師開哪些課？哪些是英語授課？', want: ['Python'], deny: [] },

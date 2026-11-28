@@ -24,6 +24,13 @@ let cached: Promise<Index> | null = null;
 // "do" would get a high idf and outrank the word the visitor actually asked about.
 const STOP = new Set('a an and are as at be but by can could do does for from had has have how i if in is it its me my of on or our so than that the their them then there these they this to was we were what when where which who why will with would you your'.split(' '));
 
+const TERMS: [RegExp, string][] = [
+  [/處分效[果應]/, 'disposition'], [/動能/, 'momentum'], [/隨機優勢|隨機支配/, 'stochastic dominance'], [/波動/, 'volatility'],
+  [/選擇權/, 'option'], [/放空|賣空/, 'short seller'], [/流動性/, 'liquidity'], [/違約/, 'default'], [/情緒/, 'sentiment'],
+  [/共同基金|基金/, 'fund'], [/期貨/, 'futures'], [/定價/, 'pricing'], [/死亡率|長壽/, 'mortality'], [/碳|排放權/, 'emission'],
+  [/資安|網路安全/, 'cybersecurity'], [/財報/, 'financial report'], [/借貸|P2P/i, 'p2p lending'],
+];
+
 /** Latin words plus CJK characters and character bigrams. */
 function grams(s: string): string[] {
   s = s.toLowerCase();
@@ -80,13 +87,15 @@ function searchOne(ix: Index, q: string, lang: string, k = 5): Passage[] {
   if (/圖神經|圖網路|圖模型|\bgnn\b/.test(qn)) qn += ' 圖卷積 因果圖 graph';
   if (/語言模型|\bllm\b|\bgpt\b/.test(qn)) qn += ' llm 生成式';
   if (/深度學習|神經網路/.test(qn)) qn += ' 深度 機器學習 lstm gru';
+  // paper titles and abstracts are English: a Chinese finance term also searches for the English one
+  for (const [re, en] of TERMS) if (re.test(qn)) qn += ` ${en}`;
   // how to work with the lab: the collaboration page, not the join steps that also say "寄信"
   if (/產學|合作|企業|公司/.test(qn)) qn += ' 產學合作 合作 兆豐';
   if (/\b(collaborat\w*|partner\w*|compan\w*|industry)\b/.test(qn)) qn += ' collaboration industry';
   // does the question name a member? then their pages lead; otherwise the lab's own pages do
   const named = ix.ps.some((p) => { const w = p.title.split(/\s*[｜|]\s*/)[0].toLowerCase(); return p.url.includes('/members/') && w.length >= 2 && !w.startsWith('ifa lab') && qn.includes(w); });
   const qs = count(grams(qn));
-  const rare = [...qs.keys()].filter((t) => /^[a-z]/.test(t) && t.length >= 2 && (ix.df.get(t) ?? 0) > 0 && (ix.df.get(t) ?? 0) / ix.ps.length < 0.05);
+  const rare = [...qs.keys()].filter((t) => /^[a-z]/.test(t) && t.length >= 2 && (ix.df.get(t) ?? 0) > 0 && (ix.df.get(t) ?? 0) / ix.ps.length < 0.08);
   const scored: [number, number][] = [];
   ix.docs.forEach((d, i) => {
     let s = 0;
