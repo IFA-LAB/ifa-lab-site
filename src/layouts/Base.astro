@@ -64,6 +64,8 @@ const cardPath = `/og/${lang}/${cardSlug}.jpg`;
 const hasCard = !noindex && existsSync(join(process.cwd(), 'public', cardPath));
 const shareImage = new URL(hasCard ? cardPath : image ?? `/og-${lang === 'en' ? 'en' : 'zh'}-2.jpg`, site).href;
 const wide = hasCard || !image;
+// a profile page names whom it is about (Google's ProfilePage requires mainEntity): the page's Person, nested in it
+const subject = ogType === 'profile' ? jsonld.find((j: any) => j['@type'] === 'Person') : undefined;
 // every page says which site it belongs to and who publishes it, so an answer engine can attribute what it quotes
 const webPage = {
   '@type': ogType === 'profile' ? 'ProfilePage' : 'WebPage',
@@ -73,11 +75,12 @@ const webPage = {
   inLanguage: htmlLang[lang],
   isPartOf: { '@type': 'WebSite', '@id': new URL('/#site', site).href, name: lab.short, url: new URL(`/${lang}/`, site).href },
   publisher: { '@id': org['@id'] },
+  ...(subject ? { mainEntity: (({ '@context': _c, ...p }: any) => p)(subject) } : {}),
   ...(crumbs?.length
     ? { breadcrumb: { '@type': 'BreadcrumbList', itemListElement: [{ name: lab.short, path: `/${lang}/` }, ...crumbs].map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: new URL(c.path, site).href })) } }
     : {}),
 };
-const graph = [org, webPage, ...jsonld];
+const graph = [org, webPage, ...jsonld.filter((j) => j !== subject)];
 ---
 <!doctype html>
 <html lang={htmlLang[lang]} data-gate-page={gate ? '' : undefined}>
@@ -166,12 +169,16 @@ const graph = [org, webPage, ...jsonld];
         const cjk = /[\u3400-\u9fff\uf900-\ufaff]/;
         // KEEP (src/lib/glue.ts): names the dictionary does not know, so they are never cut (台／積電)
         const seg = Intl.Segmenter ? new Intl.Segmenter('zh-Hant', { granularity: 'word' }) : null;
+        // text directly inside a flex or grid box is left whole: split into pieces, each piece became its own item and
+        // the box's gap showed as a space (「加入 我們」「談 合作」 on the buttons)
+        const flexy = new Map();
+        const boxed = (e) => { if (!flexy.has(e)) flexy.set(e, /flex|grid/.test(getComputedStyle(e).display)); return flexy.get(e); };
         for (const el of document.querySelectorAll('main p, main li, main dd, main figcaption, main summary, footer p')) {
           if (el.closest('astro-island, pre, code, .nw')) continue;
           const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
           let t, last = null;
           while ((t = w.nextNode())) if (t.data.trim()) last = t;
-          if (!last || last.parentElement.closest('.glue, .nw')) continue;
+          if (!last || last.parentElement.closest('.glue, .nw') || boxed(last.parentElement)) continue;
           const s = last.data.replace(/\s+$/, '');
           let i = s.length, n = 0;
           while (i > 0 && n < 4) { const c = s[i - 1]; if (/[\sA-Za-z0-9]/.test(c)) break; if (cjk.test(c)) n++; i--; }
@@ -198,7 +205,7 @@ const graph = [org, webPage, ...jsonld];
           const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
           const nodes = [];
           let t;
-          while ((t = w.nextNode())) if (cjk.test(t.data) && !t.parentElement.closest('.glue, .nw, code, astro-island')) nodes.push(t);
+          while ((t = w.nextNode())) if (cjk.test(t.data) && !t.parentElement.closest('.glue, .nw, code, astro-island') && !boxed(t.parentElement)) nodes.push(t);
           for (const node of nodes) {
             // a number and its counter word stay together (8 個獎, not 8／個獎): keep-all still allows a break between them
             node.data = node.data.replace(/(\d)(?=[個件篇座位項屆名次])/g, '$1⁠');
