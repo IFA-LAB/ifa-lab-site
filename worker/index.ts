@@ -168,6 +168,21 @@ function cite(answer: string, n: number): string {
     .trim();
 }
 
+/** The model still made up Chinese names for co-authors the site names only in English ("陳昭仲（Chao-Jung Chen）")
+ *  despite the prompt. A Chinese name beside an English one stays only if the passages contain it; otherwise the
+ *  English name, as written in the data, is all that is left. */
+function realNames(answer: string, passages: { text: string }[]): string {
+  const seen = (zh: string) => passages.some((p) => p.text.includes(zh));
+  const en = String.raw`[A-Z][A-Za-z.'\-]+(?:\s+[A-Z][A-Za-z.'\-]+)+`;
+  return answer
+    // up to four characters before the bracket: a leading 和／與／及／跟／由 is the sentence, not the name
+    .replace(new RegExp(String.raw`([一-鿿]{2,4})\s*[（(]\s*(${en})\s*[）)]`, 'g'), (m, run: string, name: string) => {
+      const lead = run.length > 2 && /^[和與及跟由是、]/.test(run) ? run[0] : '';
+      return seen(run.slice(lead.length)) ? m : lead + name;
+    })
+    .replace(new RegExp(String.raw`(${en})\s*[（(]\s*([一-鿿]{2,4})\s*[）)]`, 'g'), (m, name: string, zh: string) => (seen(zh) ? m : name));
+}
+
 const json = (o: unknown, status = 200) => Response.json(o, { status, headers: { 'Cache-Control': 'no-store' } });
 
 async function ask(req: Request, env: Env): Promise<Response> {
@@ -203,13 +218,13 @@ async function ask(req: Request, env: Env): Promise<Response> {
         body: JSON.stringify({ q, lang, passages: hits.map(({ title, section, text }) => ({ title, section, text })) }),
       });
       const a = (await r.json()) as { answer?: string; mode?: string; model?: string };
-      if (a.answer) return json({ answer: cite(a.answer, sources.length), mode: 'llm', via: 'spark', sources });
+      if (a.answer) return json({ answer: cite(realNames(a.answer, hits), sources.length), mode: 'llm', via: 'spark', sources });
       sparkMode = a.mode ?? '';
     } catch { /* tunnel down: fall through */ }
   }
   // 2) Workers AI, up to the daily cap
   const answer = await cloudAnswer(env, q, lang as 'zh-tw' | 'en', hits);
-  if (answer) return json({ answer: cite(answer, sources.length), mode: 'llm', via: 'cloud', sources });
+  if (answer) return json({ answer: cite(realNames(answer, hits), sources.length), mode: 'llm', via: 'cloud', sources });
   // 3) the matching passages only
   return json({ answer: '', mode: sparkMode === 'warming' ? 'warming' : 'search', sources });
 }

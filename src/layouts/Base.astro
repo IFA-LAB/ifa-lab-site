@@ -106,7 +106,14 @@ const graph = [org, webPage, ...jsonld.filter((j) => j !== subject)];
     <meta name="twitter:card" content={wide ? 'summary_large_image' : 'summary'} />
     <meta name="theme-color" content="#eef2f6" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#141a23" media="(prefers-color-scheme: dark)" />
+    {/* Google's results show a site icon only from a square PNG/ICO in multiples of 48 px; the .ico (16/32) was too small
+         and search showed a blank globe. iOS uses the opaque 180 px one. */}
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/icon-48.png" sizes="48x48" type="image/png" />
+    <link rel="icon" href="/icon-96.png" sizes="96x96" type="image/png" />
+    <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <script is:inline>
       try { const s = localStorage.getItem('theme'); if (s === 'light' || s === 'dark') document.documentElement.dataset.theme = s; } catch {}
