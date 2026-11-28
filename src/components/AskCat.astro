@@ -4,7 +4,8 @@
 // When the Spark is warming up or unreachable, the sheet shows the matching passages instead.
 // Opened by any element with [data-ask-open] (the header button, the join page). Native <dialog>: Esc and focus are handled.
 import { type Locale } from '@/i18n/ui';
-const { lang } = Astro.props as { lang: Locale };
+// `extra`: questions about the page the visitor is on (this paper, this member), offered before the general ones
+const { lang, extra = [] } = Astro.props as { lang: Locale; extra?: { label: string; q: string }[] };
 const zh = lang === 'zh-tw';
 const T = {
   title: zh ? '問 K 喵' : 'Ask K-meow',
@@ -32,7 +33,7 @@ const T = {
   </div>
   <div class="log" aria-live="polite" data-log>
     <p class="intro">{T.intro}</p>
-    <ul class="chips">{T.chips.map((c) => <li><button type="button" class="chip" data-q={c}>{c}</button></li>)}</ul>
+    <ul class="chips">{[...extra.slice(0, 2), ...T.chips.map((c) => ({ label: c, q: c }))].slice(0, 4).map((c) => <li><button type="button" class="chip" data-q={c.q}>{c.label}</button></li>)}</ul>
   </div>
   <form class="ask-form" data-form>
     <label class="visually-hidden" for="ask-q">{T.placeholder}</label>

@@ -80,6 +80,9 @@ function searchOne(ix: Index, q: string, lang: string, k = 5): Passage[] {
   if (/圖神經|圖網路|圖模型|\bgnn\b/.test(qn)) qn += ' 圖卷積 因果圖 graph';
   if (/語言模型|\bllm\b|\bgpt\b/.test(qn)) qn += ' llm 生成式';
   if (/深度學習|神經網路/.test(qn)) qn += ' 深度 機器學習 lstm gru';
+  // how to work with the lab: the collaboration page, not the join steps that also say "寄信"
+  if (/產學|合作|企業|公司/.test(qn)) qn += ' 產學合作 合作 兆豐';
+  if (/\b(collaborat\w*|partner\w*|compan\w*|industry)\b/.test(qn)) qn += ' collaboration industry';
   // does the question name a member? then their pages lead; otherwise the lab's own pages do
   const named = ix.ps.some((p) => { const w = p.title.split(/\s*[｜|]\s*/)[0].toLowerCase(); return p.url.includes('/members/') && w.length >= 2 && !w.startsWith('ifa lab') && qn.includes(w); });
   const qs = count(grams(qn));

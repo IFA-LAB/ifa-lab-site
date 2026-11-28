@@ -46,7 +46,7 @@ const jsonld = [{
   sourceOrganization: { '@id': new URL('/#org', site).href },
 }];
 ---
-<Base lang={lang} title={d.title} description={description} jsonld={jsonld} ogType="article" crumbs={[{ name: t(ui.nav.research, lang), path: href(lang, 'research') }, { name: d.title, path: href(lang, `papers/${paper.id}`) }]}>
+<Base lang={lang} title={d.title} description={description} jsonld={jsonld} ogType="article" ask={lang === 'en' ? [{ label: 'What did this paper find?', q: `What did the paper "${d.title}" find?` }, { label: 'What data and method does it use?', q: `What data and method does "${d.title}" use?` }] : [{ label: '這篇的主要發現？', q: `〈${d.title}〉這篇論文的主要發現是什麼？` }, { label: '用了什麼資料和方法？', q: `〈${d.title}〉用了什麼資料和方法？` }]} crumbs={[{ name: t(ui.nav.research, lang), path: href(lang, 'research') }, { name: d.title, path: href(lang, `papers/${paper.id}`) }]}>
   <Fragment slot="head">
     {/* Highwire tags: what Google Scholar reads to index a paper */}
     <meta name="citation_title" content={d.title} />

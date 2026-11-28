@@ -71,7 +71,7 @@ const links = [
   d.links.linkedin && { label: 'LinkedIn', url: d.links.linkedin },
 ].filter(Boolean) as { label: string; url: string }[];
 ---
-<Base lang={lang} title={name} description={description} noindex={d.placeholder} jsonld={[person]} ogType="profile" image={share?.src} crumbs={[{ name: t(ui.nav.members, lang), path: href(lang, 'members') }, { name, path: href(lang, `members/${m.id}`) }]}>
+<Base lang={lang} title={name} description={description} noindex={d.placeholder} ask={d.placeholder ? [] : lang === 'en' ? [{ label: `What does ${name} work on?`, q: `What does ${name} work on?` }] : [{ label: `${name}做什麼研究？`, q: `${name}做什麼研究？` }]} jsonld={[person]} ogType="profile" image={share?.src} crumbs={[{ name: t(ui.nav.members, lang), path: href(lang, 'members') }, { name, path: href(lang, `members/${m.id}`) }]}>
   <article class="wrap section">
     <p class="crumbs"><a href={href(lang, 'members')}>{t(ui.nav.members, lang)}</a> / {t(ui.cohort(d.cohort), lang)}</p>
 

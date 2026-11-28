@@ -21,7 +21,7 @@ for (const p of pubs) for (const a of p.data.authors) if (a !== 'Hsin-Yu Chiu' &
 const people = [...coauthors].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p) => p.data.venue).filter(Boolean))] as string[];
 ---
-<Base lang={lang} title={zh ? '產學合作與學術合作' : 'Industry and academic collaboration'} description={zh ? '和中央大學資管系 IFA Lab 合作：產學合作（已和兆豐銀行完成一個專案）、學術共同研究與跨領域研究。' : 'Work with IFA Lab: industry, academic and interdisciplinary collaboration.'}>
+<Base lang={lang} ask={zh ? [{ label: '怎麼開始談合作？', q: '產學合作怎麼開始？' }] : [{ label: 'How do we start working together?', q: 'How can a company start a collaboration with the lab?' }]} title={zh ? '產學合作與學術合作' : 'Industry and academic collaboration'} description={zh ? '和中央大學資管系 IFA Lab 合作：產學合作（已和兆豐銀行完成一個專案）、學術共同研究與跨領域研究。' : 'Work with IFA Lab: industry, academic and interdisciplinary collaboration.'}>
   <div class="wrap section">
     <div class="section-head">
       <h1>{zh ? '跟 IFA Lab 合作' : 'Work with IFA Lab'}</h1>

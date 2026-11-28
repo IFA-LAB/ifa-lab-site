@@ -28,8 +28,10 @@ interface Props {
   gate?: boolean;
   /** Keep this page out of search results (an empty profile reads as a soft 404). */
   noindex?: boolean;
+  /** Questions about this page that K 喵 offers first (label shown, q asked). */
+  ask?: { label: string; q: string }[];
 }
-const { lang, title, description, jsonld = [], ogType = 'website', image, crumbs, gate = false, noindex = false } = Astro.props;
+const { lang, title, description, jsonld = [], ogType = 'website', image, crumbs, gate = false, noindex = false, ask } = Astro.props;
 const site = Astro.site!;
 const path = Astro.url.pathname;
 const canonical = new URL(path, site).href;
@@ -168,7 +170,7 @@ const graph = [org, webPage, ...jsonld.filter((j) => j !== subject)];
     <Footer lang={lang} />
     <ScrollCat lang={lang} />
     <MailPick lang={lang} />
-    <AskCat lang={lang} />
+    <AskCat lang={lang} extra={ask} />
     {/* Chinese paragraphs never end on a line of one or two characters: the last four characters stay together.
          text-wrap: pretty does not do this for CJK in Chromium. Runs before first paint; skips React islands (their
          DOM must match what they hydrate). Same rule as glueTail() in src/lib/glue.ts. */}
