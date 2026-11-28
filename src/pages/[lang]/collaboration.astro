@@ -1,5 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
+import CoauthorMap from '@/components/CoauthorMap.astro';
 import { lab } from '@/data/lab';
 import { ui, t, href, type Bi, type Locale } from '@/i18n/ui';
 import { getCollection } from 'astro:content';
@@ -47,7 +48,8 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
     <div class="record">
       <section aria-labelledby="co-h">
         <h2 id="co-h">{zh ? `一起寫過論文的 ${people.length} 位研究者` : `${people.length} researchers we have co-authored with`}</h2>
-        <ul class="tags">{people.map(([n, c]) => <li lang="en">{n}{c > 1 && <b> ×{c}</b>}</li>)}</ul>
+        <CoauthorMap lang={lang} />
+        <ul class="tags">{people.map(([n, c]) => <li lang="en" data-who={n.toLowerCase().replace(/[^a-z]+/g, '-')}>{n}{c > 1 && <b> ×{c}</b>}</li>)}</ul>
       </section>
       <section aria-labelledby="ve-h">
         <h2 id="ve-h">{zh ? `刊登過的 ${venues.length} 本期刊` : `${venues.length} journals we have published in`}</h2>
@@ -74,7 +76,7 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
   .ways li { display: grid; gap: var(--space-3); align-content: start; padding-top: var(--space-5); border-top: 3px solid var(--c); }
   .ways h3 { font-size: 20px; }
   .ways p { margin: 0; }
-  .record { margin-top: var(--space-9); padding-top: var(--space-7); border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent); display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-7); }
+  .record { margin-top: var(--space-9); padding-top: var(--space-7); border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent); display: grid; grid-template-columns: 1.6fr 1fr; gap: var(--space-7); }
   .record section { display: grid; gap: var(--space-4); align-content: start; }
   .record h2 { font-size: 22px; }
   .tags b { font: 600 12px/1 var(--f-mono); color: var(--ink-2); }

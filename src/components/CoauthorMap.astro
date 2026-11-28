@@ -1,0 +1,99 @@
+---
+/* Who the lab has written papers with, drawn as the kind of graph the lab studies: Prof. Chiu in the middle, every
+   outside co-author on a ring, and each paper a small clay block joining its authors (coloured by research area).
+   Co-authors who wrote together sit next to each other on the ring, so the clusters show without a legend.
+   Layout is computed here at build time; no script draws it. Pointing at a name lights that person's papers and
+   co-authors. The list beside it is the accessible version: the drawing is aria-hidden. */
+import { getCollection } from 'astro:content';
+import { areas } from '@/data/lab';
+import { href, type Locale } from '@/i18n/ui';
+
+const { lang } = Astro.props as { lang: Locale };
+const zh = lang === 'zh-tw';
+const HUB = 'Hsin-Yu Chiu';
+const pubs = await getCollection('publications');
+const memberNames = new Set((await getCollection('members')).map((m) => m.data.name.en).filter(Boolean));
+const outside = (a: string) => a !== HUB && !memberNames.has(a);
+const papers = pubs.map((p) => ({ id: p.id, title: p.data.title, area: p.data.area as string, who: p.data.authors.filter(outside) })).filter((p) => p.who.length);
+
+// people, most papers first; then walk each person's co-authors so people who wrote together end up neighbours
+const count = new Map<string, number>();
+for (const p of papers) for (const a of p.who) count.set(a, (count.get(a) ?? 0) + 1);
+const byCount = [...count.keys()].sort((a, b) => count.get(b)! - count.get(a)! || a.localeCompare(b));
+const order: string[] = [];
+const place = (a: string) => {
+  if (order.includes(a)) return;
+  order.push(a);
+  for (const p of papers.filter((q) => q.who.includes(a))) for (const b of p.who) place(b);
+};
+byCount.forEach(place);
+
+const W = 720, H = 460, cx = W / 2, cy = H / 2, R = 190;
+const pos = new Map(order.map((a, i) => {
+  const t = -Math.PI / 2 + (i / order.length) * Math.PI * 2;
+  return [a, { x: cx + Math.cos(t) * R * 1.35, y: cy + Math.sin(t) * R, t }];
+}));
+const slug = (a: string) => a.toLowerCase().replace(/[^a-z]+/g, '-');
+const clay = (k: string) => `var(--clay-${areas.find((x) => x.key === k)?.clay ?? 'grey'})`;
+// a paper sits between its authors and the hub; papers by the same author are nudged apart along the ring
+const seen = new Map<string, number>();
+const blocks = papers.map((p) => {
+  const m = p.who.map((a) => pos.get(a)!);
+  const ax = m.reduce((s, q) => s + q.x, 0) / m.length, ay = m.reduce((s, q) => s + q.y, 0) / m.length;
+  const key = p.who.join('|'), n = seen.get(key) ?? 0; seen.set(key, n + 1);
+  const k = 0.58 - n * 0.12;
+  return { ...p, x: cx + (ax - cx) * k, y: cy + (ay - cy) * k };
+});
+const r = (a: string) => 7 + 3 * Math.sqrt(count.get(a)!);
+---
+<figure class="map" data-coauthor-map>
+  <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false">
+    <g class="edges">
+      {blocks.map((b) => <>
+        <line class={b.who.map((a) => `p-${slug(a)}`).join(' ')} x1={cx} y1={cy} x2={b.x} y2={b.y} />
+        {b.who.map((a) => <line class={`p-${slug(a)}`} x1={b.x} y1={b.y} x2={pos.get(a)!.x} y2={pos.get(a)!.y} />)}
+      </>)}
+    </g>
+    {blocks.map((b) => <rect class={`blk ${b.who.map((a) => `p-${slug(a)}`).join(' ')}`} x={b.x - 7} y={b.y - 7} width="14" height="14" rx="4" style={`--c: ${clay(b.area)}`} />)}
+    <g class="hub"><circle cx={cx} cy={cy} r="22" /><text x={cx} y={cy + 42} text-anchor="middle">{zh ? '邱信瑜' : 'H.-Y. Chiu'}</text></g>
+    {order.map((a) => { const q = pos.get(a)!, left = Math.cos(q.t) < -0.2, right = Math.cos(q.t) > 0.2; return (
+      <g class={`who p-${slug(a)}`} data-who={slug(a)}>
+        <circle cx={q.x} cy={q.y} r={r(a)} />
+        <text x={q.x + (right ? r(a) + 6 : left ? -r(a) - 6 : 0)} y={q.y + (left || right ? 4 : Math.sin(q.t) < 0 ? -r(a) - 6 : r(a) + 14)} text-anchor={right ? 'start' : left ? 'end' : 'middle'}>{a}</text>
+      </g>
+    ); })}
+  </svg>
+  <figcaption class="muted small">{zh ? '中間是邱老師，外圈是合作者，方塊是一起寫的論文（顏色是研究領域）。' : 'Prof. Chiu in the middle, co-authors around him, each block a paper they wrote together (coloured by area).'}</figcaption>
+</figure>
+
+<script>
+  // pointing at a name in the list (or in the drawing) lights that person's papers and co-authors
+  for (const fig of document.querySelectorAll<HTMLElement>('[data-coauthor-map]')) {
+    const list = [...(fig.parentElement?.querySelectorAll<HTMLElement>('[data-who]') ?? [])];
+    const on = (w: string | undefined) => { if (w) fig.dataset.on = w; else delete fig.dataset.on; fig.querySelectorAll('.lit').forEach((e) => e.classList.remove('lit')); if (w) { fig.querySelectorAll(`.p-${w}`).forEach((e) => e.classList.add('lit')); fig.querySelectorAll('.blk.lit').forEach((b) => b.classList.forEach((c) => c.startsWith('p-') && fig.querySelector(`.who.${c}`)?.classList.add('lit'))); } };
+    for (const el of list) {
+      el.addEventListener('pointerenter', () => on(el.dataset.who));
+      el.addEventListener('pointerleave', () => on(undefined));
+      el.addEventListener('focusin', () => on(el.dataset.who));
+      el.addEventListener('focusout', () => on(undefined));
+    }
+  }
+</script>
+
+<style>
+  .map { margin: 0; display: grid; gap: var(--space-2); }
+  svg { width: 100%; height: auto; overflow: visible; }
+  .edges line { stroke: color-mix(in oklab, var(--ink) 16%, transparent); stroke-width: 1.2; transition: stroke var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out); }
+  .blk { fill: var(--c); stroke: rgb(0 0 0 / 0.12); filter: drop-shadow(1px 2px 1.5px var(--lo)); transition: opacity var(--dur-fast) var(--ease-out); }
+  .hub circle { fill: var(--clay-blue); filter: drop-shadow(2px 3px 3px var(--lo)); }
+  .hub text, .who text { font: 600 12px/1 var(--f-body); fill: var(--ink); }
+  .who circle { fill: var(--surface); stroke: color-mix(in oklab, var(--ink) 30%, transparent); stroke-width: 1.5; filter: drop-shadow(1px 2px 2px var(--lo)); transition: fill var(--dur-fast) var(--ease-out); }
+  .who text { fill: var(--ink-2); font-weight: 500; transition: opacity var(--dur-fast) var(--ease-out); }
+  [data-on] .edges line, [data-on] .blk, [data-on] .who text { opacity: 0.25; }
+  [data-on] .lit, [data-on] .who.lit text { opacity: 1; }
+  [data-on] .edges line.lit { stroke: var(--accent); stroke-width: 2; }
+  [data-on] .who.lit circle { fill: var(--clay-sun); }
+  /* phones: names in the drawing would be 6 px; the list right below names everyone, and tapping a name lights the map */
+  @media (max-width: 599px) { .who text, .hub text { display: none; } .who circle { stroke-width: 2.5; } }
+  @media (prefers-reduced-motion: reduce) { .edges line, .blk, .who circle, .who text { transition: none; } }
+</style>
