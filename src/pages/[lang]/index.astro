@@ -126,7 +126,7 @@ const description = zh
               <p class="muted">{t(a.blurb, lang)}</p>
             </span>
             <span class="tower" aria-hidden="true">{Array.from({ length: perArea(a.key) }, () => <i></i>)}</span>
-            <span class="count"><b>{perArea(a.key)}</b> {zh ? '篇論文' : perArea(a.key) === 1 ? 'paper' : 'papers & theses'}</span>
+            <span class="count"><b>{perArea(a.key)}</b> {zh ? '篇' : perArea(a.key) === 1 ? 'work' : 'works'}</span>
           </a>
         </li>
       ))}

@@ -28,7 +28,6 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
       <p class="muted">{zh ? `和兆豐完成過一個產學合作，也和 ${people.length} 位其他學者合寫過論文，刊在 ${venues.length} 本期刊。` : `A completed industry project with Mega Bank, and papers co-written with ${people.length} other researchers, in ${venues.length} journals.`}</p>
     </div>
     <section class="case" aria-labelledby="case-h">
-      <p class="eyebrow">{zh ? '已完成的產學合作' : 'Completed industry project'}</p>
       <h2 id="case-h">{zh ? '兆豐 × IFA Lab：隨機優勢能不能預測？' : 'Mega × IFA Lab: can stochastic dominance be predicted?'}</h2>
       <p class="lede">{zh
         ? '和兆豐金控、兆豐銀行合作，研究「隨機優勢」關係的可預測性與持續性：處理跨時區資料對齊、超參數調整與財務特徵，讓模型的結果能放進實際的投資決策。'

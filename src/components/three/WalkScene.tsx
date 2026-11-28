@@ -104,7 +104,7 @@ function YearTag({ i, s, L, c, reveal }: { i: number; s: WalkStep; L: Layout; c:
   // a tall year pulls the camera back and its tag shrank to a chip: keep tags about one size on screen,
   // measured against the distance of a short year (the width-bound distance the rig uses)
   const wide = size.width / size.height > 1.15;
-  const base = (wide ? GX * 5 : GX * 2.6) / (2 * Math.tan((32 * Math.PI) / 360) * (size.width / size.height));
+  const base = (wide ? GX * 5 : GX * 3) / (2 * Math.tan((32 * Math.PI) / 360) * (size.width / size.height));
   useFrame(() => {
     const o = g.current; if (!o) return;
     // full size by the time the card switches to this year (round(T) flips at i − 0.5), not after: mid-scroll it read as a 7-px chip
@@ -272,11 +272,12 @@ function Rig({ at, L, c, reveal, focus }: { at: RefObject<Vector3>; L: Layout; c
     // fits in height (a tall year was cut off at the top, leaving most of the frame empty), then each year's own zoom
     const yr = L[clamp(Math.round(T), 0, L.length - 1)], h = yr.close - yr.open;
     // phones: the text card covers the lower third, so the candle and its year tag must fit the ~60% of height above it
-    const dH = (wide ? GX * 5 : GX * 2.6) / (2 * tan * aspect), dV = wide ? (h + 3.6) / (2 * tan) : (h + 3.6) / (2 * tan * 0.6);
+    const dH = (wide ? GX * 5 : GX * 3) / (2 * tan * aspect), dV = wide ? (h + 3.6) / (2 * tan) : (h + 3.6) / (2 * tan * 0.6);
     const d = Math.max(dH, dV) * keyAt(ZOOM, T);
     const yaw = keyAt(YAW, T), lift = keyAt(LIFT, T);
-    // aim between the cat and the candle's foot, so the year's bricks, its tag and the cat share the frame
-    const lookY = a.y + 0.6 - h * (wide ? 0.42 : 0.5);
+    // aim at the middle of what must show, from the year tag under the candle (about h + 0.85 below the cat) to the
+    // cat's ears (0.9 above): aimed higher, a tall year's tag fell below the window on desktop
+    const lookY = wide ? a.y - h * 0.5 - 0.1 : a.y + 0.6 - h * 0.5;
     // on the last step the dashed next candle stands one slot right: aim a little right so it clears the scroll rail
     const ax = a.x + (wide ? clamp(T - (L.length - 2)) * GX * 0.7 : 0);
     want.set(ax + Math.sin(yaw) * d, lookY + lift * d, Math.cos(yaw) * d);

@@ -96,7 +96,7 @@ const jsonld = people.map((m) => ({
         </ul>
         {/* members without a profile yet: named, so every page lists the same people, but no empty card */}
         {(() => { const rest = ms.filter((m) => m.data.placeholder); return rest.length > 0 && (
-          <p class="also muted">{zh ? '同屆還有 ' : 'Also in this cohort: '}{rest.map((m, i) => <>{i > 0 && (zh ? '、' : ', ')}<a href={href(lang, `members/${m.id}`)}>{t(m.data.name, lang)}</a></>)}{zh ? '（個人頁整理中）' : ' (profile coming)'}</p>
+          <p class="also muted">{zh ? '同屆還有 ' : 'Also in this cohort: '}{rest.map((m, i) => <>{i > 0 && (zh ? '、' : ', ')}<a href={href(lang, `members/${m.id}`)}>{t(m.data.name, lang)}</a></>)}</p>
         ); })()}
       </section>
     ))}

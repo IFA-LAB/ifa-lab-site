@@ -71,7 +71,7 @@ const jsonld = journals.map((p) => ({
   <div class="wrap section">
     <div class="section-head">
       <h1>{zh ? '研究成果' : 'Research'}</h1>
-      <p class="muted">{zh ? `${advisor.name.zh}老師與學生的 ${journals.length} 篇期刊論文、${working.length} 篇工作論文、${grants.length} 件國科會計畫和 ${theses.length} 篇碩士論文。` : `${journals.length} journal papers, ${working.length} working papers, ${grants.length} NSTC grants and ${theses.length} master's theses by ${advisor.name.en} and students.`}</p>
+      <p class="muted">{zh ? `${Math.min(...done.map((w) => w.year))} 年起，${advisor.name.zh}老師與學生的論文、計畫與碩士論文。` : `Papers, grants and theses by ${advisor.name.en} and students since ${Math.min(...done.map((w) => w.year))}.`}</p>
     </div>
 
     <figure class="wall clay" aria-label={zh ? `成果牆：${wall.map((c) => `${c.year}${typeof c.year === 'number' ? ' 年' : ''} ${c.bricks.length} 件`).join('、')}` : `Output wall: ${wall.map((c) => `${c.year}: ${c.bricks.length}`).join(', ')}`}>

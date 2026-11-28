@@ -2,7 +2,7 @@
  *  a paragraph then never ends on a line holding one or two characters. Returns ['', s] when there is nothing to glue.
  *  The same rule runs on server-rendered text in Base.astro (inline script); keep the two in step. */
 /** Names the word dictionary does not know (台／積電); Base.astro's inline pass gets this same list. */
-export const KEEP = ['台積電', '工研院', '中研院', '國科會', '資策會', '中華電信', '玉山銀行', '國泰金控', '富邦金控', '聯發科', '鴻海', '邱信瑜', '黑客松', '懶人包', '資安', '準實驗', '自適應', '去過', '沙盒', '生成式', '衍生性', '個人化', '財伴', '研發替代役', '替代役',
+export const KEEP = ['台積電', '工研院', '中研院', '國科會', '資策會', '中華電信', '玉山銀行', '國泰金控', '富邦金控', '聯發科', '鴻海', '邱信瑜', '視覺化', '黑客松', '懶人包', '資安', '準實驗', '自適應', '去過', '沙盒', '生成式', '衍生性', '個人化', '財伴', '研發替代役', '替代役',
   '博士後', '衍生性商品', '江彌修', '宏泰人壽', '決策者', '資產定價', '資料集', '歷史資料', '投資人', '管理學院', '圖神經網路', '學長姐', '研究助理', '跨公司', '跨年度', '投資人行為', '高維度',
   '隨機優勢', '機器學習', '動能', '醫數', '行銷', '大黑客松', '國內組', '產學合作', '產學合作組', '排時段', '櫃檯', '國科會計畫', '寄信', '資安組', '刊登於', '第一或第二學期',
   // every member's and the advisor's Chinese name: the dictionary cut 謝子尉 as 謝子／尉 (only the name field is bundled)
