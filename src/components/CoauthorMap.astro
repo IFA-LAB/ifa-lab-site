@@ -63,7 +63,7 @@ const r = (a: string) => 7 + 3 * Math.sqrt(count.get(a)!);
       </g>
     ); })}
   </svg>
-  <figcaption class="muted small">{zh ? '中間是邱老師，外圈是合作者，方塊是一起寫的論文（顏色是研究領域）。' : 'Prof. Chiu in the middle, co-authors around him, each block a paper they wrote together (coloured by area).'}</figcaption>
+  <figcaption class="muted small">{zh ? '方塊是合寫的論文，顏色是研究領域。點下方的名字，會亮出這個人和邱老師合寫的論文。' : 'Blocks are co-written papers, colored by research area. Tap a name below to light up that person’s papers with Prof. Chiu.'}</figcaption>
 </figure>
 
 <script>
@@ -71,11 +71,17 @@ const r = (a: string) => 7 + 3 * Math.sqrt(count.get(a)!);
   for (const fig of document.querySelectorAll<HTMLElement>('[data-coauthor-map]')) {
     const list = [...(fig.parentElement?.querySelectorAll<HTMLElement>('[data-who]') ?? [])];
     const on = (w: string | undefined) => { if (w) fig.dataset.on = w; else delete fig.dataset.on; fig.querySelectorAll('.lit').forEach((e) => e.classList.remove('lit')); if (w) { fig.querySelectorAll(`.p-${w}`).forEach((e) => e.classList.add('lit')); fig.querySelectorAll('.blk.lit').forEach((b) => b.classList.forEach((c) => c.startsWith('p-') && fig.querySelector(`.who.${c}`)?.classList.add('lit'))); } };
+    // a tap or Enter pins one person (aria-pressed); hovering previews someone else and falls back to the pinned one
+    let pinned: string | undefined;
     for (const el of list) {
-      el.addEventListener('pointerenter', () => on(el.dataset.who));
-      el.addEventListener('pointerleave', () => on(undefined));
-      el.addEventListener('focusin', () => on(el.dataset.who));
-      el.addEventListener('focusout', () => on(undefined));
+      el.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') on(el.dataset.who); });
+      el.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') on(pinned); });
+      if (el.tagName !== 'BUTTON') continue;
+      el.addEventListener('click', () => {
+        pinned = pinned === el.dataset.who ? undefined : el.dataset.who;
+        for (const b of list) if (b.tagName === 'BUTTON') b.setAttribute('aria-pressed', String(b.dataset.who === pinned));
+        on(pinned);
+      });
     }
   }
 </script>

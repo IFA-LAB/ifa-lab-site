@@ -121,6 +121,8 @@ pre code { font-size: inherit; }
   padding-right: max(clamp(16px, 4vw, 48px), env(safe-area-inset-right, 0px));
 }
 .eyebrow { font: 600 14px/1.4 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
+/* Chinese has no case: uppercasing only turned the brand into 'IFA LAB' beside the 'IFA Lab' logo */
+.eyebrow:lang(zh) { text-transform: none; }
 /* Chinese in a monospace face came out spaced apart (「2 0 2 3 年 8 月」): Chinese eyebrows use the body face */
 .eyebrow:lang(zh) { font: 600 14px/1.4 var(--f-body); letter-spacing: 0.04em; }
 .muted { color: var(--ink-2); }

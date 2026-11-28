@@ -88,7 +88,8 @@ const T = {
         for (const part of line.split(/(\[\d+\])/)) {
           const m = part.match(/^\[(\d+)\]$/);
           const s = m ? src[+m[1] - 1] : undefined;
-          if (s) { const a = el('a', 'cite', m![1]) as HTMLAnchorElement; a.href = s.url; a.title = s.title; node.append(a); }
+          // word joiners keep the source number on the line of the word before it and the full stop after it
+          if (s) { const a = el('a', 'cite', m![1]) as HTMLAnchorElement; a.href = s.url; a.title = s.title; node.append('⁠', a, '⁠'); }
           else if (!m) put(node, part.replace(/\*\*/g, ''));
         }
       };

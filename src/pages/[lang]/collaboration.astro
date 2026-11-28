@@ -11,7 +11,7 @@ const lang = Astro.params.lang as Locale;
 const zh = lang === 'zh-tw';
 const ways: { title: Bi; body: Bi; clay: string }[] = [
   { clay: 'blue', title: { zh: '產業合作', en: 'Industry partners' }, body: { zh: '帶著資料和想問的問題來談，就像兆豐那樣。', en: 'Bring a dataset and a question, as Mega Bank did.' } },
-  { clay: 'sun', title: { zh: '學術合作', en: 'Academic collaboration' }, body: { zh: '一起申請國科會計畫、合寫論文。', en: 'Joint NSTC proposals and coauthored papers.' } },
+  { clay: 'sun', title: { zh: '學術合作', en: 'Academic collaboration' }, body: { zh: '已和 {n} 位校外研究者合寫論文，名單和合寫篇數在下方地圖。', en: 'We have written papers with {n} outside researchers; the map below shows who and how many.' } },
   { clay: 'pink', title: { zh: '跨領域研究', en: 'Interdisciplinary research' }, body: { zh: '做行為、語言或網路資料的研究者，可以拿金融市場的資料來驗證自己的方法。', en: 'Researchers working on behavior, language or network data can test their methods on financial market data.' } },
 ];
 // Real collaboration record, computed from the publication list
@@ -32,14 +32,14 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
       <p class="lede">{zh
         ? '和兆豐金控、兆豐銀行合作，研究「隨機優勢」關係的可預測性與持續性：處理跨時區資料對齊、超參數調整與財務特徵，讓模型的結果能放進實際的投資決策。'
         : 'With Mega Financial Holding and Mega Bank, we studied whether stochastic-dominance relations are predictable and persistent, working through cross-timezone data alignment, tuning and financial features so the results could feed real investment decisions.'}</p>
-      <p class="team">{zh ? '參與成員：' : 'Team: '}<a href={href(lang, 'members/wei-hua-hou')}>{zh ? '侯威華' : 'Wei-Hua Hou'}</a>{zh ? '、' : ', '}<a href={href(lang, 'members/yu-bin-chen')}>{zh ? '陳昱斌' : 'Yu-Bin Chen'}</a>{zh ? '，指導：邱信瑜' : '; advisor Hsin-Yu Chiu'}</p>
+      <p class="team">{zh ? '2025–2026 · 參與成員：' : '2025–2026 · Team: '}<a href={href(lang, 'members/wei-hua-hou')}>{zh ? '侯威華' : 'Wei-Hua Hou'}</a>{zh ? '、' : ', '}<a href={href(lang, 'members/yu-bin-chen')}>{zh ? '陳昱斌' : 'Yu-Bin Chen'}</a>{zh ? '，指導：邱信瑜' : '; advisor Hsin-Yu Chiu'}</p>
     </section>
     <h2 class="ways-h">{zh ? '可以怎麼合作' : 'Ways to work with us'}</h2>
     <ul class="ways">
       {ways.map((w) => (
         <li style={`--c: var(--clay-${w.clay})`}>
           <h3>{t(w.title, lang)}</h3>
-          <p>{t(w.body, lang)}</p>
+          <p>{t(w.body, lang).replace('{n}', String(people.length))}</p>
         </li>
       ))}
     </ul>
@@ -49,7 +49,7 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
       <section aria-labelledby="co-h">
         <h2 id="co-h">{zh ? `一起寫過論文的 ${people.length} 位研究者` : `${people.length} researchers we have co-authored with`}</h2>
         <CoauthorMap lang={lang} />
-        <ul class="tags">{people.map(([n, c]) => <li lang="en" data-who={n.toLowerCase().replace(/[^a-z]+/g, '-')}>{n}{c > 1 && <b> ×{c}</b>}</li>)}</ul>
+        <ul class="tags who-list">{people.map(([n, c]) => <li><button type="button" lang="en" aria-pressed="false" data-who={n.toLowerCase().replace(/[^a-z]+/g, '-')}>{n}{c > 1 && <b> ×{c}</b>}</button></li>)}</ul>
       </section>
       <section aria-labelledby="ve-h">
         <h2 id="ve-h">{zh ? `刊登過的 ${venues.length} 本期刊` : `${venues.length} journals we have published in`}</h2>
@@ -81,6 +81,10 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
   .record h2 { font-size: 22px; }
   .tags b { font: 600 12px/1 var(--f-mono); color: var(--ink-2); }
   .venues li { font-style: italic; }
+  /* each co-author is a toggle: tap or Enter lights their papers in the map (phones show no names in the drawing) */
+  .who-list li { padding: 0; background: none; }
+  .who-list button { font: inherit; font-size: 14px; color: inherit; min-height: 44px; padding: 6px 14px; border: 0; border-radius: var(--r-full); background: var(--surface-2); cursor: pointer; transition: background var(--dur-fast) var(--ease-out); }
+  .who-list button[aria-pressed='true'] { background: var(--clay-sun); color: var(--ink); }
   .cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-7); }
   @media (max-width: 899px) { .record, .ways { grid-template-columns: 1fr; } .ways { gap: var(--space-6); } }
   /* wide screens: the question on the left, the work on the right, so the slab has no empty half */

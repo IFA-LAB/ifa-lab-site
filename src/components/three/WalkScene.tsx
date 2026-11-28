@@ -271,11 +271,11 @@ function Rig({ at, L, c, reveal, focus }: { at: RefObject<Vector3>; L: Layout; c
     const cam = camera as PerspectiveCamera;
     const T = now(c, L), a = at.current!;
     const aspect = size.width / size.height, tan = Math.tan((cam.fov * Math.PI) / 360);
-    // about 5 candles across on desktop, 2.6 on phones; on wide screens also far enough back that this year's whole candle
+    // about 5 candles across on desktop, 3.4 on phones (at 3 the neighbouring years were cut at the screen edge); on wide screens also far enough back that this year's whole candle
     // fits in height (a tall year was cut off at the top, leaving most of the frame empty), then each year's own zoom
     const yr = L[clamp(Math.round(T), 0, L.length - 1)], h = yr.close - yr.open;
     // phones: the text card covers the lower third, so the candle and its year tag must fit the ~60% of height above it
-    const dH = (wide ? GX * 5 : GX * 3) / (2 * tan * aspect), dV = wide ? (h + 3.6) / (2 * tan) : (h + 3.6) / (2 * tan * 0.6);
+    const dH = (wide ? GX * 5 : GX * 3.4) / (2 * tan * aspect), dV = wide ? (h + 4.6) / (2 * tan) : (h + 3.6) / (2 * tan * 0.6);
     let d = Math.max(dH, dV) * keyAt(ZOOM, T);
     const yaw = keyAt(YAW, T), lift = keyAt(LIFT, T);
     // aim at the middle of what must show, from the year tag under the candle (about h + 0.85 below the cat) to the
