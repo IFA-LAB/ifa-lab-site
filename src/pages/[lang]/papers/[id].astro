@@ -183,7 +183,7 @@ const jsonld = [{
   .brick b { font: 600 14px/1.4 var(--f-mono); align-self: start; }
   /* one left edge for every brick so titles scan; three lines, and this paper's title in full */
   .brick.here span { -webkit-line-clamp: unset; display: block; }
-  .brick span { font-size: 14px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .brick span { font-size: 14px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
   .brick.here { background: var(--c); grid-template-columns: auto minmax(0, 1fr) auto; }
   /* phones: the 這篇 tag sits under the year, so the title keeps the full width */
   @media (max-width: 767px) { .brick.here { grid-template-columns: auto minmax(0, 1fr); } .brick.here em { grid-column: 1; justify-self: start; } }

@@ -1,0 +1,117 @@
+---
+/* "Your brick": the lab drawn as a stack of clay bricks, one per member in their figure's colour, a row per cohort,
+   with an empty dashed brick on top. A visitor types a name and picks a research area; the dashed brick fills with
+   that area's colour and name, and the email button carries both. Nothing leaves the page: the name only fills the
+   brick and the mailto link. Without script the stack and a plain email button still show. */
+import { areas, lab, advisor } from '@/data/lab';
+import { ui, t, type Locale } from '@/i18n/ui';
+import { membersByCohort } from '@/lib/content';
+
+const { lang } = Astro.props as { lang: Locale };
+const zh = lang === 'zh-tw';
+const rows = [...(await membersByCohort())].reverse();
+const email = lab.contact.email;
+const subject = zh ? '想加入 IFA Lab' : 'Joining IFA Lab';
+const T = {
+  you: zh ? '你' : 'You',
+  subjectName: zh ? '想加入 IFA Lab：' : 'Joining IFA Lab: ',
+  body: zh ? `${advisor.name.zh}老師好，我是{n}，想做「{a}」方向的研究。\n\n（三五句話介紹自己、修過的課，和你好奇的題目）` : `Dear Prof. ${advisor.name.en},\n\nI am {n} and would like to work on {a}.\n\n(A few lines about yourself, courses you took, and a question you are curious about.)`,
+  live: zh ? '你的磚：{n}，{a}，疊在最上面，成為第 {c} 屆。' : 'Your brick: {n}, {a}, on top as cohort {c}.',
+};
+---
+<section class="yours" aria-labelledby="yours-h" data-yours data-t={JSON.stringify(T)} data-email={email} data-next={rows.length ? rows[0][0] + 1 : 1}>
+  <h2 id="yours-h">{zh ? '下一塊，是你的' : 'The next brick is yours'}</h2>
+  <div class="copy">
+    <p>{zh ? `實驗室是一屆一屆疊起來的，每塊磚是一位成員。寫上名字、選一個想做的方向，看看你疊上去的樣子；寄信時會一起帶上。` : 'The lab is built cohort by cohort; each brick is a member. Add your name and pick a direction to see your brick on top. The email will carry both.'}</p>
+    <form class="form" data-form>
+      <label class="name">{zh ? '你的名字' : 'Your name'}<input name="n" maxlength="16" autocomplete="name" placeholder={zh ? '例如：王小明' : 'e.g. Alex Chen'} /></label>
+      <fieldset>
+        <legend>{zh ? '想做的方向' : 'A direction you would like'}</legend>
+        <div class="chips">
+          {areas.map((a, i) => (
+            <label class="chip" style={`--c: var(--clay-${a.clay})`}><input type="radio" name="a" value={a.key} data-label={t(a.short ?? a.name, lang)} data-clay={a.clay} checked={i === 0} /><span>{t(a.short ?? a.name, lang)}</span></label>
+          ))}
+        </div>
+      </fieldset>
+      <p class="send"><a class="btn" data-mail href={`mailto:${email}?subject=${encodeURIComponent(subject)}`}>{zh ? `寄信給${advisor.name.zh}老師` : `Email Prof. ${advisor.name.en}`}</a></p>
+      <p class="muted small">{zh ? '名字只用來畫這塊磚和填進信裡，不會送到任何地方。' : 'Your name only fills the brick and the email; it is not sent anywhere.'}</p>
+      <p class="vh" aria-live="polite" data-live></p>
+    </form>
+  </div>
+  <div class="stack" aria-hidden="true">
+    <div class="row top"><span class="brick you" data-you style="--c: var(--clay-blue)"><b data-you-name>{T.you}</b></span></div>
+    {rows.map(([c, ms]) => (
+      <div class="row">
+        {ms.map((m) => <span class="brick" style={`--c: var(--clay-${m.data.figure.clay})`}>{t(m.data.name, lang)}</span>)}
+        <i class="cohort">{t(ui.cohort(c), lang)}</i>
+      </div>
+    ))}
+  </div>
+</section>
+
+<script>
+  for (const box of document.querySelectorAll<HTMLElement>('[data-yours]')) {
+    const T = JSON.parse(box.dataset.t!) as Record<string, string>;
+    const form = box.querySelector<HTMLFormElement>('[data-form]')!;
+    const you = box.querySelector<HTMLElement>('[data-you]')!, name = box.querySelector<HTMLElement>('[data-you-name]')!;
+    const mail = box.querySelector<HTMLAnchorElement>('[data-mail]')!, live = box.querySelector<HTMLElement>('[data-live]')!;
+    let timer = 0;
+    const draw = () => {
+      const n = (form.elements.namedItem('n') as HTMLInputElement).value.trim();
+      const r = form.querySelector<HTMLInputElement>('input[name="a"]:checked')!;
+      you.style.setProperty('--c', `var(--clay-${r.dataset.clay})`);
+      you.classList.toggle('named', !!n);
+      name.textContent = n || T.you;
+      const who = n || T.you, area = r.dataset.label ?? '';
+      const subject = n ? T.subjectName + n : T.subjectName.replace(/[：:]\s*$/, '');
+      mail.href = `mailto:${box.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(T.body.replace('{n}', who).replace('{a}', area))}`;
+      clearTimeout(timer);
+      timer = window.setTimeout(() => { live.textContent = T.live.replace('{n}', who).replace('{a}', area).replace('{c}', box.dataset.next ?? ''); }, 600);
+    };
+    form.addEventListener('input', draw);
+    form.addEventListener('submit', (e) => e.preventDefault());
+    draw();
+  }
+</script>
+
+<style>
+  .yours { margin-top: var(--space-9); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: 'h stack' 'copy stack'; column-gap: var(--space-8); row-gap: var(--space-4); align-items: end; }
+  .yours > h2 { grid-area: h; font-size: clamp(26px, 3vw, 40px); text-wrap: balance; }
+  .copy { grid-area: copy; }
+  .stack { grid-area: stack; }
+  .copy { display: grid; gap: var(--space-4); align-content: start; }
+  .copy > p { margin: 0; max-width: 32em; }
+  .form { display: grid; gap: var(--space-4); }
+  .name { display: grid; gap: var(--space-2); font-weight: 600; }
+  .name input { font: inherit; font-weight: 400; min-height: 48px; padding: 0 var(--space-4); border-radius: var(--r-md); border: 1.5px solid color-mix(in oklab, var(--ink) 35%, transparent); background: var(--surface); color: var(--ink); max-width: 22em; }
+  .name input::placeholder { color: var(--ink-2); }
+  fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+  legend { font-weight: 600; padding: 0; margin-bottom: var(--space-2); }
+  .chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .chip { position: relative; display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--space-4) 0 var(--space-3); border-radius: var(--r-full); background: var(--surface-2); cursor: pointer; font-size: 15px; gap: var(--space-2); }
+  .chip::before { content: ''; width: 12px; height: 12px; border-radius: 4px; background: var(--c); box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.15); }
+  .chip input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+  .chip:has(input:checked) { background: color-mix(in oklab, var(--c) 30%, var(--surface)); font-weight: 600; }
+  .chip:has(input:focus-visible) { outline: 3px solid var(--focus, var(--accent)); outline-offset: 2px; }
+  .send { margin: var(--space-2) 0 0; }
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  /* the stack: rows of clay bricks, newest cohort on top, the visitor's brick above them all */
+  .stack { display: grid; gap: 6px; justify-items: center; padding-bottom: var(--space-3); }
+  .row { position: relative; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; max-width: 100%; }
+  .cohort { position: absolute; right: calc(100% + var(--space-3)); top: 50%; translate: 0 -50%; font: 600 12px/1 var(--f-mono); font-style: normal; color: var(--ink-2); white-space: nowrap; }
+  .brick {
+    display: inline-grid; place-items: center; min-width: 84px; height: 44px; padding: 0 var(--space-3); border-radius: 10px;
+    background: var(--c); color: #1d2633; font: 600 14px/1 var(--f-body); white-space: nowrap;
+    box-shadow: inset 0 3px 0 rgb(255 255 255 / 0.35), inset 0 -5px 0 rgb(0 0 0 / 0.14), 3px 5px 10px var(--lo);
+  }
+  .row.top { margin-bottom: var(--space-2); }
+  .brick.you { min-width: 132px; height: 52px; font-size: 16px; background: transparent; border: 2px dashed color-mix(in oklab, var(--ink) 40%, transparent); box-shadow: none; color: var(--ink-2); transition: background var(--dur-base) var(--ease-out), translate var(--dur-base) var(--ease-out); }
+  .brick.you.named { background: var(--c); border-color: transparent; color: #1d2633; translate: 0 -2px; box-shadow: inset 0 3px 0 rgb(255 255 255 / 0.35), inset 0 -6px 0 rgb(0 0 0 / 0.14), 4px 8px 14px var(--lo); }
+  @media (max-width: 899px) {
+    .yours { grid-template-columns: 1fr; grid-template-areas: 'h' 'stack' 'copy'; row-gap: var(--space-5); }
+    .cohort { position: static; translate: none; align-self: center; margin-left: var(--space-2); }
+  }
+  @media (max-width: 599px) { .brick { min-width: 0; height: 40px; font-size: 13px; padding: 0 var(--space-2); } }
+  @media (prefers-reduced-motion: reduce) { .brick.you { transition: none; } .brick.you.named { translate: none; } }
+</style>

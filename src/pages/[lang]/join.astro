@@ -1,5 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
+import YourBrick from '@/components/YourBrick.astro';
 import { lab, advisor, areas } from '@/data/lab';
 import { ui, t, href, type Bi, type Locale } from '@/i18n/ui';
 import { langPaths } from '@/lib/content';
@@ -135,7 +136,8 @@ const faqLd = {
         ); })}
       </ul>
     </section>
-    <p class="cta"><a class="btn" href={`mailto:${lab.contact.email}`}>{zh ? `寄信給${advisor.name.zh}老師` : `Email Prof. ${advisor.name.en}`}</a> <button type="button" class="btn secondary" data-ask-open>{zh ? '還有問題？問 K 喵' : 'More questions? Ask K-meow'}</button></p>
+    <YourBrick lang={lang} />
+    <p class="cta"><button type="button" class="btn secondary" data-ask-open>{zh ? '還有問題？問 K 喵' : 'More questions? Ask K-meow'}</button></p>
   </div>
 </Base>
 

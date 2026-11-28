@@ -82,8 +82,8 @@
     },
     "points": {
       "question": {
-        "zh": "探討歐盟碳排放交易體系（EU ETS）中，市場穩定儲備（MSR）如何影響歐盟碳排放配額（EUA）的價格動態。",
-        "en": "How the Market Stability Reserve (MSR) shapes EUA price dynamics in the EU Emissions Trading System."
+        "zh": "歐盟碳排放交易體系（EU ETS）的市場穩定儲備（MSR），怎麼影響碳排放配額（EUA）的價格動態？",
+        "en": "How does the Market Stability Reserve (MSR) shape EUA price dynamics in the EU Emissions Trading System?"
       },
       "method": {
         "zh": "提出經 MSR 調整的多階段 EUA 定價模型（MMEP），並以 EEX 年度拍賣價格與 EEX 十二月 EUA 期貨期限結構驗證。",
@@ -127,16 +127,16 @@
     },
     "points": {
       "question": {
-        "zh": "探討處分效果（disposition effect）如何影響部分具資訊優勢的放空者之交易行為。",
-        "en": "How the disposition effect influences the trading behavior of partially informed short sellers."
+        "zh": "只掌握部分資訊的放空者，回補空單時也會有處分效果（disposition effect）嗎？",
+        "en": "Does the disposition effect shape how partially informed short sellers trade?"
       },
       "method": {
         "zh": "使用台灣放空資料，以每週回補空單占總放空股數的比率衡量回補行為，分析其與放空資本利得懸置（capital gains overhang）的關係。",
         "en": "Uses Taiwanese short sale data; measures closing of short positions by weekly closed short positions over total shorted shares and relates it to short-sale capital gains overhang."
       },
       "finding": {
-        "zh": "空單回補受處分偏誤影響，但較高的空單餘額預測較低報酬；放空者傾向過早回補而未能充分獲利；處分效果在低市值、低流動性、低法人持股與高報酬波動的股票更明顯。",
-        "en": "Short covering shows disposition bias, though a higher short balance predicts lower returns; short sellers close prematurely and miss profits; the disposition effect is stronger in small, illiquid, low-institutional-ownership and volatile stocks."
+        "zh": "空單回補受處分偏誤影響；同時放空者也帶有部分資訊，空單餘額越高，後續報酬越低；放空者傾向過早回補而未能充分獲利；處分效果在低市值、低流動性、低法人持股與高報酬波動的股票更明顯。",
+        "en": "Short covering shows disposition bias, while short sellers are partly informed: a higher short balance predicts lower returns; short sellers close prematurely and miss profits; the disposition effect is stronger in small, illiquid, low-institutional-ownership and volatile stocks."
       }
     }
   },
@@ -172,8 +172,8 @@
     },
     "points": {
       "question": {
-        "zh": "提出以幾乎隨機優勢（Almost Stochastic Dominance）規則為基礎的新動能策略。",
-        "en": "Proposes new momentum strategies based on Almost Stochastic Dominance rules."
+        "zh": "用幾乎隨機優勢（Almost Stochastic Dominance）規則選股，能做出更好的動能策略嗎？",
+        "en": "Can momentum strategies built on Almost Stochastic Dominance rules do better?"
       },
       "method": {
         "zh": "將新動能策略應用於台灣股市，並與既有動能策略比較。",
@@ -217,12 +217,12 @@
     },
     "points": {
       "question": {
-        "zh": "以機器學習模型預測 P2P 網路借貸平台（特別是中國）的倒閉。",
-        "en": "Uses machine learning models to predict failure of Peer-to-Peer (P2P) lending platforms, specifically in China."
+        "zh": "機器學習能不能預測 P2P 網路借貸平台（以中國為例）會不會倒閉？",
+        "en": "Can machine learning predict which P2P lending platforms in China will fail?"
       },
       "method": {
-        "zh": "採用過濾法與包裝法（含前向選擇與後向剔除）篩選變數，建立嚴謹且實用的程序，確保預測變數的穩健性與重要性。",
-        "en": "Applies filter and wrapper methods with forward selection and backward elimination to build a procedure ensuring robustness and importance of variables."
+        "zh": "採用過濾法與包裝法（含前向選擇與後向剔除）篩選預測變數。",
+        "en": "Selects variables with filter and wrapper methods (forward selection and backward elimination)."
       },
       "finding": {
         "zh": "找出在不同選擇方法與模型中一致出現的穩健變數；減少變數會提高錯誤接受率，但 AUC 約 0.96、F1 約 0.88 大致穩定。",
@@ -262,8 +262,8 @@
     },
     "points": {
       "question": {
-        "zh": "提出以相似性類比推理為基礎的交易規則，模擬技術交易者辨認當前與過去市場情境結構相似處的心態。",
-        "en": "Proposes a trading rule based on similarity-based analogical reasoning, simulating the technical trading mentality of perceiving resemblances between present and past market scenarios."
+        "zh": "模擬技術交易者「看今天像過去哪一段」的類比推理，做成交易規則有預測力嗎？",
+        "en": "Does a trading rule that mimics traders matching today’s market to similar past episodes have predictive power?"
       },
       "method": {
         "zh": "以十九個期貨市場檢驗此規則的獲利能力，並納入資料窺探（data-snooping）與交易成本調整。",
@@ -307,8 +307,8 @@
     },
     "points": {
       "question": {
-        "zh": "以價內外程度為基礎的賣出傾向（MPS）衡量，檢驗選擇權市場是否存在處分效果（disposition effect）。",
-        "en": "Tests the disposition effect in options using a moneyness-based propensity to sell (MPS) measure of option holders' propensity to exercise winning versus losing positions."
+        "zh": "選擇權市場也有處分效果（disposition effect）嗎？用以價內外程度為基礎的賣出傾向（MPS）來衡量。",
+        "en": "Is there a disposition effect in options, measured by a moneyness-based propensity to sell (MPS)?"
       },
       "method": {
         "zh": "使用個股與 S&P 500 指數選擇權資料，以利用處分偏誤所致價格扭曲的多空策略進行檢驗。",
@@ -351,8 +351,8 @@
     },
     "points": {
       "question": {
-        "zh": "探討均值回歸模型中波動度跳躍（volatility jumps）的關鍵角色。",
-        "en": "Investigates the critical role of volatility jumps under mean reversion models."
+        "zh": "均值回歸模型裡，除了價格跳躍，還需要納入波動度跳躍（volatility jumps）嗎？",
+        "en": "Do mean-reverting models need volatility jumps, not just price jumps?"
       },
       "method": {
         "zh": "以商品歷史價格做實證檢驗，用粒子濾波（particle filtering）比較多個均值回歸模型，並考慮價格與波動度皆有跳躍時的選擇權定價。",
@@ -397,8 +397,8 @@
     },
     "points": {
       "question": {
-        "zh": "探討以流動性為基礎的 BAB（押注反貝塔）策略是否優於傳統 BAB，後者忽略低風險股票常伴隨的流動性問題。",
-        "en": "Asks whether a liquidity-based BAB outperforms the traditional betting-against-beta strategy, which neglects the liquidity issue of low risk stocks."
+        "zh": "把流動性納入後的 BAB（押注反貝塔）策略，會比忽略低風險股流動性問題的傳統 BAB 更好嗎？",
+        "en": "Does a liquidity-based betting-against-beta strategy beat the traditional one, which ignores low-risk stocks’ liquidity?"
       },
       "method": {
         "zh": "採用雙重排序（double sorting）技術，在各流動性與各貝塔排序的投資組合內檢驗多空策略。",
@@ -442,8 +442,8 @@
     },
     "points": {
       "question": {
-        "zh": "探討壽險業者與年金發行者面臨的長壽風險，及如何以結構型債券讓投資人分擔部分風險。",
-        "en": "Examines how longevity risk for life insurers and annuity issuers can be managed with structured debt securities in which the investor bears some of the risk."
+        "zh": "壽險業者與年金發行者的長壽風險，能不能用結構型債券讓投資人分擔一部分？",
+        "en": "Can structured debt securities let investors share the longevity risk of life insurers and annuity issuers?"
       },
       "method": {
         "zh": "回顧票息或本金償還取決於死亡率指數實現值的幾種基本結構，並建立死亡率買權與賣權的評價模型。",
@@ -488,8 +488,8 @@
     },
     "points": {
       "question": {
-        "zh": "提出可處理的模型，動態刻畫信用投資組合的相關性結構。",
-        "en": "Presents a tractable model that dynamically characterizes the correlation structure of a portfolio of credit entities."
+        "zh": "能不能用一個好處理的模型，動態描述一籃子信用標的之間的違約相關性？",
+        "en": "Can a tractable model dynamically describe default correlation across a portfolio of credit entities?"
       },
       "method": {
         "zh": "以混合卜瓦松跳躍過程的到達描述異質信用事件，違約強度由 Gamma 與 Pareto 分配組合驅動，並以 iTraxx Europe 校準。",

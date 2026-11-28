@@ -121,8 +121,10 @@ const T = {
       const ol = el('ol', '');
       const seen = new Set<string>();
       for (const s of src) {
-        if (seen.has(s.url)) continue;
-        seen.add(s.url);
+        // one entry per page: a paper's title block and its citation block are the same page to a reader
+        const page = s.url.split('#')[0];
+        if (seen.has(page)) continue;
+        seen.add(page);
         const li = el('li', '') as HTMLLIElement;
         if (s.n) li.value = s.n;
         const a = el('a', '', s.title.replace(/\s*[｜|]\s*IFA Lab$/, '')) as HTMLAnchorElement; a.href = s.url;
