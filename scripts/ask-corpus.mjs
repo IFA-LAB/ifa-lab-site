@@ -51,7 +51,9 @@ for (const f of files) {
   if (/<meta name="robots" content="noindex/i.test(html)) continue;
   const lang = url.startsWith('/en/') ? 'en' : 'zh-tw';
   const title = decode((html.match(/<title>([\s\S]*?)<\/title>/i)?.[1] ?? '').trim());
-  const main = html.match(/<main\b[\s\S]*?<\/main>/i)?.[0] ?? '';
+  let main = html.match(/<main\b[\s\S]*?<\/main>/i)?.[0] ?? '';
+  // label the author line: the model invented Chinese names for co-authors the site only names in English
+  main = main.replace(/<p class="authors"[^>]*>/gi, (m) => m + (lang === 'en' ? 'Authors: ' : '作者（網站只有英文名，照原文寫）：'));
   // one passage per h2 section (h1 + intro is the first); long sections are cut at ~700 characters on a line break
   const parts = main.split(/(?=<h[12]\b)/i);
   const first = out.length;
