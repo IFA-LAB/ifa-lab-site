@@ -33,8 +33,12 @@ function pathAt(L: Layout, T: number, out: Vector3) {
     const w = i === last ? 0.6 : f;
     return out.set(a.x - 0.4 + (w / 0.6) * 0.8, a.close, 0);
   }
-  const b = L[i + 1], u = (f - 0.6) / 0.4;
-  return out.set(a.x + 0.4 + (b.x - a.x - 0.8) * u, a.close + (b.close - a.close) * u + Math.sin(u * Math.PI) * (0.8 + Math.max(0, b.close - a.close) * 0.4), 0);
+  const b = L[i + 1], u = (f - 0.6) / 0.4, dy = b.close - a.close;
+  // up a tall candle: rise first, then move over (moving straight across, the cat went through the tower's side);
+  // down: move over first, then drop
+  const early = 1 - (1 - u) * (1 - u), late = u * u;
+  const ux = dy > 0.3 ? late : dy < -0.3 ? early : u, uy = dy > 0.3 ? early : dy < -0.3 ? late : u;
+  return out.set(a.x + 0.4 + (b.x - a.x - 0.8) * ux, a.close + dy * uy + Math.sin(u * Math.PI) * (0.8 + Math.max(0, dy) * 0.2), 0);
 }
 
 type Ctx = { T: RefObject<number>; reduce: boolean; pick: (x: Pick) => void; open: (href: string) => void };

@@ -9,8 +9,8 @@ export const getStaticPaths = langPaths;
 const lang = Astro.params.lang as Locale;
 const zh = lang === 'zh-tw';
 const ways: { title: Bi; body: Bi; clay: string }[] = [
-  { clay: 'blue', title: { zh: '產業合作', en: 'Industry partners' }, body: { zh: '金融機構或科技公司有資料、有想研究的問題，都可以來談。', en: 'Financial firms or tech companies with data and a question are welcome to talk to us.' } },
-  { clay: 'sun', title: { zh: '學術合作', en: 'Academic collaboration' }, body: { zh: '共同研究、交換計畫與合著論文。我們和其他學校的學者合寫過期刊論文，也歡迎一起申請國科會計畫。', en: 'Joint research, exchange programs and co-authored papers. We have co-authored journal papers with researchers at other universities, and welcome joint NSTC proposals.' } },
+  { clay: 'blue', title: { zh: '產業合作', en: 'Industry partners' }, body: { zh: '帶著資料和想問的問題來談，就像兆豐那樣。', en: 'Bring a dataset and a question, as Mega Bank did.' } },
+  { clay: 'sun', title: { zh: '學術合作', en: 'Academic collaboration' }, body: { zh: '一起申請國科會計畫、合寫論文。合寫過的學者列在下面。', en: 'Joint NSTC proposals and co-authored papers. Past co-authors are listed below.' } },
   { clay: 'pink', title: { zh: '跨領域研究', en: 'Interdisciplinary research' }, body: { zh: '做行為、語言或網路資料的研究者，可以拿金融市場的資料來驗證自己的方法。', en: 'Researchers working on behavior, language or network data can test their methods on financial market data.' } },
 ];
 // Real collaboration record, computed from the publication list
@@ -39,7 +39,6 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
     <ul class="ways">
       {ways.map((w) => (
         <li style={`--c: var(--clay-${w.clay})`}>
-          <span class="b" aria-hidden="true"></span>
           <h3>{t(w.title, lang)}</h3>
           <p>{t(w.body, lang)}</p>
         </li>
@@ -77,9 +76,6 @@ const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p)
   .ways li { display: grid; gap: var(--space-3); align-content: start; padding-top: var(--space-5); border-top: 3px solid var(--c); }
   .ways h3 { font-size: 20px; }
   .ways p { margin: 0; }
-  /* a clay brick with a stud on top, in the column's own colour (the site's 'stack your work' motif) */
-  .b { position: relative; margin-top: 10px; width: 44px; height: 30px; border-radius: 8px; background: var(--c); box-shadow: inset -3px -4px 6px rgb(0 0 0 / 0.18), inset 3px 3px 6px rgb(255 255 255 / 0.35); }
-  .b::before { content: ''; position: absolute; left: 50%; top: -9px; translate: -50% 0; width: 18px; height: 10px; border-radius: 5px 5px 2px 2px; background: var(--c); box-shadow: inset 2px 2px 3px rgb(255 255 255 / 0.4), inset -2px -2px 3px rgb(0 0 0 / 0.12); }
   .record { margin-top: var(--space-9); padding-top: var(--space-7); border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent); display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-7); }
   .record section { display: grid; gap: var(--space-4); align-content: start; }
   .record h2 { font-size: 22px; }

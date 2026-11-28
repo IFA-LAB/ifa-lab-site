@@ -16,8 +16,8 @@ const all = YEARS.flatMap((y) => y.items);
 const count = (k: string) => all.filter((i) => i.kind === k).length;
 const wins = count('win');
 const lead = zh
-  ? `${all.length} 塊積木：${count('role')} 個角色、${count('research')} 項研究、${count('work')} 個作品、${count('award') + wins} 個獎，其中 ${wins} 座全國首獎。`
-  : `${all.length} bricks: ${count('role')} roles, ${count('research')} research items, ${count('work')} products and ${count('award') + wins} awards, ${wins} of them national first prizes.`;
+  ? `${count('role')} 個角色、${count('research')} 項研究、${count('work')} 個作品、${count('award') + wins} 個獎，其中 ${wins} 座全國首獎。`
+  : `${count('role')} roles, ${count('research')} research items, ${count('work')} products and ${count('award') + wins} awards, ${wins} of them national first prizes.`;
 ---
 <section class="part" aria-labelledby="me-kline">
   <header class="head">

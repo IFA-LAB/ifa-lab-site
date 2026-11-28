@@ -239,7 +239,9 @@ const links = [
     box-shadow: 8px 10px 22px var(--lo), inset 0 0 0 1px rgb(0 0 0 / 0.06);
     transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-slow) var(--ease-out);
   }
-  .portrait > :global(picture) { grid-row: 1; grid-column: 1; }
+  /* photo (240) and clay figure (260) share one 260-px row, so the name and button do not jump when they swap */
+  .portrait { grid-template-rows: 260px auto; }
+  .portrait > :global(picture) { grid-row: 1; grid-column: 1; align-self: center; }
   .buddy { position: relative; width: 240px; height: 260px; grid-row: 1; grid-column: 1; }
   [data-face='photo'] .buddy { display: none; }
   [data-face='buddy'] :global(picture) { display: none; }

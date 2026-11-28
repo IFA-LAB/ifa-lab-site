@@ -57,7 +57,9 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
       const u = Math.min(1, p / 0.86);
       const k = Math.max(0, segs.findIndex(([, b]) => u <= b));
       const [a, b] = segs[k];
-      T.current = k === 0 ? 0 : Math.min(N - 1, k - 1 + (u - a) / Math.max(1e-6, b - a));
+      // each year builds and hops in the first 55% of its scroll, then holds finished for the rest: wherever the reader
+      // stops, they mostly see a whole year, not bricks in mid-air
+      T.current = k === 0 ? 0 : Math.min(N - 1, k - 1 + Math.min(1, (u - a) / Math.max(1e-6, b - a) / 0.55));
       reveal.current = Math.min(1, Math.max(0, (p - 0.88) / 0.1));
       // the card turns to a year once the camera has arrived there and most of its bricks are down
       const i = Math.min(N - 1, Math.max(0, Math.ceil(T.current - 0.6)));

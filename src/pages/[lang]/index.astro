@@ -21,6 +21,8 @@ const theses = await getCollection('theses');
 const grants = await getCollection('grants');
 const cohorts = await membersByCohort();
 const memberCount = cohorts.reduce((n, [, ms]) => n + ms.length, 0);
+// '現在 12 位成員' counted graduates too, while the members page says 5 of the 12 have graduated
+const gradCount = cohorts.reduce((n, [, ms]) => n + ms.filter((m) => m.data.status === 'graduated').length, 0);
 
 const perArea = (k: string) => pubs.filter((p) => p.data.area === k).length + theses.filter((x) => x.data.area === k).length;
 const stats = [
@@ -98,7 +100,7 @@ const description = zh
     <div>
       <h2 id="mission-h" class="quote">{zh ? '2023 年 8 月在中央資管成立' : 'Founded in August 2023 at NCU'}</h2>
       {/* facts, not the list of areas: the next section shows the six areas with their counts */}
-      <p class="lede">{zh ? `現在 ${memberCount} 位成員，每週 meeting 一次。` : `${memberCount} members today; we meet once a week.`}</p>
+      <p class="lede">{zh ? `目前 ${memberCount - gradCount} 位在學、${gradCount} 位已畢業，每週 meeting 一次。` : `${memberCount - gradCount} current members and ${gradCount} graduates; we meet once a week.`}</p>
     </div>
     <a class="advisor clay" href={href(lang, 'advisor')}>
       <Image class="advisor-photo" src={advisorPhoto} alt="" width={128} height={128} densities={[1, 2]} format="webp" />
@@ -202,6 +204,8 @@ const description = zh
   .facts.en { column-gap: var(--space-4); }
   /* four figures now (the member count left the row): the English labels fit on one line */
   .facts.en dt { white-space: nowrap; }
+  /* phones: four one-line English labels are wider than the screen (the column grew to 406px and was clipped) */
+  @media (max-width: 767px) { .facts.en dt { white-space: normal; width: min-content; } }
   .facts div { display: grid; gap: 4px; align-content: start; }
   .facts dd { margin: 0; font: 600 26px/1 var(--f-display); font-variant-numeric: tabular-nums; }
   .facts dt { order: 2; font-size: 14px; line-height: 1.3; color: var(--ink-2); white-space: nowrap; }

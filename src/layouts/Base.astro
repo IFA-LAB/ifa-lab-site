@@ -198,6 +198,8 @@ const graph = [org, webPage, ...jsonld];
           let t;
           while ((t = w.nextNode())) if (cjk.test(t.data) && !t.parentElement.closest('.glue, .nw, code, astro-island')) nodes.push(t);
           for (const node of nodes) {
+            // a number and its counter word stay together (8 個獎, not 8／個獎): keep-all still allows a break between them
+            node.data = node.data.replace(/(\d)(?=[個件篇座位項屆名次])/g, '$1⁠');
             const f = document.createDocumentFragment();
             const inside = new Set();
             for (const k of KEEP) for (let i = node.data.indexOf(k); i >= 0; i = node.data.indexOf(k, i + 1)) for (let j = 1; j < k.length; j++) inside.add(i + j);
