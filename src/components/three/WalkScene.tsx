@@ -113,6 +113,8 @@ function YearTag({ i, s, L, c, reveal }: { i: number; s: WalkStep; L: Layout; c:
     const far = clamp(camera.position.distanceTo(o.position) / base, 1, 1.8);
     o.scale.setScalar((i === 0 ? 1 : Math.max(0.001, k)) * (1 + grow * r) * (far + (1 - far) * r));
     o.position.y = L[i].open - 0.55 - r * (grow * 0.18 + stagger);
+    // grown, a tag centred under its candle ran left over the taller year before it; the space to the lower right is empty
+    o.position.x = L[i].x + r * (wide ? 0.3 : 0.9);
   });
   return <group ref={g} position={[L[i].x, L[i].open - 0.55, 0.55]}><TagSprite text={s.label} position={[0, 0, 0]} height={0.3} /></group>;
 }
@@ -274,13 +276,21 @@ function Rig({ at, L, c, reveal, focus }: { at: RefObject<Vector3>; L: Layout; c
     const yr = L[clamp(Math.round(T), 0, L.length - 1)], h = yr.close - yr.open;
     // phones: the text card covers the lower third, so the candle and its year tag must fit the ~60% of height above it
     const dH = (wide ? GX * 5 : GX * 3) / (2 * tan * aspect), dV = wide ? (h + 3.6) / (2 * tan) : (h + 3.6) / (2 * tan * 0.6);
-    const d = Math.max(dH, dV) * keyAt(ZOOM, T);
+    let d = Math.max(dH, dV) * keyAt(ZOOM, T);
     const yaw = keyAt(YAW, T), lift = keyAt(LIFT, T);
     // aim at the middle of what must show, from the year tag under the candle (about h + 0.85 below the cat) to the
     // cat's ears (0.9 above): aimed higher, a tall year's tag fell below the window on desktop
-    const lookY = wide ? a.y - h * 0.5 - 0.1 : a.y + 0.6 - h * 0.5;
+    let lookY = wide ? a.y - h * 0.5 - 0.1 : a.y + 0.6 - h * 0.5;
+    // the last step: the dashed next candle rises from this year's top, about 2.9 above it with its word; frame from this
+    // year's tag to that word (aimed at the candle alone, the dashed box ran under the header)
+    const g = ease(clamp((T - (L.length - 1.7)) / 0.7));
+    if (g > 0) {
+      const top = L[L.length - 1].close + 2.9, bot = yr.open - 0.9, span = top - bot + 0.8;
+      lookY += ((top + bot) / 2 - lookY) * g;
+      d = Math.max(d, (wide ? span / (2 * tan) : span / (2 * tan * 0.6)) * g + d * (1 - g));
+    }
     // on the last step the dashed next candle stands one slot right: aim a little right so it clears the scroll rail
-    const ax = a.x + (wide ? clamp(T - (L.length - 2)) * GX * 0.7 : 0);
+    const ax = a.x + (wide ? clamp(T - (L.length - 2)) * GX * 0.7 : g * GX * 0.55);
     want.set(ax + Math.sin(yaw) * d, lookY + lift * d, Math.cos(yaw) * d);
     wantLook.set(ax + 0.2, lookY, 0);
     // the ending: the whole chart from a high three-quarter view, the dashed next candle included
