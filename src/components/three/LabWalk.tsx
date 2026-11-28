@@ -97,7 +97,9 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
         {/* inside the card, so it never sits on top of the scene */}
         {!end && idx === 0 && <a className="walk-skip" href={text.skipHref} tabIndex={-1}>{text.skip}</a>}
       </div>
-      <span className="walk-hint" aria-hidden="true" data-off={scrolled ? '' : undefined}>{text.hint}</span>
+      {/* it looks like a button, so it is one: one step down (pointer only; keyboard users have the skip link) */}
+      <button type="button" className="walk-hint" aria-hidden="true" tabIndex={-1} data-off={scrolled ? '' : undefined}
+        onClick={() => window.scrollBy({ top: window.innerHeight * 0.9, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })}>{text.hint}</button>
       {pick && <Tip pick={pick} host={host.current} />}
     </div>
   );

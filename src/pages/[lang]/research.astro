@@ -333,7 +333,7 @@ const jsonld = journals.map((p) => ({
   .col.empty .yr { font-weight: 400; border-top-style: dashed; }
   .pile { display: flex; flex-direction: column-reverse; gap: 4px; width: 100%; max-width: 120px; }
   .pile a { display: block; height: 18px; border-radius: 6px; background: var(--c); box-shadow: inset 0 -4px 0 rgb(0 0 0 / 0.16), inset 2px 3px 3px rgb(255 255 255 / 0.4), 0 3px 5px var(--lo); transition: translate var(--dur-fast) var(--ease-out), filter var(--dur-fast) var(--ease-out); }
-  .pile a:nth-child(even) { margin-inline: 6px -6px; }
+  .pile a:nth-child(even) { margin-inline: 3px -3px; }
   .pile a { transition: opacity var(--dur-base) var(--ease-out), filter var(--dur-base) var(--ease-out), translate var(--dur-fast) var(--ease-out); }
   .pile a.off { opacity: 0.16; filter: saturate(0.2); }
   /* hollow = a solid outline in the area color around the page color: reads in both themes (a dashed edge vanished on dark) */
@@ -357,7 +357,7 @@ const jsonld = journals.map((p) => ({
     .col { flex: 1 1 0; min-width: 0; gap: 4px; }
     .pile { gap: 3px; }
     .pile a { height: 12px; border-radius: 4px; }
-    .pile a:nth-child(even) { margin-inline: 3px -3px; }
+    .pile a:nth-child(even) { margin-inline: 2px -2px; }
     .num { font-size: 18px; }
     /* two-digit years on a phone: '14 … '27 */
     .yr { font-size: 12px; }

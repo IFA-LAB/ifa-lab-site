@@ -21,7 +21,7 @@ const lead = zh
 ---
 <section class="part" aria-labelledby="me-kline">
   <header class="head">
-    <h2 id="me-kline">{zh ? '我的 K 線：每一年疊上去的東西' : 'My K line: what each year added'}</h2>
+    <h2 id="me-kline">{zh ? '年表' : 'Timeline'}</h2>
     <p>{lead}</p>
   </header>
   <MyKline client:visible lang={lang} />
@@ -48,7 +48,7 @@ const lead = zh
 
 <section class="part" aria-labelledby="me-works">
   <header class="head">
-    <h2 id="me-works">{zh ? '做出來，而且還有人在用' : 'Built, and still in use'}</h2>
+    <h2 id="me-works">{zh ? '上線中的作品' : 'Live projects'}</h2>
   </header>
   <ul class="featured">
     {FEATURED.map((w) => (

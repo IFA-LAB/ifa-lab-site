@@ -56,7 +56,7 @@ const shown = KINDS.filter((k) => total(k.key) > 0);
       <p class="muted">{zh ? '創始成員：' : 'Founding members: '}{founders.map((m, i) => <>{i > 0 && (zh ? '、' : ', ')}<a class="nw" href={href(lang, `members/${m.id}`)}>{t(m.data.name, lang)}</a></>)}{zh ? <>，指導教授<span class="nw">邱信瑜</span>。</> : <>, with advisor <span class="nw">Hsin-Yu Chiu</span>.</>}</p>
     </div>
 
-    <p class="eyebrow scope">{zh ? '實驗室成立後（2023 年起）' : 'Since the lab opened in 2023'}</p>
+    <p class="eyebrow scope">{zh ? '2023 年 8 月成立以來' : 'Since August 2023'}</p>
     <ul class="totals" aria-label={zh ? '成立以來累計' : 'Since founding'}>
       {shown.map((k) => <li data-k={k.key}><b>{total(k.key)}</b><span class="nw">{unit(k, total(k.key))}</span></li>)}
     </ul>

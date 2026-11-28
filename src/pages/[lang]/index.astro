@@ -120,7 +120,7 @@ const description = zh
         <li>
           <a class="area clay" href={href(lang, `research#${a.key}`)} style={`--c: var(--clay-${a.clay})`}>
             <span class="txt">
-              <h3>{/* a break point after 與, so narrow cards split 應用與 / 視覺化, never 視覺 / 化 */}{t(a.name, lang).replace('與', '與​')}</h3>
+              <h3>{/* a break point after 與, so narrow cards split 應用與 / 視覺化, never 視覺 / 化 */}{(lang === 'en' && a.short ? a.short.en ?? '' : t(a.name, lang) ?? '').replace('與', '與​')}</h3>
               <p class="muted">{t(a.blurb, lang)}</p>
             </span>
             <span class="tower" aria-hidden="true">{Array.from({ length: perArea(a.key) }, () => <i></i>)}</span>
@@ -175,7 +175,7 @@ const description = zh
       <span class="cat-perch" style="right: 56px; top: -64px;"><LabCat lang={lang} bubble="left" lines={[{ zh: '我是 K 喵。右上角「問 K 喵」可以問我實驗室的事。', en: 'I am K-meow. Ask me about the lab with “Ask” at the top right.' }, { zh: '上面那隻 3D 的也是我，滑過或點一下 K 棒，我會跑過去看。', en: 'The 3D cat up top is me too. Point at or tap a candle and I go look.' }, { zh: '想加入？先寄一封信給老師，我幫你顧信箱。', en: 'Want to join? Email the professor first. I will watch the inbox.' }]} /></span>
       <div>
         <h2>{zh ? '想加入或合作？' : 'Want to join or work with us?'}</h2>
-        <p class="muted">{zh ? '修過財務或程式的課都可以；有資料、有問題想研究的機構，也歡迎來談。' : 'A background in either finance or programming is fine; firms with data and a question are welcome too.'}</p>
+        <p class="muted">{zh ? '修過財務或程式的課都可以。產學合作做過兆豐的案子，也歡迎其他機構來談。' : 'A background in finance or programming is enough. On the industry side, we have completed a project with Mega Bank.'}</p>
         <p class="cta"><a class="btn" href={href(lang, 'join')}>{t(ui.nav.join, lang)}</a><a class="btn secondary" href={href(lang, 'collaboration')}>{zh ? '談合作' : 'Work with us'}</a></p>
       </div>
     </div>
@@ -200,7 +200,8 @@ const description = zh
   .facts { margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-5); }
   /* English labels stack one word per line (Journal / papers), keeping the five figures on one row */
   .facts.en { column-gap: var(--space-4); }
-  .facts.en dt { width: min-content; white-space: normal; }
+  /* four figures now (the member count left the row): the English labels fit on one line */
+  .facts.en dt { white-space: nowrap; }
   .facts div { display: grid; gap: 4px; align-content: start; }
   .facts dd { margin: 0; font: 600 26px/1 var(--f-display); font-variant-numeric: tabular-nums; }
   .facts dt { order: 2; font-size: 14px; line-height: 1.3; color: var(--ink-2); white-space: nowrap; }
@@ -216,6 +217,7 @@ const description = zh
     background: var(--surface); padding: 8px 16px; border-radius: var(--r-full); box-shadow: 4px 6px 14px var(--lo);
   }
   .visual :global(.kline-hint b) { color: var(--ink); }
+  .visual :global(.kline-hint[data-sr]) { clip-path: inset(50%); }
   /* timeline: a clay ticker in the empty top-left of the scene */
   .visual :global(.kline-time) {
     position: absolute; left: 2%; top: 4%; z-index: 2; display: grid; grid-template-columns: auto auto; grid-template-areas: 'play year' 'range range';
@@ -317,6 +319,7 @@ const description = zh
   .advisor > span:last-child { display: grid; gap: 2px; }
   .advisor-photo { width: 128px; height: 128px; border-radius: var(--r-lg); object-fit: cover; flex: none; box-shadow: 4px 6px 14px var(--lo); }
   .advisor strong { font: 600 28px/1.3 var(--f-display); }
+  .advisor .muted { text-wrap: balance; }
   .go { margin-top: var(--space-2); font-weight: 600; color: var(--accent); }
 
   @media (max-width: 1023px) {

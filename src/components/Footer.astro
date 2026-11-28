@@ -42,7 +42,7 @@ const built = new Date().toISOString().slice(0, 10);
   .small { grid-column: 1 / -1; font-size: 14px; }
   /* names keep whole words; contact lines break only between parts */
   .name, .muted { word-break: keep-all; overflow-wrap: anywhere; }
-  address span { overflow-wrap: anywhere; }
+  address span { overflow-wrap: anywhere; text-wrap: balance; }
   /* tablets: name and site map side by side, contact gets the full width below */
   @media (max-width: 1023px) { .grid { grid-template-columns: 1fr 1fr; } .grid > div:nth-child(3) { grid-column: 1 / -1; } }
   @media (max-width: 767px) { .grid { grid-template-columns: 1fr; } }

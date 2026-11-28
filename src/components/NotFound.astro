@@ -8,8 +8,8 @@ interface Props { lang: Locale }
 const { lang } = Astro.props;
 const zh = lang === 'zh-tw';
 const links = zh
-  ? [['回首頁', href(lang)], ['研究成果', href(lang, 'research')], ['成員', href(lang, 'members')], ['加入我們', href(lang, 'join')]]
-  : [['Home', href(lang)], ['Research', href(lang, 'research')], ['Members', href(lang, 'members')], ['Join us', href(lang, 'join')]];
+  ? [['研究成果', href(lang, 'research')], ['成員', href(lang, 'members')], ['加入我們', href(lang, 'join')], ['回首頁', href(lang)]]
+  : [['Research', href(lang, 'research')], ['Members', href(lang, 'members')], ['Join us', href(lang, 'join')], ['Home', href(lang)]];
 ---
 <Base lang={lang} title={zh ? '找不到頁面' : 'Page not found'} description={zh ? '這個頁面不存在。' : 'This page does not exist.'}>
   <meta slot="head" name="robots" content="noindex" />
@@ -18,7 +18,7 @@ const links = zh
       ? [{ zh: '我也找不到這塊積木……', en: '' }, { zh: '回首頁看看？', en: '' }]
       : [{ zh: '', en: 'I can’t find this brick either…' }, { zh: '', en: 'Back to the home page?' }]} />
     <h1>{zh ? '找不到這一頁' : 'Page not found'}</h1>
-    <p>{zh ? '這個連結壞了，或頁面搬走了。找論文就從「研究成果」開始：' : 'This link is broken or the page has moved. Looking for a paper? Start from Research:'}</p>
+    <p>{zh ? '這裡沒有頁面。論文在「研究成果」，人在「成員」。' : 'No page here. Papers are under Research, people under Members.'}</p>
     <p class="cta">
       {links.map(([label, url], i) => <a class:list={['btn', i > 0 && 'secondary']} href={url}>{label}</a>)}
     </p>

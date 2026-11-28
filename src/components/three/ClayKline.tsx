@@ -134,7 +134,8 @@ export default function ClayKline({ bars, steps = [], hint, hintTouch, unit, wak
           />
         </div>
       )}
-      <span className="kline-hint" aria-live="polite">
+      {/* the hovered candle already wears its own 3D label: the capsule then only speaks to screen readers */}
+      <span className="kline-hint" aria-live="polite" data-sr={!say && activeNow ? '' : undefined}>
         {say ? say
           : activeNow ? (text?.open ? <><b>{activeNow.name}</b> · {text.open}</> : <><b>{activeNow.name}</b> · {activeNow.count} {unit}</>)
           : !atNow && grew ? <><b>{steps[step].label}</b>{named.map((g) => ` · ${g.bar.name} +${g.n}`).join('')}{added > named.reduce((n, g) => n + g.n, 0) ? ` · ${text?.more ?? '+'}${added - named.reduce((n, g) => n + g.n, 0)}` : ''}</>
