@@ -39,7 +39,7 @@ const person = {
 // the description ends on what he researches (the bio's last sentence), not on the bio cut at 100 characters mid-word
 const focus = t(advisor.bio, lang).split(/(?<=[。.])\s*/).filter(Boolean).at(-1) ?? '';
 ---
-<Base lang={lang} title={zh ? `${advisor.name.zh} 副教授` : `Prof. ${advisor.name.en}`} description={(zh ? `${advisor.name.zh}，國立中央大學資訊管理學系${advisor.title.zh}，IFA Lab 主持人。` : `Prof. ${advisor.name.en} leads IFA Lab, NCU. `) + focus} jsonld={[person]} ogType="profile" image={share.src}>
+<Base lang={lang} title={zh ? `${advisor.name.zh}老師（中央資管副教授）` : `Prof. ${advisor.name.en}`} description={(zh ? `中央資管${advisor.name.zh}老師：國立中央大學資訊管理學系${advisor.title.zh}，IFA Lab 主持人。` : `Prof. ${advisor.name.en} leads IFA Lab, NCU. `) + focus} jsonld={[person]} ogType="profile" image={share.src}>
   <article class="wrap section">
     <header class="head">
       <div class="portrait" data-face="photo">
