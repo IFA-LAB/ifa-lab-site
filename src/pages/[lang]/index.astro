@@ -328,6 +328,8 @@ const description = zh
 
   @media (max-width: 1023px) {
     .hero-grid, .mission { grid-template-columns: 1fr; }
+    /* stacked on tablets: the lede may use the width (at 30em it filled half of a 768 screen) */
+    .lede, :global(html:lang(en)) .lede { max-width: 40em; }
     .visual { margin-right: 0; }
     .areas { grid-template-columns: repeat(2, 1fr); }
         .row::after { inset: auto 0 0; }

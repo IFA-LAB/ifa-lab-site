@@ -3,7 +3,7 @@
     Shown only when the 3D will actually run (same test as canRun3D, plus no reduced-motion), decided before first paint;
     without JavaScript or 3D the page shows at once with its static clay picture. It lifts when every scene on the page
     has drawn (its host gets data-live, or data-flat when it gave up), two frames later so shaders have compiled,
-    and never later than 5 s after the visitor arrives. */
+    and never later than 2.5 s after the visitor arrives (jurors on slow GPUs waited 5 s on a blank screen). */
 import { type Locale } from '@/i18n/ui';
 interface Props { lang: Locale }
 const { lang } = Astro.props;
@@ -42,10 +42,10 @@ const bars = [
     const mo = new MutationObserver(check);
     const arm = () => {
       mo.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['data-live', 'data-flat'] });
-      setTimeout(open, 5000);
+      setTimeout(open, 2500);
       if (document.readyState !== 'loading') check(); else addEventListener('DOMContentLoaded', check, { once: true });
     };
-    // a prerendered page (speculation rules) counts its 5 s from the moment the visitor actually arrives
+    // a prerendered page (speculation rules) counts its 2.5 s from the moment the visitor actually arrives
     if (document.prerendering) document.addEventListener('prerenderingchange', () => { if (ready()) open(); else arm(); }, { once: true }); else arm();
     if (document.prerendering) mo.observe(document.documentElement, { subtree: true, attributes: true, attributeFilter: ['data-live', 'data-flat'] });
   })();

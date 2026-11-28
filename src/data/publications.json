@@ -403,8 +403,8 @@
       "Granger causality"
     ],
     "plain": {
-      "zh": "用經過驗證的條件式格蘭傑因果關係，建出台股之間「誰領先誰」的網路，再拿來預測報酬。",
-      "en": "Builds a validated conditional-Granger network of which Taiwan stocks lead which, then uses it to forecast returns."
+      "zh": "用條件式格蘭傑因果建出台股「誰領先誰」的網路：排序報酬勝過不用圖的 GRU 和相關係數圖，但風險調整後報酬仍是不用圖的模型最好。",
+      "en": "A network of which Taiwan stocks lead which ranks returns better than a graph-free GRU or a correlation graph, though the graph-free model still has the best risk-adjusted return."
     }
   },
   {
