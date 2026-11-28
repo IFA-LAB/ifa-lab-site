@@ -59,7 +59,7 @@ const description = zh
   <section class="hero" aria-labelledby="hero-h">
     <div class="wrap hero-grid">
       <div class="copy">
-        <p class="eyebrow">{zh ? '國立中央大學 資訊管理學系' : 'National Central University · Information Management'}</p>
+        <p class="eyebrow">{zh ? '國立中央大學 資訊管理學系' : 'NCU · Information Management'}</p>
         <h1 id="hero-h">{titleLines.map((l, i) => <span>{l}{!zh && i < titleLines.length - 1 ? ' ' : ''}</span>)}</h1>
         <p class="lede">{zh
           ? '我們用台灣與國際市場的資料研究資產定價和投資人行為，也用機器學習和圖神經網路做財務預測。'
@@ -185,7 +185,7 @@ const description = zh
 <style>
   .hero { padding-block: var(--space-6) var(--space-5); overflow-x: clip; }
   /* the facts row under the hero already closes it: no extra band before the next section */
-  .hero + .mission { padding-top: var(--space-6); }
+  .hero + .mission { padding-top: var(--space-4); }
   .hero-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-5); align-items: center; }
   .copy { display: grid; gap: var(--space-5); position: relative; z-index: 1; }
   .hero h1 { font-size: clamp(44px, 6.6vw, 96px); line-height: 1.08; }
@@ -344,7 +344,7 @@ const description = zh
     /* all five figures on one row (4 + 1 left the member count alone on a second line) */
     @media (min-width: 360px) { .facts, .facts.en { display: grid; grid-template-columns: repeat(4, auto); justify-content: space-between; column-gap: var(--space-2); } }
     .legend { order: 1; }
-    .visual { margin-inline: -16px; aspect-ratio: 1 / 0.8; margin-bottom: var(--space-6); }
+    .visual { margin-inline: -16px; aspect-ratio: 1 / 0.8; margin-bottom: var(--space-3); }
     .visual :global(.kline-hint) { bottom: calc(-1 * var(--space-6)); }
     .area h3 { font-size: 18px; word-break: keep-all; overflow-wrap: anywhere; }
     .area { grid-template-columns: 1fr; grid-template-rows: auto; padding: var(--space-4); }

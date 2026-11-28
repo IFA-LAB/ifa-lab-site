@@ -219,10 +219,13 @@ const jsonld = journals.map((p) => ({
   const zh = document.documentElement.lang.startsWith('zh');
   function apply(area: string, scroll = false) {
     for (const b of buttons) b.setAttribute('aria-pressed', String(b.dataset.area === area));
-    let n = 0;
-    for (const li of items) { const on = !area || li.dataset.area === area; li.hidden = !on; if (on) n++; }
+    for (const li of items) li.hidden = !!area && li.dataset.area !== area;
+    const parts: string[] = [];
     for (const g of document.querySelectorAll<HTMLElement>('.group[data-pubs]')) {
       const shown = g.querySelectorAll('.pub:not([hidden])').length;
+      // the heading minus its count (the zh word-break script splits the heading into several text nodes)
+      const kind = [...(g.querySelector('h2')?.childNodes ?? [])].filter((x) => !(x instanceof Element && x.classList.contains('n'))).map((x) => x.textContent).join('').trim();
+      if (shown) parts.push(`${kind} ${shown}`);
       g.querySelector('.n')!.textContent = String(shown);
       g.hidden = shown === 0;
       // the jump chips carry the same filtered counts; one whose section emptied goes away (a faded chip still linked to a hidden section)
@@ -243,7 +246,8 @@ const jsonld = journals.map((p) => ({
     for (const g of document.querySelectorAll<HTMLElement>('[data-unsorted]')) g.hidden = !!area;
     for (const a of document.querySelectorAll<HTMLElement>('.jump a[href="#g-h"], .jump a[href="#s-h"]')) a.hidden = !!area;
     const label = buttons.find((b) => b.dataset.area === area)?.textContent?.trim();
-    status.textContent = area ? (zh ? `${label}：${n} 件成果（含碩論）` : `${label}: ${n} ${n === 1 ? 'work' : 'works'}, theses included`) : '';
+    // what the count is made of, by kind (期刊論文 6・工作論文 2), instead of one total with a blanket qualifier
+    status.textContent = area ? `${label}${zh ? '：' : ': '}${parts.join(zh ? '・' : ' · ')}` : '';
     if (scroll) document.querySelector('.filter')?.scrollIntoView({ block: 'start' });
   }
   for (const b of buttons) b.addEventListener('click', () => {

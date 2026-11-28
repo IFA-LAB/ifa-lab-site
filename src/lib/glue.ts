@@ -3,7 +3,7 @@
  *  The same rule runs on server-rendered text in Base.astro (inline script); keep the two in step. */
 /** Names the word dictionary does not know (台／積電); Base.astro's inline pass gets this same list. */
 export const KEEP = ['台積電', '工研院', '中研院', '國科會', '資策會', '中華電信', '玉山銀行', '國泰金控', '富邦金控', '聯發科', '鴻海', '邱信瑜', '黑客松', '懶人包', '資安', '準實驗', '自適應', '去過', '沙盒', '生成式', '衍生性', '個人化', '財伴', '研發替代役', '替代役',
-  '博士後', '衍生性商品', '江彌修', '宏泰人壽', '決策者', '資產定價', '資料集', '歷史資料', '投資人', '管理學院', '圖神經網路', '學長姐', '研究助理', '高維度'];
+  '博士後', '衍生性商品', '江彌修', '宏泰人壽', '決策者', '資產定價', '資料集', '歷史資料', '投資人', '管理學院', '圖神經網路', '學長姐', '研究助理', '跨公司', '跨年度', '投資人行為', '高維度'];
 
 export function glueTail(s: string, n = 4): [string, string] {
   const cjk = /[\u3400-\u9fff\uf900-\ufaff]/;

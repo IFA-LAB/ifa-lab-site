@@ -8,7 +8,7 @@ const loadScene = () => import('./WalkScene');
 if (gated()) void loadScene();
 const WalkScene = lazy(loadScene);
 
-type Text = { eyebrow: string; totals: string; solo: string; more: string; skip: string; skipHref: string; hint: string; endH: string; endP: string; mail: string; mailHref: string; join: string; joinHref: string };
+type Text = { next: string; eyebrow: string; totals: string; solo: string; more: string; skip: string; skipHref: string; hint: string; endH: string; endP: string; mail: string; mailHref: string; join: string; joinHref: string };
 
 /** The lab's history as its own candlestick chart, climbed by K 喵 as the page scrolls.
     Scroll progress through [data-walk] becomes time T (0 = first year, steps-1 = the last candle).
@@ -77,7 +77,7 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
     <div ref={host} className="walk-canvas">
       <div className="walk-3d" aria-hidden="true">
         <Suspense fallback={null}>
-          <WalkScene T={T} reveal={reveal} steps={steps} crew={crew} joinOf={joinOf} reduce={reduce} visible={visible} small={small} onPick={setPick} />
+          <WalkScene T={T} reveal={reveal} steps={steps} crew={crew} joinOf={joinOf} reduce={reduce} visible={visible} small={small} onPick={setPick} next={text.next} />
         </Suspense>
       </div>
       {/* decorative for screen readers: the page's text list carries the same content */}
@@ -88,7 +88,7 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
           <p className="walk-cap"><Glued text={text.endP} /></p>
           <p className="walk-cta"><a className="btn" href={text.mailHref} tabIndex={-1}>{text.mail}</a> <a href={text.joinHref} tabIndex={-1}>{text.join} →</a></p>
         </> : <>
-          <p className="walk-year" key={s.label}>{s.label}</p>
+          <p className={s.label.length > 5 ? 'walk-year long' : 'walk-year'} key={s.label}>{s.label}</p>
           <p className="walk-cap"><Glued text={s.caption} /></p>
           {s.sub && <p className="walk-sub"><Glued text={s.sub} /></p>}
           {s.anchor && <a className="walk-more" href={s.anchor} tabIndex={-1}>{text.more}</a>}

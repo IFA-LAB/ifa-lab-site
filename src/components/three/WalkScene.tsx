@@ -114,7 +114,7 @@ function YearTag({ i, s, L, c, reveal }: { i: number; s: WalkStep; L: Layout; c:
 }
 
 /** The next candle, drawn in dashes: where the visitor's work would go. */
-function Ghost({ x, y, c, L }: { x: number; y: number; c: Ctx; L: Layout }) {
+function Ghost({ x, y, c, L, label }: { x: number; y: number; c: Ctx; L: Layout; label: string }) {
   const g = useRef<Group>(null);
   const line = useRef<LineSegments>(null);
   const h = BH * 4 + GAPY * 3;
@@ -132,6 +132,8 @@ function Ghost({ x, y, c, L }: { x: number; y: number; c: Ctx; L: Layout }) {
         <lineDashedMaterial color="#4f7fc4" dashSize={0.12} gapSize={0.08} />
       </lineSegments>
       <mesh><boxGeometry args={[BW, h, BD]} /><meshBasicMaterial color="#4f7fc4" transparent opacity={0.12} depthWrite={false} /></mesh>
+      {/* without a word the empty dashed box read as a rendering glitch */}
+      {label && <TagSprite text={label} position={[0, -h / 2 - 0.35, 0.55]} height={0.3} />}
     </group>
   );
 }
@@ -302,9 +304,9 @@ function Sun({ small, focus }: { small: boolean; focus: RefObject<Vector3> }) {
     shadow-camera-left={-16} shadow-camera-right={16} shadow-camera-top={14} shadow-camera-bottom={-14} shadow-camera-far={60} />;
 }
 
-export default function WalkScene({ T, reveal, steps, crew, joinOf, reduce, visible, small, onPick }: {
+export default function WalkScene({ T, reveal, steps, crew, joinOf, reduce, visible, small, onPick, next = '' }: {
   T: RefObject<number>; reveal: RefObject<number>; steps: WalkStep[]; crew: WalkMember[]; joinOf: Record<string, number>;
-  reduce: boolean; visible: boolean; small: boolean; onPick: (x: Pick) => void;
+  reduce: boolean; visible: boolean; small: boolean; onPick: (x: Pick) => void; next?: string;
 }) {
   const [picked, setPicked] = useState<Pick>(null);
   const pick = (x: Pick) => { setPicked(x); onPick(x); };
@@ -335,7 +337,7 @@ export default function WalkScene({ T, reveal, steps, crew, joinOf, reduce, visi
       {steps.map((s, i) => <Candle key={i} i={i} s={s} L={L} c={c} />)}
       {steps.map((s, i) => <YearTag key={'y' + i} i={i} s={s} L={L} c={c} reveal={reveal} />)}
       <Beads L={L} c={c} />
-      <Ghost x={end.x + GX} y={end.close + 0.15} c={c} L={L} />
+      <Ghost x={end.x + GX} y={end.close + 0.15} c={c} L={L} label={next} />
       <Climber L={L} c={c} at={at} />
       {crew.map((m, k) => <Follower key={m.id} m={m} join={joinOf[m.id] ?? 0} slot={crewJoin.slice(0, k).filter((j) => j === crewJoin[k]).length} L={L} c={c} />)}
     </Canvas>

@@ -78,6 +78,7 @@ function searchOne(ix: Index, q: string, lang: string, k = 5): Passage[] {
   // does the question name a member? then their pages lead; otherwise the lab's own pages do
   const named = ix.ps.some((p) => { const w = p.title.split(/\s*[｜|]\s*/)[0].toLowerCase(); return p.url.includes('/members/') && w.length >= 2 && !w.startsWith('ifa lab') && qn.includes(w); });
   const qs = count(grams(qn));
+  const rare = [...qs.keys()].filter((t) => /^[a-z]/.test(t) && t.length >= 2 && (ix.df.get(t) ?? 0) > 0 && (ix.df.get(t) ?? 0) / ix.ps.length < 0.05);
   const scored: [number, number][] = [];
   ix.docs.forEach((d, i) => {
     let s = 0;
@@ -86,7 +87,11 @@ function searchOne(ix: Index, q: string, lang: string, k = 5): Passage[] {
       if (!f) continue;
       const n = ix.df.get(t) ?? 0;
       const idf = Math.log(1 + (ix.ps.length - n + 0.5) / (n + 0.5));
-      s += (idf * f * 2.2) / (f + 1.2 * (0.25 + (0.75 * ix.lens[i]) / ix.avg));
+      // a Chinese question is mostly single characters (實 驗 室 有 做 過…) that every page has; together they outweighed
+      // the one word that mattered ("ESG"), and the ESG paper never came back. Single characters count a third,
+      // a Latin word or acronym counts double.
+      const w = /^[a-z0-9]/.test(t) ? 2 : t.length === 1 ? 0.33 : 1;
+      s += (w * idf * f * 2.2) / (f + 1.2 * (0.25 + (0.75 * ix.lens[i]) / ix.avg));
     }
     // the question names this section's heading (碩士論文, 經歷, thesis…): that section answers it, however long it is
     // (length normalisation had put a 505-character 碩士論文 below a short 論文 list that marks the same work 工作論文)
@@ -96,6 +101,8 @@ function searchOne(ix: Index, q: string, lang: string, k = 5): Passage[] {
     const who = ix.ps[i].title.split(/\s*[｜|]\s*/)[0].toLowerCase();
     if (s > 0 && who.length >= 2 && !who.startsWith('ifa lab') && qn.includes(who)) s *= 1.5;
     if (s > 0 && !named && ix.ps[i].url.includes('/members/')) s *= 0.6;
+    // a rare English word or acronym in the question (ESG, LLM, GNN) is what the question is about: pages that have it lead
+    if (s > 0 && rare.some((t) => d.has(t))) s *= 2.5;
     if (s > 0) scored.push([ix.ps[i].lang === lang ? s : s * 0.5, i]);
   });
   scored.sort((a, b) => b[0] - a[0]);

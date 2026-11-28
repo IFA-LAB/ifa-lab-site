@@ -24,6 +24,8 @@ const cases = [
   // the FAQ on who the lab is for answers the first half (對金融有興趣很好，沒有也沒關係); the site does not say
   // whether a publication is required, so "the site doesn't say" is the honest answer for the second
   { lang: 'zh-tw', q: '我大學不是讀資管，也沒學過財務，可以申請嗎？畢業要發表論文嗎？', want: ['沒關係', '都可以', '不限'], deny: [] },
+  // a Chinese question about an English-titled paper: the one rare word (ESG) must reach the paper page
+  { lang: 'zh-tw', q: '實驗室有做過跟 ESG 有關的研究嗎？是誰做的？', want: ['Cybersecurity', '資安', 'ESG'], deny: ['網站沒寫', '沒有提到'] },
   { lang: 'en', q: 'What is the weather today, and what is Prof. Chiu\'s h-index?', want: ['hychiu', 'not', 'no'], deny: ['[3, 4]', '[3,4]'] },
 ];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
