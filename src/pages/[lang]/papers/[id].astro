@@ -80,6 +80,19 @@ const jsonld = [{
       </section>
     )}
 
+    {/* question, data and method, finding: the shape readers skim for and answer engines quote */}
+    {d.points && (
+      <section class="points" aria-labelledby="pts-h">
+        <h2 id="pts-h">{zh ? '這篇在做什麼' : 'What this paper does'}</h2>
+        <dl>
+          <div><dt>{zh ? '研究問題' : 'Question'}</dt><dd>{t(d.points.question, lang)}</dd></div>
+          <div><dt>{zh ? '資料與方法' : 'Data and method'}</dt><dd>{t(d.points.method, lang)}</dd></div>
+          <div><dt>{zh ? '發現' : 'Finding'}</dt><dd>{t(d.points.finding, lang)}</dd></div>
+        </dl>
+        <p class="muted small">{zh ? '整理自期刊摘要（下方原文）。' : 'Summarised from the journal abstract below.'}</p>
+      </section>
+    )}
+
     {(d.abstract?.en || d.abstract?.zh) && (
       <section class="abs" aria-labelledby="abs-h">
         <h2 id="abs-h">{zh ? '摘要' : 'Abstract'}</h2>
@@ -189,6 +202,13 @@ const jsonld = [{
   .venue { font-size: 16px; }
   .plain { padding: var(--space-5) var(--space-6); display: grid; gap: var(--space-2); font-size: 18px; }
   .plain h2 { font-size: 15px; color: var(--ink-2); }
+  .points { display: grid; gap: var(--space-3); }
+  .points h2 { font-size: 20px; }
+  .points dl { margin: 0; display: grid; gap: var(--space-4); }
+  .points dl div { display: grid; grid-template-columns: 7em 1fr; gap: var(--space-4); padding-top: var(--space-3); border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent); }
+  .points dt { font-weight: 600; color: var(--ink-2); }
+  .points dd { margin: 0; text-wrap: pretty; }
+  @media (max-width: 599px) { .points dl div { grid-template-columns: 1fr; gap: var(--space-1); } }
   .abs { display: grid; gap: var(--space-3); }
   .abs h2 { font-size: 20px; }
   .abs p { font-size: 17px; line-height: 1.8; max-width: 70ch; text-wrap: pretty; }

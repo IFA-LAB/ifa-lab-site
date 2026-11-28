@@ -79,6 +79,20 @@
     },
     "abstract": {
       "en": "This study develops an MSR-adjusted multistage EUA pricing (MMEP) model, a novel pricing framework for analyzing EUA price dynamics under the Market Stability Reserve (MSR) in the EU Emissions Trading System (EU ETS). The model incorporates intertemporal linkages among the Total Number of Allowances in Circulation (TNAC), MSR adjustments, auction volumes, and regulatory interventions across multiple compliance periods. It explicitly considers MSR absorption, release, and cancellation mechanisms, allowing regulatory adjustments to affect continuation values and generate price adjustments at compliance-period boundaries. The analysis evaluates the model against observed EUA market data using annual EEX auction prices and EEX December EUA futures term structures. The empirical validation indicates that the model captures broad annual price and term-structure patterns more closely in the recent Phase IV period than in earlier transition-year observations. The numerical analysis further shows that supply-side assumptions, especially supply volatility and supply-drift assumptions linked to allowance-supply reduction, generate the largest changes in model-implied price paths under the calibrated baseline. By contrast, MSR intake rates and threshold levels have more state-dependent effects, becoming most relevant when TNAC approaches the relevant trigger regions. The MMEP framework therefore provides a structured annual pricing and scenario-analysis tool for evaluating MSR design, allowance-supply adjustments, and the policy trade-offs associated with EU ETS market stabilization."
+    },
+    "points": {
+      "question": {
+        "zh": "探討歐盟碳排放交易體系（EU ETS）中，市場穩定儲備（MSR）如何影響歐盟碳排放配額（EUA）的價格動態。",
+        "en": "How the Market Stability Reserve (MSR) shapes EUA price dynamics in the EU Emissions Trading System."
+      },
+      "method": {
+        "zh": "提出經 MSR 調整的多階段 EUA 定價模型（MMEP），並以 EEX 年度拍賣價格與 EEX 十二月 EUA 期貨期限結構驗證。",
+        "en": "Develops the MSR-adjusted multistage EUA pricing (MMEP) model and evaluates it against annual EEX auction prices and EEX December EUA futures term structures."
+      },
+      "finding": {
+        "zh": "模型在第四階段比早期過渡年度更貼近年度價格與期限結構的大致型態；在校準基準下，供給波動與供給漂移假設使價格路徑變動最大，MSR 收納率與門檻的影響則視狀態而定。",
+        "en": "The model captures broad annual price and term-structure patterns more closely in Phase IV than in earlier transition years; under the calibrated baseline, supply volatility and drift change price paths most, while MSR intake rates and thresholds have state-dependent effects."
+      }
     }
   },
   {
@@ -110,6 +124,20 @@
     },
     "abstract": {
       "en": "This paper examines how the disposition effect influences the trading behavior of partially informed short sellers. We measure short sellers' closing of short positions by the ratio of weekly closed short positions to the total number of shorted shares and analyze its relationship with the short-sale capital gains overhang. Using Taiwanese short sale data, we show that short sellers' closing of short positions is subjected to the disposition bias, while they are partially informed in the sense that a higher level of the short balance predicts a lower stock return. As a result, short sellers tend to close their short positions prematurely and fail to fully exploit the potential profits. Furthermore, the disposition effect is more pronounced in stocks with lower market capitalizations, lower liquidity, lower institutional ownership, and higher return volatility."
+    },
+    "points": {
+      "question": {
+        "zh": "探討處分效果（disposition effect）如何影響部分具資訊優勢的放空者之交易行為。",
+        "en": "How the disposition effect influences the trading behavior of partially informed short sellers."
+      },
+      "method": {
+        "zh": "使用台灣放空資料，以每週回補空單占總放空股數的比率衡量回補行為，分析其與放空資本利得懸置（capital gains overhang）的關係。",
+        "en": "Uses Taiwanese short sale data; measures closing of short positions by weekly closed short positions over total shorted shares and relates it to short-sale capital gains overhang."
+      },
+      "finding": {
+        "zh": "空單回補受處分偏誤影響，但較高的空單餘額預測較低報酬；放空者傾向過早回補而未能充分獲利；處分效果在低市值、低流動性、低法人持股與高報酬波動的股票更明顯。",
+        "en": "Short covering shows disposition bias, though a higher short balance predicts lower returns; short sellers close prematurely and miss profits; the disposition effect is stronger in small, illiquid, low-institutional-ownership and volatile stocks."
+      }
     }
   },
   {
@@ -141,6 +169,20 @@
     },
     "abstract": {
       "en": "We propose new momentum strategies based on the Almost Stochastic Dominance rules. Relative to classic momentum, our novel strategy achieves better risk-adjusted performance, and exhibits lower volatility and reduced negative skewness in returns. The abnormal returns are statistically and economically significant when testing against alternative common risk factors. Most interestingly, the strategy's ability to generate excess returns is particularly pronounced when using shorter-term ranking and holding periods. Notable improvements in computational efficiency suggest that practical implementability of the strategy shall prevail in cases where a large span of assets is considered. In empirical studies, we apply the new momentum strategies to the Taiwan stock market and compare them with some existing momentum strategies."
+    },
+    "points": {
+      "question": {
+        "zh": "提出以幾乎隨機優勢（Almost Stochastic Dominance）規則為基礎的新動能策略。",
+        "en": "Proposes new momentum strategies based on Almost Stochastic Dominance rules."
+      },
+      "method": {
+        "zh": "將新動能策略應用於台灣股市，並與既有動能策略比較。",
+        "en": "Applies the new momentum strategies to the Taiwan stock market and compares them with existing momentum strategies."
+      },
+      "finding": {
+        "zh": "相較傳統動能，風險調整後績效較佳、波動較低且負偏態較小；相對於其他常見風險因子，異常報酬在統計與經濟上顯著，排名與持有期較短時創造超額報酬的能力尤其明顯。",
+        "en": "Better risk-adjusted performance, lower volatility and less negative skewness than classic momentum; abnormal returns are statistically and economically significant, especially with shorter ranking and holding periods."
+      }
     }
   },
   {
@@ -172,6 +214,20 @@
     },
     "abstract": {
       "en": "This study employs machine learning models to predict the failure of Peer-to-Peer (P2P) lending platforms, specifically in China. By employing the filter method and wrapper method with forward selection and backward elimination, we establish a rigorous and practical procedure that ensures the robustness and importance of variables in predicting platform failures. The research identifies a set of robust variables that consistently appear in the feature subsets across different selection methods and models, suggesting their reliability and relevance in predicting platform failures. The study highlights that reducing the number of variables in the feature subset leads to an increase in the false acceptance rate while the performance metrics remain stable, with an AUC value of approximately 0.96 and an F1 score of around 0.88. The findings of this research provide significant practical implications for regulatory authorities and investors operating in the Chinese P2P lending industry."
+    },
+    "points": {
+      "question": {
+        "zh": "以機器學習模型預測 P2P 網路借貸平台（特別是中國）的倒閉。",
+        "en": "Uses machine learning models to predict failure of Peer-to-Peer (P2P) lending platforms, specifically in China."
+      },
+      "method": {
+        "zh": "採用過濾法與包裝法（含前向選擇與後向剔除）篩選變數，建立嚴謹且實用的程序，確保預測變數的穩健性與重要性。",
+        "en": "Applies filter and wrapper methods with forward selection and backward elimination to build a procedure ensuring robustness and importance of variables."
+      },
+      "finding": {
+        "zh": "找出在不同選擇方法與模型中一致出現的穩健變數；減少變數會提高錯誤接受率，但 AUC 約 0.96、F1 約 0.88 大致穩定。",
+        "en": "Identifies robust variables appearing across methods and models; fewer variables raise the false acceptance rate while performance stays stable, with AUC around 0.96 and F1 around 0.88."
+      }
     }
   },
   {
@@ -203,6 +259,20 @@
     },
     "abstract": {
       "en": "A trading rule that draws on the similarity-based analogical reasoning is proposed in an attempt to simulate the technical trading mentality—one that selectively perceives structural resemblances between market scenarios of the present and the past. In more than half of the nineteen futures markets that we test against for profitability of this similarity-based trading rule, we find evidence of predictive ability that is robust to data-snooping and transaction-cost adjustments. When aided by an exit strategy that liquidates the trader's positions across some evenly-spaced time points, this rule generates the most robust returns and survives the in- and out-of-sample tests."
+    },
+    "points": {
+      "question": {
+        "zh": "提出以相似性類比推理為基礎的交易規則，模擬技術交易者辨認當前與過去市場情境結構相似處的心態。",
+        "en": "Proposes a trading rule based on similarity-based analogical reasoning, simulating the technical trading mentality of perceiving resemblances between present and past market scenarios."
+      },
+      "method": {
+        "zh": "以十九個期貨市場檢驗此規則的獲利能力，並納入資料窺探（data-snooping）與交易成本調整。",
+        "en": "Tests the rule's profitability in nineteen futures markets, adjusting for data-snooping and transaction costs."
+      },
+      "finding": {
+        "zh": "超過半數市場出現預測能力的證據；搭配在等距時間點平倉的出場策略時，報酬最穩健，並通過樣本內與樣本外檢驗。",
+        "en": "More than half the markets show predictive ability robust to data-snooping and costs; with an exit strategy, returns are most robust and survive in- and out-of-sample tests."
+      }
     }
   },
   {
@@ -234,6 +304,20 @@
     },
     "abstract": {
       "en": "A moneyness‐based propensity to sell (MPS) measure, at the aggregate level, determines the propensity of option holders to exercise their winning relative to losing positions. Using data on individual stock and S&P 500 Index options, we find that the MPS measure has significant predictive power over the cross section of delta‐hedged option returns. We test the disposition effect in the options market based on a long–short strategy that exploits price distortions induced by the disposition bias. More pronounced evidence of the disposition bias is found for individual at‐the‐money call options than put options where the significance of abnormal returns remains robust across different subsamples even after we control for the portfolio option greeks and market‐based risk factors. The profitability of the long–short strategy is related to limit‐to‐arbitrage proxies suggesting that behavioral explanations help explain the positive relation between the MPS measure and delta‐hedged option returns."
+    },
+    "points": {
+      "question": {
+        "zh": "以價內外程度為基礎的賣出傾向（MPS）衡量，檢驗選擇權市場是否存在處分效果（disposition effect）。",
+        "en": "Tests the disposition effect in options using a moneyness-based propensity to sell (MPS) measure of option holders' propensity to exercise winning versus losing positions."
+      },
+      "method": {
+        "zh": "使用個股與 S&P 500 指數選擇權資料，以利用處分偏誤所致價格扭曲的多空策略進行檢驗。",
+        "en": "Uses individual stock and S&P 500 Index options data and a long-short strategy exploiting price distortions induced by the disposition bias."
+      },
+      "finding": {
+        "zh": "MPS 對 delta 避險選擇權報酬有顯著預測力；個股價平買權的處分偏誤證據比賣權明顯，控制風險因子後仍穩健；多空策略的獲利性與套利限制指標相關。",
+        "en": "MPS significantly predicts delta-hedged option returns; evidence of disposition bias is more pronounced for individual at-the-money calls than puts and robust to controls, and the long-short strategy's profitability is related to limits-to-arbitrage proxies."
+      }
     }
   },
   {
@@ -264,6 +348,20 @@
     },
     "abstract": {
       "en": "This paper investigates the critical role of volatility jumps under mean reversion models. Based on the empirical tests conducted on the historical prices of commodities, we demonstrate that allowing for the presence of jumps in volatility in addition to price jumps is a crucial factor when confronting non-Gaussian return distributions. By employing the particle filtering method, a comparison of results drawn among several mean-reverting models suggests that incorporating volatility jumps ensures an improved fit to the data. We infer further empirical evidence for the existence of volatility jumps from the possible paths of filtered state variables. Our numerical results indicate that volatility jumps significantly affect the level and shape of implied volatility smiles. Finally, we consider the pricing of options under the mean reversion model, where the underlying asset price and its volatility both have jump components."
+    },
+    "points": {
+      "question": {
+        "zh": "探討均值回歸模型中波動度跳躍（volatility jumps）的關鍵角色。",
+        "en": "Investigates the critical role of volatility jumps under mean reversion models."
+      },
+      "method": {
+        "zh": "以商品歷史價格做實證檢驗，用粒子濾波（particle filtering）比較多個均值回歸模型，並考慮價格與波動度皆有跳躍時的選擇權定價。",
+        "en": "Empirical tests on historical commodity prices comparing mean-reverting models via particle filtering, plus option pricing when both price and volatility have jumps."
+      },
+      "finding": {
+        "zh": "除價格跳躍外納入波動度跳躍，對非常態報酬分配至關重要並改善資料配適；波動度跳躍顯著影響隱含波動度微笑的水準與形狀。",
+        "en": "Allowing volatility jumps besides price jumps is crucial for non-Gaussian returns and improves fit; volatility jumps significantly affect the level and shape of implied volatility smiles."
+      }
     }
   },
   {
@@ -296,6 +394,20 @@
     "abstract": {
       "en": "The betting-against-beta (BAB) strategy of Frazzini and Pedersen (2014), though exploits the low risk anomaly by buying the portfolio of low beta stocks and selling those with high beta, neglects the liquid issue often associated with low risk stocks (Li, Sullivan and Garcia-Feijóo, 2014). In this study, we show that a liquidity-based BAB outperforms the traditional BAB. Using a double sorting technique, we find that BAB strategies generate abnormal returns within each liquidity-sorted portfolio. On the other hand, a long/short strategy of buying those stocks with low liquidity and selling those with high liquidity generates abnormal returns within each beta-sorted portfolio. These results suggest that, over the predictability of stock returns, stock beta and liquidity are not substitutes for one another. We find that the abnormal returns generated by LBAB sustain across different liquidity measures that are commonly used in mainstream literature, except for the proportion of days with zero returns.",
       "zh": "Frazzini and Pedersen (2014)的貝塔套利交易策略(betting against beta, BAB)雖然利用了低風險高報酬異常現象來獲取異常報酬，然而卻忽略了低貝塔係數的股票與其平均流動性的連帶關係(Li, Sullivan 與Garcia-Feijóo, 2014)。本文提出考量流動性下之貝塔套利交易策略(liquidity-based betting against beta, LBAB)。我們發現相較於貝塔套利交易策略，考量流動性之貝塔套利交易策略更能有效地增加超額報酬率。兩階段排序(double sorting)下的實證結果顯示：流動性排序後所形成的股票群組中，執行貝塔套利交易策略仍能獲取顯著異常報酬。另一方面，貝塔係數排序後所形成的股票群組中，藉由買賣流動性高低之套利交易策略亦可產生異常報酬。這顯示貝塔係數與流動性之於股票報酬率的解釋能力並無法彼此取代，在考量不同主流文獻之流動性指標所建立的投資組合之下，我們進一步發現除卻零報酬率天數比率之外，LBAB均能產生顯著異常報酬。"
+    },
+    "points": {
+      "question": {
+        "zh": "探討以流動性為基礎的 BAB（押注反貝塔）策略是否優於傳統 BAB，後者忽略低風險股票常伴隨的流動性問題。",
+        "en": "Asks whether a liquidity-based BAB outperforms the traditional betting-against-beta strategy, which neglects the liquidity issue of low risk stocks."
+      },
+      "method": {
+        "zh": "採用雙重排序（double sorting）技術，在各流動性與各貝塔排序的投資組合內檢驗多空策略。",
+        "en": "Uses double sorting: BAB strategies within liquidity-sorted portfolios, and liquidity long/short strategies within beta-sorted portfolios."
+      },
+      "finding": {
+        "zh": "流動性 BAB 優於傳統 BAB；就股票報酬預測而言，貝塔與流動性並非互相替代，且異常報酬在多數流動性指標下持續，零報酬天數比例除外。",
+        "en": "Liquidity-based BAB outperforms traditional BAB; beta and liquidity are not substitutes, and abnormal returns persist across liquidity measures except the proportion of days with zero returns."
+      }
     }
   },
   {
@@ -327,6 +439,20 @@
     },
     "abstract": {
       "en": "Medical advances have extended the average lifespan and seem poised to eliminate, or at least substantially moderate, death rates from major diseases like AIDS and cancer. But at the same time they have introduced major “longevity risk” for life insurers and issuers of annuity products. One way this exposure can be managed is by issuing structured debt securities in which the investor bears some of the risk. In this article, Yueh, Chiu, and Tsai review several basic structures in which either the coupon or the principal repayment depends on the realized value of a mortality index. They develop valuation models for mortality calls and puts, and explore the sensitivity to changes in parameter values."
+    },
+    "points": {
+      "question": {
+        "zh": "探討壽險業者與年金發行者面臨的長壽風險，及如何以結構型債券讓投資人分擔部分風險。",
+        "en": "Examines how longevity risk for life insurers and annuity issuers can be managed with structured debt securities in which the investor bears some of the risk."
+      },
+      "method": {
+        "zh": "回顧票息或本金償還取決於死亡率指數實現值的幾種基本結構，並建立死亡率買權與賣權的評價模型。",
+        "en": "Reviews basic structures where coupon or principal repayment depends on a realized mortality index, and develops valuation models for mortality calls and puts."
+      },
+      "finding": {
+        "zh": "摘要僅說明探討評價結果對參數變動的敏感度，未陳述具體結果。",
+        "en": "The abstract only says it explores sensitivity to parameter changes; it states no specific results."
+      }
     }
   },
   {
@@ -359,6 +485,20 @@
     "abstract": {
       "en": "In this paper we present a tractable model that dynamically characterizes the correlation structure for a portfolio of credit entities. Heterogeneous credit events are modeled as the arrivals of mixed Poisson jump processes and magnitudes of jumps represent the associated impacts of credit events on the joint survival probabilities of the credit portfolio. We assume that the default intensities of both sources of risk are driven by a combination of two-parameter Gamma and Pareto distributions as to capture the clustering effects of default events under different market scenarios. We conduct calibration of the model to iTraxx Europe as an example and verify the goodness of fit between the arket spreads and the model spreads of ours. We extract the implied jump-sizes that reveal information on the correlation structure, and further explore their impacts on the risk characteristics of CDO tranches.",
       "zh": "本文建立信用資產債權群組之動態違約相關性模型。其中，我們允許異質性信用風險事件之抵達由雙重（Autonomous）混合型卜瓦松跳躍過程（Mixed Poisson Jump Processes）所描述，且藉由跳躍幅度（Jump Sizes）反映信用事件之於信用資產池（Reference Pool）聯合存活機率（Joint Survival Probabilities）的危害程度。本文藉由提供驅動信用事件發生之頻率（Default Intensity）服從一雙參數伽瑪（Gamma）及帕雷圖分配（Pareto Distribution），以描述不同市場情境下信用事件發生之密集性。我們以市場指數型擔保債權憑證iTraxx Europe為例，驗證模型之市價擬合度，且藉由校準市價反推求得各分券之隱含相關性（Implied Correlation），進一步闡述隱含相關性於分券風險特徵及信用交易策略上所呈現的意涵。"
+    },
+    "points": {
+      "question": {
+        "zh": "提出可處理的模型，動態刻畫信用投資組合的相關性結構。",
+        "en": "Presents a tractable model that dynamically characterizes the correlation structure of a portfolio of credit entities."
+      },
+      "method": {
+        "zh": "以混合卜瓦松跳躍過程的到達描述異質信用事件，違約強度由 Gamma 與 Pareto 分配組合驅動，並以 iTraxx Europe 校準。",
+        "en": "Models credit events as mixed Poisson jump arrivals with Gamma and Pareto driven default intensities, and calibrates the model to iTraxx Europe."
+      },
+      "finding": {
+        "zh": "驗證市場價差與模型價差的配適度，並萃取隱含跳躍幅度以取得相關性結構的資訊，進一步探討其對 CDO 分券風險特性的影響。",
+        "en": "Verifies fit between market and model spreads, extracts implied jump-sizes that reveal information on the correlation structure, and explores their impact on CDO tranche risk characteristics."
+      }
     }
   },
   {

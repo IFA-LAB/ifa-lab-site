@@ -236,7 +236,8 @@ async function ask(req: Request, env: Env): Promise<Response> {
   const page = (t: string) => t.split(/\s*[｜|]\s*/)[0];
   const sources = hits.map((p) => ({
     title: p.section && p.section !== page(p.title) ? `${page(p.title)} · ${p.section}` : page(p.title),
-    url: p.url,
+    // the citation block is not where the content is: point at the page itself
+    url: p.url.replace(/#cite-h$/, ''),
     text: p.text.slice(0, 220),
   }));
   // 1) the lab's Spark, when a model is running there

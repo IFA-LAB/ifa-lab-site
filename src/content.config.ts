@@ -85,6 +85,8 @@ const publications = defineCollection({
     plain: L.optional(),
     /** the published abstract, verbatim (publisher, RePEc, OpenAlex or Airiti); zh only for Chinese-language journals */
     abstract: z.object({ en: z.string().optional(), zh: z.string().optional() }).optional(),
+    /** question / method / finding, each taken only from the published abstract (checked line by line against it) */
+    points: z.object({ question: L, method: L, finding: L }).optional(),
   }),
 });
 
