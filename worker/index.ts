@@ -251,7 +251,7 @@ async function ask(req: Request, env: Env): Promise<Response> {
   if (pts && finding) {
     const intro = lang === 'en' ? 'In short: ' : '簡單說：';
     const tail = lang === 'en' ? ' The abstract on this page has the details.' : '細節在本頁的摘要。';
-    return json({ answer: `${intro}${finding} [1]${tail}`, mode: 'page', sources: [{ title: `${pts.title.split(/\s*[｜|]\s*/)[0]} · ${pts.section}`, url: pts.url, text: finding.slice(0, 220) }] });
+    return json({ answer: lang === 'en' ? `${intro}${finding} [1]${tail}` : `${intro}${finding}[1]${tail}`, mode: 'page', sources: [{ title: `${pts.title.split(/\s*[｜|]\s*/)[0]} · ${pts.section}`, url: pts.url, text: finding.slice(0, 220) }] });
   }
   // an unfilled member page has no passages at all: "his thesis?" there must not be answered with someone else's
   if (deictic && /^\/(zh-tw|en)\/(papers|members)\/[a-z0-9-]+\/$/.test(at) && !mine.length) {
