@@ -45,14 +45,17 @@ const pages = [];
 
 /** A photo from the built site, if the page shares one. */
 const photo = (h) => {
-  const img = meta(h, 'og:image');
+  // the person's photo from JSON-LD: og:image points at this card itself once the card exists
+  const img = h.match(/"image":"(https:\/\/ifalab-ncu\.com\/_astro\/[^"]+)"/)?.[1] ?? '';
   const local = img.startsWith('https://ifalab-ncu.com/_astro/') ? join(DIST, img.replace('https://ifalab-ncu.com/', '')) : '';
   return local && existsSync(local) ? `<img class="photo" src="${pathToFileURL(local).href}">` : '';
 };
 
 function card(lang, path, h) {
   const zh = lang === 'zh-tw';
-  const h1 = strip(h.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1] ?? '');
+  // an <h1 class="lines"> sets each <span> on its own line: keep those breaks ('|') on the card
+  const h1m = h.match(/<h1\b([^>]*)>([\s\S]*?)<\/h1>/);
+  const h1 = strip(/class="[^"]*\blines\b/.test(h1m?.[1] ?? '') ? h1m[2].replace(/<\/span>\s*<span\b/g, '</span>|<span') : h1m?.[2] ?? '');
   const [kind, rest] = path.split('/');
   let label = '', title = h1, sub = '', side = '';
   // the lab's own climb: six areas, rising, like the home page's K line
@@ -75,7 +78,7 @@ function card(lang, path, h) {
     side = bars([C.grey, C.grey, c, C.grey, c, c]);
   } else if (kind === 'members' && rest) {
     label = zh ? 'IFA Lab 成員' : 'IFA Lab member';
-    sub = clip(meta(h, 'description'), 70);
+    sub = clip(meta(h, 'description'), zh ? 70 : 110);
     side = photo(h) || defBars;
   } else if (kind === 'advisor') {
     label = zh ? '指導教授' : 'Advisor';
@@ -84,11 +87,15 @@ function card(lang, path, h) {
   } else {
     label = strip(h.match(/<title>([\s\S]*?)<\/title>/)?.[1] ?? '').split(/[｜|]/)[0].trim();
     if (label === h1) label = 'IFA Lab';
-    sub = clip(meta(h, 'description'), 64);
+    sub = clip(meta(h, 'description'), zh ? 64 : 110);
     side = defBars;
   }
   const cjk = CJK.test(title);
-  const long = title.split('|')[0].length > (cjk ? 16 : 40);
+  // a two-line title ('|') shrinks when either line is long; a one-line title when it would wrap past two lines
+  const lines = title.split('|');
+  const long = lines.length > 1 ? lines.some((l) => l.length > (cjk ? 12 : 24)) : title.length > (cjk ? 16 : 40);
+  // English cards: a Latin face first, or the CJK font sets ’ full width (master’ s)
+  const text = zh ? "'Noto Sans TC', 'Microsoft JhengHei', sans-serif" : "'Segoe UI', Arial, 'Noto Sans TC', sans-serif";
   return `<!doctype html><meta charset="utf-8"><style>${FONTS}
   * { box-sizing: border-box; margin: 0; }
   body { width: 1200px; height: 630px; overflow: hidden; background: ${C.surface2}; font-family: Fredoka, Huninn, 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; color: ${C.ink}; }
@@ -96,9 +103,9 @@ function card(lang, path, h) {
   .text { display: flex; flex-direction: column; min-width: 0; }
   .brand { display: flex; align-items: center; gap: 14px; font: 600 26px/1 Fredoka, 'Noto Sans TC', sans-serif; }
   .brand img { height: 34px; }
-  .label { margin-top: 40px; font: 600 24px/1.3 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; color: ${C.accent}; }
+  .label { margin-top: 40px; font: 600 24px/1.3 ${text}; color: ${C.accent}; }
   h1 { margin-top: 12px; font-size: ${long ? 48 : title.includes('|') && !cjk ? 64 : 76}px; line-height: 1.2; font-weight: 600; letter-spacing: ${cjk ? '0' : '-0.01em'}; display: -webkit-box; -webkit-line-clamp: ${long ? 4 : 2}; -webkit-box-orient: vertical; overflow: hidden; text-wrap: balance; word-break: ${cjk ? 'keep-all' : 'normal'}; overflow-wrap: anywhere; }
-  .sub { margin-top: auto; padding-top: 20px; font: 400 26px/1.5 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; color: ${C.ink2}; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .sub { margin-top: auto; padding-top: 20px; font: 400 26px/1.5 ${text}; color: ${C.ink2}; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .side { display: grid; place-items: end center; }
   .bars { display: flex; align-items: flex-end; gap: 14px; height: 100%; padding-bottom: 8px; }
   .bars i { display: block; width: 40px; border-radius: 12px; box-shadow: inset -5px -7px 0 rgb(0 0 0 / 0.14), inset 4px 4px 0 rgb(255 255 255 / 0.35); }

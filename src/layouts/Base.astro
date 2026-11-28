@@ -8,6 +8,7 @@ import Gate from '@/components/Gate.astro';
 import Footer from '@/components/Footer.astro';
 import { htmlLang, ogLocale, locales, swapLocale, ui, t, type Locale } from '@/i18n/ui';
 import { lab } from '@/data/lab';
+import { KEEP } from '@/lib/glue';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -160,11 +161,10 @@ const graph = [org, webPage, ...jsonld];
     {/* Chinese paragraphs never end on a line of one or two characters: the last four characters stay together.
          text-wrap: pretty does not do this for CJK in Chromium. Runs before first paint; skips React islands (their
          DOM must match what they hydrate). Same rule as glueTail() in src/lib/glue.ts. */}
-    {lang === 'zh-tw' && <script is:inline>
+    {lang === 'zh-tw' && <script is:inline define:vars={{ KEEP }}>
       (() => {
         const cjk = /[\u3400-\u9fff\uf900-\ufaff]/;
-        // names the dictionary does not know, so they are never cut (台／積電)
-        const KEEP = ['台積電', '工研院', '中研院', '國科會', '資策會', '中華電信', '玉山銀行', '國泰金控', '富邦金控', '聯發科', '鴻海', '邱信瑜', '黑客松', '懶人包', '資安', '準實驗', '自適應', '去過', '沙盒', '生成式', '衍生性', '個人化', '財伴', '研發替代役', '替代役'];
+        // KEEP (src/lib/glue.ts): names the dictionary does not know, so they are never cut (台／積電)
         const seg = Intl.Segmenter ? new Intl.Segmenter('zh-Hant', { granularity: 'word' }) : null;
         for (const el of document.querySelectorAll('main p, main li, main dd, main figcaption, main summary, footer p')) {
           if (el.closest('astro-island, pre, code, .nw')) continue;

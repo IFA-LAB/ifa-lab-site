@@ -10,7 +10,7 @@ export const getStaticPaths = langPaths;
 const lang = Astro.params.lang as Locale;
 const zh = lang === 'zh-tw';
 const ways: { title: Bi; body: Bi; clay: string }[] = [
-  { clay: 'blue', title: { zh: '產業合作', en: 'Industry partners' }, body: { zh: '和兆豐金控、兆豐銀行做過一個，就是上面那個。金融機構或科技公司有資料、有問題想研究，都可以來談。', en: 'We have done one with Mega, shown above. Financial firms or tech companies with data and a question are welcome to talk to us.' } },
+  { clay: 'blue', title: { zh: '產業合作', en: 'Industry partners' }, body: { zh: '金融機構或科技公司有資料、有想研究的問題，都可以來談。上面的兆豐專案就是一個例子。', en: 'Financial firms or tech companies with data and a question are welcome to talk to us. The Mega project above is one example.' } },
   { clay: 'sun', title: { zh: '學術合作', en: 'Academic collaboration' }, body: { zh: '共同研究、交換計畫與合著論文。我們和其他學校的學者合寫過期刊論文，也歡迎一起申請國科會計畫。', en: 'Joint research, exchange programs and co-authored papers. We have co-authored journal papers with researchers at other universities, and welcome joint NSTC proposals.' } },
   { clay: 'pink', title: { zh: '跨領域研究', en: 'Interdisciplinary research' }, body: { zh: '不做金融的研究者也可以，題目碰得到資料和模型就好。', en: 'You do not have to work in finance; a question that involves data and models is enough.' } },
 ];

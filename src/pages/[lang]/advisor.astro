@@ -44,7 +44,7 @@ const person = {
         <Picture class="photo" src={photo} alt={zh ? '邱信瑜老師的照片' : 'Photo of Hsin-Yu Chiu'} widths={[240, 336]} sizes="240px" formats={['avif', 'webp']} loading="eager" />
         <div class="buddy" data-buddy>
           <div class="stage"><ClayFigure clay="sun" accessory="guitar" size={160} model="prof" /></div>
-          <ClayBuddy client:visible clay="sun" accessory="guitar" model="prof" hint={zh ? '拖曳轉圈，點一下會跳' : 'Drag to spin, click to hop'} hintTouch={zh ? '左右滑轉圈，點一下會跳' : 'Swipe to spin, tap to hop'} />
+          <ClayBuddy client:visible clay="sun" accessory="guitar" model="prof" hint="" hintTouch="" />
           <ClayKnead lang={lang} clay="sun" />
         </div>
         <button type="button" class="flip chip" aria-pressed="false" data-on={zh ? '換回照片' : 'Show photo'} data-off={zh ? '換成黏土公仔' : 'Show clay figure'}>{zh ? '換成黏土公仔' : 'Show clay figure'}</button>
@@ -72,7 +72,7 @@ const person = {
       </dl>
     </section>
     <section class="sec">
-      <h2 id="career-h">{zh ? '一路疊上來' : 'How he got here'}</h2>
+      <h2 id="career-h">{zh ? '經歷' : 'Career'}</h2>
       <p class="muted small">{zh ? '先唸書，進業界做風險管理，回去讀博士，然後一路教到中央。' : 'School, risk management in industry, back for a PhD, then teaching, now at NCU.'}</p>
       <CareerSteps lang={lang} />
     </section>

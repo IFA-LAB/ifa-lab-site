@@ -198,3 +198,6 @@ html.theme-vt * { view-transition-name: none !important; }
 .nw, .glue { white-space: nowrap; }
 /* Chinese text whose word boundaries were marked with <wbr> (Base.astro): break only there; a word wider than the line still breaks */
 .wb.wb { word-break: keep-all; overflow-wrap: anywhere; }
+
+/* a 3D scene's caption pill shows only when it has something to say (a hovered candle or figure), not an idle how-to */
+.kline-hint:empty, .shelf-hint:empty, .buddy-hint:empty { visibility: hidden; }

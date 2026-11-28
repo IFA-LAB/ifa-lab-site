@@ -17,8 +17,8 @@ const links = zh
     <LabCat lang={lang} size={120} bubble="right" lines={zh
       ? [{ zh: '我也找不到這塊積木……', en: '' }, { zh: '回首頁看看？', en: '' }]
       : [{ zh: '', en: 'I can’t find this brick either…' }, { zh: '', en: 'Back to the home page?' }]} />
-    <h1>{zh ? '這塊積木不見了' : 'This brick is missing'}</h1>
-    <p>{zh ? '這個網址沒有頁面，可能已經搬家了。從這幾個地方找找看：' : 'Nothing lives at this address; it may have moved. Try one of these:'}</p>
+    <h1>{zh ? '找不到這一頁' : 'Page not found'}</h1>
+    <p>{zh ? '這一頁不存在，或已經搬到別的網址。可以從這裡找：' : 'This page doesn’t exist or has moved. Try one of these:'}</p>
     <p class="cta">
       {links.map(([label, url], i) => <a class:list={['btn', i > 0 && 'secondary']} href={url}>{label}</a>)}
     </p>

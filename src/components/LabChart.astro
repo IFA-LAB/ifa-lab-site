@@ -76,14 +76,14 @@ const steps = [
 // the advisor stands on the first candle from the start (not counted as a member: the step text says "alone" there)
 const crew = [{ id: 'advisor', name: zh ? `${advisor.name.zh}老師` : `Prof. ${advisor.name.en}`, clay: 'sun', accessory: 'none' as const, model: 'prof' as const, href: href(lang, 'advisor') }, ...members.map((m) => ({ id: m.id, name: t(m.data.name, lang), clay: m.data.placeholder ? 'grey' : m.data.figure.clay, accessory: m.data.placeholder ? 'none' as const : m.data.figure.accessory, model: m.data.placeholder ? undefined : m.data.figure.model, href: href(lang, `members/${m.id}`) }))];
 const text = {
-  eyebrow: zh ? 'IFA Lab 的 K 線' : 'The IFA Lab chart',
+  eyebrow: '',
   totals: zh ? '累積 {w} 件成果・{m} 位成員' : '{w} works so far · {m} members',
-  solo: zh ? `累積 {w} 件成果・${advisor.name.zh}老師一個人` : `{w} works so far · Prof. ${advisor.name.en} alone`,
+  solo: zh ? `實驗室成立前・${advisor.name.zh}老師的 {w} 件成果` : `Before the lab · {w} works by Prof. ${advisor.name.en}`,
   more: zh ? '這年的紀錄 ↓' : 'This year’s record ↓',
   skip: zh ? '跳到逐筆紀錄 ↓' : 'Skip to the full record ↓', skipHref: `#${listId}`,
-  hint: zh ? '往下捲，跟 K 喵爬上去' : 'Scroll to climb with K-meow',
+  hint: zh ? '往下捲 ↓' : 'Scroll ↓',
   endH: zh ? '下一根 K 棒，由你來畫' : 'The next candle is yours',
-  endP: zh ? `寄一封信給${advisor.name.zh}老師，說說你好奇的題目。每位成員都是從一封信開始的。` : `Email Prof. ${advisor.name.en} about a question you are curious about. Every member started with one letter.`,
+  endP: zh ? `寄一封信給${advisor.name.zh}老師，說說你好奇的題目。` : `Email Prof. ${advisor.name.en} about a question you are curious about.`,
   mail: zh ? `寄信給${advisor.name.zh}老師` : `Email Prof. ${advisor.name.en}`,
   mailHref: `mailto:${lab.contact.email}`,
   join: zh ? '先看怎麼加入' : 'How to join',

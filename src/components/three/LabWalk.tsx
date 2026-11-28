@@ -82,7 +82,7 @@ export default function LabWalk({ steps, crew, text }: { steps: WalkStep[]; crew
       </div>
       {/* decorative for screen readers: the page's text list carries the same content */}
       <div className="walk-card" aria-hidden="true">
-        <p className="eyebrow">{text.eyebrow}</p>
+        {text.eyebrow && <p className="eyebrow">{text.eyebrow}</p>}
         {end ? <>
           <p className="walk-h"><Glued text={text.endH} /></p>
           <p className="walk-cap"><Glued text={text.endP} /></p>

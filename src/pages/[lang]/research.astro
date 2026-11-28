@@ -74,7 +74,7 @@ const jsonld = journals.map((p) => ({
       <p class="muted">{zh ? '粗體作者是實驗室成員，* 為通訊作者。' : 'Lab members are in bold; * marks the corresponding author.'}</p>
     </div>
 
-    <figure class="wall clay" aria-label={zh ? `成果牆：${wall.map((c) => `${c.year} 年 ${c.bricks.length} 件`).join('、')}` : `Output wall: ${wall.map((c) => `${c.year}: ${c.bricks.length}`).join(', ')}`}>
+    <figure class="wall clay" aria-label={zh ? `成果牆：${wall.map((c) => `${c.year}${typeof c.year === 'number' ? ' 年' : ''} ${c.bricks.length} 件`).join('、')}` : `Output wall: ${wall.map((c) => `${c.year}: ${c.bricks.length}`).join(', ')}`}>
       <div class="cols" style={`--rows: ${wallMax}`}>
         {wall.map((c) => (
           <div class:list={['col', { empty: !c.bricks.length, run: !!c.to }]}>
