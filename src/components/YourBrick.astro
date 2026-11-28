@@ -23,7 +23,7 @@ const T = {
 <section class="yours" aria-labelledby="yours-h" data-yours data-t={JSON.stringify(T)} data-email={email} data-next={rows.length ? rows[0][0] + 1 : 1}>
   <h2 id="yours-h">{zh ? '下一塊，是你的' : 'The next brick is yours'}</h2>
   <div class="copy">
-    <p>{zh ? `實驗室是一屆一屆疊起來的，每塊磚是一位成員。寫上名字、選一個想做的方向，看看你疊上去的樣子；寄信時會一起帶上。` : 'The lab is built cohort by cohort; each brick is a member. Add your name and pick a direction to see your brick on top. The email will carry both.'}</p>
+    <p>{zh ? <>實驗室是一屆一屆疊起來的，每塊磚是一位<span class="nw">成員</span>。<span class="js-only">寫上名字、選一個想做的方向，看看你疊上去的樣子；寄信時會一起帶上。</span></> : <>The lab is built cohort by cohort; each brick is a member. <span class="js-only">Add your name and pick a direction to see your brick on top. The email will carry both.</span></>}</p>
     <form class="form" data-form>
       <label class="name">{zh ? '你的名字' : 'Your name'}<input name="n" maxlength="40" autocomplete="name" placeholder={zh ? '例如：王小明' : 'e.g. Alex Chen'} /></label>
       <fieldset>
@@ -82,10 +82,11 @@ const T = {
   .stack { grid-area: stack; }
   .copy { display: grid; gap: var(--space-4); align-content: start; }
   .copy > p { margin: 0; max-width: 32em; }
-  .form { display: none; gap: var(--space-4); }
-  :global(html.js) .yours .form { display: grid; }
+  .form { display: grid; gap: var(--space-4); }
+  /* without script only the email button stays: the name field and chips would do nothing */
+  :global(html:not(.js)) .yours :is(.name, fieldset, .js-only, .form > .muted) { display: none; }
+  .nw { white-space: nowrap; }
   .nm { display: block; max-width: 14em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .copy > p { word-break: keep-all; overflow-wrap: anywhere; }
   .name { display: grid; gap: var(--space-2); font-weight: 600; }
   .name input { font: inherit; font-weight: 400; min-height: 48px; padding: 0 var(--space-4); border-radius: var(--r-md); border: 1.5px solid color-mix(in oklab, var(--ink) 35%, transparent); background: var(--surface); color: var(--ink); max-width: 22em; }
   .name input::placeholder { color: var(--ink-2); }

@@ -227,7 +227,7 @@ async function ask(req: Request, env: Env): Promise<Response> {
   cached ??= loadIndex(env, origin).catch((e) => { cached = null; throw e; });
   const ix = await cached;
   // "this paper" / "這篇" / "他的" asked on a paper or member page means that page
-  const deictic = /這篇|本篇|這份|這位|這個人|他的|她的|\bthis (paper|study|article|person|member)\b|\b(his|her|their) (research|papers?|thesis)\b/i.test(q);
+  const deictic = /這篇|本篇|這份|這位|這個人|(?<!其)他|(?<!其)她|\b(he|she|him|his|her|they|their|this (paper|study|article|person|member))\b/i.test(q);
   // asked from a paper's or member's own page about that page (the suggested questions name it): that page's passages
   // lead, so "the main finding?" is answered from the paper itself, not from the research overview's one-line entry
   const own = /^\/(zh-tw|en)\/(papers|members)\/[a-z0-9-]+\/$/.test(at)
@@ -242,6 +242,12 @@ async function ask(req: Request, env: Env): Promise<Response> {
   const hit = (p: (typeof own)[number]) => { let n = 0; for (const g of grams(p.section)) if (qg.has(g)) n += 3; for (const g of grams(p.text.slice(0, 400))) if (qg.has(g)) n++; return n; };
   const byQ = deictic && own.length ? own.filter((p) => hit(p) > 0).sort((a, b) => hit(b) - hit(a)) : [];
   const mine = deictic && own.length ? [...new Set([...own.filter((p) => rank(p) === 0), ...byQ, ...own])].filter((p) => rank(p) < 9 && p.text.length > 40).slice(0, 4) : [];
+  if (deictic && own.length && !mine.length) {
+    const answer = /\/members\//.test(at)
+      ? (lang === 'en' ? 'This member has not filled in their page yet, so the website does not have this information.' : '這位成員的頁面還沒填寫，網站上沒有這項資料。')
+      : (lang === 'en' ? 'The website does not say. Please email Prof. Hsin-Yu Chiu (hychiu@ncu.edu.tw).' : '網站上沒有寫，建議寄信問邱信瑜老師（hychiu@ncu.edu.tw）。');
+    return json({ answer, mode: 'page', sources: [] });
+  }
   const noThesis = mine.length > 0 && /碩論|碩士論文|thesis/i.test(q) && !own.some((p) => /thesis/.test(p.url));
   const hits = mine.length ? (noThesis ? mine.filter((p) => !/^(論文|papers)$/i.test(p.section)) : mine) : [...own.slice(0, 2), ...search(ix, q, lang).filter((h) => !own.includes(h))].slice(0, 5);
   // a current student's page has papers but no thesis yet; without this the model calls the first paper the thesis
