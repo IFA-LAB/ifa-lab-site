@@ -72,8 +72,8 @@ export const advisor = {
   } satisfies Bi,
   education: [
     { degree: { zh: '博士', en: 'PhD' }, school: { zh: '國立政治大學 金融學系', en: 'National Chengchi University, Money and Banking' }, period: '2009–2016' },
-    { degree: { zh: '碩士', en: 'Master' }, school: { zh: '國立中央大學 財務金融學系', en: 'National Central University, Finance' }, period: '2004–2006' },
-    { degree: { zh: '學士', en: 'Bachelor' }, school: { zh: '國立臺灣大學 工商管理學系', en: 'National Taiwan University, Business Administration' }, period: '1999–2004' },
+    { degree: { zh: '碩士', en: 'Master’s' }, school: { zh: '國立中央大學 財務金融學系', en: 'National Central University, Finance' }, period: '2004–2006' },
+    { degree: { zh: '學士', en: 'B.B.A.' }, school: { zh: '國立臺灣大學 工商管理學系', en: 'National Taiwan University, Business Administration' }, period: '1999–2004' },
   ],
   experience: [
     { title: { zh: '副教授', en: 'Associate Professor' }, org: { zh: '中央大學 資訊管理學系', en: 'NCU, Information Management' }, kind: 'academia', period: '2023/02–' },

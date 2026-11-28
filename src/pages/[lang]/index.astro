@@ -41,7 +41,6 @@ const kindLook: Record<Kind, { clay: string; name: { zh: string; en: string } }>
   milestone: { clay: 'pink', name: { zh: '里程碑', en: 'Milestone' } },
 };
 const fmtDate = (d: string) => (d.length === 4 ? d : zh ? `${d.slice(0, 4)} 年 ${+d.slice(5, 7)} 月` : new Date(`${d}-01`).toLocaleString('en', { month: 'short', year: 'numeric' }));
-const crew = cohorts.flatMap(([, ms]) => ms).slice(0, 8);
 // timeline for the board: works per area counted up to each year; accepted papers join at "now"
 const dated = [
   ...pubs.map((p) => ({ area: p.data.area, year: p.data.status === 'forthcoming' ? Infinity : p.data.year })),
@@ -98,7 +97,6 @@ const description = zh
 
   <section class="wrap section mission" aria-labelledby="mission-h">
     <div>
-      <p class="eyebrow">{zh ? '使命' : 'Mission'}</p>
       <h2 id="mission-h" class="quote">{zh ? <><span>用台灣市場的資料檢驗財務理論，</span><span>再把它做成用得上的模型。</span></> : 'We test finance theory on Taiwan market data, then turn it into models people can use.'}</h2>
       {/* facts, not the list of areas: the next section shows the six areas with their counts */}
       <p class="lede">{zh ? `2023 年 8 月在中央資管成立，現在 ${memberCount} 位成員，每週 meeting 一次。` : `Founded in August 2023 in NCU Information Management; ${memberCount} members now, meeting once a week.`}</p>
@@ -117,9 +115,6 @@ const description = zh
   <section class="wrap section" aria-labelledby="areas-h">
     <div class="section-head">
       <h2 id="areas-h">{zh ? 'IFA Lab 在研究什麼？' : 'What does IFA Lab research?'}</h2>
-      <p class="muted">{zh
-        ? '六個研究領域，數字是論文和碩士論文的篇數。'
-        : 'Six research areas, with the number of papers and master’s theses in each.'}</p>
     </div>
     <ul class="areas" style={`--rows: ${Math.ceil(Math.max(...areas.map((a) => perArea(a.key))) / 2)}`}>
       {areas.map((a) => (
@@ -130,7 +125,7 @@ const description = zh
               <p class="muted">{t(a.blurb, lang)}</p>
             </span>
             <span class="tower" aria-hidden="true">{Array.from({ length: perArea(a.key) }, () => <i></i>)}</span>
-            <span class="count"><b>{perArea(a.key)}</b> {zh ? '篇' : perArea(a.key) === 1 ? 'work' : 'works'}</span>
+            <span class="count"><b>{perArea(a.key)}</b> {zh ? '篇論文' : perArea(a.key) === 1 ? 'paper' : 'papers & theses'}</span>
           </a>
         </li>
       ))}
@@ -178,21 +173,20 @@ const description = zh
   </section>
   <section class="wrap section">
     <div class="join clay has-cat">
-      <span class="cat-perch" style="right: 56px; top: -64px;"><LabCat lang={lang} bubble="left" lines={[{ zh: '我是 K 喵，IFA Lab 的吉祥物。', en: 'I am K-meow, the IFA Lab mascot.' }, { zh: '上面那隻 3D 的也是我，滑過或點一下 K 棒，我會跑過去看。', en: 'The 3D cat up top is me too. Point at or tap a candle and I go look.' }, { zh: '想加入？先寄一封信給老師，我幫你顧信箱。', en: 'Want to join? Email the professor first. I will watch the inbox.' }]} /></span>
+      <span class="cat-perch" style="right: 56px; top: -64px;"><LabCat lang={lang} bubble="left" lines={[{ zh: '我是 K 喵。右上角「問 K 喵」可以問我實驗室的事。', en: 'I am K-meow. Ask me about the lab with “Ask” at the top right.' }, { zh: '上面那隻 3D 的也是我，滑過或點一下 K 棒，我會跑過去看。', en: 'The 3D cat up top is me too. Point at or tap a candle and I go look.' }, { zh: '想加入？先寄一封信給老師，我幫你顧信箱。', en: 'Want to join? Email the professor first. I will watch the inbox.' }]} /></span>
       <div>
         <h2>{zh ? '想加入或合作？' : 'Want to join or work with us?'}</h2>
-        <p class="muted">{zh ? '修過財務或程式的課都可以，先寄一封信聊聊你好奇的事。' : 'Finance or programming background both work. Start with an email about what you are curious about.'}</p>
-        <a class="btn" href={href(lang, 'join')}>{t(ui.nav.join, lang)}</a>
-      </div>
-      <div class="crowd" aria-label={zh ? '現在的成員' : 'Current members'}>
-        {crew.map((m) => <Mate member={m} lang={lang} size={64} />)}
+        <p class="muted">{zh ? '修過財務或程式的課都可以；有資料、有問題想研究的機構，也歡迎來談。' : 'A background in either finance or programming is fine; firms with data and a question are welcome too.'}</p>
+        <p class="cta"><a class="btn" href={href(lang, 'join')}>{t(ui.nav.join, lang)}</a><a class="btn secondary" href={href(lang, 'collaboration')}>{zh ? '談合作' : 'Work with us'}</a></p>
       </div>
     </div>
   </section>
 </Base>
 
 <style>
-  .hero { padding-block: var(--space-6) var(--space-7); overflow-x: clip; }
+  .hero { padding-block: var(--space-6) var(--space-5); overflow-x: clip; }
+  /* the facts row under the hero already closes it: no extra band before the next section */
+  .hero + .mission { padding-top: var(--space-6); }
   .hero-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-5); align-items: center; }
   .copy { display: grid; gap: var(--space-5); position: relative; z-index: 1; }
   .hero h1 { font-size: clamp(44px, 6.6vw, 96px); line-height: 1.08; }
@@ -304,18 +298,15 @@ const description = zh
   .say { font-size: 17px; line-height: 1.65; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
   .say a { color: var(--ink); text-decoration: none; }
   .say a:hover { color: var(--accent); text-decoration: underline; }
-  .join { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-6); align-items: center; padding: var(--space-7) var(--space-7); background: color-mix(in oklab, var(--accent) 9%, var(--surface)); }
+  .join { display: grid; grid-template-columns: minmax(0, 44em); gap: var(--space-6); align-items: center; padding: var(--space-7) var(--space-7); background: color-mix(in oklab, var(--accent) 9%, var(--surface)); }
   .join > div:first-child { display: grid; gap: var(--space-4); justify-items: start; max-width: 34em; }
   .join .btn { margin-top: var(--space-2); }
   /* fixed cells: a guitar or headphones never eats into the gap beside its figure */
-  .join .crowd { display: grid; grid-template-columns: repeat(4, minmax(0, 76px)); justify-items: center; gap: var(--space-2) var(--space-3); }
   /* 320px phones: figures shrink a little so three per shelf and four in the crowd still fit */
   @media (max-width: 400px) {
     .mission .quote { font-size: 23px; } /* 再把它做成用得上的模型。 fits one 288px line */
     .row::after { inset: auto 0 0; }
     .row :global(.mate) { zoom: 0.78; }
-    .join .crowd { gap: var(--space-1); }
-    .join .crowd :global(.mate) { zoom: 0.85; }
   }
   .mission { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-8); align-items: center; }
   .mission > div { display: grid; gap: var(--space-4); }

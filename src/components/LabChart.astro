@@ -42,9 +42,9 @@ const pick = (y: number) => {
 const beforeAreas = [...new Set(before.map((w) => areaName(w.area)))];
 const steps = [
   ...(before.length ? [{
-    label: zh ? '成立前' : 'Before',
-    caption: zh ? `實驗室成立前，${advisor.name.zh}老師 ${first}–${OPEN - 1} 年已經累積 ${before.length} 件研究，這是 K 線的第一根。`
-      : `Before the lab opened, Prof. ${advisor.name.en} had published ${before.length} works (${first}–${OPEN - 1}): the first candle.`,
+    label: zh ? '成立前' : 'Before the lab',
+    caption: zh ? `實驗室成立前，${advisor.name.zh}老師 ${first}–${OPEN - 1} 年已經累積 ${before.length} 件研究。`
+      : `Before the lab opened, Prof. ${advisor.name.en} had published ${before.length} works (${first}–${OPEN - 1}).`,
     sub: zh ? `領域：${beforeAreas.join('、')}` : `Areas: ${beforeAreas.join(', ')}`,
     soon: false, bricks: before.map(brick), joins: [] as string[], anchor: '',
   }] : []),
@@ -66,7 +66,7 @@ const steps = [
     return { label: String(y), caption, sub, soon: false, bricks: ws.map(brick), joins: ms.map((m) => m.id), anchor: events.some((e) => e.date.startsWith(String(y))) ? `#${listId}-${y}` : '' };
   }),
   ...(works.some((w) => w.year === 0) ? [{
-    label: zh ? '即將' : 'Soon',
+    label: zh ? '即將' : 'Forthcoming',
     caption: zh ? '已被期刊接受、即將刊登的論文。' : 'Accepted papers, about to be published.',
     sub: '', soon: true,
     bricks: works.filter((w) => w.year === 0).sort(byArea).map(brick),

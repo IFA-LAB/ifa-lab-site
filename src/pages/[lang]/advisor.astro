@@ -68,7 +68,6 @@ const person = {
       <dl class="facts">
         <div><dt>{zh ? '在大學任教' : 'Teaching since'}</dt><dd class="nw"><b>2017</b>{zh ? ' 年起' : ''}</dd></div>
         <div><dt>{zh ? '期刊論文' : 'Journal papers'}</dt><dd class="nw"><b>{journals}</b>{zh ? ' 篇' : ''}</dd></div>
-        <div><dt>{zh ? '這兩學期開的課' : 'Courses this year'}</dt><dd class="nw"><b>{advisor.courses.length}</b>{zh ? ' 門' : ''}</dd></div>
       </dl>
     </section>
     <section class="sec">
@@ -104,7 +103,7 @@ const person = {
     </section>
     <div class="two">
       <section class="sec"><h2>{zh ? '獎項' : 'Awards'}</h2><ul class="plain">{advisor.awards.map((x) => <li>{t(x, lang)}</li>)}</ul></section>
-      <section class="sec"><h2>{zh ? '證照' : 'Licenses'}</h2><ul class="plain lic">{advisor.licenses.map((l) => <li>{t(l, lang)}</li>)}</ul></section>
+      <section class="sec"><h2>{zh ? '證照' : 'Certifications'}</h2><ul class="plain lic">{advisor.licenses.map((l) => <li>{t(l, lang)}</li>)}</ul></section>
     </div>
   </article>
 </Base>

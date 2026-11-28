@@ -69,6 +69,8 @@ function searchOne(ix: Index, q: string, lang: string, k = 5): Passage[] {
   let qn = q.replace(/碩論/g, '碩士論文').toLowerCase();
   // how people ask to join: the site answers under 加入 / 寄信 and "join" / "email"
   if (/申請|報名|考進|進實驗室|進 ?lab/.test(qn)) qn += ' 加入 寄信';
+  // 財務 and 金融 are used for the same thing (the FAQ says 對金融有興趣很好，沒有也沒關係)
+  if (qn.includes('財務') && !qn.includes('金融')) qn += ' 金融';
   if (/\b(apply|applying|application|admission|get in)\b/.test(qn)) qn += ' join email';
   // does the question name a member? then their pages lead; otherwise the lab's own pages do
   const named = ix.ps.some((p) => { const w = p.title.split(/\s*[｜|]\s*/)[0].toLowerCase(); return p.url.includes('/members/') && w.length >= 2 && !w.startsWith('ifa lab') && qn.includes(w); });
@@ -145,6 +147,15 @@ async function cloudAnswer(env: Env, q: string, lang: 'zh-tw' | 'en', hits: Pass
   }
 }
 
+/** Citations the chat can link: "[3, 4]" becomes "[3][4]", and a number with no source behind it is dropped
+ *  (a refusal once ended in a bare "[3, 4]"). */
+function cite(answer: string, n: number): string {
+  return answer
+    .replace(/\[(\d+(?:\s*[,，、]\s*\d+)+)\]/g, (_, list: string) => list.split(/\s*[,，、]\s*/).map((k) => `[${k}]`).join(''))
+    .replace(/\s*\[(\d+)\]/g, (m, k: string) => (+k >= 1 && +k <= n ? m : ''))
+    .trim();
+}
+
 const json = (o: unknown, status = 200) => Response.json(o, { status, headers: { 'Cache-Control': 'no-store' } });
 
 async function ask(req: Request, env: Env): Promise<Response> {
@@ -163,7 +174,8 @@ async function ask(req: Request, env: Env): Promise<Response> {
 
   cached ??= loadIndex(env, origin).catch((e) => { cached = null; throw e; });
   const hits = search(await cached, q, lang);
-  const page = (t: string) => t.replace(/\s*[｜|]\s*IFA Lab.*$/, '');
+  // the page's own name: the title before its first separator (the home page's long SEO title included)
+  const page = (t: string) => t.split(/\s*[｜|]\s*/)[0];
   const sources = hits.map((p) => ({
     title: p.section && p.section !== page(p.title) ? `${page(p.title)} · ${p.section}` : page(p.title),
     url: p.url,
@@ -179,13 +191,13 @@ async function ask(req: Request, env: Env): Promise<Response> {
         body: JSON.stringify({ q, lang, passages: hits.map(({ title, section, text }) => ({ title, section, text })) }),
       });
       const a = (await r.json()) as { answer?: string; mode?: string; model?: string };
-      if (a.answer) return json({ answer: a.answer, mode: 'llm', via: 'spark', sources });
+      if (a.answer) return json({ answer: cite(a.answer, sources.length), mode: 'llm', via: 'spark', sources });
       sparkMode = a.mode ?? '';
     } catch { /* tunnel down: fall through */ }
   }
   // 2) Workers AI, up to the daily cap
   const answer = await cloudAnswer(env, q, lang as 'zh-tw' | 'en', hits);
-  if (answer) return json({ answer, mode: 'llm', via: 'cloud', sources });
+  if (answer) return json({ answer: cite(answer, sources.length), mode: 'llm', via: 'cloud', sources });
   // 3) the matching passages only
   return json({ answer: '', mode: sparkMode === 'warming' ? 'warming' : 'search', sources });
 }

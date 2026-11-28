@@ -225,10 +225,10 @@ const jsonld = journals.map((p) => ({
       const shown = g.querySelectorAll('.pub:not([hidden])').length;
       g.querySelector('.n')!.textContent = String(shown);
       g.hidden = shown === 0;
-      // the jump chips carry the same filtered counts; an emptied one fades
+      // the jump chips carry the same filtered counts; one whose section emptied goes away (a faded chip still linked to a hidden section)
       const id = g.getAttribute('aria-labelledby');
       const chip = document.querySelector<HTMLElement>(`.jump [data-for="${id}"]`);
-      if (chip) { chip.querySelector('b')!.textContent = String(shown); chip.classList.toggle('none', shown === 0); }
+      if (chip) { chip.querySelector('b')!.textContent = String(shown); chip.hidden = shown === 0; }
     }
     // the wall above follows the filter: other areas fade, each year's number counts only this area
     for (const col of document.querySelectorAll<HTMLElement>('.wall .col')) {
@@ -241,7 +241,7 @@ const jsonld = journals.map((p) => ({
     // grants and student projects carry no research area: while an area is picked they step aside instead of
     // showing in full under a label that says they were filtered
     for (const g of document.querySelectorAll<HTMLElement>('[data-unsorted]')) g.hidden = !!area;
-    for (const a of document.querySelectorAll<HTMLElement>('.jump a[href="#g-h"], .jump a[href="#s-h"]')) a.classList.toggle('none', !!area);
+    for (const a of document.querySelectorAll<HTMLElement>('.jump a[href="#g-h"], .jump a[href="#s-h"]')) a.hidden = !!area;
     const label = buttons.find((b) => b.dataset.area === area)?.textContent?.trim();
     status.textContent = area ? (zh ? `${label}：${n} 篇論文` : `${label}: ${n} ${n === 1 ? 'paper' : 'papers'}`) : '';
     if (scroll) document.querySelector('.filter')?.scrollIntoView({ block: 'start' });
@@ -387,6 +387,7 @@ const jsonld = journals.map((p) => ({
     /* the bar's background runs the full window width, so there is no seam where it stops */
     box-shadow: 0 0 0 100vmax var(--bg); clip-path: inset(0 -100vmax); }
   .jump a { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 var(--space-4); border-radius: var(--r-full); background: var(--surface-2); color: var(--ink); text-decoration: none; }
+  .jump a[hidden] { display: none; }
   .jump::before { content: attr(data-label); align-self: center; font: 600 13px/1 var(--f-mono); color: var(--ink-2); margin-right: var(--space-2); }
   .live { margin-left: var(--space-2); padding: 2px 8px; border-radius: var(--r-full); background: var(--clay-down); color: #0b1f15; font: 600 12px/1.4 var(--f-body); }
   .jump a:hover { color: var(--accent); }

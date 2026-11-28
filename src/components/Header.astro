@@ -89,9 +89,14 @@ const other = otherLocale(lang);
   );
   // Close the mobile menu on Escape or a tap anywhere outside it.
   document.querySelectorAll<HTMLDetailsElement>('details.menu').forEach((d) => {
-    d.addEventListener('keydown', (e) => { if (e.key === 'Escape' && d.open) { d.open = false; d.querySelector('summary')?.focus(); } });
+    // on the document, not the menu: after a tap on the summary, focus may not be inside it
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && d.open) { d.open = false; d.querySelector('summary')?.focus(); } });
     document.addEventListener('pointerdown', (e) => { if (d.open && !d.contains(e.target as Node)) d.open = false; });
   });
+  // The language switch keeps the page's state in the hash (the research filter, a section): #behavioral stays put.
+  document.querySelectorAll<HTMLAnchorElement>('a.lang').forEach((a) =>
+    a.addEventListener('click', () => { if (location.hash) a.hash = location.hash; }),
+  );
 </script>
 
 <style>
