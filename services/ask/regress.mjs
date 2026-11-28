@@ -16,6 +16,7 @@ const cases = [
   { lang: 'en', q: "What is his master's thesis?", page: '/en/members/hong-jie-tseng/', want: ['not', "doesn't"], deny: ['SeqTAG', 'Zi-Wei'] },
   { lang: 'zh-tw', q: '他做過哪些研究？', page: '/zh-tw/members/sheng-le-wu/', want: ['沒', '未'], deny: ['邱信瑜老師個人'] },
   { lang: 'en', q: 'What did this paper find?', page: '/en/papers/disposition-short-sellers/', want: ['short'], deny: ['holding onto losing', 'hold onto losing', 'hold losing'] },
+  { lang: 'zh-tw', q: '其他成員在做什麼研究？', page: '/zh-tw/members/sheng-le-wu/', want: ['SeqTAG', 'SHAP', 'DNNTSP'], deny: ['未提及其他成員'] },
   { lang: 'zh-tw', q: '實驗室有博士班嗎？', want: ['沒寫', '沒有提', '未提', 'hychiu'], deny: ['沒有博士班。'] },
   { lang: 'zh-tw', q: '碩士班一年收幾位？', want: ['3'], deny: ['每年收', '每年都收'] },
   { lang: 'zh-tw', q: '老師開哪些課？哪些是英語授課？', want: ['Python'], deny: [] },

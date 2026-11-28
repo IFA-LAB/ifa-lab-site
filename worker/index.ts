@@ -80,6 +80,8 @@ function searchOne(ix: Index, q: string, lang: string, k = 5): Passage[] {
   let qn = q.replace(/碩論/g, '碩士論文').toLowerCase();
   // how people ask to join: the site answers under 加入 / 寄信 and "join" / "email"
   if (/申請|報名|考進|進實驗室|進 ?lab/.test(qn)) qn += ' 加入 寄信';
+  // what other members / alumni work on: the join page lists every thesis under 學長姐做過的題目
+  if (/其他成員|學長姐|學長|學姐|大家|成員們|其他人/.test(qn) && /研究|題目|做什麼|做哪|碩士論文|論文/.test(qn)) qn += ' 學長姐做過的題目 學長姐 題目';
   // 財務 and 金融 are used for the same thing (the FAQ says 對金融有興趣很好，沒有也沒關係)
   if (qn.includes('財務') && !qn.includes('金融')) qn += ' 金融';
   // "I didn't study X, can I…": the answer is the FAQ on who the lab is for, not the one on undergraduates
@@ -242,6 +244,15 @@ async function ask(req: Request, env: Env): Promise<Response> {
   const hit = (p: (typeof own)[number]) => { let n = 0; for (const g of grams(p.section)) if (qg.has(g)) n += 3; for (const g of grams(p.text.slice(0, 400))) if (qg.has(g)) n++; return n; };
   const byQ = deictic && own.length ? own.filter((p) => hit(p) > 0).sort((a, b) => hit(b) - hit(a)) : [];
   const mine = deictic && own.length ? [...new Set([...own.filter((p) => rank(p) === 0), ...byQ, ...own])].filter((p) => rank(p) < 9 && p.text.length > 40).slice(0, 4) : [];
+  // "what did this paper find?" on a paper page: the page's own Finding line, word for word. The model, given the
+  // abstract, kept adding the textbook definition of the effect (short sellers "holding onto losing ones")
+  const pts = /^\/(zh-tw|en)\/papers\//.test(at) && own.length && /發現|結果|結論|\b(find|finds|found|findings?|results?|conclu\w*)\b/i.test(q) ? own.find((p) => /#pts-h$/.test(p.url)) : undefined;
+  const finding = pts?.text.split(/\n(?:Finding|發現)\n/)[1]?.split('\n')[0]?.trim();
+  if (pts && finding) {
+    const intro = lang === 'en' ? 'In short: ' : '簡單說：';
+    const tail = lang === 'en' ? ' The abstract on this page has the details.' : '細節在本頁的摘要。';
+    return json({ answer: `${intro}${finding} [1]${tail}`, mode: 'page', sources: [{ title: `${pts.title.split(/\s*[｜|]\s*/)[0]} · ${pts.section}`, url: pts.url, text: finding.slice(0, 220) }] });
+  }
   // an unfilled member page has no passages at all: "his thesis?" there must not be answered with someone else's
   if (deictic && /^\/(zh-tw|en)\/(papers|members)\/[a-z0-9-]+\/$/.test(at) && !mine.length) {
     const answer = /\/members\//.test(at)
