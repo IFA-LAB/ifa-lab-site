@@ -1,6 +1,7 @@
 ---
 /* Root entry: send visitors to their language. Static, so it works on any host.
-   Search engines follow the canonical + hreflang to /zh-tw/. */
+   Search engines follow the canonical + hreflang to /zh-tw/. Not noindex: a noindex page that also names a canonical
+   sends Google two opposite signals, and this page is where Google looks for the site icon. */
 const site = Astro.site!;
 ---
 <!doctype html>
@@ -13,7 +14,15 @@ const site = Astro.site!;
     <link rel="alternate" hreflang="zh-Hant-TW" href={new URL('/zh-tw/', site).href} />
     <link rel="alternate" hreflang="en" href={new URL('/en/', site).href} />
     <link rel="alternate" hreflang="x-default" href={new URL('/zh-tw/', site).href} />
-    <meta name="robots" content="noindex, follow" />
+    <meta name="description" content="IFA Lab 智能金融分析實驗室，國立中央大學資訊管理學系，邱信瑜老師主持。" />
+    <!-- Google reads the site's icon from this page (the domain's home), so it carries the same icon set as every page -->
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/icon-48.png" sizes="48x48" type="image/png" />
+    <link rel="icon" href="/icon-96.png" sizes="96x96" type="image/png" />
+    <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <script is:inline>
       var en = (navigator.languages || [navigator.language || '']).some(function (l) { return /^en/i.test(l); }) &&
         !(navigator.languages || []).some(function (l) { return /^zh/i.test(l); });

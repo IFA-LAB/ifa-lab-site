@@ -73,7 +73,7 @@ const webPage = {
   url: canonical,
   name: fullTitle,
   inLanguage: htmlLang[lang],
-  isPartOf: { '@type': 'WebSite', '@id': new URL('/#site', site).href, name: lab.short, url: new URL(`/${lang}/`, site).href },
+  isPartOf: { '@type': 'WebSite', '@id': new URL('/#site', site).href, name: lab.short, alternateName: ['IFA Lab 中央資管', 'IFA Lab NCU', `${lab.short} ${lab.name.zh}`, lab.name.en], url: new URL('/', site).href },
   publisher: { '@id': org['@id'] },
   ...(subject ? { mainEntity: (({ '@context': _c, ...p }: any) => p)(subject) } : {}),
   ...(crumbs?.length
@@ -108,7 +108,7 @@ const graph = [org, webPage, ...jsonld.filter((j) => j !== subject)];
     <meta name="theme-color" content="#141a23" media="(prefers-color-scheme: dark)" />
     {/* Google's results show a site icon only from a square PNG/ICO in multiples of 48 px; the .ico (16/32) was too small
          and search showed a blank globe. iOS uses the opaque 180 px one. */}
-    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/icon-48.png" sizes="48x48" type="image/png" />
     <link rel="icon" href="/icon-96.png" sizes="96x96" type="image/png" />
