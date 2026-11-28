@@ -245,7 +245,7 @@ async function ask(req: Request, env: Env): Promise<Response> {
   const hits = mine.length ? mine : [...own.slice(0, 2), ...search(ix, q, lang).filter((h) => !own.includes(h))].slice(0, 5);
   // a current student's page has papers but no thesis yet; without this the model calls the first paper the thesis
   const noThesis = mine.length && /碩論|碩士論文|thesis/i.test(q) && !own.some((p) => /thesis/.test(p.url));
-  if (noThesis) q += lang === 'en' ? ' (This page has no master's thesis section; the papers listed are not the thesis.)' : '（這一頁沒有碩士論文段落，列出的論文不是碩論）';
+  if (noThesis) q += lang === 'en' ? " (This page has no master's thesis section; the papers listed are not the thesis.)" : '（這一頁沒有碩士論文段落，列出的論文不是碩論）';
   if (mine.length) q = `${q}（${lang === 'en' ? 'about: ' : '指的是：'}${mine[0].title.split(/\s*[｜|]\s*/)[0]}）`;
   // the page's own name: the title before its first separator (the home page's long SEO title included)
   const page = (t: string) => t.split(/\s*[｜|]\s*/)[0];
