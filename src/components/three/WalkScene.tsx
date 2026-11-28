@@ -290,7 +290,9 @@ function Rig({ at, L, c, reveal, focus }: { at: RefObject<Vector3>; L: Layout; c
       d = Math.max(d, (wide ? span / (2 * tan) : span / (2 * tan * 0.6)) * g + d * (1 - g));
     }
     // on the last step the dashed next candle stands one slot right: aim a little right so it clears the scroll rail
-    const ax = a.x + (wide ? clamp(T - (L.length - 2)) * GX * 0.7 : g * GX * 0.55);
+    // phones and tablets: this year sat right of centre with empty space beside it while last year was cut at the left
+    // edge, so aim about half a slot back and both years fit
+    const ax = a.x + (wide ? clamp(T - (L.length - 2)) * GX * 0.7 : g * GX * 0.55 - (1 - g) * GX * 0.5);
     want.set(ax + Math.sin(yaw) * d, lookY + lift * d, Math.cos(yaw) * d);
     wantLook.set(ax + 0.2, lookY, 0);
     // the ending: the whole chart from a high three-quarter view, the dashed next candle included

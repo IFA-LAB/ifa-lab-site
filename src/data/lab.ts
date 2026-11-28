@@ -65,6 +65,8 @@ export const advisor = {
   ] satisfies { level: 'ug' | 'grad'; code: string; name: Bi; note: Bi }[],
   // NCU Scholars (scholars.ncu.edu.tw) stopped resolving in 2026-11; the department's faculty page is the official profile
   facultyUrl: 'https://im.mgt.ncu.edu.tw/teacher',
+  /** NCU's own CV page for him (iTeacher); verified 2026-11-28 */
+  iTeacherUrl: 'https://cis.ncu.edu.tw/iTeacher/home/0x19d05e8574cbe7058600d4b66bbde0aa',
   awards: [{ zh: '113 學年度管理學院教學優良獎', en: 'Teaching Excellence Award, College of Management, NCU (2024⁠–⁠25)' }] satisfies Bi[],
   bio: {
     zh: '政治大學金融學博士（指導教授：江彌修），曾任中央研究院經濟研究所博士後研究（與許育進合作）。進入學界前在宏泰人壽與元大銀行從事風險管理、衍生性商品定價與商品開發。研究聚焦資產定價、行為財務、AI 與機器學習，以及用歷史資料建構投資組合。',

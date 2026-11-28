@@ -22,7 +22,7 @@ for (const p of pubs) for (const a of p.data.authors) if (a !== 'Hsin-Yu Chiu' &
 const people = [...coauthors].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 const venues = [...new Set(pubs.filter((p) => p.data.kind === 'journal').map((p) => p.data.venue).filter(Boolean))] as string[];
 ---
-<Base lang={lang} ask={zh ? [{ label: '怎麼開始談合作？', q: '產學合作怎麼開始？' }] : [{ label: 'How do we start working together?', q: 'How can a company start a collaboration with the lab?' }]} title={zh ? '產學合作與學術合作' : 'Industry and academic collaboration'} description={zh ? '和中央大學資管系 IFA Lab 合作：產學合作（已和兆豐銀行完成一個專案）、學術共同研究與跨領域研究。' : 'Work with IFA Lab: industry, academic and interdisciplinary collaboration.'}>
+<Base lang={lang} ask={zh ? [{ label: '怎麼開始談合作？', q: '產學合作怎麼開始？' }] : [{ label: 'How do we start working together?', q: 'How can a company start a collaboration with the lab?' }]} title={zh ? '產學合作：兆豐銀行 × 中央資管' : 'Industry collaboration with Mega Bank'} description={zh ? `中央資管 IFA Lab（邱信瑜老師）2025–2026 年和兆豐金控、兆豐銀行產學合作，研究隨機優勢的可預測性與持續性；也和 ${people.length} 位校外研究者合寫過論文。` : `IFA Lab at NCU (Prof. Hsin-Yu Chiu) worked with Mega Financial Holding and Mega Bank in 2025–2026 on whether stochastic dominance is predictable and persistent, and has co-authored papers with ${people.length} outside researchers.`}>
   <div class="wrap section">
     <div class="section-head">
       <h1>{zh ? '跟 IFA Lab 合作' : 'Work with IFA Lab'}</h1>

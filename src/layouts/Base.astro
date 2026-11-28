@@ -45,7 +45,8 @@ const org = {
   '@type': 'ResearchOrganization',
   '@id': new URL('/#org', site).href,
   name: `${lab.short} — ${lab.name.en}`,
-  alternateName: [lab.name.zh, `${lab.short}-${lab.name.zh}`],
+  // the names people and answer engines use (Gemini called the lab's site a typo for the old Google Site)
+  alternateName: [lab.name.zh, `${lab.short}-${lab.name.zh}`, 'IFA Lab 中央資管', '中央資管 IFA Lab', `中央大學${lab.name.zh}`, 'IFA Lab NCU'],
   url: new URL(`/${lang}/`, site).href,
   foundingDate: lab.founded,
   email: lab.contact.email,
@@ -58,7 +59,8 @@ const org = {
   },
   address: { '@type': 'PostalAddress', streetAddress: lab.contact.address.en, addressCountry: 'TW' },
   logo: new URL('/logo.png', site).href,
-  sameAs: ['https://github.com/IFA-LAB'],
+  // the lab's previous site (still online) is the same organisation
+  sameAs: ['https://github.com/IFA-LAB', 'https://sites.google.com/view/ifa-lab/'],
 };
 // this page's own share card (scripts/og.mjs) when there is one; otherwise the member photo or the home shot
 const cardSlug = path.replace(/^\/(zh-tw|en)\/?/, '').replace(/\/$/, '').replace(/\//g, '_') || 'home';

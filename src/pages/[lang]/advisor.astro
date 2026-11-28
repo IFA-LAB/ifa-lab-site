@@ -32,7 +32,7 @@ const person = {
   url: new URL(href(lang, 'advisor'), site).href,
   worksFor: { '@id': new URL('/#org', site).href },
   knowsAbout: advisor.research,
-  sameAs: [advisor.facultyUrl, advisor.scholarUrl, advisor.researchGateUrl],
+  sameAs: [advisor.facultyUrl, advisor.iTeacherUrl, advisor.scholarUrl, advisor.researchGateUrl],
   award: advisor.awards.map((a) => a.zh),
   alumniOf: advisor.education.map((e) => ({ '@type': 'CollegeOrUniversity', name: e.school.en })),
 };
@@ -179,6 +179,8 @@ const focus = t(advisor.bio, lang).split(/(?<=[。.])\s*/).filter(Boolean).at(-1
   .cat-row { position: absolute; right: var(--space-6); bottom: calc(-1 * var(--space-6)); }
   .recent { margin: 0; padding-left: 1.4em; display: grid; gap: var(--space-2); }
   .recent .mono { font-size: 13px; margin-left: var(--space-1); }
+  /* a title ending "…the roles of ESG" left "ESG" alone on the last line */
+  .recent li { text-wrap: pretty; }
   .plain { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2); }
   /* licence names stay whole: two columns only when each column can hold the longest name */
   .lic li { word-break: keep-all; }

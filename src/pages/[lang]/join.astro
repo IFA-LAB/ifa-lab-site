@@ -13,11 +13,11 @@ const zh = lang === 'zh-tw';
 const faq: { q: Bi; a: Bi }[] = [
   {
     q: { zh: 'IFA Lab 適合什麼樣的學生？', en: 'Who is IFA Lab for?' },
-    a: { zh: '想拿真實資料做研究的學生：實驗室做過台股、期貨、選擇權、財報文字和 P2P 借貸的題目。不懂金融沒關係，會一點 Python 會比較快上手。', en: 'Students who want to do research on real data: past topics used Taiwan stocks, futures, options, financial-report text and P2P lending. No finance background is needed; some Python helps you start faster.' },
+    a: { zh: '想拿真實資料做研究的學生：實驗室做過台股、期貨、選擇權、財報文字和 P2P 借貸的題目。不懂金融也沒關係。', en: 'Students who want to do research on real data: past topics used Taiwan stocks, futures, options, financial-report text and P2P lending. No finance background is needed.' },
   },
   {
     q: { zh: '中央資管碩士班怎麼找指導老師？', en: 'How do I choose an advisor for the NCU IM master’s program?' },
-    a: { zh: '先看老師近幾年的論文和學生題目合不合你的興趣，再寄信約時間聊；也可以問學長姐每週 meeting 的方式和畢業時程。IFA Lab 的這些資訊都整理在這一頁和研究頁。', en: 'Look at the advisor’s recent papers and students’ topics, then email to set up a chat; ask current students how meetings run and how long graduation takes. For IFA Lab, all of this is on this page and the research page.' },
+    a: { zh: '先看老師近幾年的論文和學生題目合不合你的興趣，再寄信約時間聊；也可以問學長姐每週 meeting 的方式和畢業時程。IFA Lab 每週 meeting 一次，學長姐的碩論題目和畢業去向列在本頁下方。', en: 'Look at the advisor’s recent papers and students’ topics, then email to set up a chat; ask current students how meetings run and how long graduation takes. At IFA Lab the meeting is weekly, and past students’ theses and where they went are listed below.' },
   },
   {
     q: { zh: '一定要做金融題目嗎？', en: 'Do I have to work on finance?' },
@@ -80,7 +80,7 @@ const faqLd = {
 <Base lang={lang} title={zh ? '中央資管碩士班找指導老師：加入我們' : 'Join us: master’s students at NCU IM'} description={zh ? 'IFA Lab 招收碩士班學生：題目不限金融，資訊管理領域的方向都可以討論，每週 meeting 一次、壓力不大、可以實習。學長姐畢業後去了台積電、中華電信研究院、世界先進。' : 'IFA Lab takes master’s students on any information-management topic: one meeting a week, internships welcome. Graduates went on to TSMC, Chunghwa Telecom Labs and VIS.'} jsonld={[faqLd]}>
   <div class="wrap section">
     <div class="section-head">
-      <h1 class="lines">{(zh ? ['加入 IFA Lab：', '碩士班與研究助理'] : ['Join IFA Lab:', 'master’s students and RAs']).map((l, i) => <>{i ? ' ' : ''}<span>{l}</span></>)}</h1>
+      <h1 class="lines">{(zh ? ['加入 IFA Lab：', '碩士班與研究助理'] : ['Join IFA Lab:', 'master’s students and RAs']).map((l, i) => <>{i && !zh ? ' ' : ''}<span>{l}</span></>)}</h1>
       <p class="muted">{zh ? '2026 年秋天收了 3 位碩士生，題目不限金融。' : 'Three master’s students joined in fall 2026. Topics are not limited to finance.'}</p>
       <p class="cta top"><a class="btn" href={`mailto:${lab.contact.email}`}>{zh ? `寄信給${advisor.name.zh}老師` : `Email Prof. ${advisor.name.en}`}</a></p>
     </div>

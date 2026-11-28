@@ -229,7 +229,7 @@ async function ask(req: Request, env: Env): Promise<Response> {
   // asked from a paper's or member's own page about that page (the suggested questions name it): that page's passages
   // lead, so "the main finding?" is answered from the paper itself, not from the research overview's one-line entry
   const own = /^\/(zh-tw|en)\/(papers|members)\/[a-z0-9-]+\/$/.test(at)
-    ? ix.ps.filter((p) => p.lang === lang && p.url.split('#')[0] === at && q.toLowerCase().includes(p.title.split(/\s*[｜|]\s*/)[0].toLowerCase().slice(0, 12)))
+    ? ix.ps.filter((p) => p.lang === lang && p.url.split('#')[0] === at && !/引用|cite/i.test(p.section) && q.toLowerCase().includes(p.title.split(/\s*[｜|]\s*/)[0].toLowerCase().slice(0, 12)))
     : [];
   const hits = [...own.slice(0, 2), ...search(ix, q, lang).filter((h) => !own.includes(h))].slice(0, 5);
   // the page's own name: the title before its first separator (the home page's long SEO title included)
