@@ -16,6 +16,7 @@ const T = {
   you: zh ? '你' : 'You',
   subjectName: zh ? '想加入 IFA Lab：' : 'Joining IFA Lab: ',
   body: zh ? `${advisor.name.zh}老師好，我是{n}，想做「{a}」方向的研究。\n\n（三五句話介紹自己、修過的課，和你好奇的題目）` : `Dear Prof. ${advisor.name.en},\n\nI am {n} and would like to work on {a}.\n\n(A few lines about yourself, courses you took, and a question you are curious about.)`,
+  bodyAnon: zh ? `${advisor.name.zh}老師好，我想做「{a}」方向的研究。\n\n（三五句話介紹自己、修過的課，和你好奇的題目）` : `Dear Prof. ${advisor.name.en},\n\nI would like to work on {a}.\n\n(A few lines about yourself, courses you took, and a question you are curious about.)`,
   live: zh ? '你的磚：{n}，{a}，疊在最上面，成為第 {c} 屆。' : 'Your brick: {n}, {a}, on top as cohort {c}.',
 };
 ---
@@ -24,9 +25,9 @@ const T = {
   <div class="copy">
     <p>{zh ? `實驗室是一屆一屆疊起來的，每塊磚是一位成員。寫上名字、選一個想做的方向，看看你疊上去的樣子；寄信時會一起帶上。` : 'The lab is built cohort by cohort; each brick is a member. Add your name and pick a direction to see your brick on top. The email will carry both.'}</p>
     <form class="form" data-form>
-      <label class="name">{zh ? '你的名字' : 'Your name'}<input name="n" maxlength="16" autocomplete="name" placeholder={zh ? '例如：王小明' : 'e.g. Alex Chen'} /></label>
+      <label class="name">{zh ? '你的名字' : 'Your name'}<input name="n" maxlength="40" autocomplete="name" placeholder={zh ? '例如：王小明' : 'e.g. Alex Chen'} /></label>
       <fieldset>
-        <legend>{zh ? '想做的方向' : 'A direction you would like'}</legend>
+        <legend>{zh ? '想做的方向' : 'Area you’d like to work on'}</legend>
         <div class="chips">
           {areas.map((a, i) => (
             <label class="chip" style={`--c: var(--clay-${a.clay})`}><input type="radio" name="a" value={a.key} data-label={t(a.short ?? a.name, lang)} data-clay={a.clay} checked={i === 0} /><span>{t(a.short ?? a.name, lang)}</span></label>
@@ -39,7 +40,7 @@ const T = {
     </form>
   </div>
   <div class="stack" aria-hidden="true">
-    <div class="row top"><span class="brick you" data-you style="--c: var(--clay-blue)"><b data-you-name>{T.you}</b></span></div>
+    <div class="row top"><span class="brick you" data-you style="--c: var(--clay-blue)"><b class="nm" data-you-name>{T.you}</b></span></div>
     {rows.map(([c, ms]) => (
       <div class="row">
         {ms.map((m) => <span class="brick" style={`--c: var(--clay-${m.data.figure.clay})`}>{t(m.data.name, lang)}</span>)}
@@ -64,7 +65,7 @@ const T = {
       name.textContent = n || T.you;
       const who = n || T.you, area = r.dataset.label ?? '';
       const subject = n ? T.subjectName + n : T.subjectName.replace(/[：:]\s*$/, '');
-      mail.href = `mailto:${box.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(T.body.replace('{n}', who).replace('{a}', area))}`;
+      mail.href = `mailto:${box.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent((n ? T.body : T.bodyAnon).replace('{n}', who).replace('{a}', area))}`;
       clearTimeout(timer);
       timer = window.setTimeout(() => { live.textContent = T.live.replace('{n}', who).replace('{a}', area).replace('{c}', box.dataset.next ?? ''); }, 600);
     };
@@ -81,7 +82,10 @@ const T = {
   .stack { grid-area: stack; }
   .copy { display: grid; gap: var(--space-4); align-content: start; }
   .copy > p { margin: 0; max-width: 32em; }
-  .form { display: grid; gap: var(--space-4); }
+  .form { display: none; gap: var(--space-4); }
+  :global(html.js) .yours .form { display: grid; }
+  .nm { display: block; max-width: 14em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .copy > p { word-break: keep-all; overflow-wrap: anywhere; }
   .name { display: grid; gap: var(--space-2); font-weight: 600; }
   .name input { font: inherit; font-weight: 400; min-height: 48px; padding: 0 var(--space-4); border-radius: var(--r-md); border: 1.5px solid color-mix(in oklab, var(--ink) 35%, transparent); background: var(--surface); color: var(--ink); max-width: 22em; }
   .name input::placeholder { color: var(--ink-2); }

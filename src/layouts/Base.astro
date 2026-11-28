@@ -121,6 +121,7 @@ const graph = [org, webPage, ...jsonld.filter((j) => j !== subject)];
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <script is:inline>
+      document.documentElement.classList.add('js');
       try { const s = localStorage.getItem('theme'); if (s === 'light' || s === 'dark') document.documentElement.dataset.theme = s; } catch {}
       // desktop with a mouse: the scrollbar becomes K 喵's candle (ScrollCat.astro); decided before paint so nothing shifts
       // pages that open on 3D wait behind the loading screen, but only when the 3D will run (same test as canRun3D)
