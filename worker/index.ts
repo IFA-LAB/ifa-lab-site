@@ -59,7 +59,11 @@ async function loadIndex(env: Env, origin: string): Promise<Index> {
 /** A question that asks two things (研究什麼？怎麼申請？ / what … and how …) is searched part by part and the
  *  results interleaved, so the second part is not crowded out by passages matching the first. */
 function search(ix: Index, q: string, lang: string, k = 5): Passage[] {
-  const parts = q.split(/[？?；;]+|\band (?=how|what|where|when|who|which|can|do)|，(?=要|怎|有沒有|可以|那)/i).map((s) => s.trim()).filter((s) => s.length >= 2);
+  const raw = q.split(/[？?；;]+|\band (?=how|what|where|when|who|which|can|do)|，(?=要|怎|有沒有|可以|那)/i).map((s) => s.trim()).filter((s) => s.length >= 2);
+  // a short follow-up (刊在哪？ / Which journals?) is about the first part, not a topic of its own: searched alone,
+  // 刊在哪 found 學長姐畢業後去哪裡
+  const parts: string[] = [];
+  for (const s of raw) if (parts.length && [...s].length < (/[a-z]/i.test(s) ? 16 : 5)) parts[parts.length - 1] += ` ${s}`; else parts.push(s);
   if (parts.length < 2) return searchOne(ix, q, lang, k);
   const lists = parts.slice(0, 3).map((p) => searchOne(ix, p, lang, 3));
   const out: Passage[] = [], seen = new Set<string>();
