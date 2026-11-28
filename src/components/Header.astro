@@ -95,7 +95,13 @@ const other = otherLocale(lang);
   });
   // The language switch keeps the page's state in the hash (the research filter, a section): #behavioral stays put.
   document.querySelectorAll<HTMLAnchorElement>('a.lang').forEach((a) =>
-    a.addEventListener('click', () => { if (location.hash) a.hash = location.hash; }),
+    a.addEventListener('click', () => {
+      if (location.hash) { a.hash = location.hash; return; }
+      // scrolled down a page: land on the same section in the other language (both share the ids), not at the top
+      if (scrollY < 200) return;
+      const at = [...document.querySelectorAll<HTMLElement>('main [id]')].filter((e) => e.getBoundingClientRect().top <= 120 && e.offsetHeight > 0).pop();
+      if (at) a.hash = at.id;
+    }),
   );
 </script>
 
