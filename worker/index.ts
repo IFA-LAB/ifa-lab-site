@@ -242,7 +242,8 @@ async function ask(req: Request, env: Env): Promise<Response> {
   const hit = (p: (typeof own)[number]) => { let n = 0; for (const g of grams(p.section)) if (qg.has(g)) n += 3; for (const g of grams(p.text.slice(0, 400))) if (qg.has(g)) n++; return n; };
   const byQ = deictic && own.length ? own.filter((p) => hit(p) > 0).sort((a, b) => hit(b) - hit(a)) : [];
   const mine = deictic && own.length ? [...new Set([...own.filter((p) => rank(p) === 0), ...byQ, ...own])].filter((p) => rank(p) < 9 && p.text.length > 40).slice(0, 4) : [];
-  if (deictic && own.length && !mine.length) {
+  // an unfilled member page has no passages at all: "his thesis?" there must not be answered with someone else's
+  if (deictic && /^\/(zh-tw|en)\/(papers|members)\/[a-z0-9-]+\/$/.test(at) && !mine.length) {
     const answer = /\/members\//.test(at)
       ? (lang === 'en' ? 'This member has not filled in their page yet, so the website does not have this information.' : '這位成員的頁面還沒填寫，網站上沒有這項資料。')
       : (lang === 'en' ? 'The website does not say. Please email Prof. Hsin-Yu Chiu (hychiu@ncu.edu.tw).' : '網站上沒有寫，建議寄信問邱信瑜老師（hychiu@ncu.edu.tw）。');
