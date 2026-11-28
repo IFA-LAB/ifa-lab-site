@@ -236,9 +236,16 @@ async function ask(req: Request, env: Env): Promise<Response> {
   // "this paper" with the page's own passages: answer from that page only (its findings, abstract, thesis first, related
   // lists dropped), and name the page in the question, so the model cannot borrow a neighbouring paper's or person's lines
   const rank = (p: (typeof own)[number]) => { const h = p.url.split('#')[1] ?? ''; return /pts|abs|thesis/.test(h) ? 0 : /rel-h/.test(h) ? 9 : 1; };
-  const byQ = deictic && own.length ? searchOne(ix, q, lang, 60).filter((h) => own.includes(h)) : [];
+  // within the page, the section that shares the most two-character pieces with the question comes first
+  const grams = (t: string) => { const c = t.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ''); const g = new Set<string>(); for (let i = 0; i < c.length - 1; i++) g.add(c.slice(i, i + 2)); return g; };
+  const qg = grams(q.replace(/碩論/g, '碩士論文').replace(/這篇|本篇|這份|這位|這個人|他的|她的|是什麼|什麼|在做|怎麼/g, ''));
+  const hit = (p: (typeof own)[number]) => { let n = 0; for (const g of grams(p.section)) if (qg.has(g)) n += 3; for (const g of grams(p.text.slice(0, 400))) if (qg.has(g)) n++; return n; };
+  const byQ = deictic && own.length ? own.filter((p) => hit(p) > 0).sort((a, b) => hit(b) - hit(a)) : [];
   const mine = deictic && own.length ? [...new Set([...own.filter((p) => rank(p) === 0), ...byQ, ...own])].filter((p) => rank(p) < 9 && p.text.length > 40).slice(0, 4) : [];
   const hits = mine.length ? mine : [...own.slice(0, 2), ...search(ix, q, lang).filter((h) => !own.includes(h))].slice(0, 5);
+  // a current student's page has papers but no thesis yet; without this the model calls the first paper the thesis
+  const noThesis = mine.length && /碩論|碩士論文|thesis/i.test(q) && !own.some((p) => /thesis/.test(p.url));
+  if (noThesis) q += lang === 'en' ? ' (This page has no master's thesis section; the papers listed are not the thesis.)' : '（這一頁沒有碩士論文段落，列出的論文不是碩論）';
   if (mine.length) q = `${q}（${lang === 'en' ? 'about: ' : '指的是：'}${mine[0].title.split(/\s*[｜|]\s*/)[0]}）`;
   // the page's own name: the title before its first separator (the home page's long SEO title included)
   const page = (t: string) => t.split(/\s*[｜|]\s*/)[0];
