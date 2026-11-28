@@ -84,7 +84,7 @@ export default function MyKline({ lang }: Props) {
             {items.map((it) => (
               <li key={it.id} data-hot={hot === it.id ? '' : undefined} onPointerEnter={() => setHot(it.id)} onPointerLeave={() => setHot(null)}>
                 <i style={{ background: `var(--clay-${KINDS[it.kind].clay})` }} title={pick(KINDS[it.kind].name)} aria-hidden="true" />
-                <span className="jsk-vh">{pick(KINDS[it.kind].name)}：</span>
+                <span className="jsk-vh">{pick(KINDS[it.kind].name)}{zh ? '：' : ': '}</span>
                 {it.href
                   ? <a href={link(it.href)} target={it.href.startsWith('http') ? '_blank' : undefined} rel={it.href.startsWith('http') ? 'noopener' : undefined} onFocus={() => setHot(it.id)} onBlur={() => setHot(null)}><Glued text={pick(it.text)} /></a>
                   : <span><Glued text={pick(it.text)} /></span>}

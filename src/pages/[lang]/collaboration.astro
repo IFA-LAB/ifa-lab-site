@@ -10,7 +10,7 @@ const lang = Astro.params.lang as Locale;
 const zh = lang === 'zh-tw';
 const ways: { title: Bi; body: Bi; clay: string }[] = [
   { clay: 'blue', title: { zh: '產業合作', en: 'Industry partners' }, body: { zh: '帶著資料和想問的問題來談，就像兆豐那樣。', en: 'Bring a dataset and a question, as Mega Bank did.' } },
-  { clay: 'sun', title: { zh: '學術合作', en: 'Academic collaboration' }, body: { zh: '一起申請國科會計畫、合寫論文。', en: 'Joint NSTC proposals and co-authored papers.' } },
+  { clay: 'sun', title: { zh: '學術合作', en: 'Academic collaboration' }, body: { zh: '一起申請國科會計畫、合寫論文。', en: 'Joint NSTC proposals and coauthored papers.' } },
   { clay: 'pink', title: { zh: '跨領域研究', en: 'Interdisciplinary research' }, body: { zh: '做行為、語言或網路資料的研究者，可以拿金融市場的資料來驗證自己的方法。', en: 'Researchers working on behavior, language or network data can test their methods on financial market data.' } },
 ];
 // Real collaboration record, computed from the publication list

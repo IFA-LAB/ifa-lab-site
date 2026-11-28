@@ -75,6 +75,11 @@ function searchOne(ix: Index, q: string, lang: string, k = 5): Passage[] {
   if (/不是讀|沒學過|沒修過|沒有.{0,4}背景|非本科|跨領域|轉領域/.test(qn)) qn += ' 適合 什麼樣 學生 沒關係';
   if (/\b(background|not from|never studied|no experience|didn't study)\b/.test(qn)) qn += ' who is ifa lab for';
   if (/\b(apply|applying|application|admission|get in)\b/.test(qn)) qn += ' join email';
+  // Chinese names for methods the papers write in English or under another Chinese name: 圖神經網路 never met the
+  // SeqTAG pages, which say 圖卷積 and "graph"
+  if (/圖神經|圖網路|圖模型|\bgnn\b/.test(qn)) qn += ' 圖卷積 因果圖 graph';
+  if (/語言模型|\bllm\b|\bgpt\b/.test(qn)) qn += ' llm 生成式';
+  if (/深度學習|神經網路/.test(qn)) qn += ' 深度 機器學習 lstm gru';
   // does the question name a member? then their pages lead; otherwise the lab's own pages do
   const named = ix.ps.some((p) => { const w = p.title.split(/\s*[｜|]\s*/)[0].toLowerCase(); return p.url.includes('/members/') && w.length >= 2 && !w.startsWith('ifa lab') && qn.includes(w); });
   const qs = count(grams(qn));

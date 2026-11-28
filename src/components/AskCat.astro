@@ -126,11 +126,14 @@ const T = {
       return box;
     }
 
+    // the send button is off while K-meow answers, so a second question is not silently dropped
+    const send = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const q = input.value.trim();
       if (busy || q.length < 2) return;
       busy = true;
+      send.disabled = true;
       dlg.querySelector('.chips')?.remove();
       log.append(el('p', 'q', q));
       const wait = el('p', 'wait', T.thinking);
@@ -167,6 +170,7 @@ const T = {
         log.append(el('p', 'a', T.error));
       }
       busy = false;
+      send.disabled = false;
       log.lastElementChild?.scrollIntoView({ block: 'nearest' });
       input.focus();
     });
